@@ -16,3 +16,4 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::match(['GET', 'POST'], '/home', [App\Http\Controllers\HomeController::class, 'home'])->name('route_home');
