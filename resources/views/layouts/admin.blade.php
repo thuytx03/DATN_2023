@@ -42,7 +42,7 @@
 </a>
 
 <!-- Logout Modal-->
-@include('layouts.admin.logout')
+@include('admin.auth.logout')
 
 <!-- Bootstrap core JavaScript-->
 <script src="{{ asset('admin/vendor/jquery/jquery.min.js') }}"></script>
@@ -53,6 +53,7 @@
 
 <!-- Custom scripts for all pages-->
 <script src="{{ asset('admin/js/sb-admin-2.min.js') }}"></script>
+
 
 @stack('scripts')
 

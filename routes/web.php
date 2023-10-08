@@ -64,14 +64,17 @@ Route::get('contact', function () {
 
 
 Route::prefix('admin')
-    ->as('admin.')
     ->group(function () {
+        Route::get('/dashboard', function () {
+            return view('admin.dashboard');
+        })->name('admin.dashboard');
+
         Route::get('movie', function () {
             $title = 'MOVIE - ADMIN';
             return view('admin.index', compact('title'));
-        })->name('movie');
+        })->name('admin.movie');
 
         Route::get('table', function () {
             return view('admin.table');
-        })->name('table');
+        })->name('admin.table');
     });
