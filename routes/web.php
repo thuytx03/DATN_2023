@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\CategoryBlogController;
+use App\Http\Controllers\Admin\CategoryPostController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -70,8 +70,8 @@ Route::prefix('admin')
         /*
          * Category Blog
          */
-        Route::prefix('category-blog')->group(function () {
-            Route::get('/',[CategoryBlogController::class,'index']);
+        Route::prefix('category-post')->group(function () {
+            Route::get('/',[CategoryPostController::class,'index']);
         });
 
 
