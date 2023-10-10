@@ -1,17 +1,11 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+namespace App\Http\Controllers;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
+use Illuminate\Support\Facades\Route;
+use Laravel\Socialite\Facades\Socialite;
+
+
 
 Route::get('/', function () {
     return view('client.index');
@@ -61,6 +55,18 @@ Route::get('about-us', function () {
 Route::get('contact', function () {
     return view('client.contacts.contact');
 })->name('contact');
+// route đăng nhập social media 
+Route::get('/auth/facebook', function () {
+    return Socialite::driver('facebook')->redirect();
+});
+Route::get('/auth/callback', function () {
+    $user = Socialite::driver('github')->user();
+
+});
+ route::get('/auth/facebook/callback', function() {
+return 'callbackloginfacebook';
+ });
+
 
 
 Route::prefix('admin')
