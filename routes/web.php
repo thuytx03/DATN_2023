@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Admin\CategoryBlogController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
 Route::get('/', function () {
     return view('client.index');
 })->name('index');
@@ -68,6 +67,13 @@ Route::prefix('admin')
         Route::get('/dashboard', function () {
             return view('admin.dashboard');
         })->name('admin.dashboard');
+        /*
+         * Category Blog
+         */
+        Route::prefix('category-blog')->group(function () {
+            Route::get('/',[CategoryBlogController::class,'index']);
+        });
+
 
         Route::get('movie', function () {
             $title = 'MOVIE - ADMIN';
