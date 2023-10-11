@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('address')->nullable();;
             $table->string('gender')->nullable();
             $table->string('avatar')->nullable();
-            $table->string('status')->nullable();
+            $table->string('status')->default(1);
             $table->string('gauth_token')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();

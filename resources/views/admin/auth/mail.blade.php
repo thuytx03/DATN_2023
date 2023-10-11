@@ -31,7 +31,7 @@
     </header>
     <div class="container">
         <form action="">
-            <h1> Chào Mừng {{$newUser->name}} Đến Với Chúng Tôi </h1>
+            {{-- <h1>{{$name}}</h1> --}}
             
         </form>
     </div>
