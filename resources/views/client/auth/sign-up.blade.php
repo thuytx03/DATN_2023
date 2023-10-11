@@ -46,7 +46,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#0">
+                            <a href="">
                                 <i class="fab fa-google"></i>
                             </a>
                         </li>

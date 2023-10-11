@@ -1,11 +1,8 @@
 <?php
-
-namespace App\Http\Controllers;
-
 use Illuminate\Support\Facades\Route;
-use Laravel\Socialite\Facades\Socialite;
-
-
+use App\Http\Controllers\Auth\SocialController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return view('client.index');
@@ -55,25 +52,27 @@ Route::get('about-us', function () {
 Route::get('contact', function () {
     return view('client.contacts.contact');
 })->name('contact');
-// route đăng nhập social media 
-Route::get('/auth/facebook', function () {
-    return Socialite::driver('facebook')->redirect();
-});
-Route::get('/auth/callback', function () {
-    $user = Socialite::driver('github')->user();
 
-});
- route::get('/auth/facebook/callback', function() {
-return 'callbackloginfacebook';
- });
+// route cua google
+Route::get('auth/google', [SocialController::class, 'signInwithGoogle'])->name('login_google');
+Route::get('callback/google', [SocialController::class, 'callbackToGoogle']);
+// ket thuc route google
+// route logout
+Route::get('logout', [SocialController::class, 'logout'])->name('logout');
 
-
-
+// ket thuc route mang xa hoi
 Route::prefix('admin')
     ->group(function () {
         Route::get('/dashboard', function () {
             return view('admin.dashboard');
         })->name('admin.dashboard');
+        /*
+         * Category Blog
+         */
+        Route::prefix('category-post')->group(function () {
+            Route::get('/',[CategoryPostController::class,'index']);
+        });
+
 
         Route::get('movie', function () {
             $title = 'MOVIE - ADMIN';

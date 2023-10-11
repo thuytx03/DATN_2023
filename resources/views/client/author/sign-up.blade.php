@@ -83,7 +83,7 @@
                             </a>
                         </li> --}}
                         <li>
-                            <a href="#0">
+                            <a href="{{ route('login_google') }}">
                                 <i class="fab fa-google"></i>
                             </a>
                         </li>
