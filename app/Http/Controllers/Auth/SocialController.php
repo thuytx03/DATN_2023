@@ -10,7 +10,7 @@ use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Exception;
-use pathToFile;
+
 
 class SocialController extends Controller
 {
@@ -30,7 +30,7 @@ class SocialController extends Controller
             // đăng nhập với google
             $user = Socialite::driver('google')->user();
             $finduser = User::where('gauth_id', $user->id)->first();
-            $check = User::where('email', $request->email)->first();
+           
             // nếu đã có tài khoản tự động đăng nhập
             if ($finduser->status == 2) {
                 toastr()->error('Tài Khoản của bạn đang bị khóa!', 'Congrats');
@@ -44,7 +44,8 @@ class SocialController extends Controller
                 return redirect(route('index'));
                 // nếu chưa có thì sẽ tự động thêm mới 
             } else {
-                $this->newUser = User::create([
+                $newUser =  $this->newUser;
+                $newUser = User::create([
                     'name' => $user->name,
                     'email' => $user->email,
                     'gauth_id' => $user->id,
@@ -53,7 +54,7 @@ class SocialController extends Controller
                 ]);
 
                 // email chào mừng
-                $name = 'Chào Mừng   ' . '  ' . $this->newUser->name . '' . 'đến với boleto';
+                $name = 'Chào Mừng   ' . '  ' . $newUser->name . '' . 'đến với boleto';
                 Mail::send('admin.auth.mail', compact('name'), function ($message) {
                     $newUser =  $this->newUser;
                     $email = $newUser->email;
@@ -65,7 +66,7 @@ class SocialController extends Controller
                     $message->subject('Chào Mừng đến với BoLeto');
                     $message->priority(3);
                 });
-                Auth::login($this->newUser);
+                Auth::login($newUser);
                 toastr()->success('Data has been saved successfully!', 'Congrats');
                 return redirect(route('index'));
             }
@@ -78,7 +79,7 @@ class SocialController extends Controller
     // test send email
     public function sendMail()
     {
-             $name = 'adadada';
+        $name = 'adadada';
         Mail::send('test', compact('name'), function ($message) {
             $email = 'levanan3418@gmail.com';
             $message->from('anhandepgiai22@gmail.com', 'Boleto');
