@@ -43,11 +43,11 @@
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="false" aria-controls="collapseUtilities">
             <i class="fas fa-fw fa-wrench"></i>
-            <span>Quản lý danh mục post</span>
+            <span>Quản lý bài viết</span>
         </a>
         <div id="collapseUtilities" class="collapse" aria-labelledby="headingPost" data-parent="#accordionSidebar" style="">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="">Danh sách post</a>
+                <a class="collapse-item" href="{{ route('post-type.index') }}">Danh mục bài viết</a>
             </div>
         </div>
     </li>
