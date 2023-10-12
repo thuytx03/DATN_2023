@@ -43,6 +43,8 @@
                             <option value="0" {{ ($postType->status == 0 ? 'selected' : '') }}>Not Active</option>
                         </select>
                     </div>
+                    <input type="hidden" name="_lft" value="{{ $postType->_lft }}">
+                    <input type="hidden" name="_rgt" value="{{ $postType->_rgt }}">
                     <div class="form-group">
                         <label for="image">Ảnh</label> <br>
                         <input class="form-control" name="image" type="file" id="image_url" style="display: none">

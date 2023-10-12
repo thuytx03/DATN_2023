@@ -1,2 +1,2 @@
-omposer install
+composer install
 composer require laravel/socialite

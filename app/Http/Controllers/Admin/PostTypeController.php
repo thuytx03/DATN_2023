@@ -7,6 +7,9 @@ use App\Http\Requests\PostTypeRequest;
 use App\Models\PostType;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Kalnoy\Nestedset\NestedSet;
+use Kalnoy\Nestedset\QueryBuilder;
+
 
 class PostTypeController extends Controller
 {
@@ -106,6 +109,7 @@ class PostTypeController extends Controller
     {
         try {
             $postType = PostType::find($id);
+            $deltaLeft = $request->_lft;
             $params = $request->except('_token', 'image');
             if ($request->hasFile('image') && $request->file('image')->isValid()) {
                 Storage::delete('/public/' . $postType->image);
@@ -119,6 +123,7 @@ class PostTypeController extends Controller
             }
             $params['slug'] = Str::slug($params['name']);
             $postTypeUpdate = PostType::where('id', $id)->update($params);
+
             if ($postTypeUpdate) {
                 toastr()->success('Cập nhập danh mục thành công!', 'success');
             } else {
