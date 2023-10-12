@@ -12,6 +12,7 @@
         "laravel/sanctum": "^2.14",
         "laravel/socialite": "^5.9",
         "laravel/tinker": "^2.7",
+        "spatie/laravel-permission": "^5.11",
         "yoeunes/toastr": "^2.3"
     },
     "require-dev": {

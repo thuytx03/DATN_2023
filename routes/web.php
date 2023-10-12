@@ -17,13 +17,14 @@ Route::get('movie-detail', function () {
     return view('client.movies.movie-detail');
 })->name('movie-detail');
 
-Route::get('sign-in', function () {
-    return view('client.author.sign-in');
-})->name('sign-in');
+//login-register
+Route::match(['GET', 'POST'], '/login', [App\Http\Controllers\Auth\SocialController::class, 'login'])->name('login');
+Route::match(['GET', 'POST'], '/register', [App\Http\Controllers\Auth\AuthClientController::class, 'register'])->name('register');
 
-Route::get('sign-up', function () {
-    return view('client.author.sign-up');
-})->name('sign-up');
+Route::middleware('auth')->group(function () {
+//Spatie 
+Route::match(['GET', 'POST'], '/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dasboard')->middleware('role:JungX-Admin');
+});
 
 Route::get('movie-ticket-plan', function () {
     return view('client.movies.movie-ticket-plan');
