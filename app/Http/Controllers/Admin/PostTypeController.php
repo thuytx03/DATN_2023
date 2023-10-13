@@ -10,7 +10,6 @@ use Illuminate\Support\Str;
 use Kalnoy\Nestedset\NestedSet;
 use Illuminate\Database\QueryException;
 
-
 use Illuminate\Support\Facades\DB;
 
 class PostTypeController extends Controller
@@ -23,6 +22,7 @@ class PostTypeController extends Controller
     public function index()
     {
         $postTypes = PostType::latest()->paginate(5);
+        $postTypes = PostType::latest()->paginate(3);
         return view('admin.post-type.index', compact('postTypes'));
     }
 
@@ -146,6 +146,8 @@ class PostTypeController extends Controller
             toastr()->success('Cập nhật danh mục thành công!', 'success');
         } catch
         (QueryException $e) {
+
+        } catch (\Illuminate\Database\QueryException $e) {
             if ($e->errorInfo[1] === 1062) {
                 // Lỗi duplicate entry
                 DB::rollBack(); // Lưu ý: Rollback transaction nếu xảy ra lỗi
@@ -156,7 +158,6 @@ class PostTypeController extends Controller
 
         return redirect()->route('post-type.index');
     }
-
 
     /**
      * Remove the specified resource from storage.
