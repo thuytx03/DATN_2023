@@ -23,13 +23,13 @@ Route::get('movie-detail', function () {
     return view('client.movies.movie-detail');
 })->name('movie-detail');
 
-Route::get('sign-in', function () {
-    return view('client.author.sign-in');
-})->name('sign-in');
+// Route::get('sign-in', function () {
+//     return view('client.author.sign-in');
+// })->name('sign-in');
 
-Route::get('sign-up', function () {
-    return view('client.author.sign-up');
-})->name('sign-up');
+// Route::get('sign-up', function () {
+//     return view('client.author.sign-up');
+// })->name('sign-up');
 
 Route::get('movie-ticket-plan', function () {
     return view('client.movies.movie-ticket-plan');

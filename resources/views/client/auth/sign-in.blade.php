@@ -43,7 +43,7 @@
                 <div class="or"><span>Hoặc</span></div>
                 <ul class="social-icons">
                     <li>
-                        <a href="#0">
+                        <a href="">
                             <i class="fab fa-facebook-f"></i>
                         </a>
                     </li>
@@ -53,7 +53,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#0">
+                        <a href="{{ route('login_google')}}">
                             <i class="fab fa-google"></i>
                         </a>
                     </li>

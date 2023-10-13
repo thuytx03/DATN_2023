@@ -22,7 +22,6 @@ class PostTypeController extends Controller
     public function index()
     {
         $postTypes = PostType::latest()->paginate(5);
-        $postTypes = PostType::latest()->paginate(3);
         return view('admin.post-type.index', compact('postTypes'));
     }
 
