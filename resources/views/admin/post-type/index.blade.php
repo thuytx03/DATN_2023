@@ -1,5 +1,7 @@
 @extends('layouts.admin')
-
+@section('title')
+    Danh sách danh mục
+@endsection
 @push('styles')
     <link rel="stylesheet" href="{{ asset('admin/vendor/datatables/dataTables.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/switchery/0.8.2/switchery.min.css">

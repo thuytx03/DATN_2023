@@ -71,7 +71,7 @@ Route::prefix('admin')
         /*
          * Category Blog
          */
-        Route::prefix('category-post')->group(function () {
+        Route::prefix('post-type')->group(function () {
             Route::get('/', [PostTypeController::class, 'index'])->name('post-type.index');
             Route::get('/create', [PostTypeController::class, 'create'])->name('post-type.add');
             Route::post('/store', [PostTypeController::class, 'store'])->name('post-type.store');

@@ -1,4 +1,7 @@
 @extends('layouts.admin')
+@section('title')
+    Cập nhập danh mục
+@endsection
 @section('content')
     <div class="container-fluid">
 
@@ -39,12 +42,10 @@
                         <label for="status">Trạng thái</label>
                         <select id="status" class="form-control custom-select" name="status">
                             <option selected="" disabled="">Chọn một</option>
-                            <option value="1" {{ ($postType->status == 1 ? 'selected' : '') }}>Active</option>
-                            <option value="0" {{ ($postType->status == 0 ? 'selected' : '') }}>Not Active</option>
+                            <option value="1" {{ ($postType->status == 1 ? 'selected' : '') }}>Kích hoạt</option>
+                            <option value="0" {{ ($postType->status == 0 ? 'selected' : '') }}>Không kích hoạt</option>
                         </select>
                     </div>
-                    <input type="hidden" name="_lft" value="{{ $postType->_lft }}">
-                    <input type="hidden" name="_rgt" value="{{ $postType->_rgt }}">
                     <div class="form-group">
                         <label for="image">Ảnh</label> <br>
                         <input class="form-control" name="image" type="file" id="image_url" style="display: none">
@@ -59,8 +60,9 @@
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer">
-                    <a href="{{ route('post-type.index') }}" class="btn btn-info">Danh sách</a>
                     <button type="submit" class="btn btn-primary">Cập nhập</button>
+                    <a href="{{ route('post-type.index') }}" class="btn btn-info">Danh sách</a>
+
                 </div>
             </div>
         </form>

@@ -1,4 +1,7 @@
 @extends('layouts.admin')
+@section('title')
+  Thêm mới danh mục
+@endsection
 @section('content')
     <div class="container-fluid">
 
@@ -23,7 +26,7 @@
                     </div>
                     <div class="form-group">
                         <label for="parent_id">Danh mục cha</label>
-                        <select id="parent_id" class="form-control custom-select" name="parent_id">
+                        <select id="parent_id" class="form-control custom-select" name="parent_id" >
                             <option selected="" value="none">Chưa có danh mục cha</option>
                             @foreach($postTypes as $postType)
                                 <option value="{{ $postType->id }}">
@@ -31,13 +34,15 @@
                                 </option>
                             @endforeach
                         </select>
+                        <div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="status">Trạng thái</label>
                         <select id="status" class="form-control custom-select" name="status">
                             <option selected="" disabled="">Chọn 1</option>
-                            <option value="1" selected>Active</option>
-                            <option value="0">Not Active</option>
+                            <option value="1" selected>Kích hoạt</option>
+                            <option value="0">Không kích hoạt</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -52,8 +57,9 @@
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer ">
-                    <a href="{{ route('post-type.index') }}" class="btn btn-info">Danh sách</a>
                     <button type="submit" class="btn btn-success">Thêm mới</button>
+                    <a href="{{ route('post-type.index') }}" class="btn btn-info">Danh sách</a>
+
                 </div>
             </div>
         </form>
@@ -100,5 +106,13 @@
                 reader.readAsDataURL(file);
             }
         });
+        // Add an event listener to select/deselect all checkboxes
+        document.getElementById('select-all-checkboxes').addEventListener('change', function () {
+            const checkboxes = document.querySelectorAll('input[name="parent_id[]"]');
+            checkboxes.forEach((checkbox) => {
+                checkbox.checked = this.checked;
+            });
+        });
+
     </script>
 @endpush
