@@ -14,20 +14,6 @@ use Exception;
 
 class SocialController extends Controller
 {
-    public function login(Request $request)
-    {
-        if ($request->isMethod('POST')) {
-            //đăng nhập thành công
-            if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-                toastr()->success('Thank! Login successfully!');
-                return redirect()->route('index');
-            } else {
-                toastr()->error('Oops! Wrong password or email!');
-                return redirect()->route('login');
-            }
-        }
-        return view('client.auth.sign-in');
-    }
     // dang nhap google
     public function signInwithGoogle()
     {
@@ -86,6 +72,6 @@ class SocialController extends Controller
     public function logout()
     {
         Auth::logout();
-        return redirect(route('sign-up'));
+        return redirect()->route('login');
     }
 }
