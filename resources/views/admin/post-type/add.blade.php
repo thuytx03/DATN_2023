@@ -34,6 +34,8 @@
                                 </option>
                             @endforeach
                         </select>
+                        <div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="status">Trạng thái</label>
@@ -104,5 +106,13 @@
                 reader.readAsDataURL(file);
             }
         });
+        // Add an event listener to select/deselect all checkboxes
+        document.getElementById('select-all-checkboxes').addEventListener('change', function () {
+            const checkboxes = document.querySelectorAll('input[name="parent_id[]"]');
+            checkboxes.forEach((checkbox) => {
+                checkbox.checked = this.checked;
+            });
+        });
+
     </script>
 @endpush

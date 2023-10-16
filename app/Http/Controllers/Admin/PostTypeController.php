@@ -7,6 +7,9 @@ use App\Http\Requests\PostTypeRequest;
 use App\Models\PostType;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Kalnoy\Nestedset\NestedSet;
+use Illuminate\Database\QueryException;
+
 use Illuminate\Support\Facades\DB;
 
 class PostTypeController extends Controller
@@ -18,10 +21,7 @@ class PostTypeController extends Controller
      */
     public function index()
     {
-//        $title = 'Xóa danh mục!';
-//        $text = "Bạn có chắc chắn muốn xóa danh mục không?";
-//        confirmDelete($title, $text);
-        $postTypes = PostType::latest()->paginate(3);
+        $postTypes = PostType::latest()->paginate(5);
         return view('admin.post-type.index', compact('postTypes'));
     }
 
@@ -104,36 +104,6 @@ class PostTypeController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
 
-    // public function update(PostTypeRequest $request, $id)
-    // {
-    //     try {
-    //         $postType = PostType::find($id);
-    //         $params = $request->except('_token', 'image');
-    //         if ($request->hasFile('image') && $request->file('image')->isValid()) {
-    //             Storage::delete('/public/' . $postType->image);
-    //             $request->image = uploadFile('postTypes', $request->file('image'));
-    //             $params['image'] = $request->image;
-    //         } else {
-    //             $request->image = $postType->image;
-    //         }
-    //         if ($params['parent_id'] == 'none') {
-    //             $params['parent_id'] = NULL;
-    //         }
-    //         $params['slug'] = Str::slug($params['name']);
-    //         $postTypeUpdate = PostType::where('id', $id)->update($params);
-    //         if ($postTypeUpdate) {
-    //             toastr()->success('Cập nhập danh mục thành công!', 'success');
-    //         } else {
-    //             toastr()->error('Có lỗi xảy ra !', 'error');
-    //         }
-    //         return redirect()->route('post-type.index');
-    //     } catch (\Illuminate\Database\QueryException $e) {
-    //         if ($e->errorInfo[1] === 1062) { // Lỗi duplicate entry
-    //             return redirect()->back()->withErrors(['slug' => 'Slug đã bị trùng lặp.Vui lòng nhập tên khác']);
-    //         }
-    //     }
-    // }
-
     public function update(PostTypeRequest $request, $id)
     {
         try {
@@ -150,7 +120,6 @@ class PostTypeController extends Controller
                 $params['parent_id'] = null;
             }
             $params['slug'] = Str::slug($params['name']);
-
             // Lấy thông tin cũ của parent_id
             $oldParentId = $postType->parent_id;
 
@@ -174,6 +143,9 @@ class PostTypeController extends Controller
             DB::commit();
 
             toastr()->success('Cập nhật danh mục thành công!', 'success');
+        } catch
+        (QueryException $e) {
+
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->errorInfo[1] === 1062) {
                 // Lỗi duplicate entry
@@ -185,11 +157,6 @@ class PostTypeController extends Controller
 
         return redirect()->route('post-type.index');
     }
-
-
-
-
-
 
     /**
      * Remove the specified resource from storage.

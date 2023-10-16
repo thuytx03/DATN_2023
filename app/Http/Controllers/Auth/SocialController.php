@@ -36,9 +36,9 @@ class SocialController extends Controller
                     return redirect(route('index'));
                 } else {
                     toastr()->error('Đăng Nhập Thất Bại!', 'Xin Lỗi!');
-                    return redirect(route('sign-up'));
+                    return redirect(route('login'));
                 }
-                // nếu chưa có thì sẽ tự động thêm mới 
+                // nếu chưa có thì sẽ tự động thêm mới
             } else {
                 $newUser = User::create([
                     'name' => $user->name,
@@ -46,7 +46,7 @@ class SocialController extends Controller
                     'gauth_id' => $user->id,
                     'gauth_type' => 'google',
                     'status' => 1,
-                    'password' => encrypt('admin@123')
+                    'password' => bcrypt('admin@123')
                 ]);
                 // email chào mừng
                 $name = 'Chào Mừng   ' . '  ' . $user->name . '' . 'đến với boleto';
@@ -65,7 +65,7 @@ class SocialController extends Controller
             }
         } catch (Exception $e) {
             toastr()->error('Đăng Nhập Thất Bại!', 'Xin Lỗi!');
-            return redirect(route('sign-up'));
+            return redirect(route('login'));
         }
     }
     // dang nhap google

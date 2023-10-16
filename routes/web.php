@@ -14,7 +14,11 @@ Route::get('movie-list', function () {
     return view('client.movies.movie-list');
 })->name('movie-list');
 
-
+Route::group(['middleware' => 'guest'], function () {
+    Route::match(['GET', 'POST'], '/login', [App\Http\Controllers\Auth\AuthClientController::class, 'login'])->name('login');
+    Route::match(['GET', 'POST'], '/register', [App\Http\Controllers\Auth\AuthClientController::class, 'register'])->name('register');
+    Route::match(['GET', 'POST'], '/forgot-password', [App\Http\Controllers\Auth\AuthClientController::class, 'forgotPassword'])->name('forgotPassword');
+});
 Route::get('movie-detail', function () {
     return view('client.movies.movie-detail');
 })->name('movie-detail');
