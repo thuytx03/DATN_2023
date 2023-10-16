@@ -109,7 +109,7 @@
                                                 <button type="submit"
                                                         class="btn btn-xs btn-danger btn-flat show_confirm"
                                                         data-toggle="tooltip" title='Delete'>Xóa
-                                                </button>
+                                                </button>   
                                                 <form
                                                     action="{{ route('post-type.destroy', ['id' => $postType->id]) }}"
                                                     method="post" id="delete">
