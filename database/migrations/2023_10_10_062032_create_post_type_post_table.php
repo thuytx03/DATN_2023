@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('post_id');
             $table->unsignedBigInteger('post_type');
+           
             $table->timestamps();
             $table->foreign('post_id')->references('id')->on('posts');
             $table->foreign('post_type')->references('id')->on('post_types');
