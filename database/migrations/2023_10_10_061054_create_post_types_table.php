@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Kalnoy\Nestedset\NestedSet;
 
 return new class extends Migration
 {
@@ -16,13 +17,12 @@ return new class extends Migration
         Schema::create('post_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('slug');
-            $table->string('_lft');
-            $table->string('_rgt');
-            $table->integer('parent_id');
+            $table->string('slug')->unique();
+            $table->nestedSet();
             $table->string('image')->nullable();
             $table->text('description')->nullable();
             $table->tinyInteger('status')->default(1);
+            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -34,6 +34,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('post_types');
+        Schema::table('post_types', function (Blueprint $table) {
+            $table->dropNestedSet();
+        });
     }
 };

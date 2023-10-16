@@ -12,52 +12,55 @@
         <!-- DataTales Example -->
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <a href=""><button class="btn btn-primary">thêm</button></a>
+                <a href="">
+                    <button class="btn btn-primary">thêm</button>
+                </a>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
-                            <tr>
-                                <th>id</th>
-                                <th>Name</th>
-                                <th>gender</th>
-                                <th>total</th>
-                                <th>email</th>
-                                <th>ảnh</th>
-                                <th>date</th>
-                                <th>action</th>
-                            </tr>
+                        <tr>
+                            <th>id</th>
+                            <th>Name</th>
+                            <th>gender</th>
+                            <th>total</th>
+                            <th>email</th>
+                            <th>ảnh</th>
+                            <th>date</th>
+                            <th>action</th>
+                        </tr>
                         </thead>
 
                         <tbody>
 
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>
 
-                                    <a href="">
-                                        <button class="btn btn-primary ">edit</button>
+                                <a href="">
+                                    <button class="btn btn-primary ">edit</button>
 
-                                    </a>
+                                </a>
 
-                                    <button class="btn btn-danger"
+                                <button class="btn btn-danger"
                                         onclick="
                                 if(confirm('bạn muốn xóa k ?')){
                             document.getElementById('delete').submit();
                                      }
-                                ">xóa</button>
-                                    <form action="" method="post" id="delete">
+                                ">xóa
+                                </button>
+                                <form action="" method="post" id="delete">
 
-                                    </form>
-                                </td>
-                            </tr>
+                                </form>
+                            </td>
+                        </tr>
 
 
                         </tbody>

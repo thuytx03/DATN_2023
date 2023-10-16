@@ -6,13 +6,14 @@
     "license": "MIT",
     "require": {
         "php": "^8.0",
+        "baum/baum": "3.x-dev",
         "fruitcake/laravel-cors": "^2.0.5",
         "guzzlehttp/guzzle": "^7.2",
+        "kalnoy/nestedset": "^6.0",
         "laravel/framework": "^9.0",
         "laravel/sanctum": "^2.14",
         "laravel/socialite": "^5.9",
         "laravel/tinker": "^2.7",
-        "spatie/laravel-permission": "^5.11",
         "yoeunes/toastr": "^2.3"
     },
     "require-dev": {
@@ -25,6 +26,9 @@
         "spatie/laravel-ignition": "^1.0"
     },
     "autoload": {
+        "files": [
+            "app/Helpers/system.php"
+        ],
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",

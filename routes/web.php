@@ -1,8 +1,10 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\SocialController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Admin\PostTypeController;
 
 Route::get('/', function () {
     return view('client.index');
@@ -70,11 +72,14 @@ Route::prefix('admin')
         /*
          * Category Blog
          */
-        Route::prefix('category-post')->group(function () {
-            Route::get('/',[CategoryPostController::class,'index']);
+        Route::prefix('post-type')->group(function () {
+            Route::get('/', [PostTypeController::class, 'index'])->name('post-type.index');
+            Route::get('/create', [PostTypeController::class, 'create'])->name('post-type.add');
+            Route::post('/store', [PostTypeController::class, 'store'])->name('post-type.store');
+            Route::get('/edit/{id}', [PostTypeController::class, 'edit'])->name('post-type.edit');
+            Route::post('/update/{id}', [PostTypeController::class, 'update'])->name('post-type.update');
+            Route::post('/destroy/{id}', [PostTypeController::class, 'destroy'])->name('post-type.destroy');
         });
-
-
         Route::get('movie', function () {
             $title = 'MOVIE - ADMIN';
             return view('admin.index', compact('title'));
