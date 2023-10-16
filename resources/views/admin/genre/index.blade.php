@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 @section('title')
-    Danh sách danh mục
+    Danh sách thể loại phim
 @endsection
 @push('styles')
     <link rel="stylesheet" href="{{ asset('admin/vendor/datatables/dataTables.bootstrap4.min.css') }}">
@@ -10,12 +10,12 @@
     <div class="container-fluid">
 
         <!-- Page Heading -->
-        <h1 class="h3 mb-2 text-gray-800">Danh sách danh mục bài viết</h1>
+        <h1 class="h3 mb-2 text-gray-800">Danh sách thể loại phim</h1>
 
         <!-- DataTales Example -->
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <a href="{{ route('post-type.add') }}">
+                <a href="{{ route('genre.add') }}">
                     <button class="btn btn-success">Thêm mới</button>
                 </a>
             </div>
@@ -80,33 +80,33 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    @foreach($postTypes as $postType)
+                                    @foreach($genres as $genre)
                                         <tr class="odd">
                                             <td class="sorting_1 text-center">
                                                 <label>
                                                     <input type="checkbox" class="child-checkbox">
                                                 </label>
                                             </td>
-                                            <td class="text-center">{{ $postType->name }}</td>
+                                            <td class="text-center">{{ $genre->name }}</td>
                                             <td class="text-center">
-                                                @foreach($postType->ancestors as $item)
+                                                @foreach($genre->ancestors as $item)
                                                     {{ $item->name}} <br>
                                                 @endforeach
                                             </td>
                                             <td class="text-center">
                                                 <img alt="Avatar" width="60"
-                                                     src="{{ ($postType->image == null) ? asset('images/image-not-found.jpg') : Storage::url($postType->image) }}">
+                                                     src="{{ ($genre->image == null) ? asset('images/image-not-found.jpg') : Storage::url($genre->image) }}">
                                             </td>
                                             <td class="text-center">
                                                 <div class="form-check form-switch">
-                                                    <input type="checkbox" class="switch1" {{ $postType->status == 1 ? 'checked' : '' }} />
+                                                    <input type="checkbox" class="switch1" {{ $genre->status == 1 ? 'checked' : '' }} />
                                                 </div>
                                             </td>
                                             <td class="text-center">
-                                                <a href="{{ route('post-type.edit',['id' => $postType->id]) }}">
+                                                <a href="{{ route('genre.edit',['id' => $genre->id]) }}">
                                                     <button class="btn btn-primary ">Sửa</button>
                                                 </a>
-                                                <a class="btn show_confirm" href="{{ route('post-type.destroy',['id' => $postType->id]) }}">
+                                                <a class="btn show_confirm" href="{{ route('genre.destroy',['id' => $genre->id]) }}">
                                                     <button class="btn btn-danger">Xóa</button>
                                                 </a>
                                             </td>
@@ -119,15 +119,15 @@
                         <div class="row">
                             <div class="col-sm-12 col-md-5">
                                 <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">
-                                    Hiển thị {{ $postTypes->firstItem() }} đến {{ $postTypes->lastItem() }}
-                                    của {{ $postTypes->total() }} mục
+                                    Hiển thị {{ $genres->firstItem() }} đến {{ $genres->lastItem() }}
+                                    của {{ $genres->total() }} mục
                                 </div>
                             </div>
 
                             <div class="col-sm-12 col-md-7">
                                 <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
                                     <ul class="pagination">
-                                        {{ $postTypes->links('pagination::bootstrap-4') }}
+                                        {{ $genres->links('pagination::bootstrap-4') }}
                                     </ul>
                                 </div>
                             </div>

@@ -1,12 +1,12 @@
 @extends('layouts.admin')
 @section('title')
-    Cập nhập danh mục
+    Thêm mới thể loại
 @endsection
 @section('content')
     <div class="container-fluid">
 
         <!-- Page Heading -->
-        <h1 class="h3 mb-2 text-gray-800">Cập nhập danh mục bài viết</h1>
+        <h1 class="h3 mb-2 text-gray-800">Thêm mới thể loại phim</h1>
         @if($errors->any())
             @foreach($errors->all() as $error)
                 <div class="alert alert-danger" role="alert">
@@ -15,56 +15,50 @@
             @endforeach
         @endif
 
-        <!-- DataTales Example -->
-        <form action="{{ route('post-type.update',['id' => $postType->id]) }}" method="post"
-              enctype="multipart/form-data">
+        <form action="{{ route('genre.store') }}" method="post" enctype="multipart/form-data">
             @csrf
+            <!-- DataTales Example -->
             <div class="card card-primary">
-
                 <div class="card-body">
                     <div class="form-group">
-                        <label for="name">Tên danh mục</label>
-                        <input type="text" id="name" name="name" class="form-control" value="{{ $postType->name }}">
+                        <label for="name">Tên thể loại</label>
+                        <input type="text" id="name" name="name" class="form-control">
                     </div>
                     <div class="form-group">
                         <label for="parent_id">Danh mục cha</label>
-                        <select id="parent_id" class="form-control custom-select" name="parent_id">
-                            <option selected="" value="none">Chưa có danh mục cha</option>
-                            @foreach($postTypes as $value)
-                                @if($postType->id !== $value->id)  {{-- Kiểm tra nếu không phải danh mục đang cập nhật --}}
-                                <option
-                                    value="{{ $value->id }}" {{ ($postType->parent_id == $value->id) ? 'selected' : '' }}>
-                                    {{ $value->name }}
+                        <select id="parent_id" class="form-control custom-select" name="parent_id" >
+                            <option selected="" value="none">Chưa có thể loại cha</option>
+                            @foreach($genres as $genre)
+                                <option value="{{ $genre->id }}">
+                                    {{ $genre->name }}
                                 </option>
-                                @endif
                             @endforeach
                         </select>
+                        <div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="status">Trạng thái</label>
                         <select id="status" class="form-control custom-select" name="status">
-                            <option selected="" disabled="">Chọn một</option>
-                            <option value="1" {{ ($postType->status == 1 ? 'selected' : '') }}>Kích hoạt</option>
-                            <option value="0" {{ ($postType->status == 0 ? 'selected' : '') }}>Không kích hoạt</option>
+                            <option selected="" disabled="">Chọn 1</option>
+                            <option value="1" selected>Kích hoạt</option>
+                            <option value="0">Không kích hoạt</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="image">Ảnh</label> <br>
-                        <input class="form-control" name="image" type="file" id="image_url" style="display: none">
-                        <img src="{{ ($postType->image == null) ? asset('images/image-not-found.jpg') : Storage::url($postType->image) }}" width="130" id="image_preview" class="mt-2"
-                             alt="">
+                        <input name="image" type="file" id="image_url" style="display: none">
+                        <img src="{{ asset('images/image-not-found.jpg') }}" width="150" height="130" id="image_preview" class="mt-1" alt="">
                     </div>
                     <div class="form-group">
                         <label for="description">Mô tả</label>
-                        <textarea id="description" name="description" class="form-control"
-                                  rows="4">{{ $postType->description }}</textarea>
+                        <textarea id="description" name="description" class="form-control" rows="4"></textarea>
                     </div>
                 </div>
                 <!-- /.card-body -->
-                <div class="card-footer">
-                    <button type="submit" class="btn btn-primary">Cập nhập</button>
-                    <a href="{{ route('post-type.index') }}" class="btn btn-info">Danh sách</a>
-
+                <div class="card-footer ">
+                    <button type="submit" class="btn btn-success">Thêm mới</button>
+                    <a href="{{ route('genre.index') }}" class="btn btn-info">Danh sách</a>
                 </div>
             </div>
         </form>
@@ -78,6 +72,7 @@
     <script>
         const imagePreview = document.getElementById('image_preview');
         const imageUrlInput = document.getElementById('image_url');
+
         $(function () {
             function readURL(input, selector) {
                 if (input.files && input.files[0]) {
@@ -96,19 +91,27 @@
             });
 
         });
-        imagePreview.addEventListener('click', function () {
+        imagePreview.addEventListener('click', function() {
             imageUrlInput.click();
         });
 
-        imageUrlInput.addEventListener('change', function (event) {
+        imageUrlInput.addEventListener('change', function(event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function (e) {
+                reader.onload = function(e) {
                     imagePreview.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
             }
         });
+        // Add an event listener to select/deselect all checkboxes
+        document.getElementById('select-all-checkboxes').addEventListener('change', function () {
+            const checkboxes = document.querySelectorAll('input[name="parent_id[]"]');
+            checkboxes.forEach((checkbox) => {
+                checkbox.checked = this.checked;
+            });
+        });
+
     </script>
 @endpush

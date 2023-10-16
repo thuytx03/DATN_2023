@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Kalnoy\Nestedset\NestedSet;
 use Illuminate\Database\QueryException;
-
 use Illuminate\Support\Facades\DB;
 
 class PostTypeController extends Controller
@@ -22,7 +21,7 @@ class PostTypeController extends Controller
     public function index()
     {
         $postTypes = PostType::latest()->paginate(5);
-        $postTypes = PostType::latest()->paginate(3);
+//        $postTypes = PostType::all();
         return view('admin.post-type.index', compact('postTypes'));
     }
 
@@ -79,11 +78,6 @@ class PostTypeController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-        //
-    }
-
     /**
      * Show the form for editing the specified resource.
      *
@@ -126,7 +120,6 @@ class PostTypeController extends Controller
 
             // Sử dụng DB transaction để bảo vệ tính toàn vẹn của nested set
             DB::beginTransaction();
-
             // Cập nhật thông tin cơ bản của danh mục
             $postType->update($params);
 
