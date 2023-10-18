@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\SocialController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Admin\PostTypeController;
+use App\Http\Controllers\Admin\VoucherController;
 
 Route::get('/', function () {
     return view('client.index');
@@ -24,7 +25,7 @@ Route::get('movie-detail', function () {
 })->name('movie-detail');
 //
 Route::middleware(['auth', 'role:JungX-Admin'])->group(function () {
-    // Spatie 
+    // Spatie
     Route::match(['GET', 'POST'], '/admin/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     //user
     Route::match(['GET', 'POST'], '/admin/list/users', [App\Http\Controllers\UserController::class, 'index'])->name('list-user');
@@ -111,10 +112,9 @@ Route::get('logout', [SocialController::class, 'logout'])->name('logout');
 Route::prefix('admin')
     ->group(function () {
         //login
-        Route::prefix('login')->group(function () {
             Route::match(['GET', 'POST'], '/login', [App\Http\Controllers\Auth\AuthAdminController::class, 'login'])->name('login');
             Route::match(['GET', 'POST'], '/register', [App\Http\Controllers\Auth\AuthAdminController::class, 'register'])->name('register');
-        });
+
         /*
          * Category Blog
          */
@@ -125,6 +125,22 @@ Route::prefix('admin')
             Route::get('/edit/{id}', [PostTypeController::class, 'edit'])->name('post-type.edit');
             Route::post('/update/{id}', [PostTypeController::class, 'update'])->name('post-type.update');
             Route::post('/destroy/{id}', [PostTypeController::class, 'destroy'])->name('post-type.destroy');
+        });
+
+         // mã giảm giá
+         Route::prefix('voucher')->group(function () {
+            Route::get('/', [VoucherController::class, 'index'])->name('voucher.index');
+            Route::match(['GET', 'POST'], '/store', [VoucherController::class, 'store'])->name('voucher.store');
+            Route::match(['GET', 'POST'], '/update/{id}', [VoucherController::class, 'update'])->name('voucher.update');
+            Route::get('/destroy/{id}', [VoucherController::class, 'destroy'])->name('voucher.destroy');
+            Route::post('/deleteAll', [VoucherController::class, 'deleteAll'])->name('voucher.deleteAll');
+            Route::post('/update-status/{id}', [VoucherController::class, 'updateStatus'])->name('voucher.updateStatus');
+            Route::get('/trash', [VoucherController::class, 'trash'])->name('voucher.trash');
+            Route::get('/permanentlyDelete/{id}', [VoucherController::class, 'permanentlyDelete'])->name('voucher.permanentlyDelete');
+            Route::post('/permanentlyDeleteSelected', [VoucherController::class, 'permanentlyDeleteSelected'])->name('voucher.permanentlyDeleteSelected');
+            Route::post('/restoreSelected', [VoucherController::class, 'restoreSelected'])->name('voucher.restoreSelected');
+            Route::get('/restore/{id}', [VoucherController::class, 'restore'])->name('voucher.restore');
+
         });
         Route::get('movie', function () {
             $title = 'MOVIE - ADMIN';

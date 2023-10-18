@@ -40,6 +40,17 @@
         </div>
     </li>
     <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#magiamgia" aria-expanded="false" aria-controls="magiamgia">
+            <i class="fa-solid fa-ticket"></i>
+            <span>Quản lý mã giảm giá</span>
+        </a>
+        <div id="magiamgia" class="collapse" aria-labelledby="headingVoucher" data-parent="#accordionSidebar" style="">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{ route('voucher.index') }}">Danh sách mã giảm giá</a>
+            </div>
+        </div>
+    </li>
+    <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="false" aria-controls="collapseUtilities">
             <i class="fas fa-fw fa-wrench"></i>
             <span>Quản lý bài viết</span>
