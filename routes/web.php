@@ -24,7 +24,7 @@ Route::get('movie-detail', function () {
     return view('client.movies.movie-detail');
 })->name('movie-detail');
 //
-Route::middleware(['auth', 'role:JungX-Admin'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     // Spatie
     Route::match(['GET', 'POST'], '/admin/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     //user
