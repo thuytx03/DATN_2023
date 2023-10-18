@@ -91,7 +91,9 @@ class GenreController extends Controller
      */
     public function edit($id)
     {
-        return view('admin.genre.edit');
+        $genres = Genre::all();
+        $genre = Genre::find($id);
+        return view('admin.genre.edit', compact('genres', 'genre'));
     }
 
     /**
@@ -101,9 +103,53 @@ class GenreController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(GenreRequest $request, $id)
     {
-        //
+        try {
+            $genre = Genre::find($id);
+            $params = $request->except('_token', 'image');
+            if ($request->hasFile('image') && $request->file('image')->isValid()) {
+                Storage::delete('/public/' . $genre->image);
+                $request->image = uploadFile('genres', $request->file('image'));
+                $params['image'] = $request->image;
+            } else {
+                $request->image = $genre->image;
+            }
+            if ($params['parent_id'] == 'none') {
+                $params['parent_id'] = null;
+            }
+            $params['slug'] = Str::slug($params['name']);
+            // Lấy thông tin cũ của parent_id
+            $oldParentId = $genre->parent_id;
+
+            // Sử dụng DB transaction để bảo vệ tính toàn vẹn của nested set
+            DB::beginTransaction();
+            // Cập nhật thông tin cơ bản của danh mục
+            $genre->update($params);
+
+            // Nếu parent_id đã thay đổi, cập nhật vị trí của node trong cây
+            if ($params['parent_id'] !== $oldParentId) {
+                if ($params['parent_id'] === null) {
+                    $genre->makeRoot();
+                } else {
+                    $newParent = Genre::find($params['parent_id']);
+                    $genre->appendToNode($newParent)->save();
+                }
+            }
+
+            // Commit transaction nếu mọi thứ thành công
+            DB::commit();
+            toastr()->success('Cập nhật thể loại thành công!', 'success');
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[1] === 1062) {
+                // Lỗi duplicate entry
+                DB::rollBack(); // Lưu ý: Rollback transaction nếu xảy ra lỗi
+                return redirect()->back()->withErrors(['slug' => 'Slug đã bị trùng lặp. Vui lòng nhập tên khác']);
+            }
+            toastr()->error('Có lỗi xảy ra !', 'error');
+        }
+
+        return redirect()->route('genre.index');
     }
 
     /**
@@ -122,6 +168,31 @@ class GenreController extends Controller
                 toastr()->error('Có lỗi xảy ra', 'error');
             }
             return redirect()->route('genre.index');
+        }
+    }
+    public function trash()
+    {
+        $deleteItems = Genre::onlyTrashed()->paginate(5);
+        return view('admin.genre.trash', compact('deleteItems'));
+    }
+
+    public function restore($id)
+    {
+        if ($id) {
+            $restore = Genre::withTrashed()->find($id);
+            $restore->restore();
+            toastr()->success('Khôi phục thể loại thành công', 'success');
+            return redirect()->route('genre.trash');
+        }
+    }
+
+    public function delete($id)
+    {
+        if ($id) {
+            $deleted = Genre::onlyTrashed()->find($id);
+            $deleted->forceDelete();
+            toastr()->success('Xóa vĩnh viễn thể loại thành công', 'success');
+            return redirect()->route('genre.trash');
         }
     }
 }

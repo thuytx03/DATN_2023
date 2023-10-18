@@ -15,20 +15,27 @@
             @endforeach
         @endif
 
-        <form action="{{ route('genre.update',['id' => 1]) }}" method="post" enctype="multipart/form-data">
+        <form action="{{ route('genre.update',['id' => $genre->id]) }}" method="post" enctype="multipart/form-data">
             @csrf
             <!-- DataTales Example -->
             <div class="card card-primary">
                 <div class="card-body">
                     <div class="form-group">
                         <label for="name">Tên thể loại</label>
-                        <input type="text" id="name" name="name" class="form-control">
+                        <input type="text" id="name" name="name" class="form-control" value="{{ $genre->name }}">
                     </div>
                     <div class="form-group">
                         <label for="parent_id">Danh mục cha</label>
                         <select id="parent_id" class="form-control custom-select" name="parent_id" >
                             <option selected="" value="none">Chưa có thể loại cha</option>
-
+                            @foreach($genres as $value)
+                                @if($genre->id !== $value->id)  {{-- Kiểm tra nếu không phải danh mục đang cập nhật --}}
+                                <option
+                                    value="{{ $value->id }}" {{ ($genre->parent_id == $value->id) ? 'selected' : '' }}>
+                                    {{ $value->name }}
+                                </option>
+                                @endif
+                            @endforeach
                         </select>
                         <div>
                         </div>
@@ -37,18 +44,18 @@
                         <label for="status">Trạng thái</label>
                         <select id="status" class="form-control custom-select" name="status">
                             <option selected="" disabled="">Chọn 1</option>
-                            <option value="1" selected>Kích hoạt</option>
-                            <option value="0">Không kích hoạt</option>
+                            <option value="1" {{ ($genre->status == 1 ? 'selected' : '') }}>Kích hoạt</option>
+                            <option value="0" {{ ($genre->status == 0 ? 'selected' : '') }}>Không kích hoạt</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="image">Ảnh</label> <br>
                         <input name="image" type="file" id="image_url" style="display: none">
-                        <img src="{{ asset('images/image-not-found.jpg') }}" width="150" height="130" id="image_preview" class="mt-1" alt="">
+                        <img src="{{ ($genre->image == null) ? asset('images/image-not-found.jpg') : Storage::url($genre->image) }}" width="150" height="130" id="image_preview" class="mt-1" alt="">
                     </div>
                     <div class="form-group">
                         <label for="description">Mô tả</label>
-                        <textarea id="description" name="description" class="form-control" rows="4"></textarea>
+                        <textarea id="description" name="description" class="form-control" rows="4">{{ $genre->description }}</textarea>
                     </div>
                 </div>
                 <!-- /.card-body -->

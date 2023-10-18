@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 @section('title')
-    Danh sách thể loại phim
+    Thùng rác thể loại
 @endsection
 @push('styles')
     <link rel="stylesheet" href="{{ asset('admin/vendor/datatables/dataTables.bootstrap4.min.css') }}">
@@ -11,16 +11,14 @@
     <div class="container-fluid">
 
         <!-- Page Heading -->
-        <h1 class="h3 mb-2 text-gray-800">Danh sách thể loại phim</h1>
+        <h1 class="h3 mb-2 text-gray-800">Thùng rác thể loại phim</h1>
 
         <!-- DataTales Example -->
         <div class="card shadow mb-4">
             <div class="card-header py-3">
                 <div class="row">
                     <div class="col-md-6">
-                        <a href="{{ route('genre.add') }}">
-                            <button class="btn btn-success">Thêm mới</button>
-                        </a>
+                        <a href="{{ route('genre.index') }}" class="btn btn-success">Danh sách</a>
                     </div>
                     <div class="col-md-6 text-right">
                         <div class="dropdown">
@@ -51,7 +49,7 @@
                             </div>
                             <div class="col-sm-12 col-md-6">
                                 <div class="row">
-                                    <div class="dataTables_length mr-3" id="dataTable_length"><label>Lọc: <select
+                                    <div class="dataTables_length mr-3" id="dataTable_length"><label>Lọc <select
                                                 name="status_filter" aria-controls="dataTable"
                                                 class="custom-select custom-select-sm form-control" id="status_filter">
                                                 <option value="" selected>Tất cả</option>
@@ -110,38 +108,40 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    @foreach($genres as $genre)
+                                    @foreach($deleteItems as $value)
                                         <tr class="odd">
                                             <td class="sorting_1 text-center">
                                                 <label>
                                                     <input type="checkbox" class="child-checkbox">
                                                 </label>
                                             </td>
-                                            <td class="text-center">{{ $genre->name }}</td>
+                                            <td class="text-center">{{ $value->name }}</td>
                                             <td class="text-center">
-                                                @foreach($genre->ancestors as $item)
+                                                @foreach($value->ancestors as $item)
                                                     {{ $item->name}} <br>
                                                 @endforeach
                                             </td>
                                             <td class="text-center">
                                                 <img alt="Avatar" width="60"
-                                                     src="{{ ($genre->image == null) ? asset('images/image-not-found.jpg') : Storage::url($genre->image) }}">
+                                                     src="{{ ($value->image == null) ? asset('images/image-not-found.jpg') : Storage::url($value->image) }}">
                                             </td>
                                             <td class="text-center">
                                                 <input type="checkbox" class="switch1"
-                                                       value="{{ $genre->status == 1 ? 1 : 0 }}" {{ $genre->status == 1 ? 'checked' : '' }} />
+                                                       value="{{ $value->status == 1 ? 1 : 0 }}" {{ $value->status == 1 ? 'checked' : '' }} />
                                             </td>
                                             <td class="text-center">
                                                 <div class="dropdown">
                                                     <!-- Icon here (e.g., three dots icon) -->
-                                                    <i class="fas fa-ellipsis-v p-2" data-toggle="dropdown"
+                                                    <i class="fas fa-ellipsis-v p-2 " data-toggle="dropdown"
                                                        aria-haspopup="true" aria-expanded="false"></i>
                                                     </button>
                                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                                         <a class="dropdown-item"
-                                                           href="{{ route('genre.edit',['id' => $genre->id]) }}">Sửa</a>
+                                                           href="{{ route('genre.restore',['id' => $value->id]) }}">Khôi
+                                                            phục</a>
                                                         <a class="dropdown-item show_confirm"
-                                                           href="{{ route('genre.destroy',['id' => $genre->id]) }}">Xóa</a>
+                                                           href="{{ route('genre.delete',['id' => $value->id]) }}">Xóa
+                                                            vĩnh viễn</a>
                                                     </div>
                                                 </div>
                                             </td>
@@ -154,15 +154,15 @@
                         <div class="row">
                             <div class="col-sm-12 col-md-5">
                                 <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">
-                                    Hiển thị {{ $genres->firstItem() }} đến {{ $genres->lastItem() }}
-                                    của {{ $genres->total() }} mục
+                                    Hiển thị {{ $deleteItems->firstItem() }} đến {{ $deleteItems->lastItem() }}
+                                    của {{ $deleteItems->total() }} mục
                                 </div>
                             </div>
 
                             <div class="col-sm-12 col-md-7">
                                 <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
                                     <ul class="pagination">
-                                        {{ $genres->links('pagination::bootstrap-4') }}
+                                        {{ $deleteItems->links('pagination::bootstrap-4') }}
                                     </ul>
                                 </div>
                             </div>
@@ -246,7 +246,6 @@
                 if (switchInput) {
                     var switchValue = switchInput.value;
                 }
-
                 // Lấy giá trị trạng thái từ cell
                 var cellValue = cell.innerText.trim();
                 // Hiển thị/ẩn hàng dựa trên trạng thái đã chọn

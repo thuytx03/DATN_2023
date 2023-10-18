@@ -28,5 +28,9 @@ class Movie extends Model
         'country_id',
         'status'
     ];
+    public function genres()
+    {
+        return $this->belongsToMany(Genre::class, 'movie_genres', 'movie_id', 'genre_id');
+    }
 
 }

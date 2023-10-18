@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class GenreRequest extends FormRequest
+class MovieRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -32,7 +32,15 @@ class GenreRequest extends FormRequest
                     case 'store' :
                         $rules = [
                             'name' => 'required',
+                            'language' => 'required|string',
                             'status' => 'required',
+                            'poster' => 'required',
+                            'trailer' => 'required',
+                            'director' => 'required',
+                            'actor' => 'required',
+                            'duration' => 'required',
+                            'start_date' => 'required',
+                            'manufacturer' => 'required'
                         ];
                         break;
                 }
@@ -41,12 +49,5 @@ class GenreRequest extends FormRequest
                 break;
         }
         return $rules;
-    }
-    public function messages()
-    {
-        return [
-            'name.required' => 'Vui lòng nhập tên thể loại',
-            'status.required' => 'Vui lòng nhập trạng thái'
-        ];
     }
 }

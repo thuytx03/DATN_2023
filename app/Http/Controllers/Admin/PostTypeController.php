@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PostTypeRequest;
 use App\Models\PostType;
+use AWS\CRT\HTTP\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Kalnoy\Nestedset\NestedSet;
@@ -21,7 +22,6 @@ class PostTypeController extends Controller
     public function index()
     {
         $postTypes = PostType::latest()->paginate(5);
-//        $postTypes = PostType::all();
         return view('admin.post-type.index', compact('postTypes'));
     }
 
@@ -135,11 +135,7 @@ class PostTypeController extends Controller
 
             // Commit transaction nếu mọi thứ thành công
             DB::commit();
-
             toastr()->success('Cập nhật danh mục thành công!', 'success');
-        } catch
-        (QueryException $e) {
-
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->errorInfo[1] === 1062) {
                 // Lỗi duplicate entry
@@ -168,6 +164,32 @@ class PostTypeController extends Controller
                 toastr()->error('Có lỗi xảy ra', 'error');
             }
             return redirect()->route('post-type.index');
+        }
+    }
+
+    public function trash()
+    {
+        $deleteItems = PostType::onlyTrashed()->paginate(5);
+        return view('admin.post-type.trash', compact('deleteItems'));
+    }
+
+    public function restore($id)
+    {
+        if ($id) {
+            $restore = PostType::withTrashed()->find($id);
+            $restore->restore();
+            toastr()->success('Khôi phục danh mục thành công', 'success');
+            return redirect()->route('post-type.trash');
+        }
+    }
+
+    public function delete($id)
+    {
+        if ($id) {
+            $deleted = PostType::onlyTrashed()->find($id);
+            $deleted->forceDelete();
+            toastr()->success('Xóa vĩnh viễn danh mục thành công', 'success');
+            return redirect()->route('post-type.trash');
         }
     }
 }

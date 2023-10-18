@@ -16,18 +16,22 @@ Route::get('movie-list', function () {
     return view('client.movies.movie-list');
 })->name('movie-list');
 
-
+Route::group(['middleware' => 'guest'], function () {
+    Route::match(['GET', 'POST'], '/login', [App\Http\Controllers\Auth\AuthClientController::class, 'login'])->name('login');
+    Route::match(['GET', 'POST'], '/register', [App\Http\Controllers\Auth\AuthClientController::class, 'register'])->name('register');
+    Route::match(['GET', 'POST'], '/forgot-password', [App\Http\Controllers\Auth\AuthClientController::class, 'forgotPassword'])->name('forgotPassword');
+});
 Route::get('movie-detail', function () {
     return view('client.movies.movie-detail');
 })->name('movie-detail');
 
-Route::get('sign-in', function () {
-    return view('client.author.sign-in');
-})->name('sign-in');
+// Route::get('sign-in', function () {
+//     return view('client.author.sign-in');
+// })->name('sign-in');
 
-Route::get('sign-up', function () {
-    return view('client.author.sign-up');
-})->name('sign-up');
+// Route::get('sign-up', function () {
+//     return view('client.author.sign-up');
+// })->name('sign-up');
 
 Route::get('movie-ticket-plan', function () {
     return view('client.movies.movie-ticket-plan');
@@ -80,6 +84,9 @@ Route::prefix('admin')
             Route::get('/edit/{id}', [PostTypeController::class, 'edit'])->name('post-type.edit');
             Route::post('/update/{id}', [PostTypeController::class, 'update'])->name('post-type.update');
             Route::get('/destroy/{id}', [PostTypeController::class, 'destroy'])->name('post-type.destroy');
+            Route::get('/trash', [PostTypeController::class, 'trash'])->name('post-type.trash');
+            Route::get('/restore/{id}', [PostTypeController::class, 'restore'])->name('post-type.restore');
+            Route::get('/delete/{id}', [PostTypeController::class, 'delete'])->name('post-type.delete');
         });
         /*
          * Movie Genre
@@ -91,6 +98,9 @@ Route::prefix('admin')
             Route::get('/edit/{id}', [GenreController::class, 'edit'])->name('genre.edit');
             Route::post('/update/{id}', [GenreController::class, 'update'])->name('genre.update');
             Route::get('/destroy/{id}', [GenreController::class, 'destroy'])->name('genre.destroy');
+            Route::get('/trash', [GenreController::class, 'trash'])->name('genre.trash');
+            Route::get('/restore/{id}', [GenreController::class, 'restore'])->name('genre.restore');
+            Route::get('/delete/{id}', [GenreController::class, 'delete'])->name('genre.delete');
         });
         /*
          * Movie

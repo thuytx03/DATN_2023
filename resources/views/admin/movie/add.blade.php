@@ -14,6 +14,17 @@
         font-size: 1rem;
         cursor: pointer;
     }
+
+    /* Tùy chỉnh CSS để hiển thị checkbox theo hàng dọc */
+    .checkbox-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .checkbox-container label {
+        display: block;
+        margin-bottom: 10px;
+    }
 </style>
 @extends('layouts.admin')
 @section('title')
@@ -69,7 +80,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="movie_image">Ảnh liên quan</label> <br>
-                                        <input name="movie_image" type="file" id="image_url1" multiple
+                                        <input name="movie_image[]" type="file" id="image_url1" multiple
                                                class="form-control" style="display: none" accept="image/*">
                                         <img src="{{ asset('images/image-not-found.jpg') }}" width="110" height="90"
                                              id="image_preview1" class="mt-1" alt="">
@@ -89,7 +100,6 @@
                                         <label for="language">Ngôn ngữ</label>
                                         <input type="text" name="language" id="language" class="form-control">
                                     </div>
-
                                     <div class="form-group">
                                         <label for="trailer">Đoạn giới thiệu</label>
                                         <input type="text" name="trailer" id="trailer" class="form-control">
@@ -107,28 +117,35 @@
                                         <input type="text" name="manufacturer" id="manufacturer" class="form-control">
                                     </div>
                                     <div class="form-group">
-                                        <label for="inputStatus">Thể loại</label>
-                                        <select id="inputStatus" class="form-control custom-select">
-                                            <option selected="" disabled="">Select one</option>
-                                            <option>Hành động</option>
-                                            <option>Viễn tưởng</option>
-                                        </select>
+                                        <label for="inputStatus">Thể loại</label><br>
+                                        <div class="container">
+                                            <div class="row">
+                                                @foreach($genres as $genre)
+                                                    <div class="col-md-3">
+                                                        <label>
+                                                            <input type="checkbox" name="genre_id[]"
+                                                                   value="{{ $genre->id }}">
+                                                            {{ $genre->name }}
+                                                        </label>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="inputStatus">Quốc gia</label>
-                                        <select id="inputStatus" class="form-control custom-select">
-                                            <option selected="" disabled="">Select one</option>
-                                            <option>Việt Nam</option>
-                                            <option>Hàn quốc</option>
+                                        <select id="inputStatus" name="country_id" class="form-control custom-select">
+                                            <option selected="" disabled="">Chọn 1</option>
+                                            <option value="1">Việt Nam</option>
+                                            <option value="2">Hàn quốc</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
                                         <label for="inputStatus">Trạng thái</label>
-                                        <select id="inputStatus" class="form-control custom-select">
-                                            <option selected="" disabled="">Select one</option>
-                                            <option>On Hold</option>
-                                            <option>Canceled</option>
-                                            <option>Success</option>
+                                        <select id="inputStatus" name="status" class="form-control custom-select">
+                                            <option selected="" disabled="">Chọn 1</option>
+                                            <option value="1" selected>Kích hoạt</option>
+                                            <option value="0">Không kích hoạt</option>
                                         </select>
                                     </div>
                                 </div>
@@ -159,6 +176,7 @@
             var imageContainer = button.parentElement;
             imageContainer.remove();
         }
+
         const imagePreview = document.getElementById('image_preview');
         const imagePreview1 = document.getElementById('image_preview1');
         const imageUrlInput = document.getElementById('image_url');

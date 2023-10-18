@@ -10,5 +10,5 @@ class MovieImage extends Model
     use HasFactory;
     protected $table = 'movie_images';
     public $timestamps = true;
-    public $fillable = ['movie_id','image'];
+    public $fillable = ['movie_id','movie_image'];
 }

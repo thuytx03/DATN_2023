@@ -5,19 +5,34 @@
 @push('styles')
     <link rel="stylesheet" href="{{ asset('admin/vendor/datatables/dataTables.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/switchery/0.8.2/switchery.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 @endpush
 @section('content')
     <div class="container-fluid">
 
         <!-- Page Heading -->
         <h1 class="h3 mb-2 text-gray-800">Danh sách phim</h1>
-
         <!-- DataTales Example -->
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <a href="{{ route('movie.add') }}">
-                    <button class="btn btn-success">Thêm mới</button>
-                </a>
+                <div class="row">
+                    <div class="col-md-6">
+                        <a href="{{ route('movie.add') }}">
+                            <button class="btn btn-success">Thêm mới</button>
+                        </a>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Hành động
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="">Thùng rác</a>
+                                <a class="dropdown-item show_confirm" href="">Xóa tất cả</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -56,70 +71,86 @@
                                                 <input type="checkbox" id="select-all">
                                             </label>
                                         </th>
-                                        <th class="sorting text-center" tabindex="0" aria-controls="dataTable" rowspan="1"
+                                        <th class="sorting text-center" tabindex="0" aria-controls="dataTable"
+                                            rowspan="1"
                                             colspan="1" aria-label="Name: activate to sort column ascending"
                                             style="width: 111.2px;">Tên
                                         </th>
-                                        <th class="sorting text-center" tabindex="0" aria-controls="dataTable" rowspan="1"
+                                        <th class="sorting text-center" tabindex="0" aria-controls="dataTable"
+                                            rowspan="1"
                                             colspan="1" aria-label="Name: activate to sort column ascending"
                                             style="width: 111.2px;">Thể loại
                                         </th>
-                                        <th class="sorting text-center" tabindex="0" aria-controls="dataTable" rowspan="1"
+                                        <th class="sorting text-center" tabindex="0" aria-controls="dataTable"
+                                            rowspan="1"
                                             colspan="1" aria-label="Name: activate to sort column ascending"
                                             style="width: 111.2px;">Ngày khởi chiếu
                                         </th>
-                                        <th class="sorting text-center" tabindex="0" aria-controls="dataTable" rowspan="1"
+                                        <th class="sorting text-center" tabindex="0" aria-controls="dataTable"
+                                            rowspan="1"
                                             colspan="1" aria-label="Name: activate to sort column ascending"
                                             style="width: 111.2px;">Lượt Xem
                                         </th>
-                                        <th class="sorting text-center" tabindex="0" aria-controls="dataTable" rowspan="1"
+                                        <th class="sorting text-center" tabindex="0" aria-controls="dataTable"
+                                            rowspan="1"
                                             colspan="1" aria-label="total: activate to sort column ascending"
                                             style="width: 96.2px;">Ảnh
                                         </th>
-                                        <th class="sorting text-center" tabindex="0" aria-controls="dataTable" rowspan="1"
+                                        <th class="sorting text-center" tabindex="0" aria-controls="dataTable"
+                                            rowspan="1"
                                             colspan="1" aria-label="ảnh: activate to sort column ascending"
                                             style="width: 82.2px;">Trạng thái
                                         </th>
-                                        <th class="sorting text-center" tabindex="0" aria-controls="dataTable" rowspan="1"
+                                        <th class="sorting text-center" tabindex="0" aria-controls="dataTable"
+                                            rowspan="1"
                                             colspan="1" aria-label="action: activate to sort column ascending"
                                             style="width: 60.2px;">Hoạt động
                                         </th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr class="odd">
-                                        <td class="sorting_1 text-center">
-                                            <label>
-                                                <input type="checkbox" class="child-checkbox">
-                                            </label>
-                                        </td>
-                                        <td class="text-center"></td>
-                                        <td class="text-center">
-
-                                        </td>
-                                        <td></td>
-                                        <td></td>
-                                        <td class="text-center">
-                                            <img alt="Avatar" width="60"
-                                                 src="">
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="form-check form-switch">
-                                                <input type="checkbox" class="switch1" />
-                                            </div>
-                                        </td>
-                                        <td class="text-center">
-                                            <a href="{{ route('movie.edit',['id' => 1]) }}">
-                                                <button class="btn btn-primary ">Sửa</button>
-                                            </a>
-                                            <a href="{{ route('movie.show',['id' => 1]) }}">
-                                                <button class="btn btn-info mt-2">Xem</button>
-                                            </a>
-                                            <a class="btn show_confirm" href="{{ route('movie.destroy',['id' => 1]) }}">
-                                                <button class="btn btn-danger">Xóa</button>
-                                            </a>
-                                        </td>
-                                    </tr>
+                                    @foreach($movies as $movie)
+                                        <tr class="odd">
+                                            <td class="sorting_1 text-center">
+                                                <label>
+                                                    <input type="checkbox" class="child-checkbox">
+                                                </label>
+                                            </td>
+                                            <td class="text-center">{{ $movie->name }}</td>
+                                            <td class="text-center">
+                                                @foreach($movie->genres as $genre)
+                                                    {{ $genre->name }} <br>
+                                                @endforeach
+                                            </td>
+                                            <td>{{ $movie->start_date }}</td>
+                                            <td>{{ $movie->view }}</td>
+                                            <td class="text-center">
+                                                <img alt="Avatar" width="60"
+                                                     src="{{ ($movie->poster == null) ? asset('images/image-not-found.jpg') : Storage::url($movie->poster) }}">
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="form-check form-switch">
+                                                    <input type="checkbox" class="switch1" {{ $movie->status == 1 ? 'checked' : '' }} />
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <!-- Icon here (e.g., three dots icon) -->
+                                                    <i class="fas fa-ellipsis-v p-2" data-toggle="dropdown"
+                                                       aria-haspopup="true" aria-expanded="false"></i>
+                                                    </button>
+                                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                        <a class="dropdown-item"
+                                                           href="{{ route('movie.edit',['id' => $movie->id]) }}">Sửa</a>
+                                                        <a class="dropdown-item"
+                                                           href="{{ route('movie.show',['id' => $movie->id]) }}">Chi tiết</a>
+                                                        <a class="dropdown-item show_confirm"
+                                                           href="{{ route('movie.destroy',['id' => $movie->id]) }}">Xóa</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
                                     </tbody>
                                 </table>
                             </div>
@@ -155,9 +186,9 @@
     <script src="{{ asset('admin/js/demo/chart-pie-demo.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             var switches = Array.from(document.querySelectorAll('.switch1'));
-            switches.forEach(function(elem) {
+            switches.forEach(function (elem) {
                 new Switchery(elem);
             });
         });
