@@ -94,7 +94,7 @@
                                 <table class="table table-bordered text-center mt-2" id="dataTable" width="100%"
                                     cellspacing="0">
                                     <thead>
-                                        <<tr role="row">
+                                        <tr role="row">
                                             <th class="pr-2 text-center" tabindex="0" aria-controls="dataTable"
                                                 rowspan="1" colspan="1" aria-sort="ascending"
                                                 aria-label="id: activate to sort column descending" style="width: 5.2px;">
