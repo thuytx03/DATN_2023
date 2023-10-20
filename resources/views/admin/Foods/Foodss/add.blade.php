@@ -59,25 +59,37 @@ Thêm Mới Đồ Ăn
                         <div class="form-group" >
                             <label for="parent_id">Loại Danh Mục</label>
                             @foreach($Foodstypes as $Foodstype)
-                              
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="{{$Foodstype->id}}" id="{{$Foodstype->id}}" name="foodstypes[]">
-                                        <label class="form-check-label" for="{{$Foodstype->id}}">
-                                            {{$Foodstype->name}}
-                                        </label>
-                                    </div>
-                                    @foreach($Foodstypes as $Foodstylechild)
-                                        @if($Foodstylechild->parent_id == $Foodstype->id && $Foodstylechild->status == 1)
-                                            <div class="form-check ml-3">
-                                                <input class="form-check-input" type="checkbox" value="{{$Foodstylechild->id}}" name="foodstypes[]" id="{{$Foodstylechild->id}}">
-                                                <label class="form-check-label" for="{{$Foodstylechild->id}}">
-                                                    {{$Foodstylechild->name}}
-                                                </label>
-                                            </div>
-                                        @endif
-                                    @endforeach
-                               
-                            @endforeach
+                            @if($Foodstype->parent_id == 0)
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="{{$Foodstype->id}}" id="{{$Foodstype->id}}" name="foodstypes[]">
+                                    <label class="form-check-label" for="{{$Foodstype->id}}">
+                                        {{$Foodstype->name}}
+                                    </label>
+                                </div>
+                        
+                                @foreach($Foodstypes as $Foodstylechild)
+                                    @if($Foodstylechild->parent_id == $Foodstype->id && $Foodstylechild->status == 1)
+                                        <div class="form-check ml-3">
+                                            <input class="form-check-input" type="checkbox" value="{{$Foodstylechild->id}}" name="foodstypes[]" id="{{$Foodstylechild->id}}">
+                                            <label class="form-check-label" for="{{$Foodstylechild->id}}">
+                                                {{$Foodstylechild->name}}
+                                            </label>
+                                        </div>
+                                        @foreach($Foodstypes as $Foodstylechild1)
+                                            @if($Foodstylechild1->parent_id == $Foodstylechild->id && $Foodstylechild1->status == 1)
+                                                <div class="form-check ml-4">
+                                                    <input class="form-check-input" type="checkbox" value="{{$Foodstylechild1->id}}" name="foodstypes[]" id="{{$Foodstylechild1->id}}">
+                                                    <label class="form-check-label" for="{{$Foodstylechild1->id}}">
+                                                        {{$Foodstylechild1->name}}
+                                                    </label>
+                                                </div>
+        
+                                            @endif
+                                        @endforeach
+                                    @endif
+                                @endforeach
+                            @endif
+                        @endforeach
                         </div>
                     </div>
                  

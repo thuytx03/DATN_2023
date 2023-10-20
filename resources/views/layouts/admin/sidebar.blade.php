@@ -65,17 +65,18 @@
             </div>
         </div>
     </li>
+    
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
-            aria-expanded="true" aria-controls="collapsePages">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#monan" aria-expanded="flase" aria-controls="monan">
             <i class="fas fa-hamburger"></i>
             <span>Quản Lí Món Ăn</span>
         </a>
-        <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+        <div id="monan" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
 
                 <a class="collapse-item" href="{{route('food_types.index')}}">Danh Mục Đồ Ăn</a>
-                <a class="collapse-item" href="{{route('movie-foode.index')}}">Danh Sách Món Ăn</a>
+                <a class="collapse-item" href="{{route('movie-foode.index')}}"> Món Ăn</a>
+            </div>
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
             <i class="fas fa-fw fa-cog"></i>

@@ -56,7 +56,7 @@
                             <div class="col-sm-12 col-md-6">
                                 <form action="">
                                 <div class="row">
-                                    <div class="dataTables_length mr-3" id="dataTable_length"><label>Lọc <select
+                                    <div class="dataTables_length mr-2 sm-1" id="dataTable_length"><label>Lọc <select
                                                 name="food_type_id" aria-controls="dataTable"
                                                 class="custom-select custom-select-sm form-control " >
                                                 
@@ -68,7 +68,7 @@
                                             </select>
                                         </label>
                                     </div>
-                                    <div class="dataTables_length mr-3" id="dataTable_length"><label>Lọc <select
+                                    <div class="dataTables_length mr-2 sm-1" id="dataTable_length"><label>Lọc <select
                                         name="status" aria-controls="dataTable"
                                         class="custom-select custom-select-sm form-control " >
                                         <option value="">Lọc Theo Trạng Thái</option>
@@ -79,11 +79,12 @@
                                 </label>
                             </div>
 
-                                    <div id="dataTable_filter" class="dataTables_filter"><label><input
+                                    <div id="dataTable_filter" class="dataTables_filter mr-5 sm-2"><label><input
                                                 type="search" class="form-control form-control-sm" placeholder=""
                                                 aria-controls="dataTable"name="keyword" value="{{request()->keyword}}"" ></label>
+                                                <button class="btn btn-primare" type="submit">Tìm Kiếm</button>
                                     </div>
-                                    <button class="btn btn-primare" type="submit">Tìm Kiếm</button>
+                                    
                                 </div>
                             </form>
                                 </div>
@@ -207,14 +208,17 @@
                                     
                                 </div>
                             </div>
-
-                            <div class="col-sm-12 col-md-7">
-                                <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
-                                    <ul class="pagination">
-                                        {{ $listfood1->links('pagination::bootstrap-4') }}
-                                    </ul>
+                            <div class="row">
+                               
+                                <div class="col-sm-12 col-md-7">
+                                    <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+                                        <ul class="pagination">
+                                            {{ $listfood1->links('pagination::bootstrap-4') }}
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
+                            
                         </div>
                     </div>
                 </div>
