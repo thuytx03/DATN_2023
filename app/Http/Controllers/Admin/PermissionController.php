@@ -44,7 +44,7 @@ class PermissionController extends Controller
         $user->display_name = $data['display_name'];
         $user->group = $data['group'];
         $user->save();
-        toastr()->success('Thank! ' . $data['display_name'] . ' add successfully!');
+        toastr()->success('Cảm ơn! ' . $data['display_name'] . ' thêm thành công!');
         return redirect()->route('list-permission');
     }
 

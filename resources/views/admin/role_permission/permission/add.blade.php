@@ -35,7 +35,7 @@
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Cập nhật</button>
+                <button type="submit" class="btn btn-primary">Thêm mới</button>
                 <button type="reset" class="btn btn-danger">Nhập lại</button>
             </form>
         </div>
