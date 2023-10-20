@@ -61,7 +61,7 @@ class MovieController extends Controller
      */
     public function store(MovieRequest $request)
     {
-        try {
+        // try {
             $imageNames = [];
             if ($request->hasFile('poster') && $request->file('poster')->isValid()) {
                 $request->poster = uploadFile('movies', $request->file('poster'));
@@ -103,12 +103,13 @@ class MovieController extends Controller
                 toastr()->success('Thêm mới phim thành công', 'success');
                 return redirect()->route('movie.index');
             }
-        } catch (\Illuminate\Database\QueryException $e) {
-            if ($e->errorInfo[1] === 1062) { // Lỗi duplicate entry
-                return redirect()->back()->withErrors(['slug' => 'Slug đã bị trùng lặp.Vui lòng sửa đường dẫn']);
             }
-        }
-    }
+            //  catch (\Illuminate\Database\QueryException $e) {
+            //     if ($e->errorInfo[1] === 1062) { // Lỗi duplicate entry
+            //         return redirect()->back()->withErrors(['slug' => 'Slug đã bị trùng lặp.Vui lòng sửa đường dẫn']);
+            //     }
+            // }
+    
 
     /**
      * Display the specified resource.
