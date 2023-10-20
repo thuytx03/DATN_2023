@@ -28,8 +28,7 @@
 
     <!-- Nav Item - Pages Collapse Menu -->
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-           aria-expanded="true" aria-controls="collapseTwo">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
             <i class="fas fa-fw fa-cog"></i>
             <span>Quản lý movie</span>
         </a>
@@ -37,6 +36,17 @@
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="{{ route('admin.table') }}">Danh sách movie</a>
                 <!-- link -->
+            </div>
+        </div>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#magiamgia" aria-expanded="false" aria-controls="magiamgia">
+            <i class="fa-solid fa-ticket"></i>
+            <span>Quản lý mã giảm giá</span>
+        </a>
+        <div id="magiamgia" class="collapse" aria-labelledby="headingVoucher" data-parent="#accordionSidebar" style="">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{ route('voucher.index') }}">Danh sách mã giảm giá</a>
             </div>
         </div>
     </li>
@@ -51,6 +61,7 @@
             </div>
         </div>
     </li>
+<<<<<<< HEAD
    
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
@@ -65,6 +76,30 @@
                 <a class="collapse-item" href="{{route('movie-foode.index')}}">Danh Sách Món Ăn</a>
                 
                 
+=======
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+            <i class="fas fa-fw fa-cog"></i>
+            <span>Quản lý user</span>
+        </a>
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{ route('list-user') }}">Danh sách user</a>
+                <!-- link -->
+            </div>
+        </div>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
+            <i class="fas fa-fw fa-folder"></i>
+            <span>Quản lý quyền</span>
+        </a>
+        <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{route('list-role')}}">Quản lý vai trò</a>
+                <a class="collapse-item" href="{{route('list-permission')}}">Quản lý quyền</a>
+>>>>>>> 76bc4dadfa66b045a5763406bc8acf886c2fa8b2
             </div>
         </div>
     </li>
