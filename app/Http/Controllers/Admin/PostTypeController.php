@@ -21,7 +21,6 @@ class PostTypeController extends Controller
      */
     public function index(PostTypeRequest $request)
     {
-//        $postTypes = PostType::latest()->paginate(5);
         $query = PostType::query();
 
         // Tìm kiếm theo name

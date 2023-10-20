@@ -5,3 +5,8 @@
         </div>
     </div>
 </footer>
+
+
+<script>
+	CKEDITOR.replace('ckeditor1');
+</script>

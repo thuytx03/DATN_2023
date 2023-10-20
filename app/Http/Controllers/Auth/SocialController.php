@@ -73,9 +73,13 @@ class SocialController extends Controller
     {
         Auth::logout();
 <<<<<<< HEAD
+<<<<<<< HEAD
         return redirect(route('login'));
 =======
         return redirect()->route('login');
 >>>>>>> 76bc4dadfa66b045a5763406bc8acf886c2fa8b2
+=======
+        return redirect()->route('login');
+>>>>>>> 0f84b6b8e04dcbed99f3bf9fa43a5252d15a05b0
     }
 }

@@ -10,6 +10,10 @@ use App\Http\Controllers\Admin\MovieController;
 
 use App\Http\Controllers\Admin\VoucherController;
 
+use App\Http\Controllers\Admin\MovieFoodsController;
+use App\Http\Controllers\Admin\FoodTypesController;
+
+
 Route::get('/', function () {
     return view('client.index');
 })->name('index');
@@ -27,7 +31,6 @@ Route::get('movie-detail', function () {
     return view('client.movies.movie-detail');
 })->name('movie-detail');
 
-
 // Route::get('sign-in', function () {
 //     return view('client.author.sign-in');
 // })->name('sign-in');
@@ -35,7 +38,7 @@ Route::get('movie-detail', function () {
 // Route::get('sign-up', function () {
 //     return view('client.author.sign-up');
 // })->name('sign-up');
-//
+
 Route::middleware(['auth'])->group(function () {
     // Spatie
     Route::match(['GET', 'POST'], '/admin/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
@@ -84,8 +87,6 @@ Route::middleware(['auth'])->group(function () {
     Route::match(['GET', 'POST'], '/admin/form/edit/room/type/{id}', [App\Http\Controllers\Admin\RoomTypeController::class, 'show'])->name('form-update-room-type');
     Route::match(['GET', 'POST'], '/admin/delete/room/type/{id}', [App\Http\Controllers\Admin\RoomTypeController::class, 'destroy'])->name('delete-room-type');
 });
-
-
 Route::get('movie-ticket-plan', function () {
     return view('client.movies.movie-ticket-plan');
 })->name('movie-ticket-plan');
@@ -127,6 +128,9 @@ Route::prefix('admin')
         //login
 //            Route::match(['GET', 'POST'], '/login', [App\Http\Controllers\Auth\AuthAdminController::class, 'login'])->name('login');
 //            Route::match(['GET', 'POST'], '/register', [App\Http\Controllers\Auth\AuthAdminController::class, 'register'])->name('register');
+
+//        Route::match(['GET', 'POST'], '/login', [App\Http\Controllers\Auth\AuthAdminController::class, 'login'])->name('login');
+//        Route::match(['GET', 'POST'], '/register', [App\Http\Controllers\Auth\AuthAdminController::class, 'register'])->name('register');
 
         /*
          * Category Blog
@@ -183,8 +187,41 @@ Route::prefix('admin')
             Route::post('/permanentlyDeleteSelected', [MovieController::class, 'permanentlyDeleteSelected'])->name('movie.permanentlyDeleteSelected');
             Route::post('/restoreSelected', [MovieController::class, 'restoreSelected'])->name('movie.restoreSelected');
         });
-         // mã giảm giá
-         Route::prefix('voucher')->group(function () {
+        Route::prefix('movie-food')->group(function () {
+            Route::get('/', [MovieFoodsController::class, 'index'])->name('movie-foode.index');
+            Route::get('/create', [MovieFoodsController::class, 'create'])->name('movie-foode.add');
+            Route::post('/store', [MovieFoodsController::class, 'store'])->name('movie-foode.store');
+            Route::get('/edit/{id}', [MovieFoodsController::class, 'edit'])->name('movie-foode.edit');
+            Route::get('/destroy/{id}', [MovieFoodsController::class, 'destroy'])->name('movie-foode.destroy');
+            Route::get('/indexsd', [MovieFoodsController::class, 'indexsd'])->name('movie-foode.indexsd');
+            Route::get('/unTrash/{id}', [MovieFoodsController::class, 'unTrash'])->name('movie-foode.unTrash');
+            Route::get('/destroyTrash/{id}', [MovieFoodsController::class, 'destroySoftDelete'])->name('movie-foode.destroyTrash');
+            Route::post('/update/{id}', [MovieFoodsController::class, 'update'])->name('movie-foode.update');
+            Route::post('/permanentlyDeleteSelected', [MovieFoodsController::class, 'permanentlyDeleteSelected'])->name('movie-foode.permanentlyDeleteSelected');
+            Route::post('/unTrashAll', [MovieFoodsController::class, 'unTrashAll'])->name('movie-foode.unTrashAll');
+            Route::post('/deleteAll', [MovieFoodsController::class, 'deleteAll'])->name('movie-foode.destroys');
+            Route::get('/changeStatus/{id}', [MovieFoodsController::class, 'changeStatus'])->name('movie-foode.changeStatus');
+        });
+        Route::prefix('food_types')->group(function () {
+            Route::get('/', [FoodTypesController::class, 'index'])->name('food_types.index');
+            Route::get('/changeStatus/{id}', [FoodTypesController::class, 'changeStatus'])->name('food_types.changeStatus');
+            Route::get('/create', [FoodTypesController::class, 'create'])->name('food_types.add');
+            Route::post('/store', [FoodTypesController::class, 'store'])->name('food_types.store');
+            Route::get('/edit/{id}', [FoodTypesController::class, 'edit'])->name('food_types.edit');
+            Route::post('/update/{id}', [FoodTypesController::class, 'update'])->name('food_types.update');
+            Route::get('/destroy/{id}', [FoodTypesController::class, 'destroy'])->name('food_types.destroy');
+            Route::get('/indexsd', [FoodTypesController::class, 'indexsd'])->name('food_types.indexsd');
+            Route::get('/unTrash/{id}', [FoodTypesController::class, 'unTrash'])->name('food_types.unTrash');
+            Route::post('/unTrashAll', [FoodTypesController::class, 'unTrashAll'])->name('food_types.unTrashAll');
+            Route::get('/destroyTrash/{id}', [FoodTypesController::class, 'destroySoftDelete'])->name('food_types.destroyTrash');
+            Route::post('/deleteAllSoft', [FoodTypesController::class, 'deleteAllSoft'])->name('food_types.deleteAllSoft');
+            Route::get('/filterstatus', [FoodTypesController::class, 'filterstatus'])->name('food_types.filterstatus');
+            Route::post('/deleteAll', [FoodTypesController::class, 'deleteAll'])->name('food_types.destroys');
+            Route::post('/permanentlyDeleteSelected', [FoodTypesController::class, 'permanentlyDeleteSelected'])->name('food_types.permanentlyDeleteSelected');
+
+        });
+        // mã giảm giá
+        Route::prefix('voucher')->group(function () {
             Route::get('/', [VoucherController::class, 'index'])->name('voucher.index');
             Route::match(['GET', 'POST'], '/store', [VoucherController::class, 'store'])->name('voucher.store');
             Route::match(['GET', 'POST'], '/update/{id}', [VoucherController::class, 'update'])->name('voucher.update');
@@ -196,6 +233,7 @@ Route::prefix('admin')
             Route::post('/permanentlyDeleteSelected', [VoucherController::class, 'permanentlyDeleteSelected'])->name('voucher.permanentlyDeleteSelected');
             Route::post('/restoreSelected', [VoucherController::class, 'restoreSelected'])->name('voucher.restoreSelected');
             Route::get('/restore/{id}', [VoucherController::class, 'restore'])->name('voucher.restore');
+
 
         });
     });

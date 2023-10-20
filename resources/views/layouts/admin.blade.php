@@ -57,6 +57,9 @@
 
 
 @stack('scripts')
+<script>
+    CKEDITOR.replace('ckeditor1');
+</script>
 
 </body>
 
