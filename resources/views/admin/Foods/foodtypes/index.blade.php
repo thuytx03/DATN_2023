@@ -8,14 +8,14 @@
 @endpush
 @section('content')
     <div class="container-fluid">
-       
+
         <!-- Page Heading -->
-        <h1 class="h3 mb-2 text-gray-800">Danh sách danh mục đồ ăn</h1>
+        <h1 class="h3 mb-2 text-gray-800">Danh sách danh mục món ăn</h1>
 
         <!-- DataTales Example -->
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                
+
                 <div class="row align-items-center">
                     <div class="col">
                         <a href="{{route('food_types.add')}}" class="btn btn-success">
@@ -36,8 +36,8 @@
                     </div>
                 </div>
             </div>
-            
-            
+
+
             <div class="card-body">
                 <div class="table-responsive">
                     <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
@@ -54,14 +54,14 @@
                             </div>
                           <form action="{{route('food_types.index')}}" method="GET">
                             <div class="row">
-                               
+
                                 <div class="dataTables_length mr-3" id="dataTable_length"><label>Lọc <select
                                             name="status" aria-controls="dataTable"
                                             class="custom-select custom-select-sm form-control" class="select-filter">
                                             <option value="return">Vui lòng chọn</option>
                                             <option value="active" >Hoạt Động</option>
                                             <option value="unactive">Không hoạt động</option>
-                                            
+
                                         </select>
                                     </label>
                                 </div>
@@ -73,7 +73,7 @@
                                 <button class="btn btn-primare" type="submit">Tìm Kiếm</button>
                             </div>
                         </form>
-                       
+
                         </div>
                         <div class="row">
                             <div class="col-sm-12">
@@ -110,7 +110,7 @@
                                         colspan="1" aria-label="ảnh: activate to sort column ascending"
                                         style="width: 82.2px;">Mô Tả
                                     </th>
-                                    
+
                                         <th class="sorting text-center" tabindex="0" aria-controls="dataTable" rowspan="1"
                                             colspan="1" aria-label="action: activate to sort column ascending"
                                             style="width: 60.2px;">Hoạt động
@@ -131,7 +131,7 @@
                                                 $parentNames = [];
                                                 if ($listTyoes->parent_id) {
                                                     $currentCategoryId = $listTyoes->parent_id;
-                                            
+
                                                     while ($currentCategoryId) {
                                                         $parentCategory = $foodTypes->where('id', $currentCategoryId)->first();
                                                         if ($parentCategory) {
@@ -143,26 +143,26 @@
                                                     }
                                                 }
                                             @endphp
-                                            
+
                                             <?= implode(" > \n", array_reverse($parentNames)); ?>
                                             </td>
-                                    
-                                        
-                                               
-                       
+
+
+
+
                                             <td class="text-center">
                                                 <img alt="Avatar" width="60"
-                                                
+
                                                 src="{{ ($listTyoes->image == null) ? asset('images/image-not-found.jpg') : Storage::url($listTyoes->image) }}" alt="Image">
 
                                             </td>
                                             <td class="text-center">
                                                 <div class="form-check form-switch">
-                                                  <a href="{{ route('food_types.changeStatus', ['id' => $listTyoes->id]) }}"><input type="checkbox" class="switch1" data-id="{{ $listTyoes->id }}" {{ $listTyoes->status == 1 ? 'checked' : '' }} /></a>  
+                                                  <a href="{{ route('food_types.changeStatus', ['id' => $listTyoes->id]) }}"><input type="checkbox" class="switch1" data-id="{{ $listTyoes->id }}" {{ $listTyoes->status == 1 ? 'checked' : '' }} /></a>
                                                 </div>
                                             </td>
                                             <td class="text-center">{{ $listTyoes->description }}</td>
-                                        
+
                                             <td class="text-center">
 
                                                 <div class="dropdown">
@@ -181,7 +181,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                      
+
                                         @endforeach
                                     </tbody>
                                 </table>
@@ -190,13 +190,13 @@
                         <div class="row">
                             <div class="col-sm-12 col-md-5">
                                 <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">
-                                   
+
                                 </div>
                             </div>
 
                             <div class="col-sm-12 col-md-7">
                                 <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
-                                    <ul class="pagination">                
+                                    <ul class="pagination">
                                         {{ $foodTypes->links('pagination::bootstrap-4') }}
                                     </ul>
                                 </div>
@@ -225,7 +225,7 @@
             $('.show_confirm').click(function(event) {
                 var href = $(this).attr("href"); // Lấy URL từ thuộc tính href của thẻ <a>
                 var name = $(this).data("name");
-                
+
                 event.preventDefault();
 
                 Swal.fire({
@@ -269,7 +269,7 @@
         }
         selectAllCheckbox();
 
-       
+
 
         function deleteSelected() {
             $(document).ready(function() {

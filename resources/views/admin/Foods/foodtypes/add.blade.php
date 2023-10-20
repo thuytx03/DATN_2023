@@ -1,12 +1,12 @@
 @extends('layouts.admin')
 @section('title')
-Thêm mới danh mục Đồ Ăn
+Thêm mới danh mục món ăn
 @endsection
 @section('content')
     <div class="container-fluid">
 
         <!-- Page Heading -->
-        <h1 class="h3 mb-2 text-gray-800">Thêm mới danh mục Đồ Ăn</h1>
+        <h1 class="h3 mb-2 text-gray-800">Thêm mới danh mục món ăn</h1>
         @if($errors->any())
             @foreach($errors->all() as $error)
                 <div class="alert alert-danger" role="alert">

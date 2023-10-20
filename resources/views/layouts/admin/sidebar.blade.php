@@ -36,10 +36,7 @@
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="{{ route('genre.index') }}">Thể loại Phim</a>
                 <!-- link -->
-            </div>
-            <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="{{ route('movie.index') }}">Danh sách Phim</a>
-                <!-- link -->
             </div>
         </div>
     </li>
@@ -65,17 +62,16 @@
             </div>
         </div>
     </li>
-    
+
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#monan" aria-expanded="flase" aria-controls="monan">
             <i class="fas fa-hamburger"></i>
-            <span>Quản Lí Món Ăn</span>
+            <span>Quản lý món ăn</span>
         </a>
         <div id="monan" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-
-                <a class="collapse-item" href="{{route('food_types.index')}}">Danh Mục Đồ Ăn</a>
-                <a class="collapse-item" href="{{route('movie-foode.index')}}"> Món Ăn</a>
+                <a class="collapse-item" href="{{route('food_types.index')}}">Danh mục món ăn</a>
+                <a class="collapse-item" href="{{route('movie-foode.index')}}"> Danh sách món ăn</a>
             </div>
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">

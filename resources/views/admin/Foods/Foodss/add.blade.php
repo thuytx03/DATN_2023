@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 @section('title')
-Thêm Mới Đồ Ăn
+Thêm mới món ăn
 @endsection
 @section('content')
 <style>
@@ -17,7 +17,7 @@ Thêm Mới Đồ Ăn
     <div class="container-fluid">
 
         <!-- Page Heading -->
-        <h1 class="h3 mb-2 text-gray-800"> Thêm Mới Đồ Ăn</h1>
+        <h1 class="h3 mb-2 text-gray-800"> Thêm mới món ăn</h1>
         @if($errors->any())
             @foreach($errors->all() as $error)
                 <div class="alert alert-danger" role="alert">
@@ -66,7 +66,7 @@ Thêm Mới Đồ Ăn
                                         {{$Foodstype->name}}
                                     </label>
                                 </div>
-                        
+
                                 @foreach($Foodstypes as $Foodstylechild)
                                     @if($Foodstylechild->parent_id == $Foodstype->id && $Foodstylechild->status == 1)
                                         <div class="form-check ml-3">
@@ -83,7 +83,7 @@ Thêm Mới Đồ Ăn
                                                         {{$Foodstylechild1->name}}
                                                     </label>
                                                 </div>
-        
+
                                             @endif
                                         @endforeach
                                     @endif
@@ -92,7 +92,7 @@ Thêm Mới Đồ Ăn
                         @endforeach
                         </div>
                     </div>
-                 
+
                     <div class="form-group" style="text-align :center">
                         <label for="image">Ảnh</label> <br>
                         <input name="image" type="file" id="image_url" style="display: none" >

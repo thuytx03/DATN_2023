@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 @section('title')
-  Sửa Món Ăn
+  Cập nhật món ăn
 @endsection
 @section('content')
 <style>
@@ -10,15 +10,15 @@
     height: 350px;
     overflow-x: hidden;
     overflow-y: auto;
-  
+
     padding: 20px;
   }
- 
+
   </style>
     <div class="container-fluid">
 
         <!-- Page Heading -->
-        <h1 class="h3 mb-2 text-gray-800">  Sửa Món Ăn</h1>
+        <h1 class="h3 mb-2 text-gray-800">  Cập nhật món ăn</h1>
         @if($errors->any())
             @foreach($errors->all() as $error)
                 <div class="alert alert-danger" role="alert">
@@ -54,44 +54,56 @@
                         <label for="description">Số Lượng</label>
                         <input id="quantity"   type="number" min="0" name="quantity"  value="{{$data->quantity}}" class="form-control" rows="4"></input>
                     </div>
-                   
+
                 </div>
                     <div class="col-md-6">
                         <div class="scroll">
-                            <div class="form-group">
-                                <label for="parent_id">Loại Danh Mục</label>ssss
+                            <div class="form-group" >
+                                <label for="parent_id">Loại Danh Mục</label>
                                 @foreach($Foodstypes as $Foodstype)
-        
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="{{$Foodstype->id}}" name="foodstypes[]" id="{{$Foodstype->id}}" 
-                                    {{$Foodstype->id}}" @if(in_array($Foodstype->id,$MovieFoodsTypes->pluck('food_type_id')->toArray()))
+                                @if($Foodstype->parent_id == 0)
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="{{$Foodstype->id}}" id="{{$Foodstype->id}}" name="foodstypes[]"
+                                        @if(in_array($Foodstype->id,$MovieFoodsTypes->pluck('food_type_id')->toArray()))
                                                     checked @endif
-                                    >
-                                    
-                                    <label class="form-check-label" for="{{$Foodstype->id}}">
-                                        {{$Foodstype->name}}
-                                    </label>
-                                </div>
-                                @foreach($Foodstypes as $Foodstylechild)
-                                    @if($Foodstylechild->parent_id == $Foodstype->id)
-                                    <div class="form-check ml-3">
-                                       
-                                        <input class="form-check-input" type="checkbox" value="{{$Foodstylechild->id}}" name="foodstypes[]" id="{{$Foodstylechild->id}}" 
-                                        {{$Foodstylechild->id}}" @if(in_array($Foodstylechild->id,$MovieFoodsTypes->pluck('food_type_id')->toArray()))
-                                        checked @endif
-                                        >
-                                        <label class="form-check-label" for="{{$Foodstylechild->id}}">
-                                            {{$Foodstylechild->name}}
+                                                    >
+                                        <label class="form-check-label" for="{{$Foodstype->id}}">
+                                            {{$Foodstype->name}}
                                         </label>
                                     </div>
+
+                                    @foreach($Foodstypes as $Foodstylechild)
+                                        @if($Foodstylechild->parent_id == $Foodstype->id && $Foodstylechild->status == 1)
+                                            <div class="form-check ml-3">
+                                                <input class="form-check-input" type="checkbox" value="{{$Foodstylechild->id}}" name="foodstypes[]" id="{{$Foodstylechild->id}}"
+                                                {{$Foodstylechild->id}}" @if(in_array($Foodstylechild->id,$MovieFoodsTypes->pluck('food_type_id')->toArray()))
+                                                checked @endif>
+                                                <label class="form-check-label" for="{{$Foodstylechild->id}}">
+                                                    {{$Foodstylechild->name}}
+                                                </label>
+                                            </div>
+                                            @foreach($Foodstypes as $Foodstylechild1)
+                                                @if($Foodstylechild1->parent_id == $Foodstylechild->id && $Foodstylechild1->status == 1)
+                                                    <div class="form-check ml-4">
+                                                        <input class="form-check-input" type="checkbox" value="{{$Foodstylechild1->id}}" name="foodstypes[]" id="{{$Foodstylechild1->id}}"
+                                                        {{$Foodstylechild1->id}}" @if(in_array($Foodstylechild1->id,$MovieFoodsTypes->pluck('food_type_id')->toArray()))
+                                                        checked @endif>
+                                                        <label class="form-check-label" for="{{$Foodstylechild1->id}}">
+                                                            {{$Foodstylechild1->name}}
+                                                        </label>
+                                                    </div>
+
+                                                    @endif
+                                                @endforeach
+                                            @endif
+                                        @endforeach
                                     @endif
                                 @endforeach
-                                @endforeach
+                                </div>
+
+
                             </div>
-                           
-                       
-                            </div>
-                            
+
                             <div class="form-group">
                                 <label for="image">Ảnh</label> <br>
                                 <input class="form-control" name="image" type="file" id="image_url" style="display: none">
@@ -100,12 +112,12 @@
                             </div>
                     </div>
                 </div>
-                    
+
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer ">
                     <button type="submit" class="btn btn-success">Cập Nhật</button>
-                    
+
                     <button type="reset" class="btn btn-success">Nhập lại</button>
                     <a href="{{route('movie-foode.index')}}" class="btn btn-info">Danh sách</a>
 
