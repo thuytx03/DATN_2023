@@ -17,8 +17,8 @@
             <div class="card-header py-3">
                 <div class="row">
                     <div class="col-md-6">
-                        <a href="{{ route('post-type.add') }}">
-                            <a class="btn btn-success">Thêm mới</a>
+                        <a class="btn btn-success" href="{{ route('post-type.add') }}">
+                            Thêm mới
                         </a>
                     </div>
                     <div class="col-md-6 text-right">
@@ -26,9 +26,9 @@
                             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Hành động
                             </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <div class="dropdown-menu">
                                 <a class="dropdown-item" href="{{ route('post-type.trash') }}">Thùng rác</a>
-                                <a class="dropdown-item" id="btnDeleteAll" href="">Xóa tất cả</a>
+                                <a href="#" id="delete-selected" class="dropdown-item">Xoá mục đã chọn</a>
                             </div>
                         </div>
                     </div>
@@ -49,21 +49,29 @@
                                         </select> Mục</label></div>
                             </div>
                             <div class="col-sm-12 col-md-6">
-                                <div class="row">
-                                    <div class="dataTables_length mr-3" id="dataTable_length"><label>Lọc: <select
-                                                name="status_filter" aria-controls="dataTable"
-                                                class="custom-select custom-select-sm form-control" id="status_filter">
-                                                <option value="" selected>Tất cả</option>
-                                                <option value="1">Hoạt động</option>
-                                                <option value="0">Không hoạt động</option>
-                                            </select>
-                                        </label>
+                                <form action="{{ route('post-type.index') }}" method="get">
+                                    <div class="row">
+                                        <div class="dataTables_length mr-3" id="dataTable_length"><label>Lọc: <select
+                                                    name="status" aria-controls="dataTable"
+                                                    class="custom-select custom-select-sm form-control"
+                                                    id="status_filter">
+                                                    <option value="all" selected>Tất cả</option>
+                                                    <option value="1">Hoạt động</option>
+                                                    <option value="0">Không hoạt động</option>
+                                                </select>
+                                            </label>
+                                        </div>
+                                        <div id="dataTable_filter" class="dataTables_filter"><label>Tìm kiếm:<input
+                                                    name="search" type="search" class="form-control form-control-sm"
+                                                    placeholder=""
+                                                    aria-controls="dataTable">
+                                                <button class="btn btn-outline-success form-control-sm" type="submit">
+                                                    Tìm kiếm
+                                                </button>
+                                            </label>
+                                        </div>
                                     </div>
-                                    <div id="dataTable_filter" class="dataTables_filter"><label>Tìm kiếm:<input
-                                                type="search" class="form-control form-control-sm" placeholder=""
-                                                aria-controls="dataTable"></label>
-                                    </div>
-                                </div>
+                                </form>
                             </div>
                         </div>
                         <div class="row">
@@ -128,15 +136,16 @@
                                                      src="{{ ($postType->image == null) ? asset('images/image-not-found.jpg') : Storage::url($postType->image) }}">
                                             </td>
                                             <td class="text-center">
-                                                <input type="checkbox" class="switch1"
-                                                       value="{{ $postType->status == 1 ? 1 : 0 }}" {{ $postType->status == 1 ? 'checked' : '' }} />
+                                                <input type="checkbox" value="{{ $postType->status }}"
+                                                       name="status" data-item-id="{{ $postType->id }}"
+                                                       class="switch1 switch-status switchery-small"
+                                                    {{ $postType->status == 1 ? 'checked' : '' }}/>
                                             </td>
                                             <td class="text-center">
                                                 <div class="dropdown">
                                                     <!-- Icon here (e.g., three dots icon) -->
                                                     <i class="fas fa-ellipsis-v p-2 " data-toggle="dropdown"
                                                        aria-haspopup="true" aria-expanded="false"></i>
-                                                    </button>
                                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                                         <a class="dropdown-item"
                                                            href="{{ route('post-type.edit',['id' => $postType->id]) }}">Sửa</a>
@@ -181,7 +190,7 @@
     <!-- Page level custom scripts -->
     <script src="{{ asset('admin/js/demo/chart-area-demo.js') }}"></script>
     <script src="{{ asset('admin/js/demo/chart-pie-demo.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script>
         $(document).ready(function () {
             var switches = Array.from(document.querySelectorAll('.switch1'));
@@ -191,27 +200,33 @@
         });
     </script>
     <script type="text/javascript">
-        function alertCofirmation() {
-            $('.show_confirm').click(function (event) {
-                var href = $(this).attr("href");
+        function alertConfirmation() {
+            $('.show_confirm').click(function(event) {
+                var href = $(this).attr("href"); // Lấy URL từ thuộc tính href của thẻ <a>
                 var name = $(this).data("name");
                 event.preventDefault();
-                swal({
-                    title: `Bạn có muốn xóa danh mục này không ?`,
-                    text: "Nếu bạn xóa, Nó sẽ vào thùng rác.",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
+
+                Swal.fire({
+                    title: 'Xác nhận xóa',
+                    text: 'Bạn có chắc chắn muốn xóa mục đã chọn?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Xóa',
+                    cancelButtonText: 'Hủy',
                 })
-                    .then((willDelete) => {
-                        if (willDelete) {
+                    .then((result) => {
+                        if (result.isConfirmed) {
+                            // Người dùng đã xác nhận xóa
+                            // Chuyển hướng đến URL xóa
                             window.location.href = href;
+                        } else {
+                            // Người dùng đã bấm nút "Hủy"
+                            // Không làm gì cả hoặc có thể xử lý khác nếu cần
                         }
                     });
             });
         }
-
-        alertCofirmation();
+        alertConfirmation();
 
         function selectAllCheckbox() {
             document.getElementById('select-all').addEventListener('change', function () {
@@ -230,37 +245,77 @@
         }
 
         selectAllCheckbox();
-        // Bắt sự kiện khi thay đổi lựa chọn trong dropdown
-        document.getElementById('status_filter').addEventListener('change', function () {
-            var status = this.value; // Lấy giá trị đã chọn
-            filterTableByStatus(status);
-        });
 
-        // Hàm để lọc bảng theo trạng thái
-        function filterTableByStatus(status) {
-            var table = document.getElementById('dataTable');
-            var rows = table.getElementsByTagName('tr');
-            // Duyệt qua từng hàng trong bảng
-            for (var i = 1; i < rows.length; i++) {
-                var row = rows[i];
-                var cell = row.cells[4]; // Cột trạng thái
-                var switchInput = cell.querySelector('.switch1');
-                if (switchInput) {
-                    var switchValue = switchInput.value;
-                }
-
-                // Lấy giá trị trạng thái từ cell
-                var cellValue = cell.innerText.trim();
-                // Hiển thị/ẩn hàng dựa trên trạng thái đã chọn
-                if (status === '') {
-                    row.style.display = ''; // Hiển thị tất cả nếu không có lọc
-                } else if (switchValue === status) {
-                    row.style.display = ''; // Hiển thị nếu trạng thái khớp
-                } else {
-                    row.style.display = 'none'; // Ẩn nếu không khớp
-                }
-            }
+        function updateStatus() {
+            $(document).ready(function () {
+                $('.switch-status').change(function () {
+                    const itemId = $(this).data('item-id');
+                    const status = this.checked ? 1 : 0;
+                    $.ajax({
+                        method: 'POST',
+                        url: '/admin/post-type/update-status/' + itemId,
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            status: status
+                        },
+                        success: function (data) {
+                            // Xử lý phản hồi thành công (nếu cần)
+                        },
+                        error: function (error) {
+                            // Xử lý lỗi (nếu có)
+                        }
+                    });
+                });
+            });
         }
+
+        updateStatus();
+
+        function deleteSelected() {
+            $(document).ready(function () {
+                $('#delete-selected').click(function (e) {
+                    e.preventDefault();
+                    var selectedCheckboxes = $('.child-checkbox:checked');
+
+                    if (selectedCheckboxes.length > 0) {
+                        Swal.fire({
+                            title: 'Xác nhận xóa',
+                            text: 'Bạn có chắc chắn muốn xóa các mục đã chọn?',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Xóa',
+                            cancelButtonText: 'Hủy',
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                var selectedIds = [];
+                                selectedCheckboxes.each(function () {
+                                    selectedIds.push($(this).val());
+                                });
+                                $.ajax({
+                                    type: 'POST',
+                                    url: '/admin/post-type/deleteAll', // Thay thế bằng tuyến đường xử lý xoá của bạn
+                                    data: {
+                                        ids: selectedIds,
+                                        _token: '{{ csrf_token() }}',
+                                    },
+                                    success: function (response) {
+                                        // Xử lý phản hồi từ máy chủ nếu cần
+                                        location.reload();
+                                    },
+                                    error: function () {
+                                        location.reload();
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+
+
+        }
+
+        deleteSelected();
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/switchery/0.8.2/switchery.min.js"></script>

@@ -19,9 +19,25 @@ class GenreController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(GenreRequest $request)
     {
-        $genres = Genre::latest()->paginate(5);
+        $query = Genre::query();
+
+        // Tìm kiếm theo name
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+        // Lọc theo status
+        if ($request->has('status')) {
+            $status = $request->input('status');
+            if ($status == 1 || $status == 0) {
+                $query->where('status', $status);
+            } else if($status == 'all') {
+                $query->get();
+            }
+        }
+        $genres = $query->orderBy('id', 'DESC')->paginate(5);
         return view('admin.genre.index', compact('genres'));
     }
 
@@ -170,9 +186,25 @@ class GenreController extends Controller
             return redirect()->route('genre.index');
         }
     }
-    public function trash()
+    public function trash(GenreRequest $request)
     {
-        $deleteItems = Genre::onlyTrashed()->paginate(5);
+        $deleteItems = Genre::onlyTrashed();
+        // Tìm kiếm theo name trong trash
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $deleteItems->where('name', 'like', '%' . $search . '%');
+        }
+        // Lọc theo status trong trash
+        if ($request->has('status')) {
+            $status = $request->input('status');
+            if ($status == 0 || $status == 1) {
+                $deleteItems->where('status', $status);
+            } else if($status == 'all') {
+                $deleteItems->get();
+            }
+        }
+
+        $deleteItems = $deleteItems->orderBy('id', 'DESC')->paginate(5);
         return view('admin.genre.trash', compact('deleteItems'));
     }
 
@@ -194,5 +226,50 @@ class GenreController extends Controller
             toastr()->success('Xóa vĩnh viễn thể loại thành công', 'success');
             return redirect()->route('genre.trash');
         }
+    }
+    public function updateStatus(Request $request,$id) {
+        $item = Genre::find($id);
+
+        if (!$item) {
+            return response()->json(['message' => 'Không tìm thấy mục'], 404);
+        }
+        $newStatus = $request->input('status');
+        $item->status = $newStatus;
+        $item->save();
+        return response()->json(['message' => 'Cập nhật trạng thái thành công'], 200);
+    }
+    public function deleteAll(Request $request)
+    {
+        $ids = $request->ids;
+        if ($ids) {
+            Genre::whereIn('id', $ids)->delete();
+            toastr()->success('Thành công xoá các thể loại đã chọn');
+        } else {
+            toastr()->warning('Không tìm thấy các thể loại đã chọn');
+        }
+
+    }
+    public function restoreSelected(Request $request) {
+        $ids = $request->ids;
+        if ($ids) {
+            $genre = Genre::withTrashed()->whereIn('id', $ids);
+            $genre->restore();
+            toastr()->success('Thành công', 'Thành công khôi phục thể loại');
+        } else {
+            toastr()->warning('Thất bại', 'Không tìm thấy các thể loại đã chọn');
+        }
+        return redirect()->route('genre.trash');
+    }
+    public function permanentlyDeleteSelected(Request $request) {
+        $ids = $request->ids;
+        if ($ids) {
+            $genre = Genre::withTrashed()->whereIn('id', $ids);
+            $genre->forceDelete();
+            toastr()->success('Thành công', 'Thành công xoá vĩnh viễn thể loại');
+
+        } else {
+            toastr()->warning('Thất bại', 'Không tìm thấy các thể loại đã chọn');
+        }
+        return redirect()->route('genre.trash');
     }
 }

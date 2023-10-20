@@ -29,6 +29,19 @@ class MovieRequest extends FormRequest
             case 'POST':
                 switch ($currentAction) {
                     case 'update' :
+                        $rules = [
+                            'name' => 'required',
+                            'language' => 'required|string',
+                            'status' => 'required',
+                            'trailer' => 'required:string',
+                            'director' => 'required:string',
+                            'actor' => 'required:string',
+                            'duration' => 'required',
+                            'start_date' => 'required',
+                            'manufacturer' => 'required:string',
+                            'genre_id' => 'required'
+                        ];
+                        break;
                     case 'store' :
                         $rules = [
                             'name' => 'required',
@@ -40,7 +53,8 @@ class MovieRequest extends FormRequest
                             'actor' => 'required',
                             'duration' => 'required',
                             'start_date' => 'required',
-                            'manufacturer' => 'required'
+                            'manufacturer' => 'required',
+                            'genre_id' => 'required'
                         ];
                         break;
                 }

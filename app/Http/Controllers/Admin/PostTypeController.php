@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PostTypeRequest;
 use App\Models\PostType;
-use AWS\CRT\HTTP\Request;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Kalnoy\Nestedset\NestedSet;
@@ -19,9 +19,26 @@ class PostTypeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(PostTypeRequest $request)
     {
-        $postTypes = PostType::latest()->paginate(5);
+//        $postTypes = PostType::latest()->paginate(5);
+        $query = PostType::query();
+
+        // Tìm kiếm theo name
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+        // Lọc theo status
+        if ($request->has('status')) {
+            $status = $request->input('status');
+            if ($status == 1 || $status == 0) {
+                $query->where('status', $status);
+            } else if($status == 'all') {
+                $query->get();
+            }
+        }
+        $postTypes = $query->orderBy('id', 'DESC')->paginate(5);
         return view('admin.post-type.index', compact('postTypes'));
     }
 
@@ -167,9 +184,26 @@ class PostTypeController extends Controller
         }
     }
 
-    public function trash()
+    public function trash(PostTypeRequest $request)
     {
-        $deleteItems = PostType::onlyTrashed()->paginate(5);
+        $deleteItems = PostType::onlyTrashed();
+
+        // Tìm kiếm theo name trong trash
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $deleteItems->where('name', 'like', '%' . $search . '%');
+        }
+        // Lọc theo status trong trash
+        if ($request->has('status')) {
+            $status = $request->input('status');
+            if ($status == 0 || $status == 1) {
+                $deleteItems->where('status', $status);
+            } else if($status == 'all') {
+                $deleteItems->get();
+            }
+        }
+
+        $deleteItems = $deleteItems->orderBy('id', 'DESC')->paginate(5);
         return view('admin.post-type.trash', compact('deleteItems'));
     }
 
@@ -191,5 +225,50 @@ class PostTypeController extends Controller
             toastr()->success('Xóa vĩnh viễn danh mục thành công', 'success');
             return redirect()->route('post-type.trash');
         }
+    }
+    public function updateStatus($id,Request $request) {
+        $item = PostType::find($id);
+
+        if (!$item) {
+            return response()->json(['message' => 'Không tìm thấy mục'], 404);
+        }
+        $newStatus = $request->input('status');
+        $item->status = $newStatus;
+        $item->save();
+        return response()->json(['message' => 'Cập nhật trạng thái thành công'], 200);
+    }
+    public function deleteAll(Request $request)
+    {
+        $ids = $request->ids;
+        if ($ids) {
+            PostType::whereIn('id', $ids)->delete();
+            toastr()->success('Thành công xoá các danh mục đã chọn');
+        } else {
+            toastr()->warning('Không tìm thấy các danh mục đã chọn');
+        }
+
+    }
+    public function restoreSelected(Request $request) {
+        $ids = $request->ids;
+        if ($ids) {
+            $voucher = PostType::withTrashed()->whereIn('id', $ids);
+            $voucher->restore();
+            toastr()->success('Thành công', 'Thành công khôi phục danh mục');
+        } else {
+            toastr()->warning('Thất bại', 'Không tìm thấy các danh mục đã chọn');
+        }
+        return redirect()->route('post-type.trash');
+    }
+    public function permanentlyDeleteSelected(Request $request) {
+        $ids = $request->ids;
+        if ($ids) {
+            $voucher = PostType::withTrashed()->whereIn('id', $ids);
+            $voucher->forceDelete();
+            toastr()->success('Thành công', 'Thành công xoá vĩnh viễn danh mục');
+
+        } else {
+            toastr()->warning('Thất bại', 'Không tìm thấy các danh mục đã chọn');
+        }
+        return redirect()->route('post-type.trash');
     }
 }

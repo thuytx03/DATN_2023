@@ -21,7 +21,7 @@
             <div class="card card-primary">
                 <div class="card-body">
                     <div class="form-group">
-                        <label for="name">Tên thể loại</label>
+                        <label for="name">Tên thể loại<span class="text-danger">(*)</span></label>
                         <input type="text" id="name" name="name" class="form-control" value="{{ $genre->name }}">
                     </div>
                     <div class="form-group">

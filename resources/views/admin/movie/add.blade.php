@@ -52,25 +52,25 @@
                             <div class="card card-primary">
                                 <div class="card-body">
                                     <div class="form-group">
-                                        <label for="name">Tên phim</label>
+                                        <label for="name">Tên phim<span class="text-danger">(*)</span></label>
                                         <input type="text" id="name" name="name" class="form-control">
                                     </div>
                                     <div class="form-group">
-                                        <label for="slug">Slug</label>
+                                        <label for="slug">Đường dẫn</label>
                                         <input name="slug" type="text" id="slug" class="form-control">
                                     </div>
                                     <div class="form-group">
-                                        <label for="poster">Poster</label> <br>
+                                        <label for="poster">Poster<span class="text-danger">(*)</span></label> <br>
                                         <input name="poster" type="file" id="image_url" style="display: none">
                                         <img src="{{ asset('images/image-not-found.jpg') }}" width="130" height="110"
                                              id="image_preview" class="mt-1" alt="">
                                     </div>
                                     <div class="form-group">
-                                        <label for="start_date">Ngày khởi chiếu</label>
+                                        <label for="start_date">Ngày khởi chiếu<span class="text-danger">(*)</span></label>
                                         <input name="start_date" type="date" id="start_date" class="form-control">
                                     </div>
                                     <div class="form-group">
-                                        <label for="duration">Khoảng thời gian</label>
+                                        <label for="duration">Thời lượng phim<span class="text-danger">(*)</span></label>
                                         <input name="duration" type="text" id="duration" class="form-control">
                                     </div>
                                     <div class="form-group">
@@ -97,27 +97,27 @@
                             <div class="card card-secondary">
                                 <div class="card-body">
                                     <div class="form-group">
-                                        <label for="language">Ngôn ngữ</label>
+                                        <label for="language">Ngôn ngữ<span class="text-danger">(*)</span></label>
                                         <input type="text" name="language" id="language" class="form-control">
                                     </div>
                                     <div class="form-group">
-                                        <label for="trailer">Đoạn giới thiệu</label>
+                                        <label for="trailer">Đoạn giới thiệu<span class="text-danger">(*)</span></label>
                                         <input type="text" name="trailer" id="trailer" class="form-control">
                                     </div>
                                     <div class="form-group">
-                                        <label for="director">Đạo diễn</label>
+                                        <label for="director">Đạo diễn<span class="text-danger">(*)</span></label>
                                         <input type="text" name="director" id="director" class="form-control">
                                     </div>
                                     <div class="form-group">
-                                        <label for="actor">Diễn viên</label>
+                                        <label for="actor">Diễn viên<span class="text-danger">(*)</span></label>
                                         <input type="text" name="actor" id="actor" class="form-control">
                                     </div>
                                     <div class="form-group">
-                                        <label for="manufacturer">Nhà sáng tác</label>
+                                        <label for="manufacturer">Nhà sáng tác<span class="text-danger">(*)</span></label>
                                         <input type="text" name="manufacturer" id="manufacturer" class="form-control">
                                     </div>
                                     <div class="form-group">
-                                        <label for="inputStatus">Thể loại</label><br>
+                                        <label for="inputStatus">Thể loại<span class="text-danger">(*)</span></label><br>
                                         <div class="container">
                                             <div class="row">
                                                 @foreach($genres as $genre)
@@ -133,11 +133,12 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="inputStatus">Quốc gia</label>
+                                        <label for="inputStatus">Quốc gia<span class="text-danger">(*)</span></label>
                                         <select id="inputStatus" name="country_id" class="form-control custom-select">
                                             <option selected="" disabled="">Chọn 1</option>
-                                            <option value="1">Việt Nam</option>
-                                            <option value="2">Hàn quốc</option>
+                                            @foreach($contries as $country)
+                                            <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                     <div class="form-group">
@@ -176,7 +177,6 @@
             var imageContainer = button.parentElement;
             imageContainer.remove();
         }
-
         const imagePreview = document.getElementById('image_preview');
         const imagePreview1 = document.getElementById('image_preview1');
         const imageUrlInput = document.getElementById('image_url');
@@ -191,7 +191,7 @@
                     var reader = new FileReader();
                     reader.onload = function (e) {
                         $('#imagePreview').append(
-                            '<div class="col-md-3 mt-3 image-list"><img src="' + e.target.result + '" class="img-fluid"><button class="delete-button" onclick="deleteImage(this)">X</button></div>'
+                            '<div class="col-md-3 mt-3 image-list"><img src="' + e.target.result + '" class="img-fluid">   <button class="delete-button" onclick="deleteImage(this)">X</button></div>'
                         );
                     }
                     reader.readAsDataURL(files[i]);
