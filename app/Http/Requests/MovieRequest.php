@@ -39,7 +39,9 @@ class MovieRequest extends FormRequest
                             'duration' => 'required',
                             'start_date' => 'required',
                             'manufacturer' => 'required:string',
-                            'genre_id' => 'required'
+                            'genre_id' => 'required',
+                            'country_id' => 'required'
+
                         ];
                         break;
                     case 'store' :
@@ -54,7 +56,8 @@ class MovieRequest extends FormRequest
                             'duration' => 'required',
                             'start_date' => 'required',
                             'manufacturer' => 'required',
-                            'genre_id' => 'required'
+                            'genre_id' => 'required',
+                            'country_id' => 'required'
                         ];
                         break;
                 }

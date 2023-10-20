@@ -66,10 +66,15 @@ class GenreController extends Controller
             } else {
                 $request->image = null;
             }
+            if (!$request->slug) {
+                $request->slug = Str::slug($request->name);
+            } else {
+                $request->slug = Str::slug($request->slug);
+            }
             $genre = new Genre();
             $genre->name = $request->name;
-            $genre->slug = Str::slug($request->input('name'));
             $genre->description = $request->description;
+            $genre->slug = $request->slug;
             $genre->status = $request->status;
             $genre->image = $request->image;
             if ($request->parent_id && $request->parent_id !== 'none') {
@@ -134,7 +139,11 @@ class GenreController extends Controller
             if ($params['parent_id'] == 'none') {
                 $params['parent_id'] = null;
             }
-            $params['slug'] = Str::slug($params['name']);
+            if (!$request->slug) {
+                $params['slug'] = Str::slug($params['name']);
+            } else {
+                $params['slug'] = Str::slug($request->slug);
+            }
             // Lấy thông tin cũ của parent_id
             $oldParentId = $genre->parent_id;
 

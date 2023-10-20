@@ -33,7 +33,7 @@ class PostTypeController extends Controller
             $status = $request->input('status');
             if ($status == 1 || $status == 0) {
                 $query->where('status', $status);
-            } else if($status == 'all') {
+            } else if ($status == 'all') {
                 $query->get();
             }
         }
@@ -66,11 +66,16 @@ class PostTypeController extends Controller
             } else {
                 $request->image = null;
             }
+            if (!$request->slug) {
+                $request->slug = Str::slug($request->name);
+            } else {
+                $request->slug = Str::slug($request->slug);
+            }
             $postType = new PostType();
             $postType->name = $request->name;
-            $postType->slug = Str::slug($request->input('name'));
             $postType->description = $request->description;
             $postType->status = $request->status;
+            $postType->slug = $request->slug;
             $postType->image = $request->image;
             if ($request->parent_id && $request->parent_id !== 'none') {
                 // Here we define the parent for new created category
@@ -130,7 +135,11 @@ class PostTypeController extends Controller
             if ($params['parent_id'] == 'none') {
                 $params['parent_id'] = null;
             }
-            $params['slug'] = Str::slug($params['name']);
+            if (!$request->slug) {
+                $params['slug'] = Str::slug($params['name']);
+            } else {
+                $params['slug'] = Str::slug($request->slug);
+            }
             // Lấy thông tin cũ của parent_id
             $oldParentId = $postType->parent_id;
 
@@ -197,7 +206,7 @@ class PostTypeController extends Controller
             $status = $request->input('status');
             if ($status == 0 || $status == 1) {
                 $deleteItems->where('status', $status);
-            } else if($status == 'all') {
+            } else if ($status == 'all') {
                 $deleteItems->get();
             }
         }
@@ -225,7 +234,9 @@ class PostTypeController extends Controller
             return redirect()->route('post-type.trash');
         }
     }
-    public function updateStatus($id,Request $request) {
+
+    public function updateStatus($id, Request $request)
+    {
         $item = PostType::find($id);
 
         if (!$item) {
@@ -236,6 +247,7 @@ class PostTypeController extends Controller
         $item->save();
         return response()->json(['message' => 'Cập nhật trạng thái thành công'], 200);
     }
+
     public function deleteAll(Request $request)
     {
         $ids = $request->ids;
@@ -247,7 +259,9 @@ class PostTypeController extends Controller
         }
 
     }
-    public function restoreSelected(Request $request) {
+
+    public function restoreSelected(Request $request)
+    {
         $ids = $request->ids;
         if ($ids) {
             $voucher = PostType::withTrashed()->whereIn('id', $ids);
@@ -258,7 +272,9 @@ class PostTypeController extends Controller
         }
         return redirect()->route('post-type.trash');
     }
-    public function permanentlyDeleteSelected(Request $request) {
+
+    public function permanentlyDeleteSelected(Request $request)
+    {
         $ids = $request->ids;
         if ($ids) {
             $voucher = PostType::withTrashed()->whereIn('id', $ids);

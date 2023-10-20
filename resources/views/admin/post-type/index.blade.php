@@ -51,25 +51,24 @@
                             <div class="col-sm-12 col-md-6">
                                 <form action="{{ route('post-type.index') }}" method="get">
                                     <div class="row">
-                                        <div class="dataTables_length mr-3" id="dataTable_length"><label>Lọc: <select
-                                                    name="status" aria-controls="dataTable"
-                                                    class="custom-select custom-select-sm form-control"
-                                                    id="status_filter">
-                                                    <option value="all" selected>Tất cả</option>
+                                        <div class="dataTables_length mr-2" id="dataTable_length"><label>Lọc
+                                                <select name="status" aria-controls="dataTable"
+                                                        class="custom-select custom-select-sm form-control ">
+                                                    <option value="all">Tất cả</option>
                                                     <option value="1">Hoạt động</option>
                                                     <option value="0">Không hoạt động</option>
                                                 </select>
                                             </label>
                                         </div>
-                                        <div id="dataTable_filter" class="dataTables_filter"><label>Tìm kiếm:<input
-                                                    name="search" type="search" class="form-control form-control-sm"
-                                                    placeholder=""
-                                                    aria-controls="dataTable">
+                                        <div id="dataTable_filter" class="dataTables_filter"><label>
+                                                <input type="search" name="search" class="form-control form-control-sm"
+                                                       placeholder="" aria-controls="dataTable">
                                                 <button class="btn btn-outline-success form-control-sm" type="submit">
                                                     Tìm kiếm
                                                 </button>
                                             </label>
                                         </div>
+
                                     </div>
                                 </form>
                             </div>

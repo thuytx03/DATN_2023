@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->text('description')->nullable();
             $table->tinyInteger('status')->default(1);
-            $table->time('delete_at');
             $table->softDeletes();
             $table->timestamps();
         });

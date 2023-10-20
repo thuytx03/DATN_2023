@@ -130,9 +130,9 @@ class FoodTypesController extends Controller
 
     public function indexsd(Request $request)
     {
-        
+
         $listTypes = Foodstypes::onlyTrashed();
-    
+
 
         if ($request->has('keyword')) {
             $keyword = $request->input('keyword');
@@ -147,12 +147,12 @@ class FoodTypesController extends Controller
                 $status = 0;
             }
             $listTypes->where('status', $status);
-            
+
         }
 
-        
+
         $Foodstypes1 =  $listTypes->onlyTrashed()->paginate(5);
-      
+
 
 
 
@@ -310,7 +310,7 @@ class FoodTypesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    
+
     public function update(Request $request, $id)
     {
 
@@ -348,7 +348,6 @@ class FoodTypesController extends Controller
                 DB::commit();
             }
             toastr()->success('Cập nhật danh mục thành công!', 'success');
-        } catch (QueryException $e) {
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->errorInfo[1] === 1062) {
                 // Lỗi duplicate entry

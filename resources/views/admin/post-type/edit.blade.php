@@ -27,6 +27,10 @@
                         <input type="text" id="name" name="name" class="form-control" value="{{ $postType->name }}">
                     </div>
                     <div class="form-group">
+                        <label for="slug">Đường dẫn</label>
+                        <input name="slug" type="text" id="slug" class="form-control" value="{{ $postType->slug }}">
+                    </div>
+                    <div class="form-group">
                         <label for="parent_id">Danh mục cha</label>
                         <select id="parent_id" class="form-control custom-select" name="parent_id">
                             <option selected="" value="none">Chưa có danh mục cha</option>

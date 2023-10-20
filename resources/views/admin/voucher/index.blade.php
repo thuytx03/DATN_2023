@@ -53,7 +53,6 @@
                             </div>
                             <div class="col-sm-12 col-md-6">
                                 <form action="{{ route('voucher.index') }}" method="get">
-
                                     <div class="row">
                                         <div class="dataTables_length mr-2" id="dataTable_length"><label>Lọc
                                                 <select name="status" aria-controls="dataTable"
@@ -77,7 +76,6 @@
 
                                     </div>
                                 </form>
-
                             </div>
                         </div>
                         <div class="row">
