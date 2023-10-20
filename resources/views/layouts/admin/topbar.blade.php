@@ -205,17 +205,3 @@
 </nav>
 
 
-{{-- if ($request->has('food_type_id') && $request->input('food_type_id')) {
-    $food_type_id = $request->input('food_type_id');
-    if ($food_type_id == 'hethang') {
-        $listfood = $listfood->where('status', 2)->get();
-    } elseif ($food_type_id == 'ngungkinhdoanh') {
-        $listfood = $listfood->where('status', 0)->get();
-        dd($listfood);
-    } else {
-        $lisfood_types =  $listfood;
-        $listfood = $listfood->whereHas('foodstypes', function ($query) use ($food_type_id) {
-            $query->where('foods_types.id', $food_type_id);
-        })->get();
-    }
-} --}}
