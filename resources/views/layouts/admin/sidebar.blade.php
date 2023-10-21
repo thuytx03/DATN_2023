@@ -72,6 +72,7 @@
         <div id="collapseUtilities" class="collapse" aria-labelledby="headingPost" data-parent="#accordionSidebar" style="">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="{{ route('post-type.index') }}">Danh mục bài viết</a>
+                <a class="collapse-item" href="{{ route('post.index') }}">Bài viết</a>
             </div>
         </div>
     </li>
@@ -112,6 +113,24 @@
             </div>
         </div>
     </li>
+
+        <!-- logo -->
+        <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#logo-slider"
+                    aria-expanded="true" aria-controls="logo-slider">
+                    <i class="fas fa-fw fa-folder"></i>
+                    <span>Logo</span>
+                </a>
+                <div id="logo-slider" class="collapse" aria-labelledby="headingOne" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="{{route('logo.edit',1)}}">Logo</a>
+                        <a class="collapse-item" href="{{route('slider.index')}}">Slider</a>
+                   
+                    </div>
+                </div>
+            </li>
+
+<!-- end logo -->
 
 
     <!-- Divider -->
