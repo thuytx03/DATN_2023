@@ -28,12 +28,24 @@
 
     <!-- Nav Item - Pages Collapse Menu -->
     <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#room" aria-expanded="true" aria-controls="room">
+            <i class="fas fa-fw fa-folder"></i>
+            <span>Quản lý phòng</span>
+        </a>
+        <div id="room" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{route('list-room')}}">Quản lý phòng</a>
+                <a class="collapse-item" href="{{route('list-room-type')}}">Quản lý loại phòng</a>
+            </div>
+        </div>
+    </li>
+    <li class="nav-item">
 
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#movie" aria-expanded="true" aria-controls="movie">
             <i class="fas fa-fw fa-cog"></i>
             <span>Quản lý phim</span>
         </a>
-        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+        <div id="movie" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="{{ route('genre.index') }}">Thể loại Phim</a>
                 <!-- link -->
@@ -100,18 +112,7 @@
             </div>
         </div>
     </li>
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-            <i class="fas fa-fw fa-folder"></i>
-            <span>Quản lý phòng</span>
-        </a>
-        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="{{route('list-room')}}">Quản lý phòng</a>
-                <a class="collapse-item" href="{{route('list-room-type')}}">Quản lý loại phòng</a>
-            </div>
-        </div>
-    </li>
+
 
     <!-- Divider -->
     <hr class="sidebar-divider">

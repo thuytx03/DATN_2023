@@ -6,13 +6,13 @@
 
     <!-- Page Heading -->
     <a href="{{route('list-permission')}}" class="btn btn-success m-3">Danh sách quyền</a>
-    @if($errors->any())
-    @foreach($errors->all() as $error)
-    <div class="alert alert-danger" role="alert">
-        {{ $error }}
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
     </div>
-    @endforeach
-    @endif
+@endif
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-body">
