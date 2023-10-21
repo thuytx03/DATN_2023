@@ -105,7 +105,7 @@
             <i class="fas fa-fw fa-folder"></i>
             <span>Quản lý quyền</span>
         </a>
-        <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionSidebar">
+        <div id="collapsePages" class="collapse" aria-labelledby="headingOne" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="{{route('list-role')}}">Quản lý vai trò</a>
                 <a class="collapse-item" href="{{route('list-permission')}}">Quản lý quyền</a>
