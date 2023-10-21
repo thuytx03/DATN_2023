@@ -23,13 +23,13 @@
     <div class="container-fluid">
         <!-- Page Heading -->
         <h1 class="h3 mb-2 text-gray-800">Cập nhập phim</h1>
-        @if($errors->any())
-            @foreach($errors->all() as $error)
-                <div class="alert alert-danger" role="alert">
-                    {{ $error }}
-                </div>
+        @if ($errors->any())
+        <div class="alert alert-danger">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
             @endforeach
-        @endif
+        </div>
+    @endif
 
         <form action="{{ route('movie.update',['id' => $movie->id]) }}" method="post" enctype="multipart/form-data">
             @csrf

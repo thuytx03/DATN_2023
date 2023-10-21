@@ -6,13 +6,13 @@
 
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">Thêm mới User</h1>
-    @if($errors->any())
-    @foreach($errors->all() as $error)
-    <div class="alert alert-danger" role="alert">
-        {{ $error }}
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
     </div>
-    @endforeach
-    @endif
+@endif
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-body">

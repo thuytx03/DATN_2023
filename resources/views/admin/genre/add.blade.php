@@ -7,13 +7,13 @@
 
         <!-- Page Heading -->
         <h1 class="h3 mb-2 text-gray-800">Thêm mới thể loại phim</h1>
-        @if($errors->any())
-            @foreach($errors->all() as $error)
-                <div class="alert alert-danger" role="alert">
-                    {{ $error }}
-                </div>
+        @if ($errors->any())
+        <div class="alert alert-danger">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
             @endforeach
-        @endif
+        </div>
+    @endif
 
         <form action="{{ route('genre.store') }}" method="post" enctype="multipart/form-data">
             @csrf

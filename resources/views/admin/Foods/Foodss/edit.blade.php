@@ -19,13 +19,13 @@
 
         <!-- Page Heading -->
         <h1 class="h3 mb-2 text-gray-800">  Cập nhật món ăn</h1>
-        @if($errors->any())
-            @foreach($errors->all() as $error)
-                <div class="alert alert-danger" role="alert">
-                    {{ $error }}
+        @if ($errors->any())
+                <div class="alert alert-danger">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
                 </div>
-            @endforeach
-        @endif
+            @endif
 
         <form action="{{route('movie-foode.update',['id'=>$data->id])}}" method="post" enctype="multipart/form-data">
             @csrf
