@@ -14,9 +14,16 @@ class PermissionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $permission = Permission::orderBy('id', 'DESC')->get();
+        $query = Permission::query();
+
+        // Tìm kiếm theo name
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+        $permission =  $query->orderBy('id', 'DESC')->get();
         return view('admin.role_permission.permission.index', compact('permission'));
     }
 
@@ -107,8 +114,15 @@ class PermissionController extends Controller
     }
     public function list_bin(Request $request)
     {
-        $softDeletedPermissions = Permission::onlyTrashed()->get();
-        return view('admin.role_permission.permission.bin', compact('softDeletedPermissions'));
+        $query = Permission::onlyTrashed();
+
+        // Tìm kiếm theo name trong trash
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+        $softDeletedPermission = $query->onlyTrashed()->get();
+        return view('admin.role_permission.permission.bin', compact('softDeletedPermission'));
     }
 
     public function restore_bin(Request $request, $id)
@@ -135,5 +149,42 @@ class PermissionController extends Controller
         } else {
             abort(404);
         }
+    }
+
+    public function deleteAll(Request $request)
+    {
+        $ids = $request->ids;
+
+        if ($ids) {
+            Permission::whereIn('id', $ids)->delete();
+            toastr()->success('Thành công xoá các quyền đã chọn');
+        } else {
+            toastr()->warning('Không tìm thấy các quyền đã chọn');
+        }
+    }
+    public function delete_bin_all(Request $request)
+    {
+        $ids = $request->ids;
+        if ($ids) {
+            $permission = Permission::withTrashed()->whereIn('id', $ids);
+            $permission->forceDelete();
+            toastr()->success('Thành công', 'Thành công xoá vĩnh viễn quyền');
+        } else {
+            toastr()->warning('Thất bại', 'Không tìm thấy các quyền đã chọn');
+        }
+        return redirect()->route('list-permission');
+    }
+    public function restore_bin_all(Request $request)
+    {
+
+        $ids = $request->ids;
+        if ($ids) {
+            $permission = Permission::withTrashed()->whereIn('id', $ids);
+            $permission->restore();
+            toastr()->success('Thành công', 'Thành công khôi phục quyền');
+        } else {
+            toastr()->warning('Thất bại', 'Không tìm thấy các quyền đã chọn');
+        }
+        return redirect()->route('list-permission');
     }
 }

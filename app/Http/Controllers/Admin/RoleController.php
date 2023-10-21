@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RoleRequest;
+use App\Models\Room;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
@@ -16,9 +17,17 @@ class RoleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $role = Role::orderBy('id', 'DESC')->whereNotIn('name', ['Jungx-Admin'])->get();
+        $query = Role::query();
+
+        // Tìm kiếm theo name
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+        $role =  $query->orderBy('id', 'DESC')->whereNotIn('name', ['Jungx-Admin'])->get();
+       
         return view('admin.role_permission.role.index', compact('role'));
     }
 
@@ -136,7 +145,14 @@ class RoleController extends Controller
     //thùng rác 
     public function list_bin(Request $request)
     {
-        $softDeletedRoles = Role::onlyTrashed()->get();
+        $query = Role::onlyTrashed();
+
+        // Tìm kiếm theo name trong trash
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+        $softDeletedRoles = $query->onlyTrashed()->get();
         return view('admin.role_permission.role.bin', compact('softDeletedRoles'));
     }
 
@@ -164,5 +180,43 @@ class RoleController extends Controller
         } else {
             abort(404);
         }
+    }
+
+    public function deleteAll(Request $request)
+    {
+        $ids = $request->ids;
+
+        if ($ids) {
+            Role::whereIn('id', $ids)->delete();
+            toastr()->success('Thành công xoá các vai trò đã chọn');
+        } else {
+            toastr()->warning('Không tìm thấy các vai trò đã chọn');
+        }
+    }
+
+    public function delete_bin_all(Request $request)
+    {
+        $ids = $request->ids;
+        if ($ids) {
+            $role = Role::withTrashed()->whereIn('id', $ids);
+            $role->forceDelete();
+            toastr()->success('Thành công', 'Thành công xoá vĩnh viễn vai trò');
+        } else {
+            toastr()->warning('Thất bại', 'Không tìm thấy các vai trò đã chọn');
+        }
+        return redirect()->route('list-role');
+    }
+    public function restore_bin_all(Request $request)
+    {
+
+        $ids = $request->ids;
+        if ($ids) {
+            $role = Role::withTrashed()->whereIn('id', $ids);
+            $role->restore();
+            toastr()->success('Thành công', 'Thành công khôi phục vai trò');
+        } else {
+            toastr()->warning('Thất bại', 'Không tìm thấy các vai trò đã chọn');
+        }
+        return redirect()->route('list-role');
     }
 }

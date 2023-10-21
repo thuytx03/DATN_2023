@@ -85,5 +85,24 @@
 @endsection
 
 @push('scripts')
+<script>
+    function selectAllCheckbox() {
+        document.getElementById('selectAllAll').addEventListener('change', function() {
+            let checkboxes = document.querySelectorAll('.permission-checkbox');
+            for (let checkbox of checkboxes) {
+                checkbox.checked = this.checked;
+            }
+        });
+
+        let permissionCheckboxes = document.getElementsByClassName('permission-checkbox');
+        for (let checkbox of permissionCheckboxes) {
+            checkbox.addEventListener('change', function() {
+                document.getElementById('selectAllAll').checked = [...permissionCheckboxes].every(checkbox => checkbox.checked);
+            });
+        }
+    }
+
+    selectAllCheckbox();
+</script>
 
 @endpush
