@@ -106,7 +106,7 @@
             <i class="fas fa-fw fa-folder"></i>
             <span>Quản lý quyền</span>
         </a>
-        <div id="collapseThree" class="collapse" aria-labelledby="headingOne" data-parent="#accordionSidebar">      
+        <div id="collapseThree" class="collapse" aria-labelledby="headingOne" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="{{route('list-role')}}">Quản lý vai trò</a>
                 <a class="collapse-item" href="{{route('list-permission')}}">Quản lý quyền</a>
@@ -114,23 +114,58 @@
         </div>
     </li>
 
-        <!-- logo -->
-        <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#logo-slider"
-                    aria-expanded="true" aria-controls="logo-slider">
-                    <i class="fas fa-fw fa-folder"></i>
-                    <span>Logo</span>
-                </a>
-                <div id="logo-slider" class="collapse" aria-labelledby="headingOne" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="{{route('logo.edit',1)}}">Logo</a>
-                        <a class="collapse-item" href="{{route('slider.index')}}">Slider</a>
-                   
-                    </div>
-                </div>
-            </li>
+    <!-- logo -->
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#logo-slider" aria-expanded="true" aria-controls="logo-slider">
+            <i class="fas fa-fw fa-folder"></i>
+            <span>Logo</span>
+        </a>
+        <div id="logo-slider" class="collapse" aria-labelledby="headingOne" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{route('logo.edit',1)}}">Logo</a>
+                <a class="collapse-item" href="{{route('slider.index')}}">Slider</a>
 
-<!-- end logo -->
+            </div>
+        </div>
+    </li>
+
+    <!-- end logo -->
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwoss" aria-expanded="true" aria-controls="collapseTwoss">
+            <i class="fas fa-fw fa-cog"></i>
+            <span>Quản lý khu vực</span>
+        </a>
+        <div id="collapseTwoss" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{ route('province.index') }}">Danh sách khu vực</a>
+                <!-- link -->
+            </div>
+        </div>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwosss" aria-expanded="true" aria-controls="collapseTwosss">
+            <i class="fas fa-fw fa-cog"></i>
+            <span>Quản lý rạp phim</span>
+        </a>
+        <div id="collapseTwosss" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{ route('cinema.index') }}">Danh sách rạp phim</a>
+                <!-- link -->
+            </div>
+        </div>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwoabc" aria-expanded="true" aria-controls="collapseTwoabc">
+            <i class="fas fa-fw fa-cog"></i>
+            <span>Quản lý người dùng</span>
+        </a>
+        <div id="collapseTwoabc" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{ route('list-user') }}">Danh sách người dùng</a>
+                <!-- link -->
+            </div>
+        </div>
+    </li>
 
 
     <!-- Divider -->

@@ -4,20 +4,20 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/switchery/0.8.2/switchery.min.css">
 @endpush
 @section('title')
-Danh sách người dùng
+Danh sách khu vực
 @endsection
 @section('content')
 <div class="container-fluid">
 
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Danh sách người dùng</h1>
+    <h1 class="h3 mb-2 text-gray-800">Danh sách khu vực</h1>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <div class="row align-items-center">
                 <div class="col">
-                    <a href="{{ route('user.add') }}" class="btn btn-success">
+                    <a href="{{ route('province.add') }}" class="btn btn-success">
                         Thêm mới
                     </a>
                 </div>
@@ -27,7 +27,7 @@ Danh sách người dùng
                             Hành động
                         </button>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="{{ route('user.trash') }}">Thùng rác</a>
+                            <a class="dropdown-item" href="{{ route('province.trash') }}">Thùng rác</a>
                             <a href="#" id="delete-selected" class="dropdown-item">Xoá đã chọn</a>
                         </div>
                     </div>
@@ -49,7 +49,7 @@ Danh sách người dùng
                             </div>
                         </div>
                         <div class="col-sm-12 col-md-6">
-                            <form action="{{ route('user.index') }}" method="get" >
+                            <form action="{{ route('province.index') }}" method="get" >
                                 <div class="row">
                                     <div class="dataTables_length mr-2" id="dataTable_length"><label>Lọc
                                             <select name="status" aria-controls="dataTable" class="custom-select custom-select-sm form-control ">
@@ -81,45 +81,35 @@ Danh sách người dùng
                                         <th class="">
                                             <input type="checkbox" class="" id="select-all">
                                         </th>
-                                        <th scope="col">Tên người dùng</th>
-                                        <th scope="col">Email</th>
-                                        <th scope="col">Vai trò</th>
-                                        <th scope="col">Số điện thoại</th>
-                                        <th scope="col">Địa chỉ</th>
-                                        <th scope="col">Giới tính</th>
-                                        <th scope="col">Hình ảnh</th>
+                                        <th scope="col">Tên khu vực</th>
+                                        <th scope="col">Slug</th>
+                                        <th scope="col">Image</th>
+                                        <th scope="col">Thông tin</th>
                                         <th scope="col">Trạng thái</th>
                                         <th scope="col">Hành động</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
-                                    @foreach ($user1 as $user)
+                                    @foreach ($province1 as $province)
                                     <tr>
                                         <td>
-                                            <input type="checkbox" class="child-checkbox" name="ids[]" value="{{ $user->id }}">
+                                            <input type="checkbox" class="child-checkbox" name="ids[]" value="{{ $province->id }}">
                                         </td>
-                                        <td>{{$user->name}}</td>
-                                        <td>{{$user->email}}</td>
+                                        <td>{{$province->name}}</td>
+                                        <td>{{$province->slug}}</td>
                                         <td>
-                                            @foreach($user->roles as $role)
-                                            <span class="badge badge-info">{{$role->name}}</span>
-                                            @endforeach
+                                            <img alt="Avatar" width="60" src="{{ $province->image ? Storage::url($province->image) : asset('images/image-not-found.jpg') }}" alt="Image">
                                         </td>
-                                        <td>{{$user->phone}}</td>
-                                        <td>{{$user->address}}</td>
-                                        <td>{{$user->gender == 'Male' ? 'Nam' : 'Nữ'}}</td>
-                                        <td>
-                                            <img alt="Avatar" width="60" src="{{ $user->avatar ? Storage::url($user->avatar) : asset('images/image-not-found.jpg') }}" alt="Image">
-                                        </td>
+                                        <td>{{$province->description}}</td>
                                         <td>
                                             <div class="form-check form-switch">
-                                                @if ($user->status == 3)
+                                                @if ($province->status == 3)
                                                 Hết hạn
-                                                @elseif($user->status == 4)
+                                                @elseif($province->status == 4)
                                                 Hết số lượng
-                                                @elseif($user->status == 1 || $user->status == 2)
-                                                <input type="checkbox" value="{{ $user->status }}" name="status" data-item-id="{{ $user->id }}" class="switch1 switch-status switchery-small" {{ $user->status == 1 ? 'checked' : '' }} />
+                                                @elseif($province->status == 1 || $province->status == 2)
+                                                <input type="checkbox" value="{{ $province->status }}" name="status" data-item-id="{{ $province->id }}" class="switch1 switch-status switchery-small" {{ $province->status == 1 ? 'checked' : '' }} />
                                                 @endif
                                             </div>
                                         </td>
@@ -129,8 +119,8 @@ Danh sách người dùng
                                                     <i class="fa-solid fa-ellipsis-vertical"></i>
                                                 </button>
                                                 <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="{{ route('user.edit', ['id' => $user->id]) }}">Sửa</a>
-                                                    <a class="dropdown-item show_confirm" href="{{ route('user.destroy', ['id' => $user->id]) }}">Xoá
+                                                    <a class="dropdown-item" href="{{ route('province.edit', ['id' => $province->id]) }}">Sửa</a>
+                                                    <a class="dropdown-item show_confirm" href="{{ route('province.destroy', ['id' => $province->id]) }}">Xoá
                                                     </a>
                                                 </div>
                                             </div>
@@ -145,15 +135,15 @@ Danh sách người dùng
                         <div class="col-sm-12 col-md-5 mb-3
                             ">
                             <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">
-                                Hiển thị {{ $user1->firstItem() }} đến {{ $user1->lastItem() }}
-                                của {{ $user1->total() }} mục
+                                Hiển thị {{ $province1->firstItem() }} đến {{ $province1->lastItem() }}
+                                của {{ $province1->total() }} mục
                             </div>
                         </div>
 
                         <div class="col-sm-12 col-md-7">
                             <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
                                 <ul class="pagination">
-                                    {{ $user1->links('pagination::bootstrap-4') }}
+                                    {{ $province1->links('pagination::bootstrap-4') }}
                                 </ul>
                             </div>
                         </div>
@@ -233,7 +223,7 @@ Danh sách người dùng
 
                 $.ajax({
                     method: 'POST',
-                    url: '/admin/user/update-status/' + itemId,
+                    url: '/admin/province/update-status/' + itemId,
                     data: {
                         _token: '{{ csrf_token() }}',
                         status: status
@@ -274,7 +264,7 @@ Danh sách người dùng
 
                             $.ajax({
                                 type: 'POST',
-                                url: '/admin/user/deleteAll', // Thay thế bằng tuyến đường xử lý xoá của bạn
+                                url: '/admin/province/deleteAll', // Thay thế bằng tuyến đường xử lý xoá của bạn
                                 data: {
                                     ids: selectedIds,
                                     _token: '{{ csrf_token() }}',

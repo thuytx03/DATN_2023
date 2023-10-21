@@ -7,8 +7,11 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Admin\PostTypeController;
 use App\Http\Controllers\Admin\GenreController;
 use App\Http\Controllers\Admin\MovieController;
-
+use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\VoucherController;
+use App\Http\Controllers\Admin\ProvinceController;
+use App\Http\Controllers\Admin\CinemaController;
 
 use App\Http\Controllers\Admin\MovieFoodsController;
 use App\Http\Controllers\Admin\FoodTypesController;
@@ -184,7 +187,7 @@ Route::prefix('admin')
                     Route::get('/trash',  [App\Http\Controllers\Admin\Post\PostController::class, 'trash'])->name('post.trash');
                     Route::post('/permanentlyDeleteSelected', [App\Http\Controllers\Admin\Post\PostController::class, 'permanentlyDeleteSelected'])->name('post.permanentlyDeleteSelected');
                    Route::post('/restoreSelected', [App\Http\Controllers\Admin\Post\PostController::class, 'restoreSelected'])->name('post.restoreSelected');
-    
+
                     Route::get('/restore/{id}',  [App\Http\Controllers\Admin\Post\PostController::class, 'restore'])->name('post.restore');
                     Route::get('/force-delete/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'forceDelete'])->name('post.forceDelete');
                 });
@@ -274,7 +277,7 @@ Route::prefix('admin')
         });
 
 
-        
+
         ////
 
            // route logo
@@ -304,8 +307,57 @@ Route::prefix('admin')
             Route::get('/force-delete/{id}', [App\Http\Controllers\Admin\Slider\SliderController::class, 'forceDelete'])->name('slider.forceDelete');
             // routes/web.php
 
-           
 
+
+        });
+        // người dùng
+        Route::prefix('user')->group(function() {
+            Route::get('/', [UserController::class, 'index'])->name('user.index');
+            Route::get('/create', [UserController::class, 'create'])->name('user.add');
+            Route::post('/store', [UserController::class, 'store'])->name('user.store');
+            Route::get('/edit/{id}', [UserController::class, 'edit'])->name('user.edit');
+            Route::post('/update/{id}', [UserController::class, 'update'])->name('user.update');
+            Route::post('/deleteAll', [UserController::class, 'deleteAll'])->name('user.deleteAll');
+            Route::post('/update-status/{id}', [UserController::class, 'updateStatus'])->name('user.updateStatus');
+            Route::match(['GET','POST'],'/destroy/{id}', [UserController::class, 'destroy'])->name('user.destroy');
+            Route::get('/trash',  [UserController::class, 'trash'])->name('user.trash');
+            Route::get('/permanentlyDelete/{id}', [UserController::class, 'permanentlyDelete'])->name('user.permanentlyDelete');
+            Route::post('/permanentlyDeleteSelected', [UserController::class, 'permanentlyDeleteSelected'])->name('user.permanentlyDeleteSelected');
+            Route::post('/restoreSelected', [UserController::class, 'restoreSelected'])->name('user.restoreSelected');
+            Route::get('/force-delete/{id}', [UserController::class, 'forceDelete'])->name('user.forceDelete');
+            Route::get('/restore/{id}', [UserController::class, 'restore'])->name('user.restore');
+        });
+        // khu vực
+        Route::prefix('province')->group(function() {
+            Route::get('/', [ProvinceController::class, 'index'])->name('province.index');
+            Route::get('/create', [ProvinceController::class, 'create'])->name('province.add');
+            Route::post('/store', [ProvinceController::class, 'store'])->name('province.store');
+            Route::get('/edit/{id}', [ProvinceController::class, 'edit'])->name('province.edit');
+            Route::post('/update/{id}', [ProvinceController::class, 'update'])->name('province.update');
+            Route::post('/deleteAll', [ProvinceController::class, 'deleteAll'])->name('province.deleteAll');
+            Route::post('/update-status/{id}', [ProvinceController::class, 'updateStatus'])->name('province.updateStatus');
+            Route::match(['GET','POST'],'/destroy/{id}', [ProvinceController::class, 'destroy'])->name('province.destroy');
+            Route::get('/trash',  [ProvinceController::class, 'trash'])->name('province.trash');
+            Route::get('/permanentlyDelete/{id}', [ProvinceController::class, 'permanentlyDelete'])->name('province.permanentlyDelete');
+            Route::post('/permanentlyDeleteSelected', [ProvinceController::class, 'permanentlyDeleteSelected'])->name('province.permanentlyDeleteSelected');
+            Route::post('/restoreSelected', [ProvinceController::class, 'restoreSelected'])->name('province.restoreSelected');
+            Route::get('/restore/{id}', [ProvinceController::class, 'restore'])->name('province.restore');
+        });
+        // rạp phim
+        Route::prefix('cinema')->group(function() {
+            Route::get('/', [CinemaController::class, 'index'])->name('cinema.index');
+            Route::get('/create', [CinemaController::class, 'create'])->name('cinema.add');
+            Route::post('/store', [CinemaController::class, 'store'])->name('cinema.store');
+            Route::get('/edit/{id}', [CinemaController::class, 'edit'])->name('cinema.edit');
+            Route::post('/deleteAll', [CinemaController::class, 'deleteAll'])->name('cinema.deleteAll');
+            Route::post('/update-status/{id}', [CinemaController::class, 'updateStatus'])->name('cinema.updateStatus');
+            Route::post('/update/{id}', [CinemaController::class, 'update'])->name('cinema.update');
+            Route::match(['GET','POST'],'/destroy/{id}', [CinemaController::class, 'destroy'])->name('cinema.destroy');
+            Route::get('/trash',  [CinemaController::class, 'trash'])->name('cinema.trash');
+            Route::get('/permanentlyDelete/{id}', [CinemaController::class, 'permanentlyDelete'])->name('cinema.permanentlyDelete');
+            Route::post('/permanentlyDeleteSelected', [CinemaController::class, 'permanentlyDeleteSelected'])->name('cinema.permanentlyDeleteSelected');
+            Route::post('/restoreSelected', [CinemaController::class, 'restoreSelected'])->name('cinema.restoreSelected');
+            Route::get('/restore/{id}', [CinemaController::class, 'restore'])->name('cinema.restore');
         });
     });
 

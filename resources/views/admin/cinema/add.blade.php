@@ -13,7 +13,7 @@
 <div class="container-fluid">
 
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Thêm mới người dùng</h1>
+    <h1 class="h3 mb-2 text-gray-800">Thêm mới rạp chiếu phim</h1>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
@@ -21,31 +21,46 @@
             <!-- <h6 class="m-0 font-weight-bold text-primary"></h6> -->
         </div>
         <div class="card-body">
-            <form method="post" action="{{route('user.store')}}" enctype="multipart/form-data">
+            <form method="post" action="{{route('cinema.store')}}" enctype="multipart/form-data">
                 @csrf
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="name" class="form-label">Tên người dùng</label>
-                            <input type="text" class="form-control" name="name" id="name">
+                            <label for="name" class="form-label">Khu vực</label>
+                            <select name="province_id" id="" class="form-select" style="height:40px">
+                                @foreach($province1 as $province)
+                                <option value="{{$province->id}}">{{$province->name}}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" name="email" id="email">
+                            <label for="name" class="form-label">Tên rạp chiếu</label>
+                            <input type="text" class="form-control" name="name" id="name">
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="email" class="form-label">Vai trò</label>
-                            <select class="form-select" name="role[]" id="role" multiple>
-                                @foreach($role as $role)
-                                <option value="{{$role->id}}">{{$role->name}}</option>
-                                @endforeach
-                            </select>
+                            <label for="email" class="form-label">Slug</label>
+                            <input type="slug" class="form-control" name="slug" id="slug">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="image">Ảnh</label> <br>
+                            <input name="image" type="file" id="image_url" style="display: none">
+                            <img src="{{ asset('images/image-not-found.jpg') }}" width="150" height="130" id="image_preview" class="mt-1" alt="">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Địa chỉ</label>
+                            <input type="text" class="form-control" name="address" id="address">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -58,38 +73,18 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="name" class="form-label">Mật khẩu</label>
-                            <input type="password" class="form-control" name="password" id="password">
+                            <label for="name" class="form-label">Giờ mở cửa</label>
+                            <input type="datetime-local" class="form-control" name="open_hours" id="open_hours">
                         </div>
-                    </div>
-                    <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="name" class="form-label">Địa chỉ</label>
-                            <input type="text" class="form-control" name="address" id="address">
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <label for="name" class="form-label">Giới tính</label>
-                        <div class="form-check">
-                            <input class="form-check-input" value="0" type="radio" name="gender" id="gender" checked>
-                            <label class="form-check-label" for="gender">
-                                Nam
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" value="1" type="radio" name="gender" id="gender">
-                            <label class="form-check-label" for="gender">
-                                Nữ
-                            </label>
+                            <label for="name" class="form-label">Giờ đóng cửa</label>
+                            <input type="datetime-local" class="form-control" name="close_hours" id="close_hours">
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="image">Ảnh</label> <br>
-                            <input name="avatar" type="file" id="image_url" style="display: none">
-                            <img src="{{ asset('images/image-not-found.jpg') }}" width="150" height="130" id="image_preview" class="mt-1" alt="">
+                        <div class="mb-6">
+                            <label for="name" class="form-label">Thông tin</label>
+                            <input type="text" class="form-control" name="description" id="description">
                         </div>
                     </div>
                 </div>
@@ -99,19 +94,19 @@
                         <select class="form-control" id="status" name="status">
                             <option value="">--Chọn--</option>
                             <option value="1">Hoạt động</option>
-                            <option value="2">Chưa hoạt động</option>
+                            <option value="2">Không hoạt động</option>
                         </select>
                     </div>
                 </div>
-
-                <div class="submit-button-container">
-                    <button type="submit" class="btn btn-primary">Thêm mới</button>
-                    <a href="{{ route('user.index') }}"><button class="btn btn-success" type="button">Danh sách</button></a>
-                    <button type="reset" class="btn btn-warning">Làm Lại</button>
-                </div>
-            </form>
         </div>
+        <div class="submit-button-container">
+            <button type="submit" class="btn btn-primary">Thêm mới</button>
+            <a href="{{ route('cinema.index') }}"><button class="btn btn-success" type="button">Danh sách</button></a>
+            <button type="reset" class="btn btn-warning">Làm Lại</button>
+        </div>
+        </form>
     </div>
+</div>
 </div>
 </div>
 </div>

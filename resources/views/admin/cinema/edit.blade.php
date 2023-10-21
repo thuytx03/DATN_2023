@@ -11,107 +11,103 @@
 </div>
 @endif
 <div class="container-fluid">
-
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Thêm mới người dùng</h1>
-
+    <h1 class="h3 mb-2 text-gray-800">Cập nhật rạp chiếu phim</h1>
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <!-- <h6 class="m-0 font-weight-bold text-primary"></h6> -->
         </div>
         <div class="card-body">
-            <form method="post" action="{{route('user.store')}}" enctype="multipart/form-data">
+            <form method="post" action="{{route('cinema.update', $cinema->id)}}" enctype="multipart/form-data">
                 @csrf
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="name" class="form-label">Tên người dùng</label>
-                            <input type="text" class="form-control" name="name" id="name">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" name="email" id="email">
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Vai trò</label>
-                            <select class="form-select" name="role[]" id="role" multiple>
-                                @foreach($role as $role)
-                                <option value="{{$role->id}}">{{$role->name}}</option>
-                                @endforeach
+                            <label for="name" class="form-label">Khu vực</label>
+                            <select name="province_id" id="province_id" class="form-select">
+                                @foreach($province as $province)
+                                <option value="{{ $province->id }}" {{ $province->id == $cinema->province_id ? 'selected' : '' }}>
+                                    {{ $province->name }}
+                                </option> @endforeach
                             </select>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="name" class="form-label">Số điện thoại</label>
-                            <input type="text" class="form-control" name="phone" id="phone">
+                            <label for="name" class="form-label">Tên rạp chiếu</label>
+                            <input type="text" class="form-control" name="name" id="name" value="{{$cinema->name}}">
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="name" class="form-label">Mật khẩu</label>
-                            <input type="password" class="form-control" name="password" id="password">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Địa chỉ</label>
-                            <input type="text" class="form-control" name="address" id="address">
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <label for="name" class="form-label">Giới tính</label>
-                        <div class="form-check">
-                            <input class="form-check-input" value="0" type="radio" name="gender" id="gender" checked>
-                            <label class="form-check-label" for="gender">
-                                Nam
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" value="1" type="radio" name="gender" id="gender">
-                            <label class="form-check-label" for="gender">
-                                Nữ
-                            </label>
+                            <label for="email" class="form-label">Slug</label>
+                            <input type="slug" class="form-control" name="slug" id="slug" value="{{$cinema->slug}}">
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="image">Ảnh</label> <br>
-                            <input name="avatar" type="file" id="image_url" style="display: none">
+                            <input name="image" type="file" id="image_url" style="display: none" value="{{$cinema->image}}">
                             <img src="{{ asset('images/image-not-found.jpg') }}" width="150" height="130" id="image_preview" class="mt-1" alt="">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Địa chỉ</label>
+                            <input type="text" class="form-control" name="address" id="address" value="{{$cinema->address}}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Số điện thoại</label>
+                            <input type="text" class="form-control" name="phone" id="phone" value="{{$cinema->phone}}">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Giờ mở cửa</label>
+                            <input type="time" class="form-control" name="open_hours" id="open_hours" value="{{$cinema->open_hours}}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Giờ đóng cửa</label>
+                            <input type="time" class="form-control" name="close_hours" id="close_hours" value="{{$cinema->close_hours}}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-6">
+                            <label for="name" class="form-label">Thông tin</label>
+                            <input type="text" class="form-control" name="description" id="description" value="{{$cinema->description}}">
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="type" class="form-label">Trạng thái</label>
-                        <select class="form-control" id="status" name="status">
-                            <option value="">--Chọn--</option>
-                            <option value="1">Hoạt động</option>
-                            <option value="2">Chưa hoạt động</option>
-                        </select>
+                        <div class="form-group">
+                            <label for="status" class="form-label">Trạng thái</label>
+                            <select class="form-select" id="status" name="status" style="height:50px;">
+                                <option value="">--Chọn--</option>
+                                <option value="1" {{ $cinema->status == 1 ? 'selected' : '' }}>Duyệt</option>
+                                <option value="2" {{ $cinema->status == 2 ? 'selected' : '' }}>Chưa duyệt</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-
-                <div class="submit-button-container">
-                    <button type="submit" class="btn btn-primary">Thêm mới</button>
-                    <a href="{{ route('user.index') }}"><button class="btn btn-success" type="button">Danh sách</button></a>
-                    <button type="reset" class="btn btn-warning">Làm Lại</button>
-                </div>
-            </form>
         </div>
+        <div class="submit-button-container">
+            <button type="submit" class="btn btn-primary">Cập nhật</button>
+            <a href="{{ route('cinema.index') }}"><button class="btn btn-success" type="button">Danh sách</button></a>
+            <button type="reset" class="btn btn-warning">Làm Lại</button>
+        </div>
+        </form>
     </div>
+</div>
 </div>
 </div>
 </div>

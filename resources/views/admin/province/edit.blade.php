@@ -13,7 +13,7 @@
 <div class="container-fluid">
 
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Thêm mới người dùng</h1>
+    <h1 class="h3 mb-2 text-gray-800">Cập nhật khu vực</h1>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
@@ -21,92 +21,52 @@
             <!-- <h6 class="m-0 font-weight-bold text-primary"></h6> -->
         </div>
         <div class="card-body">
-            <form method="post" action="{{route('user.store')}}" enctype="multipart/form-data">
+            <form method="post" action="{{route('province.update', $province->id)}}" enctype="multipart/form-data">
                 @csrf
+                <!-- Đoạn mã HTML -->
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="name" class="form-label">Tên người dùng</label>
-                            <input type="text" class="form-control" name="name" id="name">
+                            <label for="name" class="form-label">Tên khu vực</label>
+                            <input type="text" class="form-control" name="name" id="name" oninput="generateSlug()" value="{{$province->name}}">
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" name="email" id="email">
+                            <label for="slug" class="form-label">Slug</label>
+                            <input type="text" class="form-control" name="slug" id="slug" value="{{$province->slug}}">
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Vai trò</label>
-                            <select class="form-select" name="role[]" id="role" multiple>
-                                @foreach($role as $role)
-                                <option value="{{$role->id}}">{{$role->name}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Số điện thoại</label>
-                            <input type="text" class="form-control" name="phone" id="phone">
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Mật khẩu</label>
-                            <input type="password" class="form-control" name="password" id="password">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Địa chỉ</label>
-                            <input type="text" class="form-control" name="address" id="address">
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <label for="name" class="form-label">Giới tính</label>
-                        <div class="form-check">
-                            <input class="form-check-input" value="0" type="radio" name="gender" id="gender" checked>
-                            <label class="form-check-label" for="gender">
-                                Nam
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" value="1" type="radio" name="gender" id="gender">
-                            <label class="form-check-label" for="gender">
-                                Nữ
-                            </label>
-                        </div>
-                    </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="image">Ảnh</label> <br>
-                            <input name="avatar" type="file" id="image_url" style="display: none">
+                            <input name="image" type="file" id="image_url" style="display: none" value="{{$province->image}}">
                             <img src="{{ asset('images/image-not-found.jpg') }}" width="150" height="130" id="image_preview" class="mt-1" alt="">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Thông tin</label>
+                            <input type="text" class="form-control" name="description" id="description" value="{{$province->description}}">
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="mb-3">
-                        <label for="type" class="form-label">Trạng thái</label>
-                        <select class="form-control" id="status" name="status">
+                    <div class="form-group">
+                        <label for="status" class="form-label">Trạng thái</label>
+                        <select class="form-select" id="status" name="status" style="height:50px;">
                             <option value="">--Chọn--</option>
-                            <option value="1">Hoạt động</option>
-                            <option value="2">Chưa hoạt động</option>
+                            <option value="1" {{ $province->status == 1 ? 'selected' : '' }}>Duyệt</option>
+                            <option value="2" {{ $province->status == 2 ? 'selected' : '' }}>Chưa duyệt</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="submit-button-container">
-                    <button type="submit" class="btn btn-primary">Thêm mới</button>
-                    <a href="{{ route('user.index') }}"><button class="btn btn-success" type="button">Danh sách</button></a>
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                    <a href="{{ route('province.index') }}"><button class="btn btn-success" type="button">Danh sách</button></a>
                     <button type="reset" class="btn btn-warning">Làm Lại</button>
                 </div>
             </form>
@@ -221,6 +181,9 @@
 <script src="{{ asset('upload_file/jquery/dist/jquery.min.js') }}"></script>
 <script src="{{ asset('upload_file/input-mask/jquery.inputmask.js') }}"></script>
 <script src="{{ asset('upload_file/input-mask/jquery.inputmask.date.extensions.js') }}"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/unidecode@0.2.5/unidecode.min.js"></script>
+
 <script>
     const imagePreview = document.getElementById('image_preview');
     const imageUrlInput = document.getElementById('image_url');
@@ -258,6 +221,23 @@
         }
     });
 </script>
+
+<script>
+    function generateSlug() {
+        const nameInput = document.getElementById('name');
+        const slugInput = document.getElementById('slug');
+
+        // Lấy giá trị từ ô input tên
+        const name = nameInput.value;
+
+        // Sử dụng unidecode để chuyển đổi thành slug
+        const slug = unidecode(name).toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+
+        // Gán giá trị slug vào ô input "slug" và thuộc tính "value"
+        slugInput.value = slug;
+    }
+</script>
+
 
 <script>
     var editor = CKEDITOR.replace('contents');

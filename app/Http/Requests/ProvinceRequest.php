@@ -2,13 +2,11 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
-use App\Models\User;
+use Illuminate\Validation\Rule;
+use App\Models\Province;
 
-
-class LoginRequest extends FormRequest
+class ProvinceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,10 +23,9 @@ class LoginRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-
-public function rules()
-{
-    $check = $this->route()->getActionMethod();
+    public function rules()
+    {
+        $check = $this->route()->getActionMethod();
 
     switch ($this->method()) {
         case 'POST':
@@ -36,35 +33,34 @@ public function rules()
             switch ($check) {
                 case 'store':
                     return [
-                        'name' => 'required',
-                        'email' => 'required|unique:users',
-                        'password' => 'required',
+                        'name' => 'required|unique:provinces',
+                        'description' => 'required',
                         'status' => 'required'
                     ];
                 case 'update':
                      // Assuming you're using a route model binding
-                    $user = User::find($this->route('id'));
+                    $province = Province::find($this->route('id'));
                     return [
-                        'name' => 'required',
-                        'email' => [
+                        'name' => [
                             'required',
-                            Rule::unique('users')->ignore($user->id),
+                            Rule::unique('provinces')->ignore($province->id),
                         ],
+                        'description' => 'required',
                         'status' => 'required'
                     ];
             }
             break;
     }
     return [];
-}
+    }
 
     public function messages()
     {
         return [
             'name.required' => 'Tên không được để trống!',
-            'email.required' => 'Email không được để trống!',
-            'password.required' => 'Mật khẩu không được để trống!',
-            'email.unique' => 'Email đã tồn tại!',
+            'slug.required' => 'Slug không được để trống!',
+            'description.required' => 'Thông tin bổ sung không được để trống!',
+            'name.unique' => 'Tên khu vực đã tồn tại!',
             'status.required' => 'Trạng thái không được để trống!'
         ];
     }
