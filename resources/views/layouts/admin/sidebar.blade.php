@@ -104,7 +104,7 @@
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#logo-slider" aria-expanded="true" aria-controls="logo-slider">
         <i class="fas fa-images"></i>
-            <span>Logo</span>
+            <span>Quản lý logo</span>
         </a>
         <div id="logo-slider" class="collapse" aria-labelledby="headingOne" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
