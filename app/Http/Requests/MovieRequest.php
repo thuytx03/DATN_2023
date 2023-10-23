@@ -67,4 +67,21 @@ class MovieRequest extends FormRequest
         }
         return $rules;
     }
+    public function messages()
+    {
+        return [
+          'name.required' => 'Vui lòng nhập tên',
+          'language.required' => 'Vui lòng nhập ngôn ngữ',
+          'status.required' => 'Vui lòng nhập trạng thái',
+          'poster.required' => 'Vui lòng nhập poster',
+          'trailer.required' => 'Vui lòng nhập trailer phim',
+          'director.required' => 'Vui lòng nhập đạo diễn',
+          'actor.required' => 'Vui lòng nhập diên viên',
+          'duration.required' => 'Vui lòng nhập thời lượng phim',
+          'start_date.required' => 'Vui lòng nhập ngày khởi chiếu',
+          'manufacturer.required' => 'Vui lòng nhập nhà sáng tác',
+          'genre_id.required' => 'Vui lòng nhập thể loại phim',
+          'country_id.required' => 'Vui lòng nhập quốc gia'
+        ];
+    }
 }

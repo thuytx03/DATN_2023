@@ -150,8 +150,8 @@ Route::get('logout', [SocialController::class, 'logout'])->name('logout');
 // ket thuc route mang xa hoi
 Route::prefix('admin')
     ->group(function () {
-        Route::match(['GET', 'POST'], '/login', [App\Http\Controllers\Auth\AuthAdminController::class, 'login'])->name('login');
-        Route::match(['GET', 'POST'], '/register', [App\Http\Controllers\Auth\AuthAdminController::class, 'register'])->name('register');
+//        Route::match(['GET', 'POST'], '/login', [App\Http\Controllers\Auth\AuthAdminController::class, 'login'])->name('login');
+//        Route::match(['GET', 'POST'], '/register', [App\Http\Controllers\Auth\AuthAdminController::class, 'register'])->name('register');
         /*
          * Category Blog
          */
@@ -172,26 +172,26 @@ Route::prefix('admin')
         });
 
 
-                  //route bài viết
-                  Route::prefix('post')->group(function () {
-                    Route::get('/', [App\Http\Controllers\Admin\Post\PostController::class, 'index'])->name('post.index');
-                    Route::get('/create', [App\Http\Controllers\Admin\Post\PostController::class, 'create'])->name('post.add');
-                    Route::post('/store', [App\Http\Controllers\Admin\Post\PostController::class, 'store'])->name('post.store');
-                    Route::post('/status/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'updateStatus']);
-                    Route::post('/deleteAll', [App\Http\Controllers\Admin\Post\PostController::class, 'deleteAll'])->name('post.deleteAll');
-                    Route::get('/edit/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'edit'])->name('post.edit');
-                    Route::get('/show/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'show'])->name('post.show');
-                    Route::put('/update/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'update'])->name('post.update');
-                    // Route::post('/destroy/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'destroy'])->name('post.destroy');
-                    Route::get('/destroy/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'destroy'])->name('post.destroy');
-                    Route::get('/trash',  [App\Http\Controllers\Admin\Post\PostController::class, 'trash'])->name('post.trash');
-                    Route::post('/permanentlyDeleteSelected', [App\Http\Controllers\Admin\Post\PostController::class, 'permanentlyDeleteSelected'])->name('post.permanentlyDeleteSelected');
-                   Route::post('/restoreSelected', [App\Http\Controllers\Admin\Post\PostController::class, 'restoreSelected'])->name('post.restoreSelected');
+        //route bài viết
+        Route::prefix('post')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\Post\PostController::class, 'index'])->name('post.index');
+            Route::get('/create', [App\Http\Controllers\Admin\Post\PostController::class, 'create'])->name('post.add');
+            Route::post('/store', [App\Http\Controllers\Admin\Post\PostController::class, 'store'])->name('post.store');
+            Route::post('/status/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'updateStatus']);
+            Route::post('/deleteAll', [App\Http\Controllers\Admin\Post\PostController::class, 'deleteAll'])->name('post.deleteAll');
+            Route::get('/edit/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'edit'])->name('post.edit');
+            Route::get('/show/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'show'])->name('post.show');
+            Route::put('/update/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'update'])->name('post.update');
+            // Route::post('/destroy/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'destroy'])->name('post.destroy');
+            Route::get('/destroy/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'destroy'])->name('post.destroy');
+            Route::get('/trash', [App\Http\Controllers\Admin\Post\PostController::class, 'trash'])->name('post.trash');
+            Route::post('/permanentlyDeleteSelected', [App\Http\Controllers\Admin\Post\PostController::class, 'permanentlyDeleteSelected'])->name('post.permanentlyDeleteSelected');
+            Route::post('/restoreSelected', [App\Http\Controllers\Admin\Post\PostController::class, 'restoreSelected'])->name('post.restoreSelected');
 
-                    Route::get('/restore/{id}',  [App\Http\Controllers\Admin\Post\PostController::class, 'restore'])->name('post.restore');
-                    Route::get('/force-delete/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'forceDelete'])->name('post.forceDelete');
-                });
-                ///
+            Route::get('/restore/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'restore'])->name('post.restore');
+            Route::get('/force-delete/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'forceDelete'])->name('post.forceDelete');
+        });
+        ///
         /*
          * Movie Genre
          */
@@ -277,11 +277,10 @@ Route::prefix('admin')
         });
 
 
-
         ////
 
-           // route logo
-           Route::prefix('logo')->group(function () {
+        // route logo
+        Route::prefix('logo')->group(function () {
             Route::get('/', [App\Http\Controllers\Admin\Logo\LogoController::class, 'index'])->name('logo.index');
             Route::get('/edit/{id}', [App\Http\Controllers\Admin\Logo\LogoController::class, 'edit'])->name('logo.edit');
             Route::put('/update/{id}', [App\Http\Controllers\Admin\Logo\LogoController::class, 'update'])->name('logo.update');
@@ -302,16 +301,15 @@ Route::prefix('admin')
             Route::put('/update/{id}', [App\Http\Controllers\Admin\Slider\SliderController::class, 'update'])->name('slider.update');
             // Route::slider('/destroy/{id}', [App\Http\Controllers\Admin\Slider\SliderController::class, 'destroy'])->name('slider.destroy');
             Route::get('/destroy/{id}', [App\Http\Controllers\Admin\Slider\SliderController::class, 'destroy'])->name('slider.destroy');
-            Route::get('/trash',  [App\Http\Controllers\Admin\Slider\SliderController::class, 'trash'])->name('slider.trash');
-            Route::get('/restore/{id}',  [App\Http\Controllers\Admin\Slider\SliderController::class, 'restore'])->name('slider.restore');
+            Route::get('/trash', [App\Http\Controllers\Admin\Slider\SliderController::class, 'trash'])->name('slider.trash');
+            Route::get('/restore/{id}', [App\Http\Controllers\Admin\Slider\SliderController::class, 'restore'])->name('slider.restore');
             Route::get('/force-delete/{id}', [App\Http\Controllers\Admin\Slider\SliderController::class, 'forceDelete'])->name('slider.forceDelete');
             // routes/web.php
 
 
-
         });
         // người dùng
-        Route::prefix('user')->group(function() {
+        Route::prefix('user')->group(function () {
             Route::get('/', [UserController::class, 'index'])->name('user.index');
             Route::get('/create', [UserController::class, 'create'])->name('user.add');
             Route::post('/store', [UserController::class, 'store'])->name('user.store');
@@ -319,8 +317,8 @@ Route::prefix('admin')
             Route::post('/update/{id}', [UserController::class, 'update'])->name('user.update');
             Route::post('/deleteAll', [UserController::class, 'deleteAll'])->name('user.deleteAll');
             Route::post('/update-status/{id}', [UserController::class, 'updateStatus'])->name('user.updateStatus');
-            Route::match(['GET','POST'],'/destroy/{id}', [UserController::class, 'destroy'])->name('user.destroy');
-            Route::get('/trash',  [UserController::class, 'trash'])->name('user.trash');
+            Route::match(['GET', 'POST'], '/destroy/{id}', [UserController::class, 'destroy'])->name('user.destroy');
+            Route::get('/trash', [UserController::class, 'trash'])->name('user.trash');
             Route::get('/permanentlyDelete/{id}', [UserController::class, 'permanentlyDelete'])->name('user.permanentlyDelete');
             Route::post('/permanentlyDeleteSelected', [UserController::class, 'permanentlyDeleteSelected'])->name('user.permanentlyDeleteSelected');
             Route::post('/restoreSelected', [UserController::class, 'restoreSelected'])->name('user.restoreSelected');
@@ -328,7 +326,7 @@ Route::prefix('admin')
             Route::get('/restore/{id}', [UserController::class, 'restore'])->name('user.restore');
         });
         // khu vực
-        Route::prefix('province')->group(function() {
+        Route::prefix('province')->group(function () {
             Route::get('/', [ProvinceController::class, 'index'])->name('province.index');
             Route::get('/create', [ProvinceController::class, 'create'])->name('province.add');
             Route::post('/store', [ProvinceController::class, 'store'])->name('province.store');
@@ -336,15 +334,15 @@ Route::prefix('admin')
             Route::post('/update/{id}', [ProvinceController::class, 'update'])->name('province.update');
             Route::post('/deleteAll', [ProvinceController::class, 'deleteAll'])->name('province.deleteAll');
             Route::post('/update-status/{id}', [ProvinceController::class, 'updateStatus'])->name('province.updateStatus');
-            Route::match(['GET','POST'],'/destroy/{id}', [ProvinceController::class, 'destroy'])->name('province.destroy');
-            Route::get('/trash',  [ProvinceController::class, 'trash'])->name('province.trash');
+            Route::match(['GET', 'POST'], '/destroy/{id}', [ProvinceController::class, 'destroy'])->name('province.destroy');
+            Route::get('/trash', [ProvinceController::class, 'trash'])->name('province.trash');
             Route::get('/permanentlyDelete/{id}', [ProvinceController::class, 'permanentlyDelete'])->name('province.permanentlyDelete');
             Route::post('/permanentlyDeleteSelected', [ProvinceController::class, 'permanentlyDeleteSelected'])->name('province.permanentlyDeleteSelected');
             Route::post('/restoreSelected', [ProvinceController::class, 'restoreSelected'])->name('province.restoreSelected');
             Route::get('/restore/{id}', [ProvinceController::class, 'restore'])->name('province.restore');
         });
         // rạp phim
-        Route::prefix('cinema')->group(function() {
+        Route::prefix('cinema')->group(function () {
             Route::get('/', [CinemaController::class, 'index'])->name('cinema.index');
             Route::get('/create', [CinemaController::class, 'create'])->name('cinema.add');
             Route::post('/store', [CinemaController::class, 'store'])->name('cinema.store');
@@ -352,8 +350,8 @@ Route::prefix('admin')
             Route::post('/deleteAll', [CinemaController::class, 'deleteAll'])->name('cinema.deleteAll');
             Route::post('/update-status/{id}', [CinemaController::class, 'updateStatus'])->name('cinema.updateStatus');
             Route::post('/update/{id}', [CinemaController::class, 'update'])->name('cinema.update');
-            Route::match(['GET','POST'],'/destroy/{id}', [CinemaController::class, 'destroy'])->name('cinema.destroy');
-            Route::get('/trash',  [CinemaController::class, 'trash'])->name('cinema.trash');
+            Route::match(['GET', 'POST'], '/destroy/{id}', [CinemaController::class, 'destroy'])->name('cinema.destroy');
+            Route::get('/trash', [CinemaController::class, 'trash'])->name('cinema.trash');
             Route::get('/permanentlyDelete/{id}', [CinemaController::class, 'permanentlyDelete'])->name('cinema.permanentlyDelete');
             Route::post('/permanentlyDeleteSelected', [CinemaController::class, 'permanentlyDeleteSelected'])->name('cinema.permanentlyDeleteSelected');
             Route::post('/restoreSelected', [CinemaController::class, 'restoreSelected'])->name('cinema.restoreSelected');
@@ -362,12 +360,12 @@ Route::prefix('admin')
     });
 
 
-       //route ảnh
-       Route::get('{filename}', function ($filename) {
-        $path = storage_path('app/public/' . $filename);
+//route ảnh
+Route::get('{filename}', function ($filename) {
+    $path = storage_path('app/public/' . $filename);
 
-        if (!Storage::disk('public')->exists($filename)) {
-            abort(404);
-        }
-        return response()->file($path);
-    })->where('filename', '(.*)')->name('admin.sliders.images.show');
+    if (!Storage::disk('public')->exists($filename)) {
+        abort(404);
+    }
+    return response()->file($path);
+})->where('filename', '(.*)')->name('admin.sliders.images.show');
