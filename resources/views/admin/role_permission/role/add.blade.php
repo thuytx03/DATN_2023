@@ -54,7 +54,7 @@
                                 <div class="col-md-6">
                                     <div class="form-check">
                                         <hr>
-                                        <h4 class="mb-2 text-capitalize fw-bold">{{ $groupName }}</h4>
+                                        <h6 class="text-capitalize fw-bold">{{ $groupName }}</h6>
                                         <input class="form-check-input select-all-checkbox" type="checkbox" id="selectAll{{$groupName}}">
                                         <label class="form-check-label" for="selectAll{{$groupName}}">
                                             Chọn tất cả {{$groupName}}

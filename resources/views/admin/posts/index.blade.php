@@ -40,7 +40,7 @@
                 <div class="table-responsive">
                     <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                         <div class="row">
-                        
+
                             <div class="col-sm-12 col-md-12">
                            <form action="{{ route('post.index') }}" method="get">
                         <div class="row">
@@ -65,7 +65,7 @@
                                 <label for="search">Tìm kiếm:</label>
                                 <div class="input-group">
                                     <input type="search" name="search" id="search" class="form-control form-control-sm" placeholder="Tìm kiếm">
-                                    <div class="input-group-append"> 
+                                    <div class="input-group-append">
                                         <button class="btn btn-success p-1" type="submit">Tìm kiếm</button>
                                     </div>
                                 </div>
@@ -87,9 +87,8 @@
                             </label>
                         </td>
                         <th name="title" class="title">Tiêu đề</th>
-                        <th>Đường Dẫn</th>
                         <th>Ảnh</th>
-                        </th>
+
                         <th>Người Dùng</th>
                         <th>Trạng Thái</th>
                         <th>Hành Động</th>
@@ -104,11 +103,6 @@
                                     <input  type="checkbox" class="child-checkbox" value="{{$data->id}}" name="ids[]">
                             </td>
                             <td name="title" class="title">{{$data->title}}</td>
-
-
-                            <td style="text-align: center;">
-                                <a href="{{$data->slug}}" target="_blank" style="text-decoration: none;">{{$data->slug}}</a>
-                            </td>
                             <td>
                                 <img src="{{ asset($data->image) }}" alt="" width="70px">
                             </td>
@@ -159,7 +153,7 @@
                             <div class="col-sm-12 col-md-5 mb-3
                             ">
                                 <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">
-                        
+
                                 </div>
                             </div>
 
@@ -180,7 +174,7 @@
 @endsection
 @push('styles')
 <style>
-    
+
 </style>
 @endpush
 @push('scripts')
@@ -287,7 +281,7 @@
 
                 $(document).ready(function() {
                     $('.switch-status').change(function() {
-                      
+
                         const itemId = $(this).data('item-id');
                         const status = this.checked ? 1 : 2;
 
@@ -314,7 +308,7 @@
             function deleteSelected() {
             $(document).ready(function() {
                 $('#delete-selected').click(function(e) {
-                  
+
                     e.preventDefault();
 
                     var selectedCheckboxes = $('.child-checkbox:checked');

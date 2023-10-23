@@ -100,7 +100,7 @@
                     </div>
                 </div>
         </div>
-        <div class="submit-button-container">
+        <div class="submit-button-container m-3">
             <button type="submit" class="btn btn-primary">Cập nhật</button>
             <a href="{{ route('cinema.index') }}"><button class="btn btn-success" type="button">Danh sách</button></a>
             <button type="reset" class="btn btn-warning">Làm Lại</button>

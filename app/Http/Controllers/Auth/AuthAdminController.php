@@ -22,7 +22,7 @@ class AuthAdminController extends Controller
                 return redirect()->route('dashboard');
             } else {
                 toastr()->error('Lỗi! Tài khoản hoặc mặt khẩu sai!');
-                return redirect()->route('login');
+                return redirect()->route('login.admin');
             }
         }
         return view('admin.auth.login');

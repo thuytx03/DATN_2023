@@ -74,11 +74,11 @@
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="name" class="form-label">Giờ mở cửa</label>
-                            <input type="datetime-local" class="form-control" name="open_hours" id="open_hours">
+                            <input type="time" class="form-control" name="open_hours" id="open_hours">
                         </div>
                         <div class="mb-3">
                             <label for="name" class="form-label">Giờ đóng cửa</label>
-                            <input type="datetime-local" class="form-control" name="close_hours" id="close_hours">
+                            <input type="time" class="form-control" name="close_hours" id="close_hours">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -99,7 +99,7 @@
                     </div>
                 </div>
         </div>
-        <div class="submit-button-container">
+        <div class="submit-button-container m-3">
             <button type="submit" class="btn btn-primary">Thêm mới</button>
             <a href="{{ route('cinema.index') }}"><button class="btn btn-success" type="button">Danh sách</button></a>
             <button type="reset" class="btn btn-warning">Làm Lại</button>

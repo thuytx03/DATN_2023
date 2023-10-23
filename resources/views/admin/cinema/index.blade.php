@@ -83,7 +83,6 @@ Danh sách rạp phim
                                         </th>
                                         <th scope="col">Khu vực</th>
                                         <th scope="col">Tên rạp</th>
-                                        <th scope="col">Slug</th>
                                         <th scope="col">Hình ảnh</th>
                                         <th scope="col">Địa chỉ</th>
                                         <th scope="col">Số điện thoại</th>
@@ -109,7 +108,6 @@ Danh sách rạp phim
                                             @endforeach
                                         </td>
                                         <td>{{$cinema->name}}</td>
-                                        <td>{{$cinema->slug}}</td>
                                         <td>
                                             <img alt="Avatar" width="60" src="{{ $cinema->image ? Storage::url($cinema->image) : asset('images/image-not-found.jpg') }}" alt="Image">
                                         </td>
