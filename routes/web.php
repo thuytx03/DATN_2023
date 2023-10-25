@@ -12,21 +12,24 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Admin\ProvinceController;
 use App\Http\Controllers\Admin\CinemaController;
-
+use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Admin\MovieFoodsController;
 use App\Http\Controllers\Admin\FoodTypesController;
 
-Route::get('/', function () {
-    return view('client.index');
-})->name('index');
+// Route::get('/', function () {
+//     return view('client.index');
+// })->name('index');
 
-Route::get('movie-list', function () {
-    return view('client.movies.movie-list');
-})->name('movie-list');
+Route::get('/', [HomeController::class, 'index'])->name('index');
 
-Route::get('movie-detail', function () {
-    return view('client.movies.movie-detail');
-})->name('movie-detail');
+Route::prefix('movie')->group(function () {
+    Route::get('/list', [HomeController::class, 'list'])->name('movie.list');
+    Route::get('/detail/{id}', [HomeController::class, 'detail'])->name('movie.detail');
+});
+
+
+
+
 
 Route::group(['middleware' => 'guest'], function () {
     Route::match(['GET', 'POST'], '/login', [App\Http\Controllers\Auth\AuthClientController::class, 'login'])->name('login');
@@ -116,7 +119,7 @@ Route::get('logout', [SocialController::class, 'logout'])->name('logout');
 
 // ket thuc route mang xa hoi
 Route::prefix('admin')->group(function () {
-    //        Route::match(['GET', 'POST'], '/login', [App\Http\Controllers\Auth\AuthAdminController::class, 'login'])->name('login.admin');
+    Route::match(['GET', 'POST'], '/login', [App\Http\Controllers\Auth\AuthAdminController::class, 'login'])->name('login.admin');
 
     /*
      * Category Blog
@@ -330,7 +333,7 @@ Route::get('{filename}', function ($filename) {
 })
     ->where('filename', '(.*)')
     ->name('admin.sliders.images.show');
-    Route::get('movie-ticket-plan', function () {
+Route::get('movie-ticket-plan', function () {
     return view('client.movies.movie-ticket-plan');
 })->name('movie-ticket-plan');
 
