@@ -43,10 +43,7 @@
                                 <a href="movie-grid.html">Movie Grid</a>
                             </li>
                             <li>
-                                <a href="{{ route('movie-list') }}">Movie List</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('movie-detail') }}">Movie Details</a>
+                                <a href="{{ route('movie.list') }}">Movie List</a>
                             </li>
                             <li>
                                 <a href="movie-details-2.html">Movie Details 2</a>
