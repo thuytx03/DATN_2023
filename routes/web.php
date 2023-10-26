@@ -16,9 +16,12 @@ use App\Http\Controllers\Admin\MovieFoodsController;
 use App\Http\Controllers\Admin\FoodTypesController;
 use App\Http\Controllers\Client\HomeController;
 
-Route::get('/', function () {
-    return view('client.index');
-})->name('index');
+Route::get('/', [HomeController::class, 'index'])->name('index');
+
+Route::prefix('movie')->group(function () {
+    Route::get('/list', [HomeController::class, 'list'])->name('movie.list');
+    Route::get('/detail/{id}', [HomeController::class, 'detail'])->name('movie.detail');
+});
 
 // danh mục mã giảm giá
 Route::prefix('vouchers')->group(function ()  {
@@ -26,13 +29,6 @@ Route::prefix('vouchers')->group(function ()  {
     Route::get('/voucher-detail/{id}', [HomeController::class, 'detailVouchers'])->name('home.voucher.detail');
     });
 
-Route::get('movie-list', function () {
-    return view('client.movies.movie-list');
-})->name('movie-list');
-
-Route::get('movie-detail', function () {
-    return view('client.movies.movie-detail');
-})->name('movie-detail');
 
 Route::group(['middleware' => 'guest'], function () {
     Route::match(['GET', 'POST'], '/login', [App\Http\Controllers\Auth\AuthClientController::class, 'login'])->name('login');
@@ -324,7 +320,7 @@ Route::prefix('admin')->group(function () {
         Route::post('/permanentlyDeleteSelected', [CinemaController::class, 'permanentlyDeleteSelected'])->name('cinema.permanentlyDeleteSelected');
         Route::post('/restoreSelected', [CinemaController::class, 'restoreSelected'])->name('cinema.restoreSelected');
         Route::get('/restore/{id}', [CinemaController::class, 'restore'])->name('cinema.restore');
-       
+
     });
 });
 
