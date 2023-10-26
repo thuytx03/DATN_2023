@@ -12,13 +12,19 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Admin\ProvinceController;
 use App\Http\Controllers\Admin\CinemaController;
-
 use App\Http\Controllers\Admin\MovieFoodsController;
 use App\Http\Controllers\Admin\FoodTypesController;
+use App\Http\Controllers\Client\HomeController;
 
 Route::get('/', function () {
     return view('client.index');
 })->name('index');
+
+// danh mục mã giảm giá
+Route::prefix('vouchers')->group(function ()  {
+    Route::get('/voucher-list', [HomeController::class, 'vouchers'])->name('home.voucher.list');
+    Route::get('/voucher-detail/{id}', [HomeController::class, 'detail'])->name('home.voucher.detail');
+    });
 
 Route::get('movie-list', function () {
     return view('client.movies.movie-list');
@@ -194,6 +200,8 @@ Route::prefix('admin')->group(function () {
         Route::post('/permanentlyDeleteSelected', [MovieController::class, 'permanentlyDeleteSelected'])->name('movie.permanentlyDeleteSelected');
         Route::post('/restoreSelected', [MovieController::class, 'restoreSelected'])->name('movie.restoreSelected');
     });
+
+    // đồ ăn
     Route::prefix('movie-food')->group(function () {
         Route::get('/', [MovieFoodsController::class, 'index'])->name('movie-foode.index');
         Route::get('/create', [MovieFoodsController::class, 'create'])->name('movie-foode.add');
@@ -316,6 +324,7 @@ Route::prefix('admin')->group(function () {
         Route::post('/permanentlyDeleteSelected', [CinemaController::class, 'permanentlyDeleteSelected'])->name('cinema.permanentlyDeleteSelected');
         Route::post('/restoreSelected', [CinemaController::class, 'restoreSelected'])->name('cinema.restoreSelected');
         Route::get('/restore/{id}', [CinemaController::class, 'restore'])->name('cinema.restore');
+       
     });
 });
 
@@ -357,3 +366,6 @@ Route::get('about-us', function () {
 Route::get('contact', function () {
     return view('client.contacts.contact');
 })->name('contact');
+
+
+

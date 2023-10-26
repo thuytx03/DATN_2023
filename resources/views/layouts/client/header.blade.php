@@ -86,20 +86,12 @@
                         </ul>
                     </li>
                     <li>
-                        <a href="#0">sports</a>
+                        <a href="#0">Mã Giảm Giá</a>
                         <ul class="submenu">
                             <li>
-                                <a href="sports.html">Sports</a>
+                                <a href="{{ route('home.voucher.list') }}">Danh Sách Mã Giảm Giá</a>
                             </li>
-                            <li>
-                                <a href="sport-details.html">Sport Details</a>
-                            </li>
-                            <li>
-                                <a href="sports-ticket.html">Sport Ticket</a>
-                            </li>
-                            <li>
-                                <a href="sports-checkout.html">Sport Checkout</a>
-                            </li>
+                           
                         </ul>
                     </li>
                     <li>
@@ -126,7 +118,7 @@
                         <a href="#0">blog</a>
                         <ul class="submenu">
                             <li>
-                                <a href="{{ route('blog') }}">Blog</a>
+                                <a href="">Blog</a>
                             </li>
                             <li>
                                 <a href="blog-details.html">Blog Single</a>
