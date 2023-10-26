@@ -43,7 +43,8 @@ class HomeController extends Controller
        
         return view('client.vouchers.vouchers-list', compact('vouchers1'));
     }
-    public function detail($id)
+
+    public function detailVouchers($id)
     {
         $vouchers = Voucher::query();
         $vouchers1 =    $vouchers->find($id);
