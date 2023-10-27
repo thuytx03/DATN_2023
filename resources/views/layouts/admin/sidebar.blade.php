@@ -54,7 +54,19 @@
         </div>
     </li>
     <li class="nav-item">
-
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseFour"
+           aria-expanded="true" aria-controls="collapseFour">
+            <i class="fa-solid fa-file"></i>
+            <span>Quản lý lịch chiếu</span>
+        </a>
+        <div id="collapseFour" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{ route('show-time.index') }}">Danh sách lịch chiếu</a>
+                <!-- link -->
+            </div>
+        </div>
+    </li>
+    <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#movie" aria-expanded="true"
             aria-controls="movie">
             <i class="fa-solid fa-film"></i>

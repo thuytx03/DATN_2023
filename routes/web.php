@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\CinemaController;
 use App\Http\Controllers\Admin\MovieFoodsController;
 use App\Http\Controllers\Admin\FoodTypesController;
 use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\Admin\ShowTimeController;
 
 Route::get('/', [HomeController::class, 'index'])->name('index');
 
@@ -212,6 +213,25 @@ Route::prefix('admin')->group(function () {
         Route::post('/unTrashAll', [MovieFoodsController::class, 'unTrashAll'])->name('movie-foode.unTrashAll');
         Route::post('/deleteAll', [MovieFoodsController::class, 'deleteAll'])->name('movie-foode.destroys');
         Route::get('/changeStatus/{id}', [MovieFoodsController::class, 'changeStatus'])->name('movie-foode.changeStatus');
+    });
+    /*
+* Showtime
+*/
+    Route::prefix('show-time')->group(function () {
+        Route::get('/', [ShowTimeController::class, 'index'])->name('show-time.index');
+        Route::get('/create', [ShowTimeController::class, 'create'])->name('show-time.add');
+        Route::post('/store', [ShowTimeController::class, 'store'])->name('show-time.store');
+        Route::get('/edit/{id}', [ShowTimeController::class, 'edit'])->name('show-time.edit');
+        Route::get('/show/{id}', [ShowTimeController::class, 'show'])->name('show-time.show');
+        Route::post('/update/{id}', [ShowTimeController::class, 'update'])->name('show-time.update');
+        Route::get('/destroy/{id}', [ShowTimeController::class, 'destroy'])->name('show-time.destroy');
+        Route::get('/restore/{id}', [ShowTimeController::class, 'restore'])->name('show-time.restore');
+        Route::get('/trash', [ShowTimeController::class, 'trash'])->name('show-time.trash');
+        Route::get('/delete/{id}', [ShowTimeController::class, 'delete'])->name('show-time.delete');
+        Route::post('/update-status/{id}', [ShowTimeController::class, 'updateStatus'])->name('show-time.updateStatus');
+        Route::post('/deleteAll', [ShowTimeController::class, 'deleteAll'])->name('show-time.deleteAll');
+        Route::post('/permanentlyDeleteSelected', [ShowTimeController::class, 'permanentlyDeleteSelected'])->name('show-time.permanentlyDeleteSelected');
+        Route::post('/restoreSelected', [ShowTimeController::class, 'restoreSelected'])->name('show-time.restoreSelected');
     });
     Route::prefix('food_types')->group(function () {
         Route::get('/', [FoodTypesController::class, 'index'])->name('food_types.index');
