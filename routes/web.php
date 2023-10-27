@@ -15,12 +15,22 @@ use App\Http\Controllers\Admin\CinemaController;
 use App\Http\Controllers\Admin\MovieFoodsController;
 use App\Http\Controllers\Admin\FoodTypesController;
 use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\Client\FavoriteController;
 
-Route::get('/', function () {
-    return view('client.index');
-})->name('index');
+Route::get('/', [HomeController::class, 'index'])->name('index');
 
+// phim 
+Route::prefix('movie-client')->group(function () {
+    Route::get('/list', [HomeController::class, 'list'])->name('movie.list');
+    Route::get('/detail/{id}', [HomeController::class, 'detail'])->name('movie.detail');
+});
 // danh mục mã giảm giá
+// Route::prefix('favorite')->group(function ()  {
+//     // Route::get('/favorite-list', [favorite::class, 'favorite'])->name('home.favorite.list');
+//     Route::get('/add/{id}', [FavoriteController::class, 'addFavorite'])->name('home.favorite.add');
+    
+//     });
+    // danh mục mã giảm giá
 Route::prefix('vouchers')->group(function ()  {
     Route::get('/voucher-list', [HomeController::class, 'vouchers'])->name('home.voucher.list');
     Route::get('/voucher-detail/{id}', [HomeController::class, 'detailVouchers'])->name('home.voucher.detail');
@@ -110,6 +120,14 @@ Route::middleware(['auth'])->group(function () {
     Route::match(['GET', 'POST'], '/admin/bin/restore/all/room/type', [App\Http\Controllers\Admin\RoomTypeController::class, 'restore_bin_all'])->name('restore-bin-room-type-all');
     Route::match(['GET', 'POST'], '/admin/bin/delete/room/type/{id}', [App\Http\Controllers\Admin\RoomTypeController::class, 'delete_bin'])->name('delete-bin-room-type');
     Route::match(['GET', 'POST'], '/admin/bin/delete/all/room/type/', [App\Http\Controllers\Admin\RoomTypeController::class, 'delete_bin_all'])->name('delete-bin-room-type-all');
+
+    // phim yeu thich 
+    Route::prefix('favorite')->group(function ()  {
+        // Route::get('/favorite-list', [favorite::class, 'favorite'])->name('home.favorite.list');
+        Route::get('/add/{id}', [FavoriteController::class, 'addFavorite'])->name('home.favorite.add');
+        Route::get('/list', [FavoriteController::class, 'listFavorite'])->name('home.favorite.list');
+        
+        });
 });
 
 

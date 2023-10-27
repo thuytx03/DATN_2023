@@ -1,5 +1,11 @@
 <section class="movie-section padding-top padding-bottom">
     <div class="container">
+        <style>
+            .button5 {
+                background-color: #032055;
+                border: none;
+            }
+        </style>
         <div class="tab">
             <div class="section-header-2">
                 <div class="left">
@@ -46,6 +52,23 @@
                                             </div>
                                             <span class="content">88%</span>
                                         </li>
+                                        <li>
+                                            <div class="thumb1">
+                                                @if(auth()->check())
+                                               
+                                                <form action="{{route('home.favorite.add',['id'=>$movie->id])}}">
+                                                    <button type="submit"  id="favorite-link" style="color: white" class="button5" data-movie-id="{{ $movie->id }}">
+                                                        <i id="heart-icon" class="fas fa-heart {{ $user->favoriteMovies->contains($movie) ? 'text-danger' : '' }}"></i>
+                                                       
+                                                    </button>
+                                                </form>
+                                                @else
+                                                    <a href="{{route('home.favorite.add',['id'=>$movie->id])}}" style="color: white">
+                                                        <i id="heart-icon" class="fas fa-heart"></i>
+                                                    </a>
+                                                @endif
+                                            
+                                        </li>
                                     </ul>
                                 </div>
                             </div>
@@ -57,3 +80,29 @@
         </div>
     </div>
 </section>
+
+<script>
+    // Select all elements with the "favorite-button" class
+    const favoriteButtons = document.querySelectorAll(".favorite-button");
+
+    favoriteButtons.forEach(button => {
+        button.addEventListener("click", function(event) {
+            event.preventDefault();
+            const movieId = button.getAttribute("data-movie-id");
+            const heartIcon = button.querySelector("i");
+
+            // Toggle favorite status
+            const isFavorite = !heartIcon.classList.contains("text-danger");
+
+            if (isFavorite) {
+                heartIcon.classList.add("text-danger");
+            } else {
+                heartIcon.classList.remove("text-danger");
+            }
+
+            // Send the favorite status to the server
+            sendFavoriteStatus(movieId, isFavorite);
+        });
+    });
+</script>
+
