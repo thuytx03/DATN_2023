@@ -15,20 +15,9 @@ use App\Http\Controllers\Admin\CinemaController;
 use App\Http\Controllers\Admin\MovieFoodsController;
 use App\Http\Controllers\Admin\FoodTypesController;
 use App\Http\Controllers\Client\HomeController;
-<<<<<<< HEAD
 use App\Http\Controllers\Client\FavoriteController;
 
 Route::get('/', [HomeController::class, 'index'])->name('index');
-=======
-use App\Http\Controllers\Admin\ShowTimeController;
-
-Route::get('/', [HomeController::class, 'index'])->name('index');
-
-Route::prefix('movie')->group(function () {
-    Route::get('/list', [HomeController::class, 'list'])->name('movie.list');
-    Route::get('/detail/{id}', [HomeController::class, 'detail'])->name('movie.detail');
-});
->>>>>>> 36a06234081b70050a511399a08cb0b059509267
 
 // phim 
 Route::prefix('movie-client')->group(function () {

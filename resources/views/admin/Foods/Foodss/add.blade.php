@@ -51,7 +51,7 @@ Thêm mới món ăn
                     </div>
                     <div class="form-group">
                         <label for="description">Mô tả</label>
-                        <textarea id="description" name="description" class="form-control" rows="4"></textarea>
+                        <textarea id="ckeditor1" name="description"  class="form-control" rows="4"></textarea>
                     </div>
                 </div>
                     <div class="col-md-6">

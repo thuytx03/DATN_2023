@@ -199,15 +199,28 @@
                       
                     </div>
                     <div class="pagination-area text-center">
-                        <a href="#0"><i class="fas fa-angle-double-left"></i><span>Prev</span></a>
-                        <a href="#0">1</a>
-                        <a href="#0">2</a>
-                        <a href="#0" class="active">3</a>
-                        <a href="#0">4</a>
-                        <a href="#0">5</a>
-                        <a href="#0"><span>Next</span><i class="fas fa-angle-double-right"></i></a>
+                        @if ($favoriteMovies->hasPages())
+                            @if ($favoriteMovies->onFirstPage())
+                                <a href="#0" class="disabled"><i class="fas fa-angle-double-left"></i><span>Prev</span></a>
+                            @else
+                                <a href="{{ $favoriteMovies->previousPageUrl() }}"><i class="fas fa-angle-double-left"></i><span>Prev</span></a>
+                            @endif
+                    
+                            @foreach ($favoriteMovies as $page => $url)
+                                @if ($page == $currentPage)
+                                    <span class="current">{{ $page }}</span>
+                                @else
+                                    <a href="{{ $url }}">{{ $page }}</a>
+                                @endif
+                            @endforeach
+                    
+                            @if ($favoriteMovies->hasMorePages())
+                                <a href="{{ $favoriteMovies->nextPageUrl() }}"><span>Next</span><i class="fas fa-angle-double-right"></i></a>
+                            @else
+                                <a href="#0" class="disabled"><span>Next</span><i class="fas fa-angle-double-right"></i></a>
+                            @endif
+                        @endif
                     </div>
-                </div>
             </div>
         </div>
     </div>
