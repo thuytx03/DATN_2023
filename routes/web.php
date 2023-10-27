@@ -15,9 +15,20 @@ use App\Http\Controllers\Admin\CinemaController;
 use App\Http\Controllers\Admin\MovieFoodsController;
 use App\Http\Controllers\Admin\FoodTypesController;
 use App\Http\Controllers\Client\HomeController;
+<<<<<<< HEAD
 use App\Http\Controllers\Client\FavoriteController;
 
 Route::get('/', [HomeController::class, 'index'])->name('index');
+=======
+use App\Http\Controllers\Admin\ShowTimeController;
+
+Route::get('/', [HomeController::class, 'index'])->name('index');
+
+Route::prefix('movie')->group(function () {
+    Route::get('/list', [HomeController::class, 'list'])->name('movie.list');
+    Route::get('/detail/{id}', [HomeController::class, 'detail'])->name('movie.detail');
+});
+>>>>>>> 36a06234081b70050a511399a08cb0b059509267
 
 // phim 
 Route::prefix('movie-client')->group(function () {
@@ -36,13 +47,6 @@ Route::prefix('vouchers')->group(function ()  {
     Route::get('/voucher-detail/{id}', [HomeController::class, 'detailVouchers'])->name('home.voucher.detail');
     });
 
-Route::get('movie-list', function () {
-    return view('client.movies.movie-list');
-})->name('movie-list');
-
-Route::get('movie-detail', function () {
-    return view('client.movies.movie-detail');
-})->name('movie-detail');
 
 Route::group(['middleware' => 'guest'], function () {
     Route::match(['GET', 'POST'], '/login', [App\Http\Controllers\Auth\AuthClientController::class, 'login'])->name('login');
@@ -235,6 +239,25 @@ Route::prefix('admin')->group(function () {
         Route::post('/deleteAll', [MovieFoodsController::class, 'deleteAll'])->name('movie-foode.destroys');
         Route::get('/changeStatus/{id}', [MovieFoodsController::class, 'changeStatus'])->name('movie-foode.changeStatus');
     });
+    /*
+* Showtime
+*/
+    Route::prefix('show-time')->group(function () {
+        Route::get('/', [ShowTimeController::class, 'index'])->name('show-time.index');
+        Route::get('/create', [ShowTimeController::class, 'create'])->name('show-time.add');
+        Route::post('/store', [ShowTimeController::class, 'store'])->name('show-time.store');
+        Route::get('/edit/{id}', [ShowTimeController::class, 'edit'])->name('show-time.edit');
+        Route::get('/show/{id}', [ShowTimeController::class, 'show'])->name('show-time.show');
+        Route::post('/update/{id}', [ShowTimeController::class, 'update'])->name('show-time.update');
+        Route::get('/destroy/{id}', [ShowTimeController::class, 'destroy'])->name('show-time.destroy');
+        Route::get('/restore/{id}', [ShowTimeController::class, 'restore'])->name('show-time.restore');
+        Route::get('/trash', [ShowTimeController::class, 'trash'])->name('show-time.trash');
+        Route::get('/delete/{id}', [ShowTimeController::class, 'delete'])->name('show-time.delete');
+        Route::post('/update-status/{id}', [ShowTimeController::class, 'updateStatus'])->name('show-time.updateStatus');
+        Route::post('/deleteAll', [ShowTimeController::class, 'deleteAll'])->name('show-time.deleteAll');
+        Route::post('/permanentlyDeleteSelected', [ShowTimeController::class, 'permanentlyDeleteSelected'])->name('show-time.permanentlyDeleteSelected');
+        Route::post('/restoreSelected', [ShowTimeController::class, 'restoreSelected'])->name('show-time.restoreSelected');
+    });
     Route::prefix('food_types')->group(function () {
         Route::get('/', [FoodTypesController::class, 'index'])->name('food_types.index');
         Route::get('/changeStatus/{id}', [FoodTypesController::class, 'changeStatus'])->name('food_types.changeStatus');
@@ -342,7 +365,7 @@ Route::prefix('admin')->group(function () {
         Route::post('/permanentlyDeleteSelected', [CinemaController::class, 'permanentlyDeleteSelected'])->name('cinema.permanentlyDeleteSelected');
         Route::post('/restoreSelected', [CinemaController::class, 'restoreSelected'])->name('cinema.restoreSelected');
         Route::get('/restore/{id}', [CinemaController::class, 'restore'])->name('cinema.restore');
-       
+
     });
 });
 
