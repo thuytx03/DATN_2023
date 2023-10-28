@@ -17,6 +17,9 @@ use App\Http\Controllers\Admin\FoodTypesController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\FavoriteController;
 use App\Http\Controllers\Client\VouchersController;
+use App\Http\Controllers\Admin\ShowTimeController;
+use App\Http\Controllers\Admin\SeatController;
+use App\Http\Controllers\Admin\SeatTypeController;
 Route::get('/', [HomeController::class, 'index'])->name('index');
 
 // phim
