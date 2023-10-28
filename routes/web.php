@@ -15,19 +15,25 @@ use App\Http\Controllers\Admin\CinemaController;
 use App\Http\Controllers\Admin\MovieFoodsController;
 use App\Http\Controllers\Admin\FoodTypesController;
 use App\Http\Controllers\Client\HomeController;
-use App\Http\Controllers\Admin\ShowTimeController;
-
+use App\Http\Controllers\Client\FavoriteController;
+use App\Http\Controllers\Client\VouchersController;
 Route::get('/', [HomeController::class, 'index'])->name('index');
 
-Route::prefix('movie')->group(function () {
+// phim
+Route::prefix('movie-client')->group(function () {
     Route::get('/list', [HomeController::class, 'list'])->name('movie.list');
     Route::get('/detail/{id}', [HomeController::class, 'detail'])->name('movie.detail');
 });
-
 // danh mục mã giảm giá
+// Route::prefix('favorite')->group(function ()  {
+//     // Route::get('/favorite-list', [favorite::class, 'favorite'])->name('home.favorite.list');
+//     Route::get('/add/{id}', [FavoriteController::class, 'addFavorite'])->name('home.favorite.add');
+
+//     });
+    // danh mục mã giảm giá trang người dùng
 Route::prefix('vouchers')->group(function ()  {
-    Route::get('/voucher-list', [HomeController::class, 'vouchers'])->name('home.voucher.list');
-    Route::get('/voucher-detail/{id}', [HomeController::class, 'detailVouchers'])->name('home.voucher.detail');
+    Route::get('/voucher-list', [VouchersController::class, 'vouchers'])->name('home.voucher.list');
+    Route::get('/voucher-detail/{id}', [VouchersController::class, 'detailVouchers'])->name('home.voucher.detail');
     });
 
 
@@ -107,6 +113,14 @@ Route::middleware(['auth'])->group(function () {
     Route::match(['GET', 'POST'], '/admin/bin/restore/all/room/type', [App\Http\Controllers\Admin\RoomTypeController::class, 'restore_bin_all'])->name('restore-bin-room-type-all');
     Route::match(['GET', 'POST'], '/admin/bin/delete/room/type/{id}', [App\Http\Controllers\Admin\RoomTypeController::class, 'delete_bin'])->name('delete-bin-room-type');
     Route::match(['GET', 'POST'], '/admin/bin/delete/all/room/type/', [App\Http\Controllers\Admin\RoomTypeController::class, 'delete_bin_all'])->name('delete-bin-room-type-all');
+
+    // phim yeu thich
+    Route::prefix('favorite')->group(function ()  {
+        // Route::get('/favorite-list', [favorite::class, 'favorite'])->name('home.favorite.list');
+        Route::get('/add/{id}', [FavoriteController::class, 'addFavorite'])->name('home.favorite.add');
+        Route::get('/list', [FavoriteController::class, 'listFavorite'])->name('home.favorite.list');
+
+        });
 });
 
 
@@ -214,6 +228,30 @@ Route::prefix('admin')->group(function () {
         Route::post('/deleteAll', [MovieFoodsController::class, 'deleteAll'])->name('movie-foode.destroys');
         Route::get('/changeStatus/{id}', [MovieFoodsController::class, 'changeStatus'])->name('movie-foode.changeStatus');
     });
+
+    Route::prefix('seat-type')->group(function () {
+        Route::get('/', [SeatTypeController::class, 'index'])->name('seat-type.index');
+        Route::match(['GET', 'POST'], '/store', [SeatTypeController::class, 'store'])->name('seat-type.store');
+        Route::match(['GET', 'POST'], '/update/{id}', [SeatTypeController::class, 'update'])->name('seat-type.update');
+        Route::get('/destroy/{id}', [SeatTypeController::class, 'destroy'])->name('seat-type.destroy');
+        Route::post('/deleteAll', [SeatTypeController::class, 'deleteAll'])->name('seat-type.deleteAll');
+        Route::post('/update-status/{id}', [SeatTypeController::class, 'updateStatus'])->name('seat-type.updateStatus');
+        Route::get('/trash', [SeatTypeController::class, 'trash'])->name('seat-type.trash');
+        Route::get('/permanentlyDelete/{id}', [SeatTypeController::class, 'permanentlyDelete'])->name('seat-type.permanentlyDelete');
+        Route::post('/permanentlyDeleteSelected', [SeatTypeController::class, 'permanentlyDeleteSelected'])->name('seat-type.permanentlyDeleteSelected');
+        Route::post('/restoreSelected', [SeatTypeController::class, 'restoreSelected'])->name('seat-type.restoreSelected');
+        Route::get('/restore/{id}', [SeatTypeController::class, 'restore'])->name('seat-type.restore');
+    });
+    Route::prefix('seat')->group(function () {
+        Route::get('/', [SeatController::class, 'index'])->name('seat.index');
+        Route::match(['GET', 'POST'], '/store', [SeatController::class, 'store'])->name('seat.store');
+        Route::match(['GET', 'POST'], '/update/{room_id}', [SeatController::class, 'update'])->name('seat.update');
+        Route::get('/destroy/{id}', [SeatController::class, 'destroy'])->name('seat.destroy');
+        Route::post('/deleteAll', [SeatController::class, 'deleteAll'])->name('seat.deleteAll');
+        Route::get('/get-cinemas/{provinceId}',  [SeatController::class, 'getCinemas']);
+        Route::get('/get-rooms/{cinemaId}',  [SeatController::class, 'getRooms']);
+    });
+
     /*
 * Showtime
 */

@@ -139,6 +139,7 @@
                                             </td>
                                             <td class="text-center">{{ $movie->name }}</td>
                                             <td class="text-center">
+                                             
                                                 @foreach($movie->genres as $genre)
                                                     {{ $genre->name }} <br>
                                                 @endforeach

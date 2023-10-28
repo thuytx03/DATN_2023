@@ -33,7 +33,7 @@ class MovieFoodsController extends Controller
         $listfood1 = MovieFood::with('Foodstypes')->get();
         if ($request->has('keyword')) {
             $keyword = $request->input('keyword');
-            $listfood->where('name', 'LIKE', "%$keyword");
+            $listfood->where('name', 'LIKE', '%'.$keyword.'%');
         }
         if ($request->has('food_type_id') && $request->input('food_type_id')) {
             $food_type_id = $request->input('food_type_id');
@@ -168,7 +168,7 @@ class MovieFoodsController extends Controller
         $listfood1 = MovieFood::with('Foodstypes')->get();
         if ($request->has('keyword')) {
             $keyword = $request->input('keyword');
-            $listfood->where('name', 'LIKE', "%$keyword");
+            $listfood->where('name', 'LIKE','%'.$keyword.'%');
         }
         if ($request->has('food_type_id') && $request->input('food_type_id')) {
             $food_type_id = $request->input('food_type_id');
@@ -231,15 +231,21 @@ class MovieFoodsController extends Controller
             if ($request->isMethod('POST')) {
                 $validate = $request->validate([
                     'name' => 'required|unique:movie_foods,name',
-                    'price' => 'required|integer',
+                    'price' => [
+                        'required',
+                        function ($attribute, $value, $fail) {
+                            if ($value < 0) {
+                                $fail('giá không được phép để âm.');
+                            }
+                        },
+                    ],
                     'quantity' => 'required'
-
                 ], [
                     'name.unique' => 'Vui lòng không nhập trùng tên',
-                    'name.required' => 'Vui Lòng Nhập Tên',
-                    'price.required' => 'Vui Lòng Nhập Giá',
-                    'price.integer' => 'Vui Lòng Nhập giá là số nguyên',
-                    'quantity.required' => 'Vui Lòng Nhập số lượng'
+                    'name.required' => 'Vui lòng nhập Tên',
+                    'price.required' => 'Vui lòng nhập Giá',
+                   
+                    'quantity.required' => 'Vui lòng nhập số lượng'
                 ]);
                 if ($request->hasFile('image') && $request->file('image')->isValid()) {
                     $request->image = uploadFile('MovieFood', $request->file('image'));
@@ -321,13 +327,21 @@ class MovieFoodsController extends Controller
                 $validate = $request->validate([
                     'name' => ['required', Rule::unique('movie_foods')->ignore($id)],
                     'slug' => [Rule::unique('movie_foods')->ignore($id)],
-                    'price' => 'required|integer',
+                    'price' => [
+                        'required',
+                        
+                        function ($attribute, $value, $fail) {
+                            if ($value < 0) {
+                                $fail($attribute.'không được phép để âm.');
+                            }
+                        },
+                    ],
                     'quantity' => 'required'
                 ], [
                     'name.unique' => 'Vui lòng không nhập trùng tên',
                     'name.required' => 'Vui Lòng Nhập Tên',
                     'price.required' => 'Vui Lòng Nhập Giá',
-                    'price.integer' => 'Vui Lòng Nhập giá là số nguyên',
+                  
                     'quantity.required' => 'Vui Lòng Nhập số lượng',
                     'slug.unique'   => 'Vui Lòng không nhập trùng slug'
                 ]);

@@ -150,7 +150,7 @@
                                                         <td class="text-center">
                                                             <img alt="Avatar" width="60" src="{{ $value->image ? Storage::url($value->image) : asset('images/image-not-found.jpg') }}" alt="Image">
                                                         </td>
-                                                        <td>{{ $value->description }}</td>
+                                                        <td>{!! $value->description !!}</td>
                                                         <td>
                                                             @if ($value->status == 0) 
                                                             Ngừng kinh doanh

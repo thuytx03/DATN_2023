@@ -1,5 +1,11 @@
 @extends('layouts.client')
 @section('content')
+<style>
+    .abc {
+        margin-left: 10px;
+        
+    }
+</style>
 <!-- ==========Banner-Section========== -->
 <section class="details-banner bg_img" data-background="{{asset('assets/images/banner/banner03.jpg')}}">
     <div class="container">
@@ -11,14 +17,30 @@
                 </a>
             </div>
             <div class="details-banner-content offset-lg-3">
-                <h3 class="title">{{$movie->name}}</h3>
+                <h3 class="title">{{$movie->name}}
+                   </h3>
+                  
                 <div class="tags">
                     <a href="#0">{{$movie->language}}</a>
                     <a href="#0">Việt Nam</a>
-                    <a href="#0">Thái lan</a>
-                    <a href="#0">Tàu khựa</a>
+                   
                 </div>
                 <a href="#0" class="button">{{$nameGenres}}</a>
+                @if(auth()->check())
+                @if(auth()->user()->favoriteMovies->contains($movie))
+                    
+                        <a href="{{route('home.favorite.add',['id'=>$movie->id])}}" id="favorite-link" style="color: white" data-movie-id="{{ $movie->id }}" class="custom-button abc">Hủy Yêu Thích</a>
+                    
+                @else
+                <a href="{{route('home.favorite.add',['id'=>$movie->id])}}" id="favorite-link" style="color: white" data-movie-id="{{ $movie->id }}" class="custom-button abc">Thêm Vào Yêu Thích</a>
+                @endif
+                 @else 
+          
+                    <a href="{{route('home.favorite.add',['id'=>$movie->id])}}" id="favorite-link" style="color: white" data-movie-id="{{ $movie->id }}" class="custom-button abc">Thêm Vào Yêu Thích</a>
+               
+            @endif
+            
+                
                 <div class="social-and-duration">
                     <div class="duration-area">
                         <div class="item">
@@ -97,8 +119,11 @@
                     <p><a href="#0">Rate It</a></p>
                 </div>
             </div>
-            <a href="#0" class="custom-button">book tickets</a>
-        </div>
+          <div class="button-container">
+        <a href="#0" class="custom-button">book tickets</a>
+       
+          </div>
+    </div>
     </div>
 </section>
 <!-- ==========Book-Section========== -->

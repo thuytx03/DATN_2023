@@ -82,6 +82,22 @@
         </div>
     </li>
     <li class="nav-item">
+
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#seat" aria-expanded="true"
+            aria-controls="seat">
+            <i class="fa-solid fa-chair"></i>
+
+            <span>Quản lý ghế</span>
+        </a>
+        <div id="seat" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{ route('seat-type.index') }}">Danh sách loại ghế</a>
+                <!-- link -->
+                <a class="collapse-item" href="{{ route('seat.index') }}">Danh sách ghế</a>
+            </div>
+        </div>
+    </li>
+    <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#magiamgia"
             aria-expanded="false" aria-controls="magiamgia">
             <i class="fa-solid fa-ticket"></i>

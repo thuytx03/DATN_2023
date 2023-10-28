@@ -20,7 +20,7 @@
         <div class="container">
             <div class="header-wrapper">
                 <div class="logo">
-                    <a href="index.html">
+                    <a href="{{ route('index') }}">
                         <img src=" {{asset('client/assets/images/logo/logo.png')}}" alt="logo">
                     </a>
                 </div>
@@ -37,7 +37,7 @@
                         </ul>
                     </li>
                     <li>
-                        <a href="#0">movies</a>
+                        <a href="#0">Phim</a>
                         <ul class="submenu">
                             <li>
                                 <a href="movie-grid.html">Movie Grid</a>
@@ -46,7 +46,7 @@
                                 <a href="{{ route('movie.list') }}">Movie List</a>
                             </li>
                             <li>
-                                <a href="movie-details-2.html">Movie Details 2</a>
+                                <a href="{{route('home.favorite.list')}}">Phim Yêu Thích</a>
                             </li>
                             <li>
                                 <a href="{{ route('movie-ticket-plan') }}">Movie Ticket Plan</a>
