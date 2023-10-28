@@ -16,7 +16,7 @@ use App\Http\Controllers\Admin\MovieFoodsController;
 use App\Http\Controllers\Admin\FoodTypesController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\FavoriteController;
-
+use App\Http\Controllers\Client\VouchersController;
 Route::get('/', [HomeController::class, 'index'])->name('index');
 
 // phim 
@@ -30,10 +30,10 @@ Route::prefix('movie-client')->group(function () {
 //     Route::get('/add/{id}', [FavoriteController::class, 'addFavorite'])->name('home.favorite.add');
     
 //     });
-    // danh mục mã giảm giá
+    // danh mục mã giảm giá trang người dùng
 Route::prefix('vouchers')->group(function ()  {
-    Route::get('/voucher-list', [HomeController::class, 'vouchers'])->name('home.voucher.list');
-    Route::get('/voucher-detail/{id}', [HomeController::class, 'detailVouchers'])->name('home.voucher.detail');
+    Route::get('/voucher-list', [VouchersController::class, 'vouchers'])->name('home.voucher.list');
+    Route::get('/voucher-detail/{id}', [VouchersController::class, 'detailVouchers'])->name('home.voucher.detail');
     });
 
 
