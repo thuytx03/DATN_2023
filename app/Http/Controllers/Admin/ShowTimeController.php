@@ -110,10 +110,6 @@ class ShowTimeController extends Controller
         if ($start_date->lessThanOrEqualTo($movie_start_date)) {
             return redirect()->back()->withErrors(['show-time' => 'Thời gian bắt đầu lịch chiếu phải lớn hơn thời gian khởi chiếu của phim. Vui lòng kiểm tra ngày khởi chiếu của (' . $movie->name . ') !']);
         }
-        // Kiểm tra thời gian kết thúc phải lớn hơn thời gian bắt đầu
-        if ($end_date->lessThanOrEqualTo($start_date)) {
-            return redirect()->back()->withErrors(['show-time' => 'Thời gian kết thúc phải lớn hơn thời gian bắt đầu.']);
-        }
         // Kiểm tra xem thời gian kết thúc của lịch chiếu phải lớn hơn thời gian khởi chiếu của phim
         if ($end_date->lessThanOrEqualTo($movie_start_date)) {
             return redirect()->back()->withErrors(['show-time' => 'Thời gian kết thúc lịch chiếu phải lớn hơn thời gian khởi chiếu của phim. Vui lòng kiểm tra ngày khởi chiếu của (' . $movie->name . ') !']);

@@ -180,15 +180,15 @@
                         <div class="row">
                             <div class="col-sm-12 col-md-5">
                                 <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">
-                                    Hiển thị 1 đến 2
-                                    của 3 mục
+                                    Hiển thị {{ $movies->firstItem() }} đến {{ $movies->lastItem() }}
+                                    của {{ $movies->total() }} mục
                                 </div>
                             </div>
 
                             <div class="col-sm-12 col-md-7">
                                 <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
                                     <ul class="pagination">
-                                        {{--                                        {{ $postTypes->links('pagination::bootstrap-4') }}--}}
+                                        {{ $movies->links('pagination::bootstrap-4') }}
                                     </ul>
                                 </div>
                             </div>
