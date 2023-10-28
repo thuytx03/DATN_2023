@@ -18,6 +18,7 @@ use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\FavoriteController;
 use App\Http\Controllers\Admin\SeatController;
 use App\Http\Controllers\Admin\SeatTypeController;
+use App\Http\Controllers\Admin\ShowTimeController;
 
 Route::get('/', [HomeController::class, 'index'])->name('index');
 
