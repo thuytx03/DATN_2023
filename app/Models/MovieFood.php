@@ -42,4 +42,9 @@ class MovieFood extends Model
     {
         return $this->belongsToMany(Foodstypes::class, 'movie_foods_types', 'food_id', 'food_type_id');
     }
+    
+    public function movieFoodstypes()
+    {
+        return $this->belongsToMany(MovieFoodsTypes::class,  'food_id', 'food_type_id');
+    }
 }

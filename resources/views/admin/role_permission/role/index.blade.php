@@ -27,7 +27,7 @@ Danh sách vai trò
         <div class="card-header py-3">
             <div class="row align-items-center">
                 <div class="col">
-                    <a href="{{ route('form-add-role') }}" class="btn btn-success">
+                    <a href="{{ route('role.form-add') }}" class="btn btn-success">
                         Thêm mới
                     </a>
                 </div>
@@ -37,7 +37,7 @@ Danh sách vai trò
                             Hành động
                         </button>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="{{route('list-bin-role')}}">Thùng rác</a>
+                            <a class="dropdown-item" href="{{route('bin.list-role')}}">Thùng rác</a>
                             <a href="#" id="delete-selected" class="dropdown-item">Xoá đã chọn</a>
                         </div>
                     </div>
@@ -60,7 +60,7 @@ Danh sách vai trò
                         </div>
 
                         <div class="col-md-6">
-                            <form action="{{route('list-role')}}" method="GET">
+                            <form action="{{route('role.list')}}" method="GET">
                                 <div class="row">
                                     <div id="dataTable_filter" class="dataTables_filter">
                                         <label>
@@ -105,8 +105,8 @@ Danh sách vai trò
                                                     <i class="fa-solid fa-ellipsis-vertical"></i>
                                                 </button>
                                                 <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="{{route('form-update-role',['id'=>$role->id])}}">Cập nhật</a>
-                                                    <a class="dropdown-item show_confirm" href="{{route('delete-role',['id'=>$role->id])}}">Xoá
+                                                    <a class="dropdown-item" href="{{route('role.form-update',['id'=>$role->id])}}">Cập nhật</a>
+                                                    <a class="dropdown-item show_confirm" href="{{route('role.delete',['id'=>$role->id])}}">Xoá
                                                     </a>
                                                 </div>
                                             </div>
@@ -199,7 +199,7 @@ Danh sách vai trò
                         if (result.isConfirmed) {
                             $.ajax({
                                 type: 'POST',
-                                url: '/admin/delete/all/role', // Thay thế bằng tuyến đường xử lý xoá của bạn
+                                url: '/admin/role/deleteAll', // Thay thế bằng tuyến đường xử lý xoá của bạn
                                 data: {
                                     ids: selectedIds,
                                     _token: '{{ csrf_token() }}',

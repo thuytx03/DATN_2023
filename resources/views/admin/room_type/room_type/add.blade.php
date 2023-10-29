@@ -7,7 +7,7 @@ Thêm loại phòng
 <div class="container-fluid">
 
     <!-- Page Heading -->
-    <a href="{{route('list-room-type')}}" class="btn btn-success m-3">Danh sách loại phòng</a>
+    <a href="{{route('room-type.list')}}" class="btn btn-success m-3">Danh sách loại phòng</a>
     @if ($errors->any())
     <div class="alert alert-danger">
         @foreach ($errors->all() as $error)
@@ -18,7 +18,7 @@ Thêm loại phòng
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-body">
-            <form method="post" action="{{route('add-room-type')}}" enctype="multipart/form-data">
+            <form method="post" action="{{route('room-type.add')}}" enctype="multipart/form-data">
                 @csrf
                 <h1 class="h3 mb-2 text-gray-800">Thêm mới loại phòng</h1>
                 <div class="row">
@@ -72,17 +72,25 @@ Thêm loại phòng
         });
 
     });
-    document.getElementById('name').addEventListener('input', function() {
-        let nameValue = this.value
-            .toLowerCase()
-            .normalize('NFD') // Normalize to decomposed form
-            .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
-            .replace(/[^\w\s-]/g, '') // Remove special characters except for spaces and hyphens
-            .replace(/\s+/g, '-') // Replace spaces with hyphens
-            .replace(/-+/g, '-'); // Replace multiple consecutive hyphens with a single hyphen
+    function removeVietnameseSigns(str) {
+    str = str.toLowerCase();
+    str = str.replace(/đ/g, 'd'); // Thay thế ký tự "đ" thành "d"
+    str = str.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // Loại bỏ dấu thanh
 
-        document.getElementById('slug').value = nameValue;
-    });
+    return str;
+}
+
+document.getElementById('name').addEventListener('input', function() {
+    let nameValue = this.value;
+    let slugValue = removeVietnameseSigns(nameValue)
+        .replace(/[^\w\s-]/g, '') // Loại bỏ các ký tự đặc biệt, chỉ giữ lại khoảng trắng và dấu gạch ngang
+        .replace(/\s+/g, '-') // Thay thế khoảng trắng bằng dấu gạch ngang
+        .replace(/-+/g, '-'); // Loại bỏ các dấu gạch ngang liên tiếp
+
+    document.getElementById('slug').value = slugValue;
+});
+
+
 </script>
 
 @endpush

@@ -126,8 +126,8 @@
                                     mask-position: center center;
                                     -webkit-mask-position: center center;
                                     text-align: center;
-                                    mask-image: url({{asset('client/assets/images/ticket/movie-seat.png')}});
-                                    -webkit-mask-image: url({{asset('client/assets/images/ticket/movie-seat.png')}});
+                                    /* mask-image: url({{asset('client/assets/images/ticket/movie-seat.png')}}); */
+                                    /* -webkit-mask-image: url({{asset('client/assets/images/ticket/movie-seat.png')}}); */
                                     -webkit-mask-repeat: no-repeat;
                                     mask-repeat: no-repeat;
                                     -webkit-mask-size: 100% 100%;

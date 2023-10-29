@@ -27,7 +27,7 @@ Thùng rác vai trò
         <div class="card-header py-3">
             <div class="row align-items-center">
                 <div class="col">
-                    <a href="{{ route('list-role') }}" class="btn btn-success">
+                    <a href="{{ route('role.list') }}" class="btn btn-success">
                         Danh sách vai trò
                     </a>
                 </div>
@@ -59,7 +59,7 @@ Thùng rác vai trò
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <form action="{{ route('list-bin-role') }}" method="get">
+                            <form action="{{ route('bin.list-role') }}" method="get">
                                 <div class="row">
                                     <div id="dataTable_filter" class="dataTables_filter"><label>
                                             <input type="search" name="search" class="form-control form-control-sm" placeholder="" aria-controls="dataTable">
@@ -99,9 +99,9 @@ Thùng rác vai trò
                                                     <i class="fa-solid fa-ellipsis-vertical"></i>
                                                 </button>
                                                 <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="{{ route('restore-bin-role', ['id' => $softDeletedRoles->id]) }}">Khôi phục mục đã chọn</a>
+                                                    <a class="dropdown-item" href="{{ route('bin.restore-role', ['id' => $softDeletedRoles->id]) }}">Khôi phục mục đã chọn</a>
 
-                                                    <a class="dropdown-item show_confirm" href="{{ route('delete-bin-role', ['id' => $softDeletedRoles->id]) }}">Xoá vĩnh viễn
+                                                    <a class="dropdown-item show_confirm" href="{{ route('bin.delete-role', ['id' => $softDeletedRoles->id]) }}">Xoá vĩnh viễn
                                                     </a>
 
                                                 </div>
@@ -196,7 +196,7 @@ Thùng rác vai trò
 
                             $.ajax({
                                 type: 'POST',
-                                url: '/admin/bin/delete/all/role', // Thay thế bằng tuyến đường xử lý xoá của bạn
+                                url: '/admin/role/permanentlyDeleteSelected', // Thay thế bằng tuyến đường xử lý xoá của bạn
                                 data: {
                                     ids: selectedIds,
                                     _token: '{{ csrf_token() }}',
@@ -243,7 +243,7 @@ Thùng rác vai trò
 
                             $.ajax({
                                 type: 'POST',
-                                url: '/admin/bin/restore/all/role',
+                                url: '/admin/role/restoreSelected',
                                 data: {
                                     ids: selectedIds,
                                     _token: '{{ csrf_token() }}',

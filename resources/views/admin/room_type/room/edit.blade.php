@@ -7,7 +7,7 @@ Sửa phòng
 <div class="container-fluid">
 
     <!-- Page Heading -->
-    <a href="{{route('list-room')}}" class="btn btn-success m-3">Danh sách phòng</a>
+    <a href="{{route('room.list')}}" class="btn btn-success m-3">Danh sách phòng</a>
     @if ($errors->any())
     <div class="alert alert-danger">
         @foreach ($errors->all() as $error)
@@ -18,7 +18,7 @@ Sửa phòng
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-body">
-            <form method="post" action="{{route('update-room',['id'=>$room->id])}}" enctype="multipart/form-data">
+            <form method="post" action="{{route('room.update',['id'=>$room->id])}}" enctype="multipart/form-data">
                 @csrf
                 <h1 class="h3 mb-2 text-gray-800">Sửa phòng</h1>
                 <div class="row">

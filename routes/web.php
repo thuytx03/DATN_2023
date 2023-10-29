@@ -12,9 +12,16 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Admin\ProvinceController;
 use App\Http\Controllers\Admin\CinemaController;
-
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MovieFoodsController;
 use App\Http\Controllers\Admin\FoodTypesController;
+use App\Http\Controllers\Admin\OrderFoodController;
+use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\RoomController;
+use App\Http\Controllers\Admin\RoomTypeController;
+use App\Http\Controllers\Auth\AuthAdminController;
+use App\Http\Controllers\Client\FoodController;
 
 Route::get('/', function () {
     return view('client.index');
@@ -36,75 +43,12 @@ Route::group(['middleware' => 'guest'], function () {
 
 
 Route::middleware(['auth'])->group(function () {
-    // Spatie
-    Route::match(['GET', 'POST'], '/admin/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-    //user
-    Route::match(['GET', 'POST'], '/admin/list/users', [App\Http\Controllers\UserController::class, 'index'])->name('list-user');
-    Route::match(['GET', 'POST'], '/admin/form/add/user', [App\Http\Controllers\UserController::class, 'create'])->name('form-add-user');
-    Route::match(['GET', 'POST'], '/admin/add/user', [App\Http\Controllers\UserController::class, 'store'])->name('add-user');
-    Route::match(['GET', 'POST'], '/admin/role/{id}', [App\Http\Controllers\UserController::class, 'role'])->name('role');
-    Route::match(['GET', 'POST'], '/admin/insert/role/{id}', [App\Http\Controllers\UserController::class, 'insert_role'])->name('insert-role');
-    Route::match(['GET', 'POST'], '/admin/permission/{id}', [App\Http\Controllers\UserController::class, 'permission'])->name('permission');
-    Route::match(['GET', 'POST'], '/admin/insert/permission/{id}', [App\Http\Controllers\UserController::class, 'insert_permission'])->name('insert-permission');
-    //role
-    Route::match(['GET', 'POST'], '/admin/list/role', [App\Http\Controllers\Admin\RoleController::class, 'index'])->name('list-role');
-    Route::match(['GET', 'POST'], '/admin/add/role', [App\Http\Controllers\Admin\RoleController::class, 'store'])->name('add-role');
-    Route::match(['GET', 'POST'], '/admin/form/add/role', [App\Http\Controllers\Admin\RoleController::class, 'create'])->name('form-add-role');
-    Route::match(['GET', 'POST'], '/admin/edit/role/{id}', [App\Http\Controllers\Admin\RoleController::class, 'update'])->name('update-role');
-    Route::match(['GET', 'POST'], '/admin/form/edit/role/{id}', [App\Http\Controllers\Admin\RoleController::class, 'show'])->name('form-update-role');
-    Route::match(['GET', 'POST'], '/admin/delete/role/{id}', [App\Http\Controllers\Admin\RoleController::class, 'destroy'])->name('delete-role');
-    Route::match(['GET', 'POST'], '/admin/delete/all/role', [App\Http\Controllers\Admin\RoleController::class, 'deleteAll'])->name('delete-all-role');
-    //permission
-    Route::match(['GET', 'POST'], '/admin/list/permission', [App\Http\Controllers\Admin\PermissionController::class, 'index'])->name('list-permission');
-    Route::match(['GET', 'POST'], '/admin/add/permission', [App\Http\Controllers\Admin\PermissionController::class, 'store'])->name('add-permission');
-    Route::match(['GET', 'POST'], '/admin/form/add/permission', [App\Http\Controllers\Admin\PermissionController::class, 'create'])->name('form-add-permission');
-    Route::match(['GET', 'POST'], '/admin/edit/permission/{id}', [App\Http\Controllers\Admin\PermissionController::class, 'update'])->name('update-permission');
-    Route::match(['GET', 'POST'], '/admin/form/edit/permission/{id}', [App\Http\Controllers\Admin\PermissionController::class, 'show'])->name('form-update-permission');
-    Route::match(['GET', 'POST'], '/admin/delete/permission/{id}', [App\Http\Controllers\Admin\PermissionController::class, 'destroy'])->name('delete-permission');
-    Route::match(['GET', 'POST'], '/admin/delete/all/permission', [App\Http\Controllers\Admin\PermissionController::class, 'deleteAll'])->name('delete-permission-all');
-    //bin-role
-    Route::match(['GET', 'POST'], '/admin/bin/list/role', [App\Http\Controllers\Admin\RoleController::class, 'list_bin'])->name('list-bin-role');
-    Route::match(['GET', 'POST'], '/admin/bin/restore/role/{id}', [App\Http\Controllers\Admin\RoleController::class, 'restore_bin'])->name('restore-bin-role');
-    Route::match(['GET', 'POST'], '/admin/bin/restore/all/role', [App\Http\Controllers\Admin\RoleController::class, 'restore_bin_all'])->name('restore-bin-role-all');
-    Route::match(['GET', 'POST'], '/admin/bin/delete/role/{id}', [App\Http\Controllers\Admin\RoleController::class, 'delete_bin'])->name('delete-bin-role');
-    Route::match(['GET', 'POST'], '/admin/bin/delete/all/role', [App\Http\Controllers\Admin\RoleController::class, 'delete_bin_all'])->name('delete-bin-role-all');
-    //bin-permission
-    Route::match(['GET', 'POST'], '/admin/bin/list/permission', [App\Http\Controllers\Admin\PermissionController::class, 'list_bin'])->name('list-bin-permission');
-    Route::match(['GET', 'POST'], '/admin/bin/restore/permission/{id}', [App\Http\Controllers\Admin\PermissionController::class, 'restore_bin'])->name('restore-bin-permission');
-    Route::match(['GET', 'POST'], '/admin/bin/restore/all/permission', [App\Http\Controllers\Admin\PermissionController::class, 'restore_bin_all'])->name('restore-bin-permission-all');
-    Route::match(['GET', 'POST'], '/admin/bin/delete/permission/{id}', [App\Http\Controllers\Admin\PermissionController::class, 'delete_bin'])->name('delete-bin-permission');
-    Route::match(['GET', 'POST'], '/admin/bin/delete/all/permission', [App\Http\Controllers\Admin\PermissionController::class, 'delete_bin_all'])->name('delete-bin-permission-all');
-    //room
-    Route::match(['GET', 'POST'], '/admin/list/room', [App\Http\Controllers\Admin\RoomController::class, 'index'])->name('list-room');
-    Route::match(['GET', 'POST'], '/admin/add/room', [App\Http\Controllers\Admin\RoomController::class, 'store'])->name('add-room');
-    Route::match(['GET', 'POST'], '/admin/form/add/room', [App\Http\Controllers\Admin\RoomController::class, 'create'])->name('form-add-room');
-    Route::match(['GET', 'POST'], '/admin/edit/room/{id}', [App\Http\Controllers\Admin\RoomController::class, 'update'])->name('update-room');
-    Route::match(['GET', 'POST'], '/admin/form/edit/room/{id}', [App\Http\Controllers\Admin\RoomController::class, 'show'])->name('form-update-room');
-    Route::match(['GET', 'POST'], '/admin/delete/room/{id}', [App\Http\Controllers\Admin\RoomController::class, 'destroy'])->name('delete-room');
-    Route::match(['GET', 'POST'], '/admin/update/status/room/{id}', [App\Http\Controllers\Admin\RoomController::class, 'updateStatus'])->name('update-status-room');
-    Route::match(['GET', 'POST'], '/admin/delete/all/room', [App\Http\Controllers\Admin\RoomController::class, 'deleteAll'])->name('delete-all-room');
-    //bin_room
-    Route::match(['GET', 'POST'], '/admin/bin/list/room', [App\Http\Controllers\Admin\RoomController::class, 'list_bin'])->name('list-bin-room');
-    Route::match(['GET', 'POST'], '/admin/bin/restore/room/{id}', [App\Http\Controllers\Admin\RoomController::class, 'restore_bin'])->name('restore-bin-room');
-    Route::match(['GET', 'POST'], '/admin/bin/restore/all/room', [App\Http\Controllers\Admin\RoomController::class, 'restore_bin_all'])->name('restore-bin-room-all');
-    Route::match(['GET', 'POST'], '/admin/bin/delete/room/{id}', [App\Http\Controllers\Admin\RoomController::class, 'delete_bin'])->name('delete-bin-room');
-    Route::match(['GET', 'POST'], '/admin/bin/delete/all/room', [App\Http\Controllers\Admin\RoomController::class, 'delete_bin_all'])->name('delete-bin-room-all');
-    //room_type
-    Route::match(['GET', 'POST'], '/admin/list/room/type', [App\Http\Controllers\Admin\RoomTypeController::class, 'index'])->name('list-room-type');
-    Route::match(['GET', 'POST'], '/admin/add/room/type', [App\Http\Controllers\Admin\RoomTypeController::class, 'store'])->name('add-room-type');
-    Route::match(['GET', 'POST'], '/admin/form/add/room/type', [App\Http\Controllers\Admin\RoomTypeController::class, 'create'])->name('form-add-room-type');
-    Route::match(['GET', 'POST'], '/admin/edit/room/type/{id}', [App\Http\Controllers\Admin\RoomTypeController::class, 'update'])->name('update-room-type');
-    Route::match(['GET', 'POST'], '/admin/form/edit/room/type/{id}', [App\Http\Controllers\Admin\RoomTypeController::class, 'show'])->name('form-update-room-type');
-    Route::match(['GET', 'POST'], '/admin/delete/room/type/{id}', [App\Http\Controllers\Admin\RoomTypeController::class, 'destroy'])->name('delete-room-type');
-    Route::match(['GET', 'POST'], '/admin/delete/all/room/type', [App\Http\Controllers\Admin\RoomTypeController::class, 'deleteAll'])->name('delete-all-room-type');
-    Route::match(['GET', 'POST'], '/admin/update/status/room/type/{id}', [App\Http\Controllers\Admin\RoomTypeController::class, 'updateStatus'])->name('update-status-room-type');
-    //bin_room_type
-    Route::match(['GET', 'POST'], '/admin/bin/list/room/type', [App\Http\Controllers\Admin\RoomTypeController::class, 'list_bin'])->name('list-bin-room-type');
-    Route::match(['GET', 'POST'], '/admin/bin/restore/room/type/{id}', [App\Http\Controllers\Admin\RoomTypeController::class, 'restore_bin'])->name('restore-bin-room-type');
-    Route::match(['GET', 'POST'], '/admin/bin/restore/all/room/type', [App\Http\Controllers\Admin\RoomTypeController::class, 'restore_bin_all'])->name('restore-bin-room-type-all');
-    Route::match(['GET', 'POST'], '/admin/bin/delete/room/type/{id}', [App\Http\Controllers\Admin\RoomTypeController::class, 'delete_bin'])->name('delete-bin-room-type');
-    Route::match(['GET', 'POST'], '/admin/bin/delete/all/room/type/', [App\Http\Controllers\Admin\RoomTypeController::class, 'delete_bin_all'])->name('delete-bin-room-type-all');
+    Route::prefix('food')->group(function () {
+        Route::match(['GET', 'POST'], '/', [FoodController::class, 'food'])->name('food');
+        Route::get('/get-food-by-type/{foodTypeId}', [FoodController::class, 'getFoodByType']);
+    });
 });
+
 
 
 // route cua google
@@ -116,8 +60,79 @@ Route::get('logout', [SocialController::class, 'logout'])->name('logout');
 
 // ket thuc route mang xa hoi
 Route::prefix('admin')->group(function () {
-    //        Route::match(['GET', 'POST'], '/login', [App\Http\Controllers\Auth\AuthAdminController::class, 'login'])->name('login.admin');
+    //login
+    Route::match(['GET', 'POST'], '/login', [AuthAdminController::class, 'login'])->name('login.admin');
+    //dashboard
+    Route::match(['GET', 'POST'], '/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    //role
+    Route::prefix('role')->group(function () {
+        Route::match(['GET', 'POST'], '/', [RoleController::class, 'index'])->name('role.list');
+        Route::match(['GET', 'POST'], '/store', [RoleController::class, 'store'])->name('role.add');
+        Route::match(['GET', 'POST'], '/create', [RoleController::class, 'create'])->name('role.form-add');
+        Route::match(['GET', 'POST'], '/edit/{id}', [RoleController::class, 'update'])->name('role.update');
+        Route::match(['GET', 'POST'], '/update/{id}', [RoleController::class, 'show'])->name('role.form-update');
+        Route::match(['GET', 'POST'], '/destroy/{id}', [RoleController::class, 'destroy'])->name('role.delete');
+        Route::match(['GET', 'POST'], '/deleteAll', [RoleController::class, 'deleteAll'])->name('role.delete-all');
+        Route::match(['GET', 'POST'], '/bin', [RoleController::class, 'list_bin'])->name('bin.list-role');
+        Route::match(['GET', 'POST'], '/restore/{id}', [RoleController::class, 'restore_bin'])->name('bin.restore-role');
+        Route::match(['GET', 'POST'], '/restoreSelected', [RoleController::class, 'restore_bin_all'])->name('bin.restore-role-all');
+        Route::match(['GET', 'POST'], '/delete/{id}', [RoleController::class, 'delete_bin'])->name('bin.delete-role');
+        Route::match(['GET', 'POST'], '/permanentlyDeleteSelected', [RoleController::class, 'delete_bin_all'])->name('bin.delete-role-all');
+    });
+    //permission
+    Route::prefix('permission')->group(function () {
+        Route::match(['GET', 'POST'], '/', [PermissionController::class, 'index'])->name('permission.list');
+        Route::match(['GET', 'POST'], '/store', [PermissionController::class, 'store'])->name('permission.add');
+        Route::match(['GET', 'POST'], '/create', [PermissionController::class, 'create'])->name('permission.form-add');
+        Route::match(['GET', 'POST'], '/edit/{id}', [PermissionController::class, 'update'])->name('permission.update');
+        Route::match(['GET', 'POST'], '/update/{id}', [PermissionController::class, 'show'])->name('permission.form-update');
+        Route::match(['GET', 'POST'], '/destroy/{id}', [PermissionController::class, 'destroy'])->name('permission.delete');
+        Route::match(['GET', 'POST'], '/deleteAll', [PermissionController::class, 'deleteAll'])->name('permission.delete-all');
+        Route::match(['GET', 'POST'], '/bin', [PermissionController::class, 'list_bin'])->name('bin.list-permission');
+        Route::match(['GET', 'POST'], '/restore/{id}', [PermissionController::class, 'restore_bin'])->name('bin.restore-permission');
+        Route::match(['GET', 'POST'], '/restoreSelected', [PermissionController::class, 'restore_bin_all'])->name('bin.restore-permission-all');
+        Route::match(['GET', 'POST'], '/delete/{id}', [PermissionController::class, 'delete_bin'])->name('bin.delete-permission');
+        Route::match(['GET', 'POST'], '/permanentlyDeleteSelected', [PermissionController::class, 'delete_bin_all'])->name('bin.delete-permission-all');
+    });
+    //room
+    Route::prefix('room')->group(function () {
+        Route::match(['GET', 'POST'], '/', [RoomController::class, 'index'])->name('room.list');
+        Route::match(['GET', 'POST'], '/store', [RoomController::class, 'store'])->name('room.add');
+        Route::match(['GET', 'POST'], '/create', [RoomController::class, 'create'])->name('room.form-add');
+        Route::match(['GET', 'POST'], '/edit/{id}', [RoomController::class, 'update'])->name('room.update');
+        Route::match(['GET', 'POST'], '/update/{id}', [RoomController::class, 'show'])->name('room.form-update');
+        Route::match(['GET', 'POST'], '/destroy/{id}', [RoomController::class, 'destroy'])->name('room.delete');
+        Route::match(['GET', 'POST'], '/deleteAll', [RoomController::class, 'deleteAll'])->name('room.delete-all');
+        Route::match(['GET', 'POST'], '/update-status/{id}', [RoomController::class, 'updateStatus'])->name('room.update-status');
+        Route::match(['GET', 'POST'], '/bin', [RoomController::class, 'list_bin'])->name('bin.list-room');
+        Route::match(['GET', 'POST'], '/restore/{id}', [RoomController::class, 'restore_bin'])->name('bin.restore-room');
+        Route::match(['GET', 'POST'], '/restoreSelected', [RoomController::class, 'restore_bin_all'])->name('bin.restore-room-all');
+        Route::match(['GET', 'POST'], '/delete/{id}', [RoomController::class, 'delete_bin'])->name('bin.delete-room');
+        Route::match(['GET', 'POST'], '/permanentlyDeleteSelected', [RoomController::class, 'delete_bin_all'])->name('bin.delete-room-all');
+    });
+    //room-type
+    Route::prefix('room-type')->group(function () {
+        Route::match(['GET', 'POST'], '/', [RoomTypeController::class, 'index'])->name('room-type.list');
+        Route::match(['GET', 'POST'], '/store', [RoomTypeController::class, 'store'])->name('room-type.add');
+        Route::match(['GET', 'POST'], '/create', [RoomTypeController::class, 'create'])->name('room-type.form-add');
+        Route::match(['GET', 'POST'], '/edit/{id}', [RoomTypeController::class, 'update'])->name('room-type.update');
+        Route::match(['GET', 'POST'], '/update/{id}', [RoomTypeController::class, 'show'])->name('room-type.form-update');
+        Route::match(['GET', 'POST'], '/destroy/{id}', [RoomTypeController::class, 'destroy'])->name('room-type.delete');
+        Route::match(['GET', 'POST'], '/deleteAll', [RoomTypeController::class, 'deleteAll'])->name('room-type.delete-all');
+        Route::match(['GET', 'POST'], '/update-status/{id}', [RoomTypeController::class, 'updateStatus'])->name('room-type.update-status');
+        Route::match(['GET', 'POST'], '/bin', [RoomTypeController::class, 'list_bin'])->name('bin.list-room-type');
+        Route::match(['GET', 'POST'], '/restore/{id}', [RoomTypeController::class, 'restore_bin'])->name('bin.restore-room-type');
+        Route::match(['GET', 'POST'], '/restoreSelected', [RoomTypeController::class, 'restore_bin_all'])->name('bin.restore-room-type-all');
+        Route::match(['GET', 'POST'], '/delete/{id}', [RoomTypeController::class, 'delete_bin'])->name('bin.delete-room-type');
+        Route::match(['GET', 'POST'], '/permanentlyDeleteSelected', [RoomTypeController::class, 'delete_bin_all'])->name('bin.delete-room-type-all');
+    });
 
+    //order food 
+    Route::prefix('order')->group(function () {
+        Route::match(['GET', 'POST'], '/', [OrderFoodController::class, 'index'])->name('food.list');
+        Route::match(['GET', 'POST'], '/store', [OrderFoodController::class, 'store'])->name('food.add');
+
+    });
     /*
      * Category Blog
      */
@@ -330,7 +345,7 @@ Route::get('{filename}', function ($filename) {
 })
     ->where('filename', '(.*)')
     ->name('admin.sliders.images.show');
-    Route::get('movie-ticket-plan', function () {
+Route::get('movie-ticket-plan', function () {
     return view('client.movies.movie-ticket-plan');
 })->name('movie-ticket-plan');
 

@@ -44,7 +44,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'gauth_type',
         'gauth_token'
     ];
-
+    public function order()
+    {
+        return $this->hasMany(OrderFood::class);
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -85,14 +88,14 @@ class User extends Authenticatable implements MustVerifyEmail
         if ($now > $this->end_date) {
             $this->status = 3; // Cập nhật trạng thái thành 3 (hết hạn)
             $this->save(); // Lưu thay đổi vào cơ sở dữ liệu
-        }else{
+        } else {
             $this->status = 1;
             $this->save();
         }
         if ($this->quantity == 0) {
             $this->status = 4; // Cập nhật trạng thái thành 4 (hết vé)
             $this->save();
-        }else{
+        } else {
             $this->status = 1;
             $this->save();
         }

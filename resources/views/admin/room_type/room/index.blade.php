@@ -27,7 +27,7 @@ Danh sách phòng
         <div class="card-header py-3">
             <div class="row align-items-center">
                 <div class="col">
-                    <a href="{{ route('form-add-room') }}" class="btn btn-success">
+                    <a href="{{ route('room.form-add') }}" class="btn btn-success">
                         Thêm mới
                     </a>
                 </div>
@@ -37,7 +37,7 @@ Danh sách phòng
                             Hành động
                         </button>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="{{route('list-bin-room')}}">Thùng rác</a>
+                            <a class="dropdown-item" href="{{route('bin.list-room')}}">Thùng rác</a>
                             <a href="#" id="delete-selected" class="dropdown-item">Xoá đã chọn</a>
                         </div>
                     </div>
@@ -60,7 +60,7 @@ Danh sách phòng
                         </div>
 
                         <div class="col-sm-12 col-md-6">
-                            <form action="{{route('list-room')}}" method="GET">
+                            <form action="{{route('room.list')}}" method="GET">
                                 <div class="row">
                                     <div class="dataTables_length mr-3" id="dataTable_length"><label>Lọc
                                             <select name="status" aria-controls="dataTable" class="custom-select custom-select-sm form-control ">
@@ -131,8 +131,8 @@ Danh sách phòng
                                                     <i class="fa-solid fa-ellipsis-vertical"></i>
                                                 </button>
                                                 <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="{{route('form-update-room',['id'=>$room->id])}}">Cập nhật</a>
-                                                    <a class="dropdown-item show_confirm" href="{{route('delete-room',['id'=>$room->id])}}">Xoá
+                                                    <a class="dropdown-item" href="{{route('room.form-update',['id'=>$room->id])}}">Cập nhật</a>
+                                                    <a class="dropdown-item show_confirm" href="{{route('room.delete',['id'=>$room->id])}}">Xoá
                                                     </a>
                                                 </div>
                                             </div>
@@ -219,7 +219,7 @@ Danh sách phòng
 
                 $.ajax({
                     method: 'POST',
-                    url: '/admin/update/status/room/' + itemId,
+                    url: '/admin/room/update-status/' + itemId,
                     data: {
                         _token: '{{ csrf_token() }}',
                         status: status
@@ -260,7 +260,7 @@ Danh sách phòng
                         if (result.isConfirmed) {
                             $.ajax({
                                 type: 'POST',
-                                url: '/admin/delete/all/room', // Thay thế bằng tuyến đường xử lý xoá của bạn
+                                url: '/admin/room/deleteAll', // Thay thế bằng tuyến đường xử lý xoá của bạn
                                 data: {
                                     ids: selectedIds,
                                     _token: '{{ csrf_token() }}',

@@ -26,8 +26,7 @@
         Quản lý
     </div>
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwosss"
-            aria-expanded="true" aria-controls="collapseTwosss">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwosss" aria-expanded="true" aria-controls="collapseTwosss">
             <i class="fa-solid fa-location-pin"></i>
             <span>Quản lý rạp phim</span>
         </a>
@@ -41,22 +40,31 @@
     </li>
     <!-- Nav Item - Pages Collapse Menu -->
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#room" aria-expanded="true"
-            aria-controls="room">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#room" aria-expanded="true" aria-controls="room">
             <i class="fa-solid fa-archway"></i>
             <span>Quản lý phòng</span>
         </a>
         <div id="room" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="{{ route('list-room') }}">Quản lý phòng</a>
-                <a class="collapse-item" href="{{ route('list-room-type') }}">Quản lý loại phòng</a>
+                <a class="collapse-item" href="{{ route('room.list') }}">Quản lý phòng</a>
+                <a class="collapse-item" href="{{ route('room-type.list') }}">Quản lý loại phòng</a>
+            </div>
+        </div>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#order" aria-expanded="true" aria-controls="order">
+            <i class="fa-solid fa-archway"></i>
+            <span>Quản lý đơn đặt đồ ăn</span>
+        </a>
+        <div id="order" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{ route('food.list') }}">Quản lý đặt đồ ăn</a>
             </div>
         </div>
     </li>
     <li class="nav-item">
 
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#movie" aria-expanded="true"
-            aria-controls="movie">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#movie" aria-expanded="true" aria-controls="movie">
             <i class="fa-solid fa-film"></i>
 
             <span>Quản lý phim</span>
@@ -70,28 +78,24 @@
         </div>
     </li>
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#magiamgia"
-            aria-expanded="false" aria-controls="magiamgia">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#magiamgia" aria-expanded="false" aria-controls="magiamgia">
             <i class="fa-solid fa-ticket"></i>
             <span>Quản lý mã giảm giá</span>
         </a>
-        <div id="magiamgia" class="collapse" aria-labelledby="headingVoucher" data-parent="#accordionSidebar"
-            style="">
+        <div id="magiamgia" class="collapse" aria-labelledby="headingVoucher" data-parent="#accordionSidebar" style="">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="{{ route('voucher.index') }}">Danh sách mã giảm giá</a>
             </div>
         </div>
     </li>
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-            aria-expanded="false" aria-controls="collapseUtilities">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="false" aria-controls="collapseUtilities">
 
             <i class="fa-solid fa-blog"></i>
 
             <span>Quản lý bài viết</span>
         </a>
-        <div id="collapseUtilities" class="collapse" aria-labelledby="headingPost" data-parent="#accordionSidebar"
-            style="">
+        <div id="collapseUtilities" class="collapse" aria-labelledby="headingPost" data-parent="#accordionSidebar" style="">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="{{ route('post-type.index') }}">Danh mục bài viết</a>
                 <a class="collapse-item" href="{{ route('post.index') }}">Bài viết</a>
@@ -100,8 +104,7 @@
     </li>
 
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#monan"
-            aria-expanded="flase" aria-controls="monan">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#monan" aria-expanded="flase" aria-controls="monan">
             <i class="fa-solid fa-bell-concierge"></i>
             <span>Quản lý món ăn</span>
         </a>
@@ -112,12 +115,9 @@
             </div>
 
     </li>
-
-
     <!-- logo -->
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#logo-slider"
-            aria-expanded="true" aria-controls="logo-slider">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#logo-slider" aria-expanded="true" aria-controls="logo-slider">
 
             <i class="fa-solid fa-sliders"></i>
             <span>Logo & Slider</span>
@@ -135,17 +135,16 @@
     <!-- end logo -->
 
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwoabc"
-            aria-expanded="true" aria-controls="collapseTwoabc">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwoabc" aria-expanded="true" aria-controls="collapseTwoabc">
             <i class="fa-solid fa-user"></i>
 
             <span>Quản lý người dùng</span>
         </a>
         <div id="collapseTwoabc" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="{{ route('list-user') }}">Danh sách người dùng</a>
-                <a class="collapse-item" href="{{ route('list-role') }}">Quản lý vai trò</a>
-                <a class="collapse-item" href="{{ route('list-permission') }}">Quản lý quyền</a>
+                <a class="collapse-item" href="{{ route('user.index') }}">Danh sách người dùng</a>
+                <a class="collapse-item" href="{{ route('role.list') }}">Quản lý vai trò</a>
+                <a class="collapse-item" href="{{ route('permission.list') }}">Quản lý quyền</a>
                 <!-- link -->
             </div>
         </div>

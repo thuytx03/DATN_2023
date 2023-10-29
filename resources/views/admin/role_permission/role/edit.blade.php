@@ -3,7 +3,7 @@
 
 
 <div class="container-fluid">
-    <a href="{{route('list-role')}}" class="btn btn-success m-3">Danh sách vai trò</a>
+    <a href="{{route('role.list')}}" class="btn btn-success m-3">Danh sách vai trò</a>
 
     <!-- Page Heading -->
     @if ($errors->any())
@@ -16,7 +16,7 @@
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-body">
-            <form method="post" action="{{route('update-role',['id'=>$role->id])}}" enctype="multipart/form-data">
+            <form method="post" action="{{route('role.update',['id'=>$role->id])}}" enctype="multipart/form-data">
                 @csrf
                 <h1 class="h3 mb-2 text-gray-800">Sửa vai trò</h1>
 

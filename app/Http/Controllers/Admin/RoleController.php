@@ -27,7 +27,7 @@ class RoleController extends Controller
             $query->where('name', 'like', '%' . $search . '%');
         }
         $role =  $query->orderBy('id', 'DESC')->whereNotIn('name', ['Jungx-Admin'])->get();
-       
+
         return view('admin.role_permission.role.index', compact('role'));
     }
 
@@ -63,7 +63,7 @@ class RoleController extends Controller
 
 
         toastr()->success('Thank!  add successfully!');
-        return redirect()->route('list-role');
+        return redirect()->route('role.list');
     }
 
     /**
@@ -121,7 +121,7 @@ class RoleController extends Controller
 
             if ($result) {
                 toastr()->success('Cập nhật thành công!');
-                return redirect()->route('form-update-role', ['id' => $id]);
+                return redirect()->route('role.form-update', ['id' => $id]);
             }
         }
     }
@@ -136,11 +136,11 @@ class RoleController extends Controller
     {
         if ($id == 1) {
             toastr()->error('Không thể xóa vai trò này!');
-            return redirect()->route('list-role');
+            return redirect()->route('role.list');
         }
         Role::where('id', $id)->delete();
         toastr()->success('Xóa thành công!');
-        return redirect()->route('list-role');
+        return redirect()->route('role.list');
     }
     //thùng rác 
     public function list_bin(Request $request)
@@ -164,7 +164,7 @@ class RoleController extends Controller
             $role->deleted_at = null;
             $role->save();
             toastr()->success('Cập nhật thành công!');
-            return redirect()->route('list-bin-role');
+            return redirect()->route('role.list');
         } else {
             abort(404);
         }
@@ -172,20 +172,17 @@ class RoleController extends Controller
     public function delete_bin(Request $request, $id)
     {
         $role = Role::withTrashed()->find($id);
-
         if ($role && $role->deleted_at !== null) {
             $role->forceDelete();
             toastr()->success('Xóa thành công!');
-            return redirect()->route('list-bin-role');
+            return redirect()->route('role.list-role');
         } else {
             abort(404);
         }
     }
-
     public function deleteAll(Request $request)
     {
         $ids = $request->ids;
-
         if ($ids) {
             Role::whereIn('id', $ids)->delete();
             toastr()->success('Thành công xoá các vai trò đã chọn');
@@ -193,7 +190,6 @@ class RoleController extends Controller
             toastr()->warning('Không tìm thấy các vai trò đã chọn');
         }
     }
-
     public function delete_bin_all(Request $request)
     {
         $ids = $request->ids;
@@ -204,11 +200,10 @@ class RoleController extends Controller
         } else {
             toastr()->warning('Thất bại', 'Không tìm thấy các vai trò đã chọn');
         }
-        return redirect()->route('list-role');
+        return redirect()->route('role.list');
     }
     public function restore_bin_all(Request $request)
     {
-
         $ids = $request->ids;
         if ($ids) {
             $role = Role::withTrashed()->whereIn('id', $ids);
@@ -217,6 +212,6 @@ class RoleController extends Controller
         } else {
             toastr()->warning('Thất bại', 'Không tìm thấy các vai trò đã chọn');
         }
-        return redirect()->route('list-role');
+        return redirect()->route('role.list');
     }
 }

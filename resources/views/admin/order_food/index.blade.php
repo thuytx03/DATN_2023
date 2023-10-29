@@ -14,30 +14,25 @@
 </style>
 @endpush
 @section('title')
-Danh sách loại phòng
+Danh sách đơn đặt đồ ăn
 @endsection
 @section('content')
 <div class="container-fluid">
 
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Danh sách loại phòng</h1>
+    <h1 class="h3 mb-2 text-gray-800">Danh sách đơn đặt đồ ăn</h1>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <div class="row align-items-center">
-                <div class="col">
-                    <a href="{{ route('room-type.form-add') }}" class="btn btn-success">
-                        Thêm mới
-                    </a>
-                </div>
                 <div class="col text-right">
                     <div class="dropdown">
                         <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
                             Hành động
                         </button>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="{{route('bin.list-room-type')}}">Thùng rác</a>
+                            <a class="dropdown-item" href="">Thùng rác</a>
                             <a href="#" id="delete-selected" class="dropdown-item">Xoá đã chọn</a>
                         </div>
                     </div>
@@ -60,7 +55,7 @@ Danh sách loại phòng
                         </div>
 
                         <div class="col-sm-12 col-md-6">
-                            <form action="{{route('room-type.list')}}" method="GET">
+                            <form action="{{route('food.list')}}" method="GET">
                                 <div class="row">
                                     <div class="dataTables_length mr-3" id="dataTable_length"><label>Lọc
                                             <select name="status" aria-controls="dataTable" class="custom-select custom-select-sm form-control ">
@@ -92,44 +87,38 @@ Danh sách loại phòng
                                         <th class="">
                                             <input type="checkbox" class="" id="select-all">
                                         </th>
-                                        <th scope="col">Tên loại phòng</th>
+                                        <th scope="col">Tên phòng</th>
                                         <th scope="col">Mô tả</th>
+                                        <th scope="col">Loại phòng</th>
                                         <th scope="col">Hình ảnh</th>
-                                        <th scope="col">Đường dẫn</th>
+                                        <th scope="col">Rạp</th>
                                         <th scope="col">Trạng thái</th>
                                         <th scope="col">Hành động</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
-                                    @foreach($roomType as $rooms)
+                                    
                                     <tr>
                                         <td>
-                                            <input type="checkbox" class="child-checkbox" name="ids[]" value="{{ $rooms->id }}">
+                                            <input type="checkbox" class="child-checkbox" name="ids[]" value="">
                                         </td>
-                                        <td>{{$rooms->name}}</td>
-                                        <td>{{$rooms->description}}</td>
-                                        <td><img src="{{ $rooms->image?''.Storage::url($rooms->image):''}}" alt="" width="80px"></td>
-                                        <td>{{$rooms->slug}}</td>
-                                        <td>
-                                            <div class="form-check form-switch">
-                                                <input type="checkbox" value="{{$rooms->status}}" name="status" data-item-id="{{$rooms->id}}" class="switch1 switch-status" {{$rooms->status == 1 ?'checked':''}} />
-                                            </div>
-                                        </td>
+                                        <td></td>
+                                        <td></td>
                                         <td>
                                             <div class="dropdown">
                                                 <button class="btn" type="button" data-toggle="dropdown" aria-expanded="false">
                                                     <i class="fa-solid fa-ellipsis-vertical"></i>
                                                 </button>
                                                 <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="{{route('room-type.form-update',['id'=>$rooms->id])}}">Cập nhật</a>
-                                                    <a class="dropdown-item show_confirm" href="{{route('room-type.delete',['id'=>$rooms->id])}}">Xoá
+                                                    <a class="dropdown-item" href="">Cập nhật</a>
+                                                    <a class="dropdown-item show_confirm" href="">Xoá
                                                     </a>
                                                 </div>
                                             </div>
                                         </td>
                                     </tr>
-                                    @endforeach
+                                   
                                 </tbody>
                             </table>
                         </div>
@@ -210,7 +199,7 @@ Danh sách loại phòng
 
                 $.ajax({
                     method: 'POST',
-                    url: '/admin/room-type/update-status/' + itemId,
+                    url: '/admin/room/update-status/' + itemId,
                     data: {
                         _token: '{{ csrf_token() }}',
                         status: status
@@ -251,7 +240,7 @@ Danh sách loại phòng
                         if (result.isConfirmed) {
                             $.ajax({
                                 type: 'POST',
-                                url: '/admin/room-type/deleteAll', // Thay thế bằng tuyến đường xử lý xoá của bạn
+                                url: '/admin/room/deleteAll', // Thay thế bằng tuyến đường xử lý xoá của bạn
                                 data: {
                                     ids: selectedIds,
                                     _token: '{{ csrf_token() }}',

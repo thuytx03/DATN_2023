@@ -27,7 +27,7 @@ Danh sách quyền
         <div class="card-header py-3">
             <div class="row align-items-center">
                 <div class="col">
-                    <a href="{{ route('form-add-permission') }}" class="btn btn-success">
+                    <a href="{{ route('permission.form-add') }}" class="btn btn-success">
                         Thêm mới
                     </a>
                 </div>
@@ -37,7 +37,7 @@ Danh sách quyền
                             Hành động
                         </button>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="{{route('list-bin-permission')}}">Thùng rác</a>
+                            <a class="dropdown-item" href="{{route('bin.list-permission')}}">Thùng rác</a>
                             <a href="#" id="delete-selected" class="dropdown-item">Xoá đã chọn</a>
                         </div>
                     </div>
@@ -60,7 +60,7 @@ Danh sách quyền
                         </div>
 
                         <div class="col-md-6">
-                            <form action="{{route('list-permission')}}" method="GET">
+                            <form action="{{route('permission.list')}}" method="GET">
                                 <div class="row">
                                     <div id="dataTable_filter" class="dataTables_filter">
                                         <label>
@@ -105,8 +105,8 @@ Danh sách quyền
                                                     <i class="fa-solid fa-ellipsis-vertical"></i>
                                                 </button>
                                                 <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="{{route('form-update-permission',['id'=>$permission->id])}}">Cập nhật</a>
-                                                    <a class="dropdown-item show_confirm" href="{{route('delete-permission',['id'=>$permission->id])}}">Xoá
+                                                    <a class="dropdown-item" href="{{route('permission.form-update',['id'=>$permission->id])}}">Cập nhật</a>
+                                                    <a class="dropdown-item show_confirm" href="{{route('permission.delete',['id'=>$permission->id])}}">Xoá
                                                     </a>
                                                 </div>
                                             </div>
@@ -208,7 +208,7 @@ Danh sách quyền
                         if (result.isConfirmed) {
                             $.ajax({
                                 type: 'POST',
-                                url: '/admin/delete/all/permission', // Thay thế bằng tuyến đường xử lý xoá của bạn
+                                url: '/admin/permission/deleteAll', // Thay thế bằng tuyến đường xử lý xoá của bạn
                                 data: {
                                     ids: selectedIds,
                                     _token: '{{ csrf_token() }}',

@@ -29,10 +29,9 @@ class RoomTypeController extends Controller
                 $query->where('status', $status);
             }
         }
-        $roomType =$query->orderBy('id', 'DESC')->get();
+        $roomType = $query->orderBy('id', 'DESC')->get();
 
         return view('admin.room_type.room_type.index', compact('roomType'));
-        
     }
 
     /**
@@ -70,7 +69,7 @@ class RoomTypeController extends Controller
         try {
             $roomType->save();
             toastr()->success('Cảm ơn! ' . $roomType->name . ' thêm thành công!');
-            return redirect()->route('list-room-type');
+            return redirect()->route('room-type.list');
         } catch (\Exception $e) {
             // Handle any exceptions (e.g., database errors)
             toastr()->error('Đã xảy ra lỗi khi thêm phòng. Vui lòng thử lại.');
@@ -128,10 +127,10 @@ class RoomTypeController extends Controller
             $result = RoomType::where('id', $id)->update($params);
             if ($result) {
                 toastr()->success('Cập nhật thành công!');
-                return redirect()->route('form-update-room-type', ['id' => $id]);
+                return redirect()->route('room-type.form-update', ['id' => $id]);
             } else {
                 toastr()->error('Cập nhật thất bại. Vui lòng thử lại.');
-                return redirect()->route('form-update-room-type', ['id' => $id]);
+                return redirect()->route('room-type.form-update', ['id' => $id]);
             }
         }
     }
@@ -146,7 +145,7 @@ class RoomTypeController extends Controller
     {
         RoomType::where('id', $id)->delete();
         toastr()->success('Xóa thành công!');
-        return redirect()->route('list-room-type');
+        return redirect()->route('room-type.list');
     }
 
     public function list_bin(Request $request)
@@ -162,14 +161,13 @@ class RoomTypeController extends Controller
         // Lọc theo status trong trash
         if ($request->has('status')) {
             $status = $request->input('status');
-            if ($status != 0) { 
+            if ($status != 0) {
                 $query->where('status', $status);
             }
         }
 
         $softDeletedRoomType = $query->orderBy('id', 'DESC')->paginate(5);
         return view('admin.room_type.room_type.bin', compact('softDeletedRoomType'));
-       
     }
     public function restore_bin(Request $request, $id)
     {
@@ -179,7 +177,7 @@ class RoomTypeController extends Controller
             $room->deleted_at = null;
             $room->save();
             toastr()->success('Cập nhật thành công!');
-            return redirect()->route('list-bin-room-type');
+            return redirect()->route('bin.list-room-type');
         } else {
             abort(404);
         }
@@ -192,7 +190,7 @@ class RoomTypeController extends Controller
             Storage::delete('/public/' . $room->image);
             $room->forceDelete();
             toastr()->success('Xóa thành công!');
-            return redirect()->route('list-bin-room-type');
+            return redirect()->route('bin.list-room-type');
         } else {
             abort(404);
         }
@@ -214,7 +212,7 @@ class RoomTypeController extends Controller
     public function deleteAll(Request $request)
     {
         $ids = $request->ids;
-       
+
         if ($ids) {
             RoomType::whereIn('id', $ids)->delete();
             toastr()->success('Thành công xoá các phòng đã chọn');
@@ -230,11 +228,10 @@ class RoomTypeController extends Controller
             $room = RoomType::withTrashed()->whereIn('id', $ids);
             $room->forceDelete();
             toastr()->success('Thành công', 'Thành công xoá vĩnh viễn phòng');
-
         } else {
             toastr()->warning('Thất bại', 'Không tìm thấy các phòng đã chọn');
         }
-        return redirect()->route('list-room-type');
+        return redirect()->route('room-type.list');
     }
     public function restore_bin_all(Request $request)
     {

@@ -71,7 +71,7 @@ class RoomController extends Controller
         }
         $room->save();
         toastr()->success('Cảm ơn! ' . $data['name'] . ' thêm thành công!');
-        return redirect()->route('list-room');
+        return redirect()->route('room.list');
     }
 
     /**
@@ -121,7 +121,7 @@ class RoomController extends Controller
             $result = Room::where('id', $id)->update($params);
             if ($result) {
                 toastr()->success('Cập nhật thành công!');
-                return redirect()->route('form-update-room', ['id' => $id]);
+                return redirect()->route('room.form-update', ['id' => $id]);
             }
         }
     }
@@ -138,7 +138,7 @@ class RoomController extends Controller
         Storage::delete('/public/' . $room->image);
         Room::where('id', $id)->delete();
         toastr()->success('Xóa thành công!');
-        return redirect()->route('list-room');
+        return redirect()->route('room.list');
     }
 
     public function list_bin(Request $request)
@@ -170,7 +170,7 @@ class RoomController extends Controller
             $room->deleted_at = null;
             $room->save();
             toastr()->success('Cập nhật thành công!');
-            return redirect()->route('list-bin-room');
+            return redirect()->route('bin.list-room');
         } else {
             abort(404);
         }
@@ -183,7 +183,7 @@ class RoomController extends Controller
             Storage::delete('/public/' . $room->image);
             $room->forceDelete();
             toastr()->success('Xóa thành công!');
-            return redirect()->route('list-bin-room');
+            return redirect()->route('bin.list-room');
         } else {
             abort(404);
         }
@@ -224,7 +224,7 @@ class RoomController extends Controller
         } else {
             toastr()->warning('Thất bại', 'Không tìm thấy các phòng đã chọn');
         }
-        return redirect()->route('list-room');
+        return redirect()->route('room.list');
     }
     public function restore_bin_all(Request $request)
     {
@@ -237,6 +237,6 @@ class RoomController extends Controller
         } else {
             toastr()->warning('Thất bại', 'Không tìm thấy các phòng đã chọn');
         }
-        return redirect()->route('list-room');
+        return redirect()->route('room.list');
     }
 }

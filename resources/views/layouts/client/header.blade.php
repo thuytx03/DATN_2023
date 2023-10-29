@@ -61,7 +61,7 @@
                                 <a href="{{ route('movie-checkout') }}">Movie Checkout</a>
                             </li>
                             <li>
-                                <a href="{{ route('movie-food') }}">Movie Food</a>
+                                <a href="{{ route('food') }}">Movie Food</a>
                             </li>
                         </ul>
                     </li>

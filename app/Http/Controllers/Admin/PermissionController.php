@@ -52,7 +52,7 @@ class PermissionController extends Controller
         $user->group = $data['group'];
         $user->save();
         toastr()->success('Cảm ơn! ' . $data['display_name'] . ' thêm thành công!');
-        return redirect()->route('list-permission');
+        return redirect()->route('permission.list');
     }
 
     /**
@@ -95,7 +95,7 @@ class PermissionController extends Controller
             $result = Permission::where('id', $id)->update($params);
             if ($result) {
                 toastr()->success('Cập nhật thành công!');
-                return redirect()->route('form-update-permission', ['id' => $id]);
+                return redirect()->route('permission.form-update', ['id' => $id]);
             }
         }
     }
@@ -110,7 +110,7 @@ class PermissionController extends Controller
     {
         Permission::where('id', $id)->delete();
         toastr()->success('Xóa thành công!');
-        return redirect()->route('list-permission');
+        return redirect()->route('permission.list');
     }
     public function list_bin(Request $request)
     {
@@ -133,7 +133,7 @@ class PermissionController extends Controller
             $permission->deleted_at = null;
             $permission->save();
             toastr()->success('Cập nhật thành công!');
-            return redirect()->route('list-bin-permission');
+            return redirect()->route('bin.list-permission');
         } else {
             abort(404);
         }
@@ -145,7 +145,7 @@ class PermissionController extends Controller
         if ($permission && $permission->deleted_at !== null) {
             $permission->forceDelete();
             toastr()->success('Xóa thành công!');
-            return redirect()->route('list-bin-permission');
+            return redirect()->route('bin.list-permission');
         } else {
             abort(404);
         }
@@ -172,7 +172,7 @@ class PermissionController extends Controller
         } else {
             toastr()->warning('Thất bại', 'Không tìm thấy các quyền đã chọn');
         }
-        return redirect()->route('list-permission');
+        return redirect()->route('permision.list');
     }
     public function restore_bin_all(Request $request)
     {
@@ -185,6 +185,6 @@ class PermissionController extends Controller
         } else {
             toastr()->warning('Thất bại', 'Không tìm thấy các quyền đã chọn');
         }
-        return redirect()->route('list-permission');
+        return redirect()->route('permision.list');
     }
 }

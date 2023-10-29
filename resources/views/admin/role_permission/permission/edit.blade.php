@@ -5,7 +5,7 @@
 <div class="container-fluid">
 
     <!-- Page Heading -->
-    <a href="{{route('list-permission')}}" class="btn btn-success m-3">Danh sách quyền</a>
+    <a href="{{route('permission.list')}}" class="btn btn-success m-3">Danh sách quyền</a>
     @if ($errors->any())
     <div class="alert alert-danger">
         @foreach ($errors->all() as $error)
@@ -16,7 +16,7 @@
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-body">
-            <form method="post" action="{{route('update-permission',['id'=>$permission->id])}}" enctype="multipart/form-data">
+            <form method="post" action="{{route('permission.update',['id'=>$permission->id])}}" enctype="multipart/form-data">
                 @csrf
                 <h1 class="h3 mb-2 text-gray-800">Sửa quyền</h1>
                 <div class="row">

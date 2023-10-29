@@ -27,7 +27,7 @@ Thùng rác phòng
         <div class="card-header py-3">
             <div class="row align-items-center">
                 <div class="col">
-                    <a href="{{ route('list-room-type') }}" class="btn btn-success">
+                    <a href="{{ route('room-type.list') }}" class="btn btn-success">
                         Danh sách loại phòng
                     </a>
                 </div>
@@ -59,7 +59,7 @@ Thùng rác phòng
                             </div>
                         </div>
                         <div class="col-sm-12 col-md-6">
-                            <form action="{{ route('list-bin-room-type') }}" method="get">
+                            <form action="{{ route('bin.list-room-type') }}" method="get">
 
                                 <div class="row">
                                     <div class="dataTables_length mr-2" id="dataTable_length"><label>Lọc
@@ -111,9 +111,9 @@ Thùng rác phòng
                                                     <i class="fa-solid fa-ellipsis-vertical"></i>
                                                 </button>
                                                 <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="{{ route('restore-bin-room-type', ['id' => $softDeletedRoom->id]) }}">Khôi phục mục đã chọn</a>
+                                                    <a class="dropdown-item" href="{{ route('bin.restore-room-type', ['id' => $softDeletedRoom->id]) }}">Khôi phục mục đã chọn</a>
 
-                                                    <a class="dropdown-item show_confirm" href="{{ route('delete-bin-room-type', ['id' => $softDeletedRoom->id]) }}">Xoá vĩnh viễn
+                                                    <a class="dropdown-item show_confirm" href="{{ route('bin.delete-room-type', ['id' => $softDeletedRoom->id]) }}">Xoá vĩnh viễn
                                                     </a>
 
                                                 </div>
@@ -216,7 +216,7 @@ Thùng rác phòng
 
                             $.ajax({
                                 type: 'POST',
-                                url: '/admin/bin/delete/all/room/type', // Thay thế bằng tuyến đường xử lý xoá của bạn
+                                url: '/admin/room-type/permanentlyDeleteSelected', // Thay thế bằng tuyến đường xử lý xoá của bạn
                                 data: {
                                     ids: selectedIds,
                                     _token: '{{ csrf_token() }}',
@@ -263,7 +263,7 @@ Thùng rác phòng
 
                             $.ajax({
                                 type: 'POST',
-                                url: '/admin/bin/restore/all/room/type',
+                                url: '/admin/room-type/restoreSelected',
                                 data: {
                                     ids: selectedIds,
                                     _token: '{{ csrf_token() }}',

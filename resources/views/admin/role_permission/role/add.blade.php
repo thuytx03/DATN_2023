@@ -5,7 +5,7 @@
 <div class="container-fluid">
 
     <!-- Page Heading -->
-    <a href="{{route('list-role')}}" class="btn btn-success m-3">Danh sách vai trò</a>
+    <a href="{{route('role.list')}}" class="btn btn-success m-3">Danh sách vai trò</a>
     @if ($errors->any())
                 <div class="alert alert-danger">
                     @foreach ($errors->all() as $error)
@@ -16,7 +16,7 @@
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-body">
-            <form method="post" action="{{route('add-role')}}" enctype="multipart/form-data">
+            <form method="post" action="{{route('role.add')}}" enctype="multipart/form-data">
                 @csrf
                 <h1 class="h3 mb-2 text-gray-800">Thêm mới vai trò</h1>
                 <div class="container">

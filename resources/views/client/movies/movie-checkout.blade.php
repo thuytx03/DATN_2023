@@ -95,7 +95,7 @@
                             border-radius: 50%;
                             top: -15px;
                             right: -15px;
-                            background: url({{asset('client/assets/images/payment/check.png')}}) no-repeat center center;
+                            /* background: url({{asset('client/assets/images/payment/check.png')}}) no-repeat center center; */
                             background-size: cover;
                         }
 
