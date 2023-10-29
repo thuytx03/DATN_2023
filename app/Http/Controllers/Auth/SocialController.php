@@ -49,7 +49,7 @@ class SocialController extends Controller
                     'password' => bcrypt('admin@123')
                 ]);
                 // email chào mừng
-                $name = 'Chào Mừng   ' . '  ' . $user->name . '' . 'đến với boleto';
+                $name =  $user->name;
                 Mail::send('admin.auth.mail', compact('name'), function ($message) {
                     $user = Socialite::driver('google')->user();
                     $message->from('anhandepgiai22@gmail.com', 'Boleto');
@@ -72,10 +72,8 @@ class SocialController extends Controller
     public function logout()
     {
         Auth::logout();
-   
-    
-            return redirect(route('login'));
-  
-    
+
+
+        return redirect(route('login'));
     }
 }

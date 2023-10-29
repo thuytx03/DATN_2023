@@ -209,6 +209,8 @@ Route::prefix('admin')->group(function () {
         Route::post('/permanentlyDeleteSelected', [MovieController::class, 'permanentlyDeleteSelected'])->name('movie.permanentlyDeleteSelected');
         Route::post('/restoreSelected', [MovieController::class, 'restoreSelected'])->name('movie.restoreSelected');
     });
+
+    // đồ ăn
     Route::prefix('movie-food')->group(function () {
         Route::get('/', [MovieFoodsController::class, 'index'])->name('movie-foode.index');
         Route::get('/create', [MovieFoodsController::class, 'create'])->name('movie-foode.add');
@@ -223,6 +225,49 @@ Route::prefix('admin')->group(function () {
         Route::post('/unTrashAll', [MovieFoodsController::class, 'unTrashAll'])->name('movie-foode.unTrashAll');
         Route::post('/deleteAll', [MovieFoodsController::class, 'deleteAll'])->name('movie-foode.destroys');
         Route::get('/changeStatus/{id}', [MovieFoodsController::class, 'changeStatus'])->name('movie-foode.changeStatus');
+    });
+
+    Route::prefix('seat-type')->group(function () {
+        Route::get('/', [SeatTypeController::class, 'index'])->name('seat-type.index');
+        Route::match(['GET', 'POST'], '/store', [SeatTypeController::class, 'store'])->name('seat-type.store');
+        Route::match(['GET', 'POST'], '/update/{id}', [SeatTypeController::class, 'update'])->name('seat-type.update');
+        Route::get('/destroy/{id}', [SeatTypeController::class, 'destroy'])->name('seat-type.destroy');
+        Route::post('/deleteAll', [SeatTypeController::class, 'deleteAll'])->name('seat-type.deleteAll');
+        Route::post('/update-status/{id}', [SeatTypeController::class, 'updateStatus'])->name('seat-type.updateStatus');
+        Route::get('/trash', [SeatTypeController::class, 'trash'])->name('seat-type.trash');
+        Route::get('/permanentlyDelete/{id}', [SeatTypeController::class, 'permanentlyDelete'])->name('seat-type.permanentlyDelete');
+        Route::post('/permanentlyDeleteSelected', [SeatTypeController::class, 'permanentlyDeleteSelected'])->name('seat-type.permanentlyDeleteSelected');
+        Route::post('/restoreSelected', [SeatTypeController::class, 'restoreSelected'])->name('seat-type.restoreSelected');
+        Route::get('/restore/{id}', [SeatTypeController::class, 'restore'])->name('seat-type.restore');
+    });
+    Route::prefix('seat')->group(function () {
+        Route::get('/', [SeatController::class, 'index'])->name('seat.index');
+        Route::match(['GET', 'POST'], '/store', [SeatController::class, 'store'])->name('seat.store');
+        Route::match(['GET', 'POST'], '/update/{room_id}', [SeatController::class, 'update'])->name('seat.update');
+        Route::get('/destroy/{id}', [SeatController::class, 'destroy'])->name('seat.destroy');
+        Route::post('/deleteAll', [SeatController::class, 'deleteAll'])->name('seat.deleteAll');
+        Route::get('/get-cinemas/{provinceId}',  [SeatController::class, 'getCinemas']);
+        Route::get('/get-rooms/{cinemaId}',  [SeatController::class, 'getRooms']);
+    });
+
+    /*
+* Showtime
+*/
+    Route::prefix('show-time')->group(function () {
+        Route::get('/', [ShowTimeController::class, 'index'])->name('show-time.index');
+        Route::get('/create', [ShowTimeController::class, 'create'])->name('show-time.add');
+        Route::post('/store', [ShowTimeController::class, 'store'])->name('show-time.store');
+        Route::get('/edit/{id}', [ShowTimeController::class, 'edit'])->name('show-time.edit');
+        Route::get('/show/{id}', [ShowTimeController::class, 'show'])->name('show-time.show');
+        Route::post('/update/{id}', [ShowTimeController::class, 'update'])->name('show-time.update');
+        Route::get('/destroy/{id}', [ShowTimeController::class, 'destroy'])->name('show-time.destroy');
+        Route::get('/restore/{id}', [ShowTimeController::class, 'restore'])->name('show-time.restore');
+        Route::get('/trash', [ShowTimeController::class, 'trash'])->name('show-time.trash');
+        Route::get('/delete/{id}', [ShowTimeController::class, 'delete'])->name('show-time.delete');
+        Route::post('/update-status/{id}', [ShowTimeController::class, 'updateStatus'])->name('show-time.updateStatus');
+        Route::post('/deleteAll', [ShowTimeController::class, 'deleteAll'])->name('show-time.deleteAll');
+        Route::post('/permanentlyDeleteSelected', [ShowTimeController::class, 'permanentlyDeleteSelected'])->name('show-time.permanentlyDeleteSelected');
+        Route::post('/restoreSelected', [ShowTimeController::class, 'restoreSelected'])->name('show-time.restoreSelected');
     });
     Route::prefix('food_types')->group(function () {
         Route::get('/', [FoodTypesController::class, 'index'])->name('food_types.index');
@@ -331,6 +376,7 @@ Route::prefix('admin')->group(function () {
         Route::post('/permanentlyDeleteSelected', [CinemaController::class, 'permanentlyDeleteSelected'])->name('cinema.permanentlyDeleteSelected');
         Route::post('/restoreSelected', [CinemaController::class, 'restoreSelected'])->name('cinema.restoreSelected');
         Route::get('/restore/{id}', [CinemaController::class, 'restore'])->name('cinema.restore');
+
     });
 });
 
@@ -372,3 +418,6 @@ Route::get('about-us', function () {
 Route::get('contact', function () {
     return view('client.contacts.contact');
 })->name('contact');
+
+
+

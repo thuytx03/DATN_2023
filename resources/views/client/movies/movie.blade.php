@@ -1,375 +1,108 @@
 <section class="movie-section padding-top padding-bottom">
-        <div class="container">
-            <div class="tab">
-                <div class="section-header-2">
-                    <div class="left">
-                        <h2 class="title">movies</h2>
-                        <p>Be sure not to miss these Movies today.</p>
-                    </div>
-                    <ul class="tab-menu">
-                        <li class="active">
-                            now showing 
-                        </li>
-                        <li>
-                            coming soon
-                        </li>
-                        <li>
-                            exclusive
-                        </li>
-                    </ul>
+    <div class="container">
+        <style>
+            .button5 {
+                background-color: #032055;
+                border: none;
+            }
+        </style>
+        <div class="tab">
+            <div class="section-header-2">
+                <div class="left">
+                    <h2 class="title">movies</h2>
+                    <p>Be sure not to miss these Movies today.</p>
                 </div>
-                <div class="tab-area mb-30-none">
-                    <div class="tab-item active">
-                        <div class="owl-carousel owl-theme tab-slider">
-                            <div class="item">
-                                <div class="movie-grid">
-                                    <div class="movie-thumb c-thumb">
-                                        <a href="#0">
-                                            <img src=" {{asset('client/assets/images/movie/movie01.jpg')}}" alt="movie">
-                                        </a>
-                                    </div>
-                                    <div class="movie-content bg-one">
-                                        <h5 class="title m-0">
-                                            <a href="#0">alone</a>
-                                        </h5>
-                                        <ul class="movie-rating-percent">
-                                            <li>
-                                                <div class="thumb">
-                                                    <img src=" {{asset('client/assets/images/movie/tomato.png')}}" alt="movie">
-                                                </div>
-                                                <span class="content">88%</span>
-                                            </li>
-                                            <li>
-                                                <div class="thumb">
-                                                    <img src=" {{asset('client/assets/images/movie/cake.png')}}" alt="movie">
-                                                </div>
-                                                <span class="content">88%</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div> 
-                            </div>
-                            <div class="item">
-                                <div class="movie-grid">
-                                    <div class="movie-thumb c-thumb">
-                                        <a href="#0">
-                                            <img src=" {{asset('client/assets/images/movie/movie02.jpg')}}" alt="movie">
-                                        </a>
-                                    </div>
-                                    <div class="movie-content bg-one">
-                                        <h5 class="title m-0">
-                                            <a href="#0">mars</a>
-                                        </h5>
-                                        <ul class="movie-rating-percent">
-                                            <li>
-                                                <div class="thumb">
-                                                    <img src=" {{asset('client/assets/images/movie/tomato.png')}}" alt="movie">
-                                                </div>
-                                                <span class="content">88%</span>
-                                            </li>
-                                            <li>
-                                                <div class="thumb">
-                                                    <img src=" {{asset('client/assets/images/movie/cake.png')}}" alt="movie">
-                                                </div>
-                                                <span class="content">88%</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div> 
-                            </div>
-                            <div class="item">
-                                <div class="movie-grid">
-                                    <div class="movie-thumb c-thumb">
-                                        <a href="#0">
-                                            <img src=" {{asset('client/assets/images/movie/movie03.jpg')}}" alt="movie">
-                                        </a>
-                                    </div>
-                                    <div class="movie-content bg-one">
-                                        <h5 class="title m-0">
-                                            <a href="#0">venus</a>
-                                        </h5>
-                                        <ul class="movie-rating-percent">
-                                            <li>
-                                                <div class="thumb">
-                                                    <img src=" {{asset('client/assets/images/movie/tomato.png')}}" alt="movie">
-                                                </div>
-                                                <span class="content">88%</span>
-                                            </li>
-                                            <li>
-                                                <div class="thumb">
-                                                    <img src=" {{asset('client/assets/images/movie/cake.png')}}" alt="movie">
-                                                </div>
-                                                <span class="content">88%</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div> 
-                            </div>
-                            <div class="item">
-                                <div class="movie-grid">
-                                    <div class="movie-thumb c-thumb">
-                                        <a href="#0">
-                                            <img src=" {{asset('client/assets/images/movie/movie04.jpg')}}" alt="movie">
-                                        </a>
-                                    </div>
-                                    <div class="movie-content bg-one">
-                                        <h5 class="title m-0">
-                                            <a href="#0">horror night</a>
-                                        </h5>
-                                        <ul class="movie-rating-percent">
-                                            <li>
-                                                <div class="thumb">
-                                                    <img src=" {{asset('client/assets/images/movie/tomato.png')}}" alt="movie">
-                                                </div>
-                                                <span class="content">88%</span>
-                                            </li>
-                                            <li>
-                                                <div class="thumb">
-                                                    <img src=" {{asset('client/assets/images/movie/cake.png')}}" alt="movie">
-                                                </div>
-                                                <span class="content">88%</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div> 
+                <ul class="tab-menu">
+                    <li class="active">
+                        now showing
+                    </li>
+                    <li>
+                        coming soon
+                    </li>
+                    <li>
+                        exclusive
+                    </li>
+                </ul>
+            </div>
+            <div class="tab-area mb-30-none">
+                <div class="tab-item active">
+                    <div class="owl-carousel owl-theme tab-slider">
+                        @foreach ($movies as $movie)
+                        <div class="item">
+                            <div class="movie-grid">
+                                <div class="movie-thumb c-thumb">
+                                    <a href="#0">
+                                    <img alt="movies" width="60" src="{{ $movie->poster ? Storage::url($movie->poster) : asset('images/image-not-found.jpg') }}" alt="Image">
+                                    </a>
+                                </div>
+                                <div class="movie-content bg-one">
+                                    <h5 class="title m-0">
+                                        <a href="{{route('movie.detail', ['id' => $movie->id])}}">{{$movie->name}}</a>
+                                    </h5>
+                                    <ul class="movie-rating-percent">
+                                        <li>
+                                            <div class="thumb">
+                                                <img src=" {{asset('client/assets/images/movie/tomato.png')}}" alt="movie">
+                                            </div>
+                                            <span class="content">88%</span>
+                                        </li>
+                                        <li>
+                                            <div class="thumb">
+                                                <img src=" {{asset('client/assets/images/movie/cake.png')}}" alt="movie">
+                                            </div>
+                                            <span class="content">88%</span>
+                                        </li>
+                                        <li>
+                                            <div class="thumb1">
+                                                @if(auth()->check())
+                                               
+                                                <form action="{{route('home.favorite.add',['id'=>$movie->id])}}">
+                                                    <button type="submit"  id="favorite-link" style="color: white" class="button5" data-movie-id="{{ $movie->id }}">
+                                                        <i id="heart-icon" class="fas fa-heart {{ $user->favoriteMovies->contains($movie) ? 'text-danger' : '' }}"></i>
+                                                       
+                                                    </button>
+                                                </form>
+                                                @else
+                                                    <a href="{{route('home.favorite.add',['id'=>$movie->id])}}" style="color: white">
+                                                        <i id="heart-icon" class="fas fa-heart"></i>
+                                                    </a>
+                                                @endif
+                                            
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="tab-item">
-                        <div class="owl-carousel owl-theme tab-slider">
-                            <div class="item">
-                                <div class="movie-grid">
-                                    <div class="movie-thumb c-thumb">
-                                        <a href="#0">
-                                            <img src=" {{asset('client/assets/images/movie/movie01.jpg')}}" alt="movie">
-                                        </a>
-                                    </div>
-                                    <div class="movie-content bg-one">
-                                        <h5 class="title m-0">
-                                            <a href="#0">alone</a>
-                                        </h5>
-                                        <ul class="movie-rating-percent">
-                                            <li>
-                                                <div class="thumb">
-                                                    <img src=" {{asset('client/assets/images/movie/tomato.png')}}" alt="movie">
-                                                </div>
-                                                <span class="content">88%</span>
-                                            </li>
-                                            <li>
-                                                <div class="thumb">
-                                                    <img src=" {{asset('client/assets/images/movie/cake.png')}}" alt="movie">
-                                                </div>
-                                                <span class="content">88%</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div> 
-                            </div>
-                            <div class="item">
-                                <div class="movie-grid">
-                                    <div class="movie-thumb c-thumb">
-                                        <a href="#0">
-                                            <img src=" {{asset('client/assets/images/movie/movie02.jpg')}}" alt="movie">
-                                        </a>
-                                    </div>
-                                    <div class="movie-content bg-one">
-                                        <h5 class="title m-0">
-                                            <a href="#0">mars</a>
-                                        </h5>
-                                        <ul class="movie-rating-percent">
-                                            <li>
-                                                <div class="thumb">
-                                                    <img src=" {{asset('client/assets/images/movie/tomato.png')}}" alt="movie">
-                                                </div>
-                                                <span class="content">88%</span>
-                                            </li>
-                                            <li>
-                                                <div class="thumb">
-                                                    <img src=" {{asset('client/assets/images/movie/cake.png')}}" alt="movie">
-                                                </div>
-                                                <span class="content">88%</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div> 
-                            </div>
-                            <div class="item">
-                                <div class="movie-grid">
-                                    <div class="movie-thumb c-thumb">
-                                        <a href="#0">
-                                            <img src=" {{asset('client/assets/images/movie/movie03.jpg')}}" alt="movie">
-                                        </a>
-                                    </div>
-                                    <div class="movie-content bg-one">
-                                        <h5 class="title m-0">
-                                            <a href="#0">venus</a>
-                                        </h5>
-                                        <ul class="movie-rating-percent">
-                                            <li>
-                                                <div class="thumb">
-                                                    <img src=" {{asset('client/assets/images/movie/tomato.png')}}" alt="movie">
-                                                </div>
-                                                <span class="content">88%</span>
-                                            </li>
-                                            <li>
-                                                <div class="thumb">
-                                                    <img src=" {{asset('client/assets/images/movie/cake.png')}}" alt="movie">
-                                                </div>
-                                                <span class="content">88%</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div> 
-                            </div>
-                            <div class="item">
-                                <div class="movie-grid">
-                                    <div class="movie-thumb c-thumb">
-                                        <a href="#0">
-                                            <img src=" {{asset('client/assets/images/movie/movie04.jpg')}}" alt="movie">
-                                        </a>
-                                    </div>
-                                    <div class="movie-content bg-one">
-                                        <h5 class="title m-0">
-                                            <a href="#0">horror night</a>
-                                        </h5>
-                                        <ul class="movie-rating-percent">
-                                            <li>
-                                                <div class="thumb">
-                                                    <img src=" {{asset('client/assets/images/movie/tomato.png')}}" alt="movie">
-                                                </div>
-                                                <span class="content">88%</span>
-                                            </li>
-                                            <li>
-                                                <div class="thumb">
-                                                    <img src=" {{asset('client/assets/images/movie/cake.png')}}" alt="movie">
-                                                </div>
-                                                <span class="content">88%</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div> 
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-item">
-                        <div class="owl-carousel owl-theme tab-slider">
-                            <div class="item">
-                                <div class="movie-grid">
-                                    <div class="movie-thumb c-thumb">
-                                        <a href="#0">
-                                            <img src="{{asset('client/assets/images/movie/movie01.jpg')}}" alt="movie">
-                                        </a>
-                                    </div>
-                                    <div class="movie-content bg-one">
-                                        <h5 class="title m-0">
-                                            <a href="#0">alone</a>
-                                        </h5>
-                                        <ul class="movie-rating-percent">
-                                            <li>
-                                                <div class="thumb">
-                                                    <img src=" {{asset('client/assets/images/movie/tomato.png')}}" alt="movie">
-                                                </div>
-                                                <span class="content">88%</span>
-                                            </li>
-                                            <li>
-                                                <div class="thumb">
-                                                    <img src="{{asset('client/assets/images/movie/cake.png')}}" alt="movie">
-                                                </div>
-                                                <span class="content">88%</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div> 
-                            </div>
-                            <!-- item -->
-                            <div class="item">
-                                <div class="movie-grid">
-                                    <div class="movie-thumb c-thumb">
-                                        <a href="#0">
-                                            <img src="{{asset('client/assets/images/movie/movie02.jpg')}}" alt="movie">
-                                        </a>
-                                    </div>
-                                    <div class="movie-content bg-one">
-                                        <h5 class="title m-0">
-                                            <a href="#0">alone</a>
-                                        </h5>
-                                        <ul class="movie-rating-percent">
-                                            <li>
-                                                <div class="thumb">
-                                                    <img src=" {{asset('client/assets/images/movie/tomato.png')}}" alt="movie">
-                                                </div>
-                                                <span class="content">88%</span>
-                                            </li>
-                                            <li>
-                                                <div class="thumb">
-                                                    <img src="{{asset('client/assets/images/movie/cake.png')}}" alt="movie">
-                                                </div>
-                                                <span class="content">88%</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div> 
-                            </div>
-                            <!-- end-item -->
-                            <div class="item">
-                                <div class="movie-grid">
-                                    <div class="movie-thumb c-thumb">
-                                        <a href="#0">
-                                            <img src="{{asset('client/assets/images/movie/movie03.jpg')}}" alt="movie">
-                                        </a>
-                                    </div>
-                                    <div class="movie-content bg-one">
-                                        <h5 class="title m-0">
-                                            <a href="#0">alone</a>
-                                        </h5>
-                                        <ul class="movie-rating-percent">
-                                            <li>
-                                                <div class="thumb">
-                                                    <img src=" {{asset('client/assets/images/movie/tomato.png')}}" alt="movie">
-                                                </div>
-                                                <span class="content">88%</span>
-                                            </li>
-                                            <li>
-                                                <div class="thumb">
-                                                    <img src="{{asset('client/assets/images/movie/cake.png')}}" alt="movie">
-                                                </div>
-                                                <span class="content">88%</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div> 
-                            </div>
-                            <div class="item">
-                                <div class="movie-grid">
-                                    <div class="movie-thumb c-thumb">
-                                        <a href="#0">
-                                            <img src="{{asset('client/assets/images/movie/movie04.jpg')}}" alt="movie">
-                                        </a>
-                                    </div>
-                                    <div class="movie-content bg-one">
-                                        <h5 class="title m-0">
-                                            <a href="#0">alone</a>
-                                        </h5>
-                                        <ul class="movie-rating-percent">
-                                            <li>
-                                                <div class="thumb">
-                                                    <img src=" {{asset('client/assets/images/movie/tomato.png')}}" alt="movie">
-                                                </div>
-                                                <span class="content">88%</span>
-                                            </li>
-                                            <li>
-                                                <div class="thumb">
-                                                    <img src="{{asset('client/assets/images/movie/cake.png')}}" alt="movie">
-                                                </div>
-                                                <span class="content">88%</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div> 
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
+
+<script>
+    // Select all elements with the "favorite-button" class
+    const favoriteButtons = document.querySelectorAll(".favorite-button");
+
+    favoriteButtons.forEach(button => {
+        button.addEventListener("click", function(event) {
+            event.preventDefault();
+            const movieId = button.getAttribute("data-movie-id");
+            const heartIcon = button.querySelector("i");
+
+            // Toggle favorite status
+            const isFavorite = !heartIcon.classList.contains("text-danger");
+
+            if (isFavorite) {
+                heartIcon.classList.add("text-danger");
+            } else {
+                heartIcon.classList.remove("text-danger");
+            }
+
+            // Send the favorite status to the server
+            sendFavoriteStatus(movieId, isFavorite);
+        });
+    });
+</script>
+

@@ -20,7 +20,7 @@
         <div class="container">
             <div class="header-wrapper">
                 <div class="logo">
-                    <a href="index.html">
+                    <a href="{{ route('index') }}">
                         <img src=" {{asset('client/assets/images/logo/logo.png')}}" alt="logo">
                     </a>
                 </div>
@@ -37,19 +37,16 @@
                         </ul>
                     </li>
                     <li>
-                        <a href="#0">movies</a>
+                        <a href="#0">Phim</a>
                         <ul class="submenu">
                             <li>
                                 <a href="movie-grid.html">Movie Grid</a>
                             </li>
                             <li>
-                                <a href="{{ route('movie-list') }}">Movie List</a>
+                                <a href="{{ route('movie.list') }}">Movie List</a>
                             </li>
                             <li>
-                                <a href="{{ route('movie-detail') }}">Movie Details</a>
-                            </li>
-                            <li>
-                                <a href="movie-details-2.html">Movie Details 2</a>
+                                <a href="{{route('home.favorite.list')}}">Phim Yêu Thích</a>
                             </li>
                             <li>
                                 <a href="{{ route('movie-ticket-plan') }}">Movie Ticket Plan</a>
@@ -86,20 +83,12 @@
                         </ul>
                     </li>
                     <li>
-                        <a href="#0">sports</a>
+                        <a href="#0">Mã Giảm Giá</a>
                         <ul class="submenu">
                             <li>
-                                <a href="sports.html">Sports</a>
+                                <a href="{{ route('home.voucher.list') }}">Danh Sách Mã Giảm Giá</a>
                             </li>
-                            <li>
-                                <a href="sport-details.html">Sport Details</a>
-                            </li>
-                            <li>
-                                <a href="sports-ticket.html">Sport Ticket</a>
-                            </li>
-                            <li>
-                                <a href="sports-checkout.html">Sport Checkout</a>
-                            </li>
+                           
                         </ul>
                     </li>
                     <li>
@@ -126,7 +115,7 @@
                         <a href="#0">blog</a>
                         <ul class="submenu">
                             <li>
-                                <a href="{{ route('blog') }}">Blog</a>
+                                <a href="">Blog</a>
                             </li>
                             <li>
                                 <a href="blog-details.html">Blog Single</a>

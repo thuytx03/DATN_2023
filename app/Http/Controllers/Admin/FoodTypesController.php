@@ -36,7 +36,7 @@ class FoodTypesController extends Controller
 
         if ($request->has('keyword')) {
             $keyword = $request->input('keyword');
-            $listTypes->where('name', 'LIKE', "%$keyword");
+            $listTypes->where('name', 'LIKE','%'.$keyword.'%');
         }
         if ($request->has('status') && in_array($request->input('status'), ['active', 'unactive'])) {
             $status = $request->status;
@@ -136,7 +136,7 @@ class FoodTypesController extends Controller
 
         if ($request->has('keyword')) {
             $keyword = $request->input('keyword');
-            $listTypes->where('name', 'LIKE', "%$keyword%");
+            $listTypes->where('name', 'LIKE','%'.$keyword.'%');;
         }
 
         if ($request->has('status') && in_array($request->input('status'), ['active', 'unactive'])) {

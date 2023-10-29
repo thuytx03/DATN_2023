@@ -38,6 +38,7 @@ class MovieController extends Controller
             }
         }
         $movies = $query->orderBy('id', 'DESC')->paginate(5);
+       
         return view('admin.movie.index',compact('movies'));
     }
 
