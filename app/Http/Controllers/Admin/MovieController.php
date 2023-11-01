@@ -33,13 +33,13 @@ class MovieController extends Controller
             $status = $request->input('status');
             if ($status == 1 || $status == 0) {
                 $query->where('status', $status);
-            } else if($status == 'all') {
+            } else if ($status == 'all') {
                 $query->get();
             }
         }
         $movies = $query->orderBy('id', 'DESC')->paginate(5);
-       
-        return view('admin.movie.index',compact('movies'));
+
+        return view('admin.movie.index', compact('movies'));
     }
 
     /**
@@ -51,7 +51,7 @@ class MovieController extends Controller
     {
         $genres = Genre::all();
         $contries = Country::all();
-        return view('admin.movie.add', compact('genres','contries'));
+        return view('admin.movie.add', compact('genres', 'contries'));
     }
 
     /**
@@ -62,7 +62,7 @@ class MovieController extends Controller
      */
     public function store(MovieRequest $request)
     {
-        // try {
+        try {
             $imageNames = [];
             if ($request->hasFile('poster') && $request->file('poster')->isValid()) {
                 $request->poster = uploadFile('movies', $request->file('poster'));
@@ -86,7 +86,7 @@ class MovieController extends Controller
             $movie->description = $request->description;
             $movie->status = $request->status;
             $movie->country_id = $request->country_id;
-            if($request->movie_image) {
+            if ($request->movie_image) {
                 foreach ($request->file('movie_image') as $file) {
                     $imageNames[] = uploadFile('movies', $file);
                 }
@@ -104,13 +104,13 @@ class MovieController extends Controller
                 toastr()->success('Thêm mới phim thành công', 'success');
                 return redirect()->route('movie.index');
             }
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[1] === 1062) { // Lỗi duplicate entry
+                return redirect()->back()->withErrors(['slug' => 'Slug đã bị trùng lặp.Vui lòng sửa đường dẫn']);
             }
-            //  catch (\Illuminate\Database\QueryException $e) {
-            //     if ($e->errorInfo[1] === 1062) { // Lỗi duplicate entry
-            //         return redirect()->back()->withErrors(['slug' => 'Slug đã bị trùng lặp.Vui lòng sửa đường dẫn']);
-            //     }
-            // }
-    
+        }
+    }
+
 
     /**
      * Display the specified resource.
@@ -118,7 +118,8 @@ class MovieController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public
+    function show($id)
     {
         //
     }
@@ -129,13 +130,14 @@ class MovieController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public
+    function edit($id)
     {
         $genres = Genre::all();
         $movie = Movie::find($id);
         $contries = Country::all();
-        $images = MovieImage::where('movie_id',$id)->get();
-        return view('admin.movie.edit',compact('genres','movie','images','contries'));
+        $images = MovieImage::where('movie_id', $id)->get();
+        return view('admin.movie.edit', compact('genres', 'movie', 'images', 'contries'));
     }
 
     /**
@@ -145,7 +147,8 @@ class MovieController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(MovieRequest $request, $id)
+    public
+    function update(MovieRequest $request, $id)
     {
         try {
             $imageNames = [];
@@ -161,8 +164,8 @@ class MovieController extends Controller
             } else {
                 $request->poster = $movie->poster;
             }
-            $movieImages = MovieImage::where('movie_id',$id)->get();
-            if($request->hasFile('movie_image')) {
+            $movieImages = MovieImage::where('movie_id', $id)->get();
+            if ($request->hasFile('movie_image')) {
                 MovieImage::where('movie_id', $id)->delete();
                 foreach ($movieImages as $image) {
                     Storage::delete('/public/' . $image->movie_image);
@@ -196,7 +199,8 @@ class MovieController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public
+    function destroy($id)
     {
         if ($id) {
             $deleted = Movie::where('id', $id)->delete();
@@ -208,7 +212,10 @@ class MovieController extends Controller
             return redirect()->route('movie.index');
         }
     }
-    public function trash(MovieRequest $request) {
+
+    public
+    function trash(MovieRequest $request)
+    {
         $deleteItems = Movie::onlyTrashed();
 
         // Tìm kiếm theo name trong trash
@@ -221,7 +228,7 @@ class MovieController extends Controller
             $status = $request->input('status');
             if ($status == 0 || $status == 1) {
                 $deleteItems->where('status', $status);
-            } else if($status == 'all') {
+            } else if ($status == 'all') {
                 $deleteItems->get();
             }
         }
@@ -229,7 +236,10 @@ class MovieController extends Controller
         $deleteItems = $deleteItems->orderBy('id', 'DESC')->paginate(5);
         return view('admin.movie.trash', compact('deleteItems'));
     }
-    public function updateStatus($id,Request $request) {
+
+    public
+    function updateStatus($id, Request $request)
+    {
         $item = Movie::find($id);
 
         if (!$item) {
@@ -240,7 +250,9 @@ class MovieController extends Controller
         $item->save();
         return response()->json(['message' => 'Cập nhật trạng thái thành công'], 200);
     }
-    public function restore($id)
+
+    public
+    function restore($id)
     {
         if ($id) {
             $restore = Movie::withTrashed()->find($id);
@@ -250,7 +262,8 @@ class MovieController extends Controller
         }
     }
 
-    public function delete($id)
+    public
+    function delete($id)
     {
         if ($id) {
             $deleted = Movie::onlyTrashed()->find($id);
@@ -259,7 +272,9 @@ class MovieController extends Controller
             return redirect()->route('movie.trash');
         }
     }
-    public function deleteAll(Request $request)
+
+    public
+    function deleteAll(Request $request)
     {
         $ids = $request->ids;
         if ($ids) {
@@ -270,7 +285,10 @@ class MovieController extends Controller
         }
 
     }
-    public function restoreSelected(Request $request) {
+
+    public
+    function restoreSelected(Request $request)
+    {
         $ids = $request->ids;
         if ($ids) {
             $voucher = Movie::withTrashed()->whereIn('id', $ids);
@@ -281,7 +299,10 @@ class MovieController extends Controller
         }
         return redirect()->route('movie.trash');
     }
-    public function permanentlyDeleteSelected(Request $request) {
+
+    public
+    function permanentlyDeleteSelected(Request $request)
+    {
         $ids = $request->ids;
         if ($ids) {
             $voucher = Movie::withTrashed()->whereIn('id', $ids);

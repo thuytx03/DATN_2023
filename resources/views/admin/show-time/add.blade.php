@@ -25,7 +25,9 @@
                         <select id="room_id" class="form-control custom-select" name="room_id">
                             <option selected="" disabled="">Chọn 1</option>
                             @foreach($rooms as $room)
-                                <option value="{{ $room->id }}">{{ $room->name }}</option>
+                                @if ($room->status != 2)
+                                    <option value="{{ $room->id }}">{{ $room->name }}</option>
+                                @endif
                             @endforeach
                         </select>
                     </div>
@@ -34,24 +36,26 @@
                         <select id="movie_id" class="form-control custom-select" name="movie_id">
                             <option selected="" disabled="">Chọn 1</option>
                             @foreach($movies as $movie)
+                                @if ($movie->status != 0)
                                 <option value="{{ $movie->id }}">{{ $movie->name }}</option>
+                                @endif
                             @endforeach
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="start_date">Thời gian bắt đầu<span class="text-danger">(*)</span></label>
-                        <input type="datetime-local" class="form-control" name="start_date" id="start_date">
+                        <input type="datetime-local" class="form-control" name="start_date" id="start_date" value="{{ old('start_date') }}">
                     </div>
                     <div class="form-group">
                         <label for="end_date">Thời gian kết thúc<span class="text-danger">(*)</span></label>
-                        <input type="datetime-local" class="form-control" name="end_date" id="end_date">
+                        <input type="datetime-local" class="form-control" name="end_date" id="end_date" value="{{ old('end_date') }}">
                     </div>
                     <div class="form-group">
                         <label for="status">Trạng thái<span class="text-danger">(*)</span></label>
                         <select id="status" class="form-control custom-select" name="status">
                             <option selected="" disabled="">Chọn 1</option>
-                            <option value="1" selected>Kích hoạt</option>
-                            <option value="0">Không kích hoạt</option>
+                            <option value="1" selected @if(old('type') == '1') selected @endif>Kích hoạt</option>
+                            <option value="0" @if(old('type') == '0') selected @endif>Không kích hoạt</option>
                         </select>
                     </div>
                 </div>

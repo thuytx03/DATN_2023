@@ -156,6 +156,7 @@
                 <div class="card-footer ">
                     <button type="submit" class="btn btn-success">Cập nhập</button>
                     <a href="{{ route('movie.index') }}" class="btn btn-info">Danh sách</a>
+                    <button type="reset" class="btn btn-secondary">Nhập lại</button>
                 </div>
             </div>
         </form>

@@ -110,9 +110,10 @@ class ShowTimeController extends Controller
         if ($start_date->lessThanOrEqualTo($movie_start_date)) {
             return redirect()->back()->withErrors(['show-time' => 'Thời gian bắt đầu lịch chiếu phải lớn hơn thời gian khởi chiếu của phim. Vui lòng kiểm tra ngày khởi chiếu của (' . $movie->name . ') !']);
         }
-        // Kiểm tra xem thời gian kết thúc của lịch chiếu phải lớn hơn thời gian khởi chiếu của phim
-        if ($end_date->lessThanOrEqualTo($movie_start_date)) {
-            return redirect()->back()->withErrors(['show-time' => 'Thời gian kết thúc lịch chiếu phải lớn hơn thời gian khởi chiếu của phim. Vui lòng kiểm tra ngày khởi chiếu của (' . $movie->name . ') !']);
+
+        // Kiểm tra xem thời gian kết thúc của lịch chiếu phải lớn hơn thời gian bắt đầu
+        if ($end_date->lessThanOrEqualTo($start_date)) {
+            return redirect()->back()->withErrors(['show-time' => 'Thời gian kết thúc lịch chiếu phải lớn hơn thời gian bắt đầu.']);
         }
 
         // Kiểm tra xem ngày bắt đầu và kết thúc phải lớn hơn ngày hiện tại
@@ -154,7 +155,7 @@ class ShowTimeController extends Controller
         $showtime->status = $request->status;
         $showtime->save();
         toastr()->success('Thêm lịch chiếu thành công!', 'success');
-        return redirect()->route('show-time.index');
+        return redirect()->back();
     }
 
 
@@ -218,7 +219,6 @@ class ShowTimeController extends Controller
         if ($end_date->lessThanOrEqualTo($movie_start_date)) {
             return redirect()->back()->withErrors(['show-time' => 'Thời gian kết thúc lịch chiếu phải lớn hơn thời gian khởi chiếu của phim. Vui lòng kiểm tra ngày khởi chiếu của (' . $movie->name . ') !']);
         }
-
         // Kiểm tra xem ngày bắt đầu và kết thúc phải lớn hơn ngày hiện tại
         if ($start_date->lessThanOrEqualTo($current_date) || $end_date->lessThanOrEqualTo($current_date)) {
             return redirect()->back()->withErrors(['show-time' => 'Ngày bắt đầu và kết thúc phải lớn hơn ngày hiện tại.']);

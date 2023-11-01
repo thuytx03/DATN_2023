@@ -168,15 +168,15 @@
                         <div class="row">
                             <div class="col-sm-12 col-md-5">
                                 <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">
-                                    {{--                                    Hiển thị {{ $genres->firstItem() }} đến {{ $genres->lastItem() }}--}}
-                                    {{--                                    của {{ $genres->total() }} mục--}}
+                                                                        Hiển thị {{ $deleteItems->firstItem() }} đến {{ $deleteItems->lastItem() }}
+                                                                        của {{ $deleteItems->total() }} mục
                                 </div>
                             </div>
 
                             <div class="col-sm-12 col-md-7">
                                 <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
                                     <ul class="pagination">
-                                        {{--                                        {{ $genres->links('pagination::bootstrap-4') }}--}}
+                                                                                {{ $deleteItems->links('pagination::bootstrap-4') }}
                                     </ul>
                                 </div>
                             </div>

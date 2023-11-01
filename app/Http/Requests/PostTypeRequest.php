@@ -35,6 +35,8 @@ class PostTypeRequest extends FormRequest
                         $rules = [
                             'name' => 'required',
                             'status' => 'required',
+                            'slug' => 'unique:post_types'
+
                         ];
                         break;
                 }
@@ -44,10 +46,13 @@ class PostTypeRequest extends FormRequest
         }
         return $rules;
     }
+
     public function messages()
     {
         return [
-          'name.required' => 'Vui lòng nhập tên danh mục',
+            'name.required' => 'Vui lòng nhập tên danh mục',
+            'status.required' => 'Vui lòng chọn trạng thái danh mục.',
+            'slug.unique' => 'Slug đã tồn tại. Vui lòng nhập slug khác.'
         ];
     }
 }

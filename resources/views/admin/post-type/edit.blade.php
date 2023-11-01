@@ -68,7 +68,7 @@
                 <div class="card-footer">
                     <button type="submit" class="btn btn-primary">Cập nhập</button>
                     <a href="{{ route('post-type.index') }}" class="btn btn-info">Danh sách</a>
-
+                    <button type="reset" class="btn btn-secondary">Nhập lại</button>
                 </div>
             </div>
         </form>
