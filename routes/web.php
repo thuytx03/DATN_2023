@@ -20,6 +20,10 @@ use App\Http\Controllers\Client\VouchersController;
 use App\Http\Controllers\Admin\ShowTimeController;
 use App\Http\Controllers\Admin\SeatController;
 use App\Http\Controllers\Admin\SeatTypeController;
+use App\Http\Controllers\Client\BookingController;
+use App\Http\Controllers\Client\MovieSeatPlanController;
+use App\Http\Controllers\Client\MovieTicketPlanController;
+
 Route::get('/', [HomeController::class, 'index'])->name('index');
 
 // phim
@@ -27,18 +31,17 @@ Route::prefix('movie-client')->group(function () {
     Route::get('/list', [HomeController::class, 'list'])->name('movie.list');
     Route::get('/detail/{id}', [HomeController::class, 'detail'])->name('movie.detail');
 });
-// danh mục mã giảm giá
-// Route::prefix('favorite')->group(function ()  {
-//     // Route::get('/favorite-list', [favorite::class, 'favorite'])->name('home.favorite.list');
-//     Route::get('/add/{id}', [FavoriteController::class, 'addFavorite'])->name('home.favorite.add');
 
-//     });
-    // danh mục mã giảm giá trang người dùng
-Route::prefix('vouchers')->group(function ()  {
+//lịch chiếu
+Route::get('/lich-chieu/{id}/{slug}', [MovieTicketPlanController::class, 'index'])->name('lich-chieu');
+Route::get('/get-cinemas/{provinceId}', [MovieTicketPlanController::class, 'getCinemasByProvince']);
+//kết thúc lịch chiếu
+
+// danh mục mã giảm giá trang người dùng
+Route::prefix('vouchers')->group(function () {
     Route::get('/voucher-list', [VouchersController::class, 'vouchers'])->name('home.voucher.list');
     Route::get('/voucher-detail/{id}', [VouchersController::class, 'detailVouchers'])->name('home.voucher.detail');
-    });
-
+});
 
 Route::group(['middleware' => 'guest'], function () {
     Route::match(['GET', 'POST'], '/login', [App\Http\Controllers\Auth\AuthClientController::class, 'login'])->name('login');
@@ -46,8 +49,14 @@ Route::group(['middleware' => 'guest'], function () {
     Route::match(['GET', 'POST'], '/forgot-password', [App\Http\Controllers\Auth\AuthClientController::class, 'forgotPassword'])->name('forgotPassword');
 });
 
-
 Route::middleware(['auth'])->group(function () {
+    //ghế
+    Route::get('/lich-chieu/chon-ghe/{room_id}/{slug}/{showtime_id}', [MovieSeatPlanController::class, 'index'])->name('chon-ghe');
+    Route::post('/save-selected-seats', [MovieSeatPlanController::class, 'saveSelectedSeats'])->name('save-selected-seats');
+
+    //thanh toán
+    Route::match(['GET', 'POST'], '/thanh-toan/{room_id}/{slug}/{showtime_id}', [BookingController::class, 'index'])->name('thanh-toan');
+
     // Spatie
     Route::match(['GET', 'POST'], '/admin/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     //user
@@ -118,14 +127,12 @@ Route::middleware(['auth'])->group(function () {
     Route::match(['GET', 'POST'], '/admin/bin/delete/all/room/type/', [App\Http\Controllers\Admin\RoomTypeController::class, 'delete_bin_all'])->name('delete-bin-room-type-all');
 
     // phim yeu thich
-    Route::prefix('favorite')->group(function ()  {
+    Route::prefix('favorite')->group(function () {
         // Route::get('/favorite-list', [favorite::class, 'favorite'])->name('home.favorite.list');
         Route::get('/add/{id}', [FavoriteController::class, 'addFavorite'])->name('home.favorite.add');
         Route::get('/list', [FavoriteController::class, 'listFavorite'])->name('home.favorite.list');
-
-        });
+    });
 });
-
 
 // route cua google
 Route::get('auth/google', [SocialController::class, 'signInwithGoogle'])->name('login_google');
@@ -256,8 +263,8 @@ Route::prefix('admin')->group(function () {
     });
 
     /*
-* Showtime
-*/
+     * Showtime
+     */
     Route::prefix('show-time')->group(function () {
         Route::get('/', [ShowTimeController::class, 'index'])->name('show-time.index');
         Route::get('/create', [ShowTimeController::class, 'create'])->name('show-time.add');
@@ -381,7 +388,6 @@ Route::prefix('admin')->group(function () {
         Route::post('/permanentlyDeleteSelected', [CinemaController::class, 'permanentlyDeleteSelected'])->name('cinema.permanentlyDeleteSelected');
         Route::post('/restoreSelected', [CinemaController::class, 'restoreSelected'])->name('cinema.restoreSelected');
         Route::get('/restore/{id}', [CinemaController::class, 'restore'])->name('cinema.restore');
-
     });
 });
 
@@ -396,7 +402,7 @@ Route::get('{filename}', function ($filename) {
 })
     ->where('filename', '(.*)')
     ->name('admin.sliders.images.show');
-    Route::get('movie-ticket-plan', function () {
+Route::get('movie-ticket-plan', function () {
     return view('client.movies.movie-ticket-plan');
 })->name('movie-ticket-plan');
 
@@ -423,6 +429,3 @@ Route::get('about-us', function () {
 Route::get('contact', function () {
     return view('client.contacts.contact');
 })->name('contact');
-
-
-
