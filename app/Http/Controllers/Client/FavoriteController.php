@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
-use App\Models\MovieFavorite;
+
 use App\Http\Controllers\Controller;
 use App\Models\Genre;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\MovieGenre;
 use App\Models\Movie;
 use Illuminate\Pagination\Paginator;
+use App\Models\MovieFavourite;
 
 
 use Illuminate\Http\Request;
@@ -21,7 +22,7 @@ class FavoriteController extends Controller
         // Lấy ID của người dùng đang đăng nhập
         $userID = auth()->user()->id;
         // Kiểm tra xem phim đã tồn tại trong danh sách yêu thích của người dùng hay chưa
-        $favoriteExists = MovieFavorite::where('movie_id', $movieID)
+        $favoriteExists = MovieFavourite::where('movie_id', $movieID)
             ->where('user_id', $userID)
             ->first();
         if ($favoriteExists) {
@@ -29,7 +30,7 @@ class FavoriteController extends Controller
         }
         if (!$favoriteExists) {
             // Nếu phim chưa tồn tại trong danh sách yêu thích, thêm nó vào danh sách
-            $favorite = new MovieFavorite();
+            $favorite = new MovieFavourite();
             $favorite->movie_id = $movieID;
             $favorite->user_id = $userID;
             $favorite->save();
@@ -76,16 +77,16 @@ class FavoriteController extends Controller
                 }
             }
 
-            $perPage = 5; // Số phần tử trên mỗi trang
-            $page = $request->input('page', 1); // Trang hiện tại
-            $favoriteMovies = $favoriteMovies->paginate($perPage);
+            // $perPage = 5; // Số phần tử trên mỗi trang
+            // $page = $request->input('page', 1); // Trang hiện tại
+            $favoriteMovies = $favoriteMovies->paginate(5);
 
             return view('client.favorite.favorite-list', [
                 'genres' => $genres,
                 'movies' => $movies,
                 'user' => $user,
                 'favoriteMovies' => $favoriteMovies,
-                'currentPage' => $page, // Trang hiện tại
+                // 'currentPage' => $page, // Trang hiện tại
             ]);
         }
     }

@@ -6,26 +6,26 @@
         border:none;
     }
     .select-bar {
-        margin-top:5px; 
+        margin-top:5px;
     }
     .button3 {
         background-color: #032055;
         border:none;
-    }   
+    }
     .abcc {
         margin-left: 40px;
-        
+
     }
     .button4 {
         background-color: #001232;
         border:none;
-        
+
     }
-    
+
     @media (max-width: 576px) {
         .abcc {
             margin-left: 0px;
-        
+
     }
     }
 </style>
@@ -51,41 +51,41 @@
             <div class="col-sm-10 col-md-8 col-lg-3">
                 <div class="widget-1 widget-banner">
                     <div class="widget-1-body">
-                        
+
                     </div>
                 </div>
                 <div class="widget-1 widget-check">
                     <div class="widget-header">
                         <h5 class="m-title"><a href="{{route('home.favorite.list')}}">Lọc Theo Danh Mục</a></h5>
-                       
+
                     </div>
                 </div>
                 <div class="widget-1 widget-check">
                     <div class="widget-1-body">
                         <form action="{{route('home.favorite.list')}}">
                         <div class="check-area">
-                           
+
                            @foreach ($genres as $genre )
                            <div class="form-group">
-                                
+
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bookmark-plus-fill" viewBox="0 0 16 16">
                                 <path fill-rule="evenodd" d="M2 15.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5zm6.5-11a.5.5 0 0 0-1 0V6H6a.5.5 0 0 0 0 1h1.5v1.5a.5.5 0 0 0 1 0V7H10a.5.5 0 0 0 0-1H8.5V4.5z"/>
-                              </svg>    <button type="submit" name="danhmuc" value="{{$genre->id}}" class="col-md-10 button3">  {{$genre->name}}</button>   
+                              </svg>    <button type="submit" name="danhmuc" value="{{$genre->id}}" class="col-md-10 button3">  {{$genre->name}}</button>
                         </div>
                            @endforeach
-                            
-                            
-                          
-                           
+
+
+
+
                         </div>
                     </form>
                     </div>
                 </div>
-                
-                
-                
-               
-              
+
+
+
+
+
             </div>
             <div class="col-lg-9 mb-50 mb-lg-0">
                 <form action="{{route ('home.favorite.list')}}">
@@ -108,21 +108,21 @@
                                     <div class="row abcc">
                                         <div class="col-md-4 col-5 adadada"> <button type="submit" class="button4" for="search-input">Tìm Kiếm </button></div>
                                         <div class="col-md-8 col-7 ">  <input type="search" id="search-input" name="search"></div>
-                                       
+
                                     </div>
                                 </div>
-                                
+
                                 <ul class="grid-button tab-menu">
                                     <li class="active">
                                         <i class="fas fa-th"></i>
-                                    </li>                            
-                                        
+                                    </li>
+
                                 </ul>
                             </div>
                         </form>
                     </div>
                     <div class="tab-area">
-                        
+
                             <div class="row mb-10 justify-content-center">
                                 @foreach($favoriteMovies as $movie)
                                 @if($movie->status != 0)
@@ -139,7 +139,7 @@
                                                     <span class="content">{{$movie->name}} </span>
                                                 </a>
                                             </h5>
-                                          
+
                                             <div class="content">
                                                 Thời Lượng:
                                                 <?php
@@ -161,8 +161,8 @@
                                             <div class="content">
                                                 Ngày Chiếu : <?php echo date("d-m-Y", strtotime($movie->start_date)); ?>
                                             </div>
-                                            
-                                         
+
+
                                             <ul class="movie-rating-percent">
                                                 <li>
                                                     <div class="thumb">
@@ -187,7 +187,7 @@
                                                                 <i id="heart-icon" class="fas fa-heart"></i>
                                                             </a>
                                                         @endif
-                                                    
+
                                                 </li>
                                             </ul>
                                         </div>
@@ -196,32 +196,14 @@
                                 @endif
                             @endforeach
                             </div>
-                      
+
                     </div>
                     <div class="pagination-area text-center">
-                        @if ($favoriteMovies->hasPages())
-                            @if ($favoriteMovies->onFirstPage())
-                                <a href="#0" class="disabled"><i class="fas fa-angle-double-left"></i><span>Prev</span></a>
-                            @else
-                                <a href="{{ $favoriteMovies->previousPageUrl() }}"><i class="fas fa-angle-double-left"></i><span>Prev</span></a>
-                            @endif
-                    
-                            @foreach ($favoriteMovies as $page => $url)
-                                @if ($page == $currentPage)
-                                    <span class="current">{{ $page }}</span>
-                                @else
-                                    <a href="{{ $url }}">{{ $page }}</a>
-                                @endif
-                            @endforeach
-                    
-                            @if ($favoriteMovies->hasMorePages())
-                                <a href="{{ $favoriteMovies->nextPageUrl() }}"><span>Next</span><i class="fas fa-angle-double-right"></i></a>
-                            @else
-                                <a href="#0" class="disabled"><span>Next</span><i class="fas fa-angle-double-right"></i></a>
-                            @endif
-                        @endif
+
+                       {{ $favoriteMovies->links('pagination::bootstrap-4') }}
+
+
                     </div>
-            </div>
         </div>
     </div>
 </section>
@@ -246,13 +228,13 @@
     selectAllCheckbox();
 </script>
 <script>
-  
+
     // Lấy đối tượng biểu tượng trái tim
     const heartIcon = document.getElementById("heart-icon");
- 
+
  // Bắt đầu với trạng thái không được yêu thích
  let isFavorite = false;
- 
+
  // Định nghĩa hàm để thay đổi trạng thái trái tim
  function toggleFavorite(event) {
     event.preventDefault();
@@ -262,17 +244,17 @@
     } else {
         heartIcon.classList.remove("text-danger");
     }
- 
+
     // Gửi trạng thái yêu thích lên máy chủ
     sendFavoriteStatus();
 }
 
 heartIcon.addEventListener("click", toggleFavorite);
 
- 
+
  // Gắn sự kiện click để gọi hàm toggleFavorite khi người dùng click vào biểu tượng
  heartIcon.addEventListener("click", toggleFavorite);
- 
+
  // Bắt đầu với biểu tượng màu trắng
  heartIcon.classList.remove("text-danger");
  </script>

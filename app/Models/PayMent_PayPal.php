@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MovieFavourite extends Model
+class PayMent_PayPal extends Model
 {
     use HasFactory;
-    protected $table = 'movie_favorite';
-    public $fillable = ['movie_id', 'user_id'];
+    protected $table = 'payment_paypal';
+    public $fillable = ['total','booking_id'];
 }

@@ -17,9 +17,9 @@
             -webkit-mask-size: 100% 100%;
             mask-size: 100% 100%;
             cursor: pointer;
-            -webkit-transition: all ease 0.3s;
+            /* -webkit-transition: all ease 0.3s;
             transition: all ease 0.3s;
-            margin: 5px;
+            margin: 5px; */
         }
     </style>
 
@@ -142,32 +142,7 @@
                 <div class="col-lg-9 mb-5 mb-lg-0">
                     <ul class="seat-plan-wrapper bg-five">
                         <input type="hidden" name="movie_id" value="{{ $movie->id }}">
-                            <style>
-                                .seat-plan-wrapper li .movie-schedule .item {
-                                    color: #ffffff;
-                                    padding: 5px;
-                                    width: 70px;
-                                    background: #162f5f;
-                                    position: relative;
-                                    mask-position: center center;
-                                    -webkit-mask-position: center center;
-                                    text-align: center;
-                                    /* mask-image: url({{asset('client/assets/images/ticket/movie-seat.png')}}); */
-                                    /* -webkit-mask-image: url({{asset('client/assets/images/ticket/movie-seat.png')}}); */
-                                    -webkit-mask-repeat: no-repeat;
-                                    mask-repeat: no-repeat;
-                                    -webkit-mask-size: 100% 100%;
-                                    mask-size: 100% 100%;
-                                    cursor: pointer;
-                                    -webkit-transition: all ease 0.3s;
-                                    transition: all ease 0.3s;
-                                    margin: 5px;
-                                }
-                            </style>
-    
-                            <div class="movie-schedule">
-                                <div class="item" >
-                                    09:40
+
                         @foreach ($ticketShowTime->groupBy('room_id') as $roomId => $showTimes)
                             <li>
 
@@ -180,7 +155,6 @@
                                     <div class="location-icon">
                                         <i class="fas fa-map-marker-alt"></i>
                                     </div>
-
                                 </div>
 
                                 <div class="movie-schedule">
@@ -210,71 +184,6 @@
             </div>
         </div>
     </div>
-    <!-- ==========Movie-Section========== -->
-
-
-    {{-- <div class="ticket-plan-section padding-bottom padding-top">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-9 mb-5 mb-lg-0">
-                    <ul class="seat-plan-wrapper bg-five">
-                        <input type="hidden" name="movie_id" value="{{ $movie->id }}">
-                        @foreach ($ticketShowTime->groupBy('room.cinema.id') as $cinemaId => $cinemaShowTimes)
-                            <li class="accordion-parent">
-                                <div class="movie-name">
-                                    <div class="icons">
-                                        <i class="far fa-heart"></i>
-                                        <i class="fas fa-heart"></i>
-                                    </div>
-                                    <a href="#0" class="name text-white">{{ $cinemaShowTimes[0]->room->cinema->name }}</a>
-                                    <div class="location-icon">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                    </div>
-                                </div>
-                                <div class="movie-schedule">
-                                    <div class="ml-auto">
-                                        <div class="toggle-accordion">
-                                            <i class="fa-solid fa-plus"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-
-                            @foreach ($cinemaShowTimes->groupBy('room_id') as $roomId => $showTimes)
-                                <li class="accordion-child">
-                                    <div class="movie-schedule">
-                                        <div class="">
-                                            <div
-                                            >Phòng: {{ $showTimes[0]->room->name }}</div>
-                                        </div>
-                                        @foreach ($showTimes as $showTime)
-                                        <div class="item">
-
-                                            <a href="{{ route('chon-ghe', ['room_id' => $showTime->room_id, 'slug' => $movie->slug, 'showtime_id' => $showTime->id]) }}"
-                                                class="text-white">
-                                                {{ date('H:i', strtotime($showTime->start_date)) }}
-                                            </a>
-                                        </div>
-                                        @endforeach
-                                    </div>
-                                </li>
-                            @endforeach
-                        @endforeach
-                    </ul>
-                </div>
-
-                <div class="col-lg-3 col-md-6 col-sm-10">
-                    <div class="widget-1 widget-banner">
-                        <div class="widget-1-body">
-                            <a href="#0">
-                                <img src="{{ asset('client/assets/images/sidebar/banner/banner03.jpg') }}" alt="banner">
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> --}}
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 

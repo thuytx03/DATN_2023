@@ -69,6 +69,15 @@ Route::middleware(['auth'])->group(function () {
 
     //thanh toán
     Route::match(['GET', 'POST'], '/thanh-toan/{room_id}/{slug}/{showtime_id}', [BookingController::class, 'index'])->name('thanh-toan');
+    Route::get('/camon', [BookingController::class, 'thanks'])->name('camonthanhtoan');
+
+    // paypal
+    Route::get('paypal', [BookingController::class, 'paypal'])->name('paypal');
+    Route::get('paypal/payment/{id}', [BookingController::class, 'payment'])->name('paypal.payment');
+    Route::get('paypal/payment/success/{id}', [BookingController::class, 'paymentSuccess'])->name('paypal.payment.success');
+    Route::get('paypal/payment/cancel', [BookingController::class, 'paymentCancel'])->name('paypal.payment/cancel');
+    // hết paypal
+
 
     // Spatie
     Route::match(['GET', 'POST'], '/admin/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
@@ -79,7 +88,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/add/{id}', [FavoriteController::class, 'addFavorite'])->name('home.favorite.add');
         Route::get('/list', [FavoriteController::class, 'listFavorite'])->name('home.favorite.list');
     });
-});
+
 
 // route cua google
 Route::get('auth/google', [SocialController::class, 'signInwithGoogle'])->name('login_google');
@@ -157,7 +166,7 @@ Route::prefix('admin')->group(function () {
         Route::match(['GET', 'POST'], '/permanentlyDeleteSelected', [RoomTypeController::class, 'delete_bin_all'])->name('bin.delete-room-type-all');
     });
 
-    //order food 
+    //order food
     Route::prefix('order')->group(function () {
         Route::match(['GET', 'POST'], '/', [OrderFoodController::class, 'index'])->name('food.list');
         Route::match(['GET', 'POST'], '/store', [OrderFoodController::class, 'store'])->name('food.add');
