@@ -40,6 +40,7 @@ class MovieRequest extends FormRequest
                             'start_date' => 'required',
                             'manufacturer' => 'required:string',
                             'genre_id' => 'required',
+                            'slug' => 'unique:movies',
                             'country_id' => 'required'
 
                         ];
@@ -57,6 +58,7 @@ class MovieRequest extends FormRequest
                             'start_date' => 'required',
                             'manufacturer' => 'required',
                             'genre_id' => 'required',
+                            'slug' => 'unique:movies',
                             'country_id' => 'required'
                         ];
                         break;
@@ -67,21 +69,23 @@ class MovieRequest extends FormRequest
         }
         return $rules;
     }
+
     public function messages()
     {
         return [
-          'name.required' => 'Vui lòng nhập tên',
-          'language.required' => 'Vui lòng nhập ngôn ngữ',
-          'status.required' => 'Vui lòng nhập trạng thái',
-          'poster.required' => 'Vui lòng nhập poster',
-          'trailer.required' => 'Vui lòng nhập trailer phim',
-          'director.required' => 'Vui lòng nhập đạo diễn',
-          'actor.required' => 'Vui lòng nhập diên viên',
-          'duration.required' => 'Vui lòng nhập thời lượng phim',
-          'start_date.required' => 'Vui lòng nhập ngày khởi chiếu',
-          'manufacturer.required' => 'Vui lòng nhập nhà sáng tác',
-          'genre_id.required' => 'Vui lòng nhập thể loại phim',
-          'country_id.required' => 'Vui lòng nhập quốc gia'
+            'name.required' => 'Vui lòng nhập tên',
+            'slug.unique' => 'Slug đã tồn tại. Vui lòng nhập slug khác.',
+            'language.required' => 'Vui lòng nhập ngôn ngữ',
+            'status.required' => 'Vui lòng nhập trạng thái',
+            'poster.required' => 'Vui lòng nhập poster',
+            'trailer.required' => 'Vui lòng nhập trailer phim',
+            'director.required' => 'Vui lòng nhập đạo diễn',
+            'actor.required' => 'Vui lòng nhập diên viên',
+            'duration.required' => 'Vui lòng nhập thời lượng phim',
+            'start_date.required' => 'Vui lòng nhập ngày khởi chiếu',
+            'manufacturer.required' => 'Vui lòng nhập nhà sáng tác',
+            'genre_id.required' => 'Vui lòng nhập thể loại phim',
+            'country_id.required' => 'Vui lòng nhập quốc gia'
         ];
     }
 }

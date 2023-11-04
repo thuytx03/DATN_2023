@@ -37,16 +37,17 @@
                 <div class="row">
                     <div class="col-md-4 col-12 mt-3">
                         <div class="form-group">
-                            <label for="vip_quantity">Số lượng ghế VIP:</label>
-                            <input type="text" name="vip_quantity" value="{{ $vipSeatsCount  }}" id="vip_quantity" class="form-control">
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-12 mt-3">
-                        <div class="form-group">
                             <label for="standard_quantity">Số lượng ghế Thường:</label>
                             <input type="text" name="standard_quantity" value="{{ $standardSeatsCount}}" id="standard_quantity" class="form-control">
                         </div>
                     </div>
+                    <div class="col-md-4 col-12 mt-3">
+                        <div class="form-group">
+                            <label for="vip_quantity">Số lượng ghế VIP:</label>
+                            <input type="text" name="vip_quantity" value="{{ $vipSeatsCount  }}" id="vip_quantity" class="form-control">
+                        </div>
+                    </div>
+
                     <div class="col-md-4 col-12 mt-3">
                         <div class="form-group">
                             <label for="couple_quantity">Số lượng ghế Cặp đôi:</label>

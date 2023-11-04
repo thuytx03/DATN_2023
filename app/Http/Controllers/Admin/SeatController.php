@@ -54,22 +54,22 @@ class SeatController extends Controller
 
             foreach ($rows as $row) {
                 for ($col = 1; $col <= $columns; $col++) {
-                    if ($vipSeatsToAdd > 0) {
+                    if ($standardSeatsToAdd > 0) {
                         $seat = new Seat();
                         $seat->room_id = $room_id;
                         $seat->seat_type_id = 1;
                         $seat->row = $row;
                         $seat->column = $col;
                         $seat->save();
-                        $vipSeatsToAdd--;
-                    } elseif ($standardSeatsToAdd > 0) {
+                        $standardSeatsToAdd--;
+                    } elseif ($vipSeatsToAdd > 0) {
                         $seat = new Seat();
                         $seat->room_id = $room_id;
                         $seat->seat_type_id = 2;
                         $seat->row = $row;
                         $seat->column = $col;
                         $seat->save();
-                        $standardSeatsToAdd--;
+                        $vipSeatsToAdd--;
                     } elseif ($coupleSeatsToAdd > 0) {
                         $seat = new Seat();
                         $seat->room_id = $room_id;
@@ -230,7 +230,7 @@ class SeatController extends Controller
         $cinemas = Cinema::where('province_id', $provinceId)->get();
         return response()->json($cinemas);
     }
-  
+
 
     public function getRooms($cinemaId)
     {

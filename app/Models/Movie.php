@@ -12,22 +12,7 @@ class Movie extends Model
 
     protected $table = 'movies';
     public $timestamps = true;
-    protected $fillable = [
-        'name',
-        'slug',
-        'language',
-        'poster',
-        'trailer',
-        'director',
-        'actor',
-        'manufacturer',
-        'duration',
-        'start_date',
-        'view',
-        'description',
-        'country_id',
-        'status'
-    ];
+    protected $fillable = ['name', 'slug', 'language', 'poster', 'trailer', 'director', 'actor', 'manufacturer', 'duration', 'start_date', 'view', 'description', 'country_id', 'status'];
     public function genres()
     {
         return $this->belongsToMany(Genre::class, 'movie_genres', 'movie_id', 'genre_id');
@@ -40,5 +25,9 @@ class Movie extends Model
     public function images()
     {
         return $this->hasMany(MovieImage::class, 'movie_id', 'id');
+    }
+    public function showtimes()
+    {
+        return $this->hasMany(ShowTime::class, 'movie_id');
     }
 }

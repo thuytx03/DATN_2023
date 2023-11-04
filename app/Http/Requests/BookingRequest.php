@@ -2,11 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\UniqueSlug;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class PostTypeRequest extends FormRequest
+class BookingRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -30,14 +28,14 @@ class PostTypeRequest extends FormRequest
         switch ($this->method()) {
             case 'POST':
                 switch ($currentAction) {
-                    case 'update' :
-                    case 'store' :
+                    case 'index':
                         $rules = [
                             'name' => 'required',
-                            'status' => 'required',
-                            'slug' => 'unique:post_types'
-
+                            'email' => 'required|email',
+                            'phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|max:10',
+                            'address' => 'required',
                         ];
+
                         break;
                 }
                 break;
@@ -50,9 +48,14 @@ class PostTypeRequest extends FormRequest
     public function messages()
     {
         return [
-            'name.required' => 'Vui lòng nhập tên danh mục',
-            'status.required' => 'Vui lòng chọn trạng thái danh mục.',
-            'slug.unique' => 'Slug đã tồn tại. Vui lòng nhập slug khác.'
+            'name.required' => 'Vui lòng nhập tên của bạn.',
+            'email.required' => 'Vui lòng nhập địa chỉ email.',
+            'email.email' => 'Địa chỉ email không hợp lệ.',
+            'phone.required' => 'Vui lòng nhập số điện thoại.',
+            'phone.regex' => 'Số điện thoại không hợp lệ. ',
+            'phone.min' => 'Số điện thoại cần 10 ký tự.',
+            'phone.max' => 'Số điện thoại chỉ tối đa 10 ký tự.',
+            'address.required' => 'Vui lòng nhập địa chỉ của bạn.',
         ];
     }
 }

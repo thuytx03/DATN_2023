@@ -97,16 +97,11 @@
                         </div>
                         <!--  -->
                     </div>
-
-
                     <label for="image">Nội Dung</label> <br>
                     <div class="">
                         <div class="row_content ">
-                            <textarea name="content" id="content123" cols="30" rows="10" width="100%" height="1000px">
-                </textarea>
-
+                            <textarea name="content" id="content123" cols="30" rows="10" width="100%" height="1000px"></textarea>
                         </div>
-
                     </div>
                     <div class="col submit-button-container">
                         <button type="submit" class="btn btn-success">Thêm mới</button>
@@ -294,23 +289,6 @@
                     reader.readAsDataURL(file);
                 }
             });
-            //     $(function() {
-            //     function readURL(input, selector) {
-            //         if (input.files && input.files[0]) {
-            //             let reader = new FileReader();
-
-            //             reader.onload = function(e) {
-            //                 $(selector).attr('src', e.target.result);
-            //             };
-
-            //             reader.readAsDataURL(input.files[0]);
-            //         }
-            //     }
-            //     $("#cmt_truoc").change(function() {
-            //         readURL(this, '#mat_truoc_preview');
-            //     });
-
-            // });
         </script>
     @endpush
 @endsection

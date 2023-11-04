@@ -23,6 +23,7 @@
 
     <title>Boleto  - Online Ticket Booking Website HTML Template</title>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   
 
 
@@ -36,10 +37,10 @@
 
     @yield('content')
 
-   
+
     <!-- ==========Newslater-Section========== -->
     @include('layouts.client.footer')
-   
+
     <!-- ==========Newslater-Section========== -->
 
 

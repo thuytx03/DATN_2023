@@ -3,7 +3,7 @@
 <style>
     .abc {
         margin-left: 10px;
-        
+
     }
 </style>
 <!-- ==========Banner-Section========== -->
@@ -19,28 +19,28 @@
             <div class="details-banner-content offset-lg-3">
                 <h3 class="title">{{$movie->name}}
                    </h3>
-                  
+
                 <div class="tags">
                     <a href="#0">{{$movie->language}}</a>
                     <a href="#0">Việt Nam</a>
-                   
+
                 </div>
                 <a href="#0" class="button">{{$nameGenres}}</a>
                 @if(auth()->check())
                 @if(auth()->user()->favoriteMovies->contains($movie))
-                    
+
                         <a href="{{route('home.favorite.add',['id'=>$movie->id])}}" id="favorite-link" style="color: white" data-movie-id="{{ $movie->id }}" class="custom-button abc">Hủy Yêu Thích</a>
-                    
+
                 @else
                 <a href="{{route('home.favorite.add',['id'=>$movie->id])}}" id="favorite-link" style="color: white" data-movie-id="{{ $movie->id }}" class="custom-button abc">Thêm Vào Yêu Thích</a>
                 @endif
-                 @else 
-          
+                 @else
+
                     <a href="{{route('home.favorite.add',['id'=>$movie->id])}}" id="favorite-link" style="color: white" data-movie-id="{{ $movie->id }}" class="custom-button abc">Thêm Vào Yêu Thích</a>
-               
+
             @endif
-            
-                
+
+
                 <div class="social-and-duration">
                     <div class="duration-area">
                         <div class="item">
@@ -120,8 +120,8 @@
                 </div>
             </div>
           <div class="button-container">
-        <a href="#0" class="custom-button">book tickets</a>
-       
+        <a href="{{ route('lich-chieu',['id'=>$movie->id,'slug'=>$movie->slug]) }}" class="custom-button">Mua vé</a>
+            <input type="hidden" name="id" value="{{ $movie->id }}">
           </div>
     </div>
     </div>

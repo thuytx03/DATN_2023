@@ -53,11 +53,11 @@
                                 <div class="card-body">
                                     <div class="form-group">
                                         <label for="name">Tên phim<span class="text-danger">(*)</span></label>
-                                        <input type="text" id="name" name="name" class="form-control">
+                                        <input type="text" id="name" name="name" class="form-control" value="{{ old('name') }}">
                                     </div>
                                     <div class="form-group">
                                         <label for="slug">Đường dẫn</label>
-                                        <input name="slug" type="text" id="slug" class="form-control">
+                                        <input name="slug" type="text" id="slug" class="form-control" value="{{ old('slug') }}">
                                     </div>
                                     <div class="form-group">
                                         <label for="poster">Poster<span class="text-danger">(*)</span></label> <br>
@@ -67,16 +67,16 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="start_date">Ngày khởi chiếu<span class="text-danger">(*)</span></label>
-                                        <input name="start_date" type="date" id="start_date" class="form-control">
+                                        <input name="start_date" type="date" id="start_date" class="form-control" value="{{ old('start_date') }}">
                                     </div>
                                     <div class="form-group">
                                         <label for="duration">Thời lượng phim<span class="text-danger">(*)</span></label>
-                                        <input name="duration" type="text" id="duration" class="form-control">
+                                        <input name="duration" type="text" id="duration" class="form-control" value="{{ old('duration') }}">
                                     </div>
                                     <div class="form-group">
                                         <label for="description">Mô tả</label>
                                         <textarea id="description" name="description" class="form-control"
-                                                  rows="4"></textarea>
+                                                  rows="4">{{ old('description') }}</textarea>
                                     </div>
                                     <div class="form-group">
                                         <label for="movie_image">Ảnh liên quan</label> <br>
@@ -98,23 +98,23 @@
                                 <div class="card-body">
                                     <div class="form-group">
                                         <label for="language">Ngôn ngữ<span class="text-danger">(*)</span></label>
-                                        <input type="text" name="language" id="language" class="form-control">
+                                        <input type="text" name="language" id="language" class="form-control" value="{{ old('language') }}">
                                     </div>
                                     <div class="form-group">
                                         <label for="trailer">Đoạn giới thiệu<span class="text-danger">(*)</span></label>
-                                        <input type="text" name="trailer" id="trailer" class="form-control">
+                                        <input type="text" name="trailer" id="trailer" class="form-control" value="{{ old('trailer') }}">
                                     </div>
                                     <div class="form-group">
                                         <label for="director">Đạo diễn<span class="text-danger">(*)</span></label>
-                                        <input type="text" name="director" id="director" class="form-control">
+                                        <input type="text" name="director" id="director" class="form-control" value="{{ old('director') }}">
                                     </div>
                                     <div class="form-group">
                                         <label for="actor">Diễn viên<span class="text-danger">(*)</span></label>
-                                        <input type="text" name="actor" id="actor" class="form-control">
+                                        <input type="text" name="actor" id="actor" class="form-control" value="{{ old('actor') }}">
                                     </div>
                                     <div class="form-group">
                                         <label for="manufacturer">Nhà sáng tác<span class="text-danger">(*)</span></label>
-                                        <input type="text" name="manufacturer" id="manufacturer" class="form-control">
+                                        <input type="text" name="manufacturer" id="manufacturer" class="form-control" value="{{ old('manufacturer') }}">
                                     </div>
                                     <div class="form-group">
                                         <label for="inputStatus">Thể loại<span class="text-danger">(*)</span></label><br>
@@ -145,8 +145,8 @@
                                         <label for="inputStatus">Trạng thái</label>
                                         <select id="inputStatus" name="status" class="form-control custom-select">
                                             <option selected="" disabled="">Chọn 1</option>
-                                            <option value="1" selected>Kích hoạt</option>
-                                            <option value="0">Không kích hoạt</option>
+                                            <option value="1" selected @if(old('status') == '1') selected @endif>Kích hoạt</option>
+                                            <option value="0" @if(old('status') == '0') selected @endif>Không kích hoạt</option>
                                         </select>
                                     </div>
                                 </div>
@@ -160,6 +160,7 @@
                 <div class="card-footer ">
                     <button type="submit" class="btn btn-success">Thêm mới</button>
                     <a href="{{ route('movie.index') }}" class="btn btn-info">Danh sách</a>
+                    <button type="reset" class="btn btn-secondary">Nhập lại</button>
                 </div>
             </div>
         </form>

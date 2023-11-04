@@ -17,5 +17,9 @@ class Seat extends Model
     public function seatType() {
         return $this->belongsTo(SeatType::class);
     }
+    public function bookings()
+{
+    return $this->hasMany(Booking::class);
+}
 
 }

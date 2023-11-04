@@ -84,7 +84,7 @@ class PostTypeController extends Controller
             }
             if ($postType->save()) {
                 toastr()->success('Thêm mới danh mục thành công!', 'success');
-                return redirect()->route('post-type.index');
+                return redirect()->back();
             }
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->errorInfo[1] === 1062) { // Lỗi duplicate entry
