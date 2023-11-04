@@ -131,6 +131,12 @@ Route::prefix('admin')->group(function () {
     Route::prefix('order')->group(function () {
         Route::match(['GET', 'POST'], '/', [OrderFoodController::class, 'index'])->name('food.list');
         Route::match(['GET', 'POST'], '/store', [OrderFoodController::class, 'store'])->name('food.add');
+        Route::match(['GET', 'POST'], '/edit/{id}', [OrderFoodController::class, 'update'])->name('food.update');
+        Route::match(['GET', 'POST'], '/destroy/{id}', [OrderFoodController::class, 'destroy'])->name('food.delete');
+        Route::match(['GET', 'POST'], '/user/{id}', [OrderFoodController::class, 'user'])->name('food.user');
+        Route::match(['GET', 'POST'], '/food/{id}', [OrderFoodController::class, 'food'])->name('food.detail');
+        Route::match(['GET', 'POST'], '/update-status/{id}', [OrderFoodController::class, 'updateStatus'])->name('food.update-status');
+        Route::match(['GET', 'POST'], '/deleteAll', [OrderFoodController::class, 'deleteAll'])->name('food.delete-all');
 
     });
     /*
@@ -376,7 +382,6 @@ Route::prefix('admin')->group(function () {
         Route::post('/permanentlyDeleteSelected', [CinemaController::class, 'permanentlyDeleteSelected'])->name('cinema.permanentlyDeleteSelected');
         Route::post('/restoreSelected', [CinemaController::class, 'restoreSelected'])->name('cinema.restoreSelected');
         Route::get('/restore/{id}', [CinemaController::class, 'restore'])->name('cinema.restore');
-
     });
 });
 
@@ -418,6 +423,3 @@ Route::get('about-us', function () {
 Route::get('contact', function () {
     return view('client.contacts.contact');
 })->name('contact');
-
-
-

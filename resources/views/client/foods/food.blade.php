@@ -2,9 +2,8 @@
 @push('styles')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <style>
-    .grid-item {
-        display: block;
-        /* Mặc định hiển thị tất cả */
+    .required {
+        color: red;
     }
 </style>
 @endpush
@@ -51,7 +50,6 @@
         </div>
     </div>
 </section>
-
 <div class="movie-facility padding-bottom padding-top">
     <div class="container">
         <div class="row">
@@ -105,9 +103,13 @@
                                             <input type="hidden" class="food-name" value="{{$foodItem->name}}">
                                             <input type="hidden" class="food-price" value="{{$foodItem->price}}">
                                             <input type="hidden" class="food-id" value="{{$foodItem->id}}">
-                                            <input class="cart-plus-minus-box" type="hidden" name="qtybutton" value="1">
-                                            <div class="w-100">
-                                                <button type="submit" class="custom-button">
+                                            <input class="number" type="hidden" name="qtybutton" value="1">
+                                            <div class="w-100 d-flex justify-content-center">
+                                                <div class="cart-plus-minus m-2">
+                                                    <input class="cart-plus-minus-box" type="text" id="next" min="0" value="1" oninput="updateQuantity()">
+                                                </div>
+
+                                                <button type="submit" class="custom-button m-2">
                                                     Mua
                                                 </button>
                                             </div>
@@ -136,33 +138,67 @@
                     </ul>
                     <ul>
                         <li>
-                            <span class="info"><span>Mã giảm</span><span id="discount">15000</span></span>
+                            <span class="info"><span>Mã giảm</span><span id="discount">0</span></span>
                         </li>
                     </ul>
                     <ul>
                         <li>
-                            <h6 class="subtitle"><span>Phương thức thanh toán</span>
-                                <span>
-                                    <div class=" mt-2 w-100">
-                                        <select class="form-select text-dark" id="paymentMethod">
-                                            <option value="1">Tiền mặt</option>
-                                            <option value="2">Thẻ tín dụng/debit</option>
-                                            <option value="3">Chuyển khoản ngân hàng</option>
-                                            <option value="4">Ví điện tử</option>
-                                            <option value="5">Thanh toán qua QR code</option>
-                                        </select>
-                                    </div>
-                                </span>
-                            </h6>
+                            <h6 class="subtitle"><span>Phương thức thanh toán</span></h6>
+                            <hr>
+                            <span>
+                                <div class=" mt-2">
+                                    <select class="form-select text-dark " id="paymentMethod">
+                                        <option value="1">Thanh toán nội địa Napas</option>
+                                        <option value="2">Thanh toán quốc tế Visa</option>
+                                        <option value="3">Thanh toán ví MoMo</option>
+                                    </select>
+                                </div>
+                            </span>
+                        </li>
+                    </ul>
+                    <ul>
+                        <li>
+                            <h6 class="subtitle"><span>Thông tin các nhân</span> </h6>
+                            <hr>
+                            <div class="">
+                                <ul>
+                                    @foreach($errors->all() as $error)
+                                    <li class="text-danger">{{$error}}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                            <div>
+                                <div class="mb-3">
+                                    <label class="form-label">Email<span class="required">*</span></label>
+                                    <input type="email" class="form-control" id="email">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Ngày nhận<span class="required">*</span></label>
+                                    <input type="datetime-local" class="form-control" id="order_end">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Ghi chú</label>
+                                    <textarea name="note" id="note"></textarea>
+                                </div>
+                            </div>
                         </li>
                     </ul>
                 </div>
                 <div class="proceed-area  text-center">
                     <h6 class="subtitle"><span>Tổng tiền</span><span id="total"></span></h6>
-                    <a href="#0" class="custom-button back-button" id="payButton">Thanh toán</a>
+                    <form id="myForm" action="{{ route('food.add') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="total_amount">
+                        <input type="hidden" name="payment_method">
+                        <input type="hidden" name="food_items">
+                        <input type="hidden" name="email">
+                        <input type="hidden" name="order_end">
+                        <input type="hidden" name="note">
+                        <button class="custom-button back-button" id="payButton">Thanh toán</button>
+                    </form>
+
                 </div>
             </div>
-
         </div>
     </div>
 </div>
@@ -179,8 +215,18 @@
         } else {
             hiddenField.value = foodTypeId;
         }
-
         form.submit();
+    }
+</script>
+<script>
+    function updateQuantity() {
+        var newValue = parseInt(document.getElementById('next').value);
+        var quantityElement = document.querySelector('.quantity');
+
+        document.getElementById('next').value = newValue;
+        quantityElement.textContent = newValue;
+
+        // Các bước cập nhật quantity và totalPrice tương tự như trước
     }
 </script>
 <script>
@@ -205,7 +251,7 @@
         event.preventDefault();
         var foodName = event.target.querySelector('.food-name').value;
         var foodPrice = event.target.querySelector('.food-price').value;
-        var quantity = event.target.querySelector('.cart-plus-minus-box').value;
+        var quantity = event.target.querySelector('.number').value;
         var itemExists = false;
         var itemList = document.getElementById('itemList').getElementsByTagName('li');
         var foodId = event.target.querySelector('.food-id').value;
@@ -237,8 +283,8 @@
                     <span></i></span>
                 </h6>
                 <div class="info">
-                    <span>Price: ${foodPrice} Vnđ</span>
-                    <span class="quantity">${quantity}</span>
+                    <span id="number">Price: ${foodPrice} Vnđ</span>
+                    <span class="quantity" oninput="updateQuantity()">${quantity}</span>
                 </div>
             `;
             document.getElementById('itemList').appendChild(newItem);
@@ -249,113 +295,40 @@
             totalPriceElement.textContent = totalPrice;
         }
     }
-
-
-    // function deleteItem(button) {
-    //     var listItem = button.parentElement.parentElement;
-    //     var itemPrice = parseInt(listItem.querySelector('.info span:nth-child(2)').textContent.split(' ')[1]);
-    //     var quantity = parseInt(listItem.querySelector('.quantity').textContent);
-    //     var itemList = document.getElementById('itemList').getElementsByTagName('li');
-    //     if (itemList.length > 0) {
-    //         var totalPriceElement = document.getElementById('totalPrice');
-    //         var totalPrice = parseInt(totalPriceElement.textContent) || 0; // Use 0 if parseInt returns NaN
-    //         totalPrice -= itemPrice * quantity;
-    //         totalPriceElement.textContent = totalPrice;
-    //         listItem.remove();
-    //     } else {
-    //         alert("At least one item is required in the list.");
-    //     }
-    //     // Check if there are remaining items
-    //     var remainingItems = document.getElementById('itemList').getElementsByTagName('li');
-    //     if (remainingItems.length > 0) {
-    //         // Calculate new total price
-    //         var newTotalPrice = 0;
-    //         for (var i = 0; i < remainingItems.length; i++) {
-    //             var item = remainingItems[i];
-    //             var itemPrice = parseInt(item.querySelector('.info span:nth-child(2)').textContent.split(' ')[1]);
-    //             var itemQuantity = parseInt(item.querySelector('.quantity').textContent);
-    //             newTotalPrice += itemPrice * itemQuantity;
-    //         }
-    //         var newTotalPriceElement = document.getElementById('totalPrice');
-    //         newTotalPriceElement.textContent = newTotalPrice;
-    //     } else {
-    //         // If no remaining items, set total price to 0
-    //         var newTotalPriceElement = document.getElementById('totalPrice');
-    //         newTotalPriceElement.textContent = '0';
-    //     }
-    // }
 </script>
-<!-- <script>
-    document.getElementById('payButton').addEventListener('click', function() {
-        var paymentMethod = document.getElementById('paymentMethod').value;
-        var totalPrice = document.getElementById('total').textContent;
-
-        var data = {
-            order_date: new Date().toISOString(),
-            total_amount: parseInt(totalPrice),
-            payment_method: parseInt(paymentMethod),
-            food_items: []
-        };
-        var itemList = document.getElementById('itemList').getElementsByTagName('li');
-        for (var i = 0; i < itemList.length; i++) {
-            var item = itemList[i];
-            var foodId = item.dataset.foodId;
-            var quantity = parseInt(item.querySelector('.quantity').textContent);
-            data.food_items.push({
-                food_id: parseInt(foodId),
-                quantity: quantity
-            });
-
-        }
-        // Bước 3: Gửi dữ liệu lên server bằng Ajax
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', '/admin/order/store');
-        xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                alert('Đặt đồ ăn thành công!');
-            } else {
-                alert('Đã có lỗi xảy ra. Vui lòng thử lại sau.');
-            }
-        };
-        xhr.send(JSON.stringify(data));
-        console.log(data)
-    });
-</script> -->
-
 <script>
     document.getElementById('payButton').addEventListener('click', function() {
         var paymentMethod = document.getElementById('paymentMethod').value;
+        var email = document.getElementById('email').value;
+        var order_end = document.getElementById('order_end').value;
+        var note = document.getElementById('note').value;
         var totalPrice = document.getElementById('total').textContent;
         var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        var data = {
-            _token: csrfToken,
-            order_date: new Date().toISOString(),
-            total_amount: parseInt(totalPrice),
-            payment_method: parseInt(paymentMethod),
-            food_items: []
-        };
         var itemList = document.getElementById('itemList').getElementsByTagName('li');
+        var foodItems = [];
+
         for (var i = 0; i < itemList.length; i++) {
             var item = itemList[i];
             var foodId = item.dataset.foodId;
             var quantity = parseInt(item.querySelector('.quantity').textContent);
 
-            data.food_items.push({
+            foodItems.push({
                 food_id: parseInt(foodId),
                 quantity: quantity
             });
         }
-        console.log(data)
-        // Thực hiện yêu cầu POST bằng Axios
-        axios.post('/admin/order/store', data)
-            .then(function(response) {
-                alert('Đặt đồ ăn thành công!');
-            })
-            .catch(function(error) {
-                alert('Đã có lỗi xảy ra. Vui lòng thử lại sau.');
-            });
+
+        // Cập nhật giá trị trong form
+        document.querySelector('input[name="total_amount"]').value = parseInt(totalPrice);
+        document.querySelector('input[name="payment_method"]').value = parseInt(paymentMethod);
+        document.querySelector('input[name="email"]').value = email;
+        document.querySelector('input[name="order_end"]').value = order_end;
+        document.querySelector('input[name="note"]').value = note;
+        document.querySelector('input[name="food_items"]').value = JSON.stringify(foodItems);
+
+        // Gửi form
+        document.getElementById('myForm').submit();
     });
 </script>
 

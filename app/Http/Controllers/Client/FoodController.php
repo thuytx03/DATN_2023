@@ -14,7 +14,7 @@ class FoodController extends Controller
 {
     public function food(Request $request)
     {
-        $query = MovieFood::query();
+        $query = MovieFood::where('status', 1);
 
         if ($request->has('search')) {
             $search = $request->input('search');
@@ -30,7 +30,7 @@ class FoodController extends Controller
             }
         }
 
-        $foodType = Foodstypes::orderBy('id', 'DESC')->get();
+        $foodType = Foodstypes::orderBy('id', 'DESC')->where('status',1)->get();
         $food = $query->orderBy('id', 'DESC')->paginate(6);
 
         return view('client.foods.food', compact('foodType', 'food'));
@@ -41,6 +41,7 @@ class FoodController extends Controller
         $foods = DB::table('movie_foods_types')
             ->join('movie_foods', 'movie_foods_types.food_id', '=', 'movie_foods.id')
             ->where('movie_foods_types.food_type_id', $foodTypeId)
+            ->where('movie_foods.status', 1)
             ->select('movie_foods.*')
             ->get();
 

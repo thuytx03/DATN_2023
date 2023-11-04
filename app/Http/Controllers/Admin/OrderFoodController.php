@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\OrderFoodRequest;
+use App\Models\MovieFood;
 use App\Models\OrderDetailFood;
 use App\Models\OrderFood;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class OrderFoodController extends Controller
@@ -14,9 +17,24 @@ class OrderFoodController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.order_food.index');
+        $query = OrderFood::query();
+
+        // Tìm kiếm theo name
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where('user_id', 'like', '%' . $search . '%');
+        }
+        // Lọc theo status
+        if ($request->has('status')) {
+            $status = $request->input('status');
+            if ($status != 0) {
+                $query->where('status', $status);
+            }
+        }
+        $orders = $query->orderBy('id', 'desc')->get(); // Sắp xếp theo ID mới nhất
+        return view('admin.order_food.index', compact('orders'));
     }
 
     /**
@@ -34,34 +52,64 @@ class OrderFoodController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(OrderFoodRequest $request)
     {
-        $user_id = auth()->user()->id;
-        $order_date = $request->input('order_date');
+        $order_date = now();
         $total_amount = $request->input('total_amount');
         $payment_method = $request->input('payment_method');
-        $order_id = $request->input('order_id');
-        $food_items = $request->input('food_items');
+        $email = $request->input('email');
+        $order_end = $request->input('order_end');
+        $note = $request->input('note');
+        $food_items = json_decode($request->input('food_items'), true);
 
-        // Lưu vào bảng order
-        $order = OrderFood::create([
-            'user_id' => $user_id,
-            'order_date' => $order_date,
-            'total_amount' => $total_amount,
-            'payment_method' => $payment_method,
-            'order_id' => $order_id,
-        ]);
-
-        // Lưu các food items vào bảng order_detail
-        foreach ($food_items as $food_item) {
-            $order->orderDetail()->create([
-                'order_id' => $order->id,
-                'food_id' => $food_item['food_id'],
-                'quantity' => $food_item['quantity'],
-            ]);
+        if (empty($food_items)) {
+            toastr()->error('Bạn chưa chọn món!');
+            return redirect()->route('food');
         }
 
-        return response()->json(['message' => 'Đặt đồ ăn thành công!'], 200);
+        $can_place_order = true;
+
+        foreach ($food_items as $item) {
+            $food = MovieFood::find($item['food_id']);
+            $food_quantity = $food->quantity;
+
+            if ($item['quantity'] > $food_quantity) {
+                toastr()->error('Số lượng món ăn vượt quá số lượng có sẵn!');
+                $can_place_order = false;
+                break;
+            }
+        }
+
+        if ($can_place_order) {
+            $order = OrderFood::create([
+                'user_id' => auth()->user()->id,
+                'email' => $email,
+                'order_date' => $order_date,
+                'order_end' => $order_end,
+                'total_amount' => $total_amount,
+                'payment_method' => $payment_method,
+                'note' => $note,
+                'reason' => null,
+                'status' => 1,
+            ]);
+
+            foreach ($food_items as $item) {
+                $food = MovieFood::find($item['food_id']);
+                $food_quantity = $food->quantity;
+                $food->quantity = $food_quantity - $item['quantity'];
+                $food->save();
+
+                OrderDetailFood::create([
+                    'order_id' => $order->id,
+                    'food_id' => $item['food_id'],
+                    'quantity' => $item['quantity'],
+                ]);
+            }
+            toastr()->success('Đặt hàng thành công!');
+            return redirect()->route('food');
+        } else {
+            return redirect()->route('food');
+        }
     }
 
     /**
@@ -95,7 +143,11 @@ class OrderFoodController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $item = OrderFood::find($id);
+        $newReason = $request->input('reason');
+        $item->reason =  $newReason;
+        $item->save();
+        return redirect()->back();
     }
 
     /**
@@ -106,6 +158,85 @@ class OrderFoodController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $orderFood = OrderFood::find($id);
+
+        if ($orderFood) {
+            // Xóa các OrderDetailFood có order_id tương ứng
+            OrderDetailFood::where('order_id', $orderFood->id)->delete();
+
+            // Xóa OrderFood
+            $orderFood->delete();
+
+            toastr()->success('Thành công xoá đơn hàng');
+        }
+
+        return redirect()->back();
+    }
+
+    public function user(Request $request, $id)
+    {
+        $orderFood = OrderFood::find($id);
+
+        if ($orderFood) {
+            // Lấy user_id của người mua đơn hàng
+            $userId = $orderFood->user_id;
+
+            // Lấy thông tin người mua
+            $user = User::find($userId);
+
+            if ($user) {
+                // Hiển thị thông tin người mua
+                return view('admin.order_food.user', compact('user'));
+            }
+            // ...
+        }
+    }
+    public function food(Request $request, $id)
+    {
+
+        $orderDetails = OrderDetailFood::join('movie_foods', 'order_detail_foods.food_id', '=', 'movie_foods.id')
+            ->join('order_foods', 'order_detail_foods.order_id', '=', 'order_foods.id')
+            ->select('movie_foods.name', 'movie_foods.image', 'movie_foods.price', 'order_detail_foods.quantity')
+            ->where('order_foods.id', $id)
+            ->get();
+        return view('admin.order_food.food', compact('orderDetails'));
+    }
+    public function updateStatus(Request $request, $id)
+    {
+        $item = OrderFood::find($id);
+
+        if (!$item) {
+            return response()->json(['message' => 'Không tìm thấy mục'], 404);
+        }
+
+        $newStatus = $request->input('status');
+
+        // Kiểm tra xem nếu trạng thái đã hoàn thành hoặc đã hủy bỏ, thì không cho phép thay đổi
+        if ($item->status == 3 || $item->status == 4) {
+            toastr()->error('Không thể thay đổi trạng thái đã hoàn thành hoặc đã hủy bỏ!');
+            return response()->json(['success' => false, 'message' => 'Không thể thay đổi trạng thái đã hoàn thành hoặc đã hủy bỏ']);
+        }
+        if (empty($newReason)) {
+            $item->reason = null;
+        }
+        $item->status = $newStatus;
+        $item->save();
+        toastr()->success('Cập nhật trạng thái thành công!');
+        return response()->json(['message' => 'Cập nhật trạng thái thành công'], 200);
+    }
+    public function deleteAll(Request $request)
+    {
+        $ids = $request->ids;
+        if ($ids) {
+            // Delete orders
+            OrderFood::whereIn('id', $ids)->delete();
+
+            // Delete related order details
+            OrderDetailFood::whereIn('order_id', $ids)->delete();
+
+            toastr()->success('Thành công xoá các đơn đã chọn');
+        } else {
+            toastr()->warning('Không tìm thấy các đơn đã chọn');
+        }
     }
 }

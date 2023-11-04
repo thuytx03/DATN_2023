@@ -3,6 +3,7 @@
 <link href="{{ asset('admin/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/switchery/0.8.2/switchery.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
 
 <style>
     .dropdown-menu a:hover {
@@ -32,7 +33,6 @@ Danh sách đơn đặt đồ ăn
                             Hành động
                         </button>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="">Thùng rác</a>
                             <a href="#" id="delete-selected" class="dropdown-item">Xoá đã chọn</a>
                         </div>
                     </div>
@@ -60,8 +60,10 @@ Danh sách đơn đặt đồ ăn
                                     <div class="dataTables_length mr-3" id="dataTable_length"><label>Lọc
                                             <select name="status" aria-controls="dataTable" class="custom-select custom-select-sm form-control ">
                                                 <option value="">Vui lòng chọn</option>
-                                                <option value="1">Hoạt động</option>
-                                                <option value="2">Không hoạt động</option>
+                                                <option value="1">Chưa xử lý</option>
+                                                <option value="2">Đã xác nhận</option>
+                                                <option value="3">Đã hủy bỏ</option>
+                                                <option value="4">Hoàn thành</option>
                                             </select>
                                         </label>
                                     </div>
@@ -87,38 +89,75 @@ Danh sách đơn đặt đồ ăn
                                         <th class="">
                                             <input type="checkbox" class="" id="select-all">
                                         </th>
-                                        <th scope="col">Tên phòng</th>
-                                        <th scope="col">Mô tả</th>
-                                        <th scope="col">Loại phòng</th>
-                                        <th scope="col">Hình ảnh</th>
-                                        <th scope="col">Rạp</th>
+                                        <th scope="col">Id</th>
+                                        <th scope="col">Email</th>
+                                        <th scope="col">Ngày đặt</th>
+                                        <th scope="col">Ngày nhận</th>
+                                        <th scope="col">Tổng tiền</th>
+                                        <th scope="col">Phương thức thanh toán</th>
+                                        <th scope="col">Ghi chú</th>
                                         <th scope="col">Trạng thái</th>
                                         <th scope="col">Hành động</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
-                                    
+                                    @foreach($orders as $orders)
                                     <tr>
                                         <td>
-                                            <input type="checkbox" class="child-checkbox" name="ids[]" value="">
+                                            <input type="checkbox" class="child-checkbox" name="ids[]" value="{{$orders->id}}">
                                         </td>
-                                        <td></td>
-                                        <td></td>
+                                        <td>{{$orders->user_id}}</td>
+                                        <td>{{$orders->email}}</td>
+                                        <td>{{$orders->order_date}}</td>
+                                        <td>{{$orders->order_end}}</td>
+                                        <td>{{$orders->total_amount}}</td>
+                                        <td>
+                                            @if($orders->payment_method == 1)
+                                            Thanh toán nội địa Napas
+                                            @elseif($orders->payment_method == 2)
+                                            Thanh toán quốc tế Visa
+                                            @elseif($orders->payment_method == 3)
+                                            Thanh toán ví MoMo
+                                            @endif
+                                        </td>
+                                        <td>{{$orders->note}}</td>
+                                        <td>
+                                            <select class="custom-select custom-select-sm form-control switch-status" data-item-id="{{ $orders->id }}">
+                                                <option value="1" {{ $orders->status == 1 ? 'selected' : '' }}>Chưa xử lý</option>
+                                                <option value="2" {{ $orders->status == 2 ? 'selected' : '' }}>Đã xác nhận</option>
+                                                <option value="3" {{ $orders->status == 3 ? 'selected' : '' }}>Đã hủy bỏ</option>
+                                                <option value="4" {{ $orders->status == 4 ? 'selected' : '' }}>Hoàn thành</option>
+                                            </select>
+                                            <div class="cancel-reason mt-2" style="display:none;">
+                                                <form class="cancel-form" action="{{ route('food.update',['id'=>$orders->id]) }}" method="POST">
+                                                    @csrf
+                                                    <input type="text" class="form-control" name="reason" placeholder="Nhập lý do hủy đơn">
+                                                    <button class="btn btn-primary mt-2">Xác nhận</button>
+                                                </form>
+                                            </div>
+                                            @if ($orders->status == 3)
+                                            <div class="cancel-reason mt-2">
+                                                <span class="btn btn-danger">Lý do hủy: {{$orders->reason}}</span>
+                                            </div>
+                                            @endif
+                                        </td>
+
                                         <td>
                                             <div class="dropdown">
                                                 <button class="btn" type="button" data-toggle="dropdown" aria-expanded="false">
                                                     <i class="fa-solid fa-ellipsis-vertical"></i>
                                                 </button>
                                                 <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="">Cập nhật</a>
-                                                    <a class="dropdown-item show_confirm" href="">Xoá
+                                                    <a class="dropdown-item" href="{{route('food.user',['id'=>$orders->id])}}">Thông tin người đặt hàng</a>
+                                                    <a class="dropdown-item" href="{{route('food.detail',['id'=>$orders->id])}}">Thông tin đơn hàng</a>
+                                                    <a class="dropdown-item show_confirm" href="{{route('food.delete',['id'=>$orders->id])}}">Xoá đơn hàng
                                                     </a>
                                                 </div>
                                             </div>
                                         </td>
                                     </tr>
-                                   
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
@@ -133,7 +172,7 @@ Danh sách đơn đặt đồ ăn
 @push('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/switchery/0.8.2/switchery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 <script>
     $(document).ready(function() {
         var switches = Array.from(document.querySelectorAll('.switch1'));
@@ -191,30 +230,32 @@ Danh sách đơn đặt đồ ăn
     selectAllCheckbox();
 
     function updateStatus() {
+        $('.switch-status').change(function() {
+            const orderId = $(this).data('item-id');
+            const status = $(this).val();
+            const cancelReasonDiv = $(this).closest('td').find('.cancel-reason');
 
-        $(document).ready(function() {
-            $('.switch-status').change(function() {
-                const itemId = $(this).data('item-id');
-                const status = this.checked ? 1 : 2;
+            if (status == 3) {
+                cancelReasonDiv.show();
+            } else {
+                cancelReasonDiv.hide();
+            }
 
-                $.ajax({
-                    method: 'POST',
-                    url: '/admin/room/update-status/' + itemId,
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        status: status
-                    },
-                    success: function(data) {
-                        // Xử lý phản hồi thành công (nếu cần)
-                    },
-                    error: function(error) {
-                        // Xử lý lỗi (nếu có)
-                    }
-                });
+            $.ajax({
+                method: 'POST',
+                url: '/admin/order/update-status/' + orderId,
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    status: status
+                },
             });
         });
     }
+
     updateStatus();
+
+
+
 
     function deleteSelected() {
         $(document).ready(function() {
@@ -240,7 +281,7 @@ Danh sách đơn đặt đồ ăn
                         if (result.isConfirmed) {
                             $.ajax({
                                 type: 'POST',
-                                url: '/admin/room/deleteAll', // Thay thế bằng tuyến đường xử lý xoá của bạn
+                                url: '/admin/order/deleteAll', // Thay thế bằng tuyến đường xử lý xoá của bạn
                                 data: {
                                     ids: selectedIds,
                                     _token: '{{ csrf_token() }}',

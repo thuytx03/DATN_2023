@@ -43,19 +43,19 @@
                                 <a href="movie-grid.html">Movie Grid</a>
                             </li>
                             <li>
-                                <a href="{{ route('movie.list') }}">Movie List</a>
+                                <a href="">Movie List</a>
                             </li>
                             <li>
-                                <a href="{{route('home.favorite.list')}}">Phim Yêu Thích</a>
+                                <a href="">Phim Yêu Thích</a>
                             </li>
                             <li>
-                                <a href="{{ route('movie-ticket-plan') }}">Movie Ticket Plan</a>
+                                <a href="">Movie Ticket Plan</a>
                             </li>
                             <li>
-                                <a href="{{ route('movie-seat-plan') }}">Movie Seat Plan</a>
+                                <a href="">Movie Seat Plan</a>
                             </li>
                             <li>
-                                <a href="{{ route('movie-checkout') }}">Movie Checkout</a>
+                                <a href="">Movie Checkout</a>
                             </li>
                             <li>
                                 <a href="{{ route('food') }}">Movie Food</a>
@@ -86,7 +86,7 @@
                         <a href="#0">Mã Giảm Giá</a>
                         <ul class="submenu">
                             <li>
-                                <a href="{{ route('home.voucher.list') }}">Danh Sách Mã Giảm Giá</a>
+                                <a href="">Danh Sách Mã Giảm Giá</a>
                             </li>
                            
                         </ul>

@@ -108,7 +108,7 @@ Danh sách người dùng
                                         </td>
                                         <td>{{$user->phone}}</td>
                                         <td>{{$user->address}}</td>
-                                        <td>{{$user->gender == 'Male' ? 'Nam' : 'Nữ'}}</td>
+                                        <td>{{$user->gender == '0' ? 'Nam' : 'Nữ'}}</td>
                                         <td>
                                             <img alt="Avatar" width="60" src="{{ $user->avatar ? Storage::url($user->avatar) : asset('images/image-not-found.jpg') }}" alt="Image">
                                         </td>

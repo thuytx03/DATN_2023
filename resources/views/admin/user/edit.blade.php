@@ -67,20 +67,20 @@
                     <div class="col-md-6">
                         <label for="gender" class="form-label">Giới tính</label>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="gender" id="gender" value="male" {{ $user->gender == 'male' ? 'checked' : '' }}>
+                            <input class="form-check-input" type="radio" name="gender" id="gender" value="0" {{ $user->gender == '0' ? 'checked' : '' }}>
                             <label class="form-check-label" for="gender-male">Nam</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="gender" id="gender" value="female" {{ $user->gender == 'female' ? 'checked' : '' }}>
+                            <input class="form-check-input" type="radio" name="gender" id="gender" value="1" {{ $user->gender == '1' ? 'checked' : '' }}>
                             <label class="form-check-label" for="gender-female">Nữ</label>
                         </div>
                     </div>
 
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="avatar" class="form-label">Ảnh</label>
-                            <input name="avatar" type="file" id="avatar" style="display: none" value="{{ $user->avatar }}">
-                            <img src="{{ asset($user->avatar) }}" width="150" height="130" id="image_preview" class="mt-1" alt="">
+                    <div class="form-group">
+                            <label for="image">Ảnh</label> <br>
+                            <input name="avatar" type="file" id="image_url" style="display: none" value="{{ $user->avatar ? Storage::url($user->avatar) : asset('images/image-not-found.jpg') }}">
+                            <img src="{{ $user->avatar ? Storage::url($user->avatar) : asset('images/image-not-found.jpg') }}" width="150" height="130" id="image_preview" class="mt-1" alt="">
                         </div>
                     </div>
                     <div class="col-md-6">
