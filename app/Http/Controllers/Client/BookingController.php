@@ -6,6 +6,7 @@ use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BookingRequest;
 use App\Models\Booking;
+use App\Models\BookingDetail;
 use App\Models\MovieFood;
 use App\Models\Room;
 use App\Models\Seat;
@@ -26,27 +27,35 @@ class BookingController extends Controller
         $this->checkStatus();
         $room = Room::where('id', $room_id)->first();
         $showTime = ShowTime::find($showtime_id);
+        // dd(Session::get('selectedSeats', []));
 
         $totalPrice = 0;
+        // Tạo một mảng để lưu giá của từng ghế.
         $prices = [];
-
         foreach (Session::get('selectedSeats', []) as $seat) {
-            $row = substr($seat, 0, 1);
+            // Tách hàng và cột từ chuỗi ghế (ví dụ: "J6" -> hàng "J", cột "6").
+            $row = substr($seat, 0, 1); // Lấy ký tự đầu tiên
             $column = substr($seat, 1);
 
+            // Lấy thông tin của ghế từ bảng 'seats'.
             $seatInfo = Seat::where('row', $row)
                 ->where('column', $column)
                 ->first();
 
             if ($seatInfo) {
+                // Lấy giá dựa trên 'seat_type_id' từ bảng 'seat_types'.
                 $seatType = SeatType::find($seatInfo->seat_type_id);
                 if ($seatType) {
+                    // Lưu giá của từng ghế vào mảng $prices.
                     $prices[] = $seatType->price;
                 }
             }
         }
 
-        $totalPrice = array_sum($prices);
+        // Tính tổng giá của tất cả các ghế.
+        $totalPriceTicket = array_sum($prices);
+
+        // dd($totalPriceTicket);
 
         if ($request->isMethod('POST')) {
             $booking = new Booking();
@@ -60,15 +69,26 @@ class BookingController extends Controller
             $booking->payment = $request->payment;
             $booking->status = 1;
             $booking->note = $request->note;
-
             if (Session::has('selectedSeats')) {
                 $listSeat = Session::get('selectedSeats', []);
+                // dd($listSeat);
                 $selectedSeatsJson = json_encode($listSeat);
+                // dd($selectedSeatsJson);
                 $booking->list_seat = $selectedSeatsJson;
             }
-
-            $booking->total = $totalPrice;
+            $booking->total = $request->totalPrice;
             $booking->save();
+
+            if(session()->has('selectedProducts')){
+                foreach (session('selectedProducts') as $food){
+                    $bookingDetail=new BookingDetail();
+                    $bookingDetail->booking_id=$booking->id;
+                    $bookingDetail->food_id=$food['id'];
+                    $bookingDetail->quantity=$food['quantity'];
+                    $bookingDetail->price=$food['price'];
+                    $bookingDetail->save();
+                }
+            }
 
             if ($booking->payment == 1) {
                 // Thực hiện thanh toán VNPay
@@ -76,9 +96,17 @@ class BookingController extends Controller
             } elseif ($booking->payment == 2) {
                 return redirect()->route('paypal.payment', ['id' => $booking->id]);
             }
+
+            session()->forget('voucher');
+            session()->forget('selectedSeats');
+            session()->forget('selectedProducts');
+            session()->forget('totalPriceFood');
+            toastr()->success('Đặt vé thành công');
+
         }
 
-        return view('client.movies.movie-checkout', compact('showTime', 'room', 'totalPrice'));
+        return view('client.movies.movie-checkout', compact('showTime', 'room', 'totalPriceTicket'));
+
     }
 
 
@@ -330,5 +358,12 @@ class BookingController extends Controller
                 ->route('camonthanhtoan')
                 ->with('error', $response['message'] ?? 'Something went wrong.');
         }
+    }
+
+    public function ticketFood(Request $request)
+    {
+        $food = MovieFood::all();
+
+        return view('client.movies.movie-ticket-food', compact('food'));
     }
 }

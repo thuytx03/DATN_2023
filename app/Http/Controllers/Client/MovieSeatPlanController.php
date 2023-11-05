@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Cinema;
 use App\Models\Movie;
+use App\Models\MovieFood;
 use App\Models\Province;
 use App\Models\Room;
 use App\Models\Seat;
@@ -48,7 +49,15 @@ class MovieSeatPlanController extends Controller
         $bookedSeats = array_unique($bookedSeats);
         $province = Province::all();
 
-        return view('client.movies.movie-seat-plan', compact('seatsVip', 'seatsThuong', 'seatsDoi', 'room', 'showTime', 'bookedSeats','province'));
+        //Danh sách đồ ăn
+        $food=MovieFood::paginate(6);
+
+            // session()->forget('selectedProducts');
+            // session()->forget('totalPriceFood');
+
+        return view('client.movies.movie-seat-plan',
+        compact('seatsVip', 'seatsThuong', 'seatsDoi', 'room', 'showTime', 'bookedSeats','province','food',
+    ));
     }
 
     public function saveSelectedSeats(Request $request)
@@ -58,5 +67,18 @@ class MovieSeatPlanController extends Controller
         // Trả về số ghế đã chọn cùng với phản hồi JSON
         return response()->json(['message' => 'Selected seats saved successfully']);
     }
+
+    public function luuThongTinSanPham(Request $request)
+    {
+        $selectedProducts = $request->input('selectedProducts');
+        $totalPriceFood = $request->input('totalPriceFood');
+
+        // Lưu dữ liệu vào session
+        session(['selectedProducts' => $selectedProducts, 'totalPriceFood' => $totalPriceFood]);
+
+        return response()->json(['success' => true]);
+    }
+
+
 
 }

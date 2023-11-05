@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('status')->nullable();
             $table->longText('note')->nullable();
             $table->longText('cancel_reason')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

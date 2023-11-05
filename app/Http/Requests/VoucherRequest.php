@@ -35,7 +35,7 @@ class VoucherRequest extends FormRequest
                         'code' => 'required|unique:vouchers|min:6|max:15',
                         'type' => 'required',
                         'value' => 'required|integer',
-                        'quantity' => 'required|integer',
+                        'quantity' => 'required|integer|numeric|min:0',
                         'start_date' => 'required|date|after_or_equal:today',
                         'end_date' => 'required|date|after:start_date',
                     ];
@@ -56,7 +56,7 @@ class VoucherRequest extends FormRequest
                         'code' => ['required', Rule::unique('vouchers')->ignore($this->id), 'min:6', 'max:15'],
                         'type' => 'required',
                         'value' => 'required|integer',
-                        'quantity' => 'required|integer',
+                        'quantity' => 'required|integer|numeric|min:0',
                         'start_date' => 'required|date|after_or_equal:today',
                         'end_date' => 'required|date|after:start_date',
                     ];
@@ -92,6 +92,8 @@ class VoucherRequest extends FormRequest
             'value.max' => 'Mã giảm giá tối đa là 100%.',
             'quantity.required' => 'Vui lòng nhập số lượng.',
             'quantity.integer' => 'Số lượng mã giảm giá phải là số nguyên.',
+            'quantity.min' => 'Số lượng không được nhỏ hơn 0.',
+
             'min_order_amount.numeric' => 'Giá trị tối thiểu phải là số.',
             'max_order_amount.numeric' => 'Giá trị tối đa phải là số.',
             'max_order_amount.greater_than_field' => 'Giá trị tối đa phải lớn hơn giá trị tối thiểu.',

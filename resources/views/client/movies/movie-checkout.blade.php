@@ -27,10 +27,10 @@
         <div class="container">
             <div class="details-banner-wrapper">
                 <div class="details-banner-content style-two">
-                    <h3 class="title">Venus</h3>
+                    <h3 class="title">Thanh toán</h3>
                     <div class="tags">
-                        <a href="#0">City Walk</a>
-                        <a href="#0">English - 2D</a>
+                        {{-- <a href="#0">City Walk</a>
+                        <a href="#0">English - 2D</a> --}}
                     </div>
                 </div>
             </div>
@@ -43,29 +43,22 @@
         <div class="container">
             <div class="page-title-area">
                 <div class="item md-order-1">
-                    <a href="#" class="custom-button back-button" onclick="goBack()">
-                        <!-- <i class="flaticon-double-right-arrows-angles"></i> -->
-                        << back </a>
+                    <a href="{{ route('chon-ghe', ['room_id' => $showTime->room_id, 'slug' => $showTime->movie->slug, 'showtime_id' => $showTime->id]) }}"
+                        class="custom-button back-button">
+                        Quay lại</a>
                 </div>
 
-                <script>
-                    function goBack() {
-                        window.history.back();
-                    }
-                </script>
-
-                <div class="item date-item">
-                    <span class="date">MON, SEP 09 2020</span>
-                    <select class="select-bar">
-                        <option value="sc1">09:40</option>
-                        <option value="sc2">13:45</option>
-                        <option value="sc3">15:45</option>
-                        <option value="sc4">19:50</option>
-                    </select>
+                <div class="item text-white ">
+                    <div class="tags ">
+                        <a href="#0" class="text-white">Rạp: {{ $showTime->room->cinema->name }}</a> -
+                        <a href="#0" class="text-white">Phòng: {{ $showTime->room->name }}</a> -
+                        <a href="#0" class="text-white">Thời gian: {{ date('H:i', strtotime($showTime->start_date)) }}
+                            ~ {{ date('H:i', strtotime($showTime->start_end)) }}</a>
+                    </div>
                 </div>
                 <div class="item">
-                    <h5 class="title">05:00</h5>
-                    <p>Mins Left</p>
+                    {{-- <h5 class="title">05:00</h5>
+                    <p>Mins Left</p> --}}
                 </div>
             </div>
         </div>
@@ -76,30 +69,44 @@
     <div class="movie-facility padding-bottom padding-top">
         <div class="container">
             <div class="row">
-
                 <div class="col-lg-8">
                     <div class="checkout-widget checkout-contact">
                         <h5 class="title">Mã giảm giá </h5>
-                        <form class="checkout-contact-form">
+                        <form class="checkout-contact-form" action="{{ route('home.voucher.apllyVouchers') }}"
+                            method="POST">
+                            @csrf
                             <div class="form-group">
-                                <input type="text" placeholder="Nhập mã giảm giá tại đây!">
+                                <input type="text" placeholder="Nhập mã giảm giá tại đây!" name="code"
+                                    id="discount-code-input">
                             </div>
                             <div class="form-group">
-                                <input type="submit" value="Nhập" class="custom-button">
+                                <input type="submit" value="Nhập" class="custom-button" id="submit-button" disabled>
                             </div>
+
+                            @php
+                                $totalPriceFood = session('totalPriceFood') ?? 0;
+                                // dd($totalPriceFood);
+                                // dd($totalPriceTicket);
+                                $totalPrice = $totalPriceFood + $totalPriceTicket;
+                                // dd($totalPrice);
+                            @endphp
+                            <input type="hidden" name="totalPrice" value="{{ $totalPrice }}">
+
                         </form>
                     </div>
                     @if ($errors->any())
-                    <div class="alert alert-danger">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </div>
-                @endif
-                    <form action="{{ route('thanh-toan', ['room_id' => $room->id, 'slug' => $showTime->movie->slug, 'showtime_id' => $showTime->id]) }}" class="" method="post">
+                        <div class="alert alert-danger">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </div>
+                    @endif
+                    <form
+                        action="{{ route('thanh-toan', ['room_id' => $room->id, 'slug' => $showTime->movie->slug, 'showtime_id' => $showTime->id]) }}"
+                        class="" method="post">
                         @csrf
-                    <div class="checkout-widget checkout-contact">
-                        <h5 class="title">Thông tin liên hệ</h5>
+                        <div class="checkout-widget checkout-contact">
+                            <h5 class="title">Thông tin liên hệ</h5>
 
                             <div class="form-group">
                                 <input type="text" placeholder="Họ và tên" name="name" value="{{ old('name') }}">
@@ -108,7 +115,8 @@
                                 <input type="text" placeholder="Email" name="email" value="{{ old('email') }}">
                             </div>
                             <div class="form-group">
-                                <input type="text" placeholder="Số điện thoại" name="phone" value="{{ old('phone') }}">
+                                <input type="text" placeholder="Số điện thoại" name="phone"
+                                    value="{{ old('phone') }}">
                             </div>
                             <div class="form-group">
                                 <input type="text" placeholder="Địa chỉ" name="address" value="{{ old('address') }}">
@@ -118,50 +126,50 @@
                             </div>
 
 
-                    </div>
-                    <div class="checkout-widget checkout-card mb-0">
-                        <h5 class="title">Phương thức thanh toán </h5>
-                        <ul class="payment-option">
-                            <li class="active" onclick="selectPayment(1)">
-                                <a href="#0">
-                                    <img src="{{ asset('client/assets/images/payment/card.png') }}" alt="payment">
-                                    <span>VNPay</span>
-                                </a>
-                                <input type="radio" name="payment" value="1" checked hidden>
-                            </li>
-                            <li onclick="selectPayment(2)">
-                                <a href="#0">
-                                    <img src="{{ asset('client/assets/images/payment/card.png') }}" alt="payment">
-                                    <span>PayPal</span>
-                                </a>
-                                <input type="radio" name="payment" value="2" hidden>
-                            </li>
-                        </ul>
+                        </div>
+                        <div class="checkout-widget checkout-card mb-0">
+                            <h5 class="title">Phương thức thanh toán </h5>
+                            <ul class="payment-option">
+                                <li class="active" onclick="selectPayment(1)">
+                                    <a href="#0">
+                                        <img src="{{ asset('client/assets/images/payment/card.png') }}" alt="payment">
+                                        <span>VNPay</span>
+                                    </a>
+                                    <input type="radio" name="payment" value="1" checked hidden>
+                                </li>
+                                <li onclick="selectPayment(2)">
+                                    <a href="#0">
+                                        <img src="{{ asset('client/assets/images/payment/card.png') }}" alt="payment">
+                                        <span>PayPal</span>
+                                    </a>
+                                    <input type="radio" name="payment" value="2" hidden>
+                                </li>
+                            </ul>
 
-                        <script>
-                            function selectPayment(value) {
-                                // Lấy danh sách tất cả các phần tử li
-                                var paymentOptions = document.querySelectorAll('.payment-option li');
+                            <script>
+                                function selectPayment(value) {
+                                    // Lấy danh sách tất cả các phần tử li
+                                    var paymentOptions = document.querySelectorAll('.payment-option li');
 
-                                // Bỏ chọn tất cả các input radio
-                                var paymentRadios = document.querySelectorAll('input[name="payment"]');
-                                for (var i = 0; i < paymentRadios.length; i++) {
-                                    paymentRadios[i].checked = false;
+                                    // Bỏ chọn tất cả các input radio
+                                    var paymentRadios = document.querySelectorAll('input[name="payment"]');
+                                    for (var i = 0; i < paymentRadios.length; i++) {
+                                        paymentRadios[i].checked = false;
+                                    }
+
+                                    // Tìm li tương ứng và chọn input radio trong li đó
+                                    for (var i = 0; i < paymentOptions.length; i++) {
+                                        paymentOptions[i].classList.remove('active'); // Loại bỏ class "active" khỏi tất cả các li
+                                    }
+                                    paymentOptions[value - 1].classList.add('active'); // Thêm class "active" cho li đã chọn
+                                    paymentRadios[value - 1].checked = true; // Chọn input radio tương ứng
                                 }
-
-                                // Tìm li tương ứng và chọn input radio trong li đó
-                                for (var i = 0; i < paymentOptions.length; i++) {
-                                    paymentOptions[i].classList.remove('active'); // Loại bỏ class "active" khỏi tất cả các li
-                                }
-                                paymentOptions[value - 1].classList.add('active'); // Thêm class "active" cho li đã chọn
-                                paymentRadios[value - 1].checked = true; // Chọn input radio tương ứng
-                            }
-                        </script>
-                        <p class="notice">
-                            Bằng cách nhấp vào "Thanh toán", bạn đồng ý với các <a href="#0">Điều khoản và điều
-                                kiện</a>
-                        </p>
-                    </div>
+                            </script>
+                            <p class="notice">
+                                Bằng cách nhấp vào "Thanh toán", bạn đồng ý với các <a href="#0">Điều khoản và điều
+                                    kiện</a>
+                            </p>
+                        </div>
                 </div>
                 <div class="col-lg-4">
                     <div class="booking-summery bg-one">
@@ -174,12 +182,13 @@
                             <li>
                                 <h6 class="subtitle"><span>Rạp: {{ $room->cinema->name }}</span></h6>
                             </li>
-                             <li>
+                            <li>
                                 <h6 class="subtitle"><span>Phòng: {{ $room->name }}</span></h6>
                                 <div class="info"><span>Ngày chiếu: {{ $showTime->start_date }}</span></div>
                             </li>
                             <li>
-                                <h6 class="subtitle"><span>Tổng số ghế</span><span>{{ count(Session::get('selectedSeats', [])) }}</span></h6>
+                                <h6 class="subtitle"><span>Tổng số
+                                        ghế</span><span>{{ count(Session::get('selectedSeats', [])) }}</span></h6>
                                 <div class="info">
                                     <span>Hàng ghế:
                                         @foreach (Session::get('selectedSeats', []) as $seat)
@@ -187,40 +196,69 @@
                                             @if (!$loop->last)
                                                 ,
                                             @endif
-
                                         @endforeach
                                     </span>
                                 </div>
                             </li>
 
+                            <li>
+                                <h6 class="subtitle mb-0"><span>Tiền vé </span><span>
+                                        {{ number_format($totalPriceTicket, 0, ',', '.') }} VNĐ
+                                    </span></h6>
+                                <input type="hidden" name="totalPriceTicket" value="{{ $totalPriceTicket }}">
+                            </li>
+                        </ul>
 
-                            <li>
-                                <h6 class="subtitle mb-0"><span>Tiền vé </span><span>{{ $totalPrice }}</span></h6>
-                            </li>
+                        @php
+                            $totalPriceFood = session('totalPriceFood') ?? 0;
+                            // dd($totalPriceFood);
+                            $totalPrice = $totalPriceFood + $totalPriceTicket;
+                            // dd($totalPrice);
+                        @endphp
+                        <ul class="side-shape">
+                            @if (session('selectedProducts'))
+                                <li>
+                                    <h6 class="subtitle"><span>Đồ ăn</span> </h6>
+                                    @foreach (session('selectedProducts') as $product)
+                                        <span
+                                            class="info"><span>{{ $product['name'] }}</span><span>{{ $product['quantity'] }}</span><span>{{ number_format($product['price'], 0, ',', '.') }}
+                                                VNĐ</span></span>
+                                    @endforeach
+                                </li>
+                                <li>
+                                    <h6 class="subtitle mb-0"><span>Tổng tiền đồ ăn </span><span>
+                                            {{ number_format(session('totalPriceFood'), 0, ',', '.') }} VNĐ
+                                        </span></h6>
+                                    <input type="hidden" name="totalPriceFood" value="{{ $totalPriceFood }}">
+
+                                </li>
+                            @endif
+                            @if (session('voucher'))
+                                <li>
+                                    <h6 class="subtitle mb-0"><span>Giảm giá </span><span>
+                                            {{ number_format(session('voucher.discount'), 0, ',', '.') }} VNĐ
+                                        </span></h6>
+                                </li>
+                            @endif
                         </ul>
-                        {{-- <ul class="side-shape">
-                            <li>
-                                <h6 class="subtitle"><span>combos</span><span>$57</span></h6>
-                                <span class="info"><span>2 Nachos Combo</span></span>
-                            </li>
-                            <li>
-                                <h6 class="subtitle"><span>food & bevarage</span></h6>
-                            </li>
-                        </ul>
-                        <ul>
-                            <li>
-                                <span class="info"><span>price</span><span>$207</span></span>
-                                <span class="info"><span>vat</span><span>$15</span></span>
-                            </li>
-                        </ul> --}}
                     </div>
                     <div class="proceed-area  text-center">
-                        <h6 class="subtitle"><span>Tổng tiền</span><span>$222</span></h6>
-                       <input type="hidden" name="">
-                        <button type="submit" class="custom-button back-button btn btn-success" name="redirect">Thanh toán</button>
+                        @if (session('voucher'))
+                            <h6 class="subtitle"><span>Tổng tiền</span><span>
+                                    {{ number_format(session('voucher.totalPriceVoucher'), 0, ',', '.') }} VNĐ
+                                </span></h6>
+                            <input type="hidden" name="totalPrice" value="{{ $totalPrice }}">
+                        @else
+                            <h6 class="subtitle"><span>Tổng tiền</span><span>
+                                    {{ number_format($totalPrice, 0, ',', '.') }} VNĐ
+                                </span></h6>
+                            <input type="hidden" name="totalPrice" value="{{ $totalPrice }}">
+                        @endif
+                        <button type="submit" class="custom-button back-button" name="redirect">Thanh toán</button>
                     </div>
                 </div>
-            </form>
+                </form>
+
             </div>
         </div>
     </div>
@@ -241,5 +279,19 @@
                 this.classList.add('active');
             });
         }
+    </script>
+
+    {{-- disbale nút submit khi chưa nhập mã giảm giá  --}}
+    <script>
+        document.getElementById("discount-code-input").addEventListener("input", function() {
+            var codeInput = this.value.trim();
+            var submitButton = document.getElementById("submit-button");
+
+            if (codeInput !== "") {
+                submitButton.removeAttribute("disabled");
+            } else {
+                submitButton.setAttribute("disabled", "disabled");
+            }
+        });
     </script>
 @endsection

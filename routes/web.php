@@ -49,6 +49,8 @@ Route::get('/get-cinemas/{provinceId}', [MovieTicketPlanController::class, 'getC
 Route::prefix('vouchers')->group(function () {
     Route::get('/voucher-list', [VouchersController::class, 'vouchers'])->name('home.voucher.list');
     Route::get('/voucher-detail/{id}', [VouchersController::class, 'detailVouchers'])->name('home.voucher.detail');
+    Route::post('/apllyVouchers', [VouchersController::class, 'apllyVouchers'])->name('home.voucher.apllyVouchers');
+
 });
 
 Route::group(['middleware' => 'guest'], function () {
@@ -66,9 +68,11 @@ Route::middleware(['auth'])->group(function () {
     //ghế
     Route::get('/lich-chieu/chon-ghe/{room_id}/{slug}/{showtime_id}', [MovieSeatPlanController::class, 'index'])->name('chon-ghe');
     Route::post('/save-selected-seats', [MovieSeatPlanController::class, 'saveSelectedSeats'])->name('save-selected-seats');
+    Route::post('/luu-thong-tin-san-pham', [MovieSeatPlanController::class, 'luuThongTinSanPham'])->name('luu-thong-tin-san-pham');
 
     //thanh toán
     Route::match(['GET', 'POST'], '/thanh-toan/{room_id}/{slug}/{showtime_id}', [BookingController::class, 'index'])->name('thanh-toan');
+    Route::match(['GET', 'POST'], '/thanh-toan/do-an', [BookingController::class, 'ticketFood'])->name('thanh-toan.do-an');
     Route::get('/camon', [BookingController::class, 'thanks'])->name('camonthanhtoan');
 
     // paypal
