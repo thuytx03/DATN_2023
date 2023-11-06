@@ -144,12 +144,17 @@
                                                 Thời Lượng:
                                                 <?php
                                                 $duration = $movie->duration;
-                                                if ($duration >= 60) {
-                                                    $hours = floor($duration / 60);
-                                                    $minutes = $duration % 60;
-                                                    echo $hours . "h " . $minutes . "p";
+                                                if ($duration !== null) {
+                                                    $duration = (int)$duration; // Convert to an integer
+                                                    if ($duration >= 60) {
+                                                        $hours = floor($duration / 60);
+                                                        $minutes = $duration % 60;
+                                                        echo $hours . "h " . $minutes . "p";
+                                                    } else {
+                                                        echo $duration . "p";
+                                                    }
                                                 } else {
-                                                    echo $duration . "p";
+                                                    echo "Unknown";
                                                 }
                                                 ?>
                                             </div>

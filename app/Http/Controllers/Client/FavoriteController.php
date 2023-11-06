@@ -64,7 +64,7 @@ class FavoriteController extends Controller
             if (!empty($request['danhmuc'])) {
                 $categoryId = $request->input('danhmuc');
                 $favoriteMovies = $favoriteMovies->whereHas('genres', function ($query) use ($categoryId) {
-                    $query->where('id', $categoryId);
+                    $query->where('genre_id', $categoryId);
                 });
             }
 
