@@ -46,7 +46,7 @@
                                 <a href="">Movie List</a>
                             </li>
                             <li>
-                                <a href="">Phim Yêu Thích</a>
+                                <a href="{{route('home.favorite.list')}}">Phim Yêu Thích</a>
                             </li>
                             <li>
                                 <a href="">Movie Ticket Plan</a>
@@ -86,7 +86,7 @@
                         <a href="#0">Mã Giảm Giá</a>
                         <ul class="submenu">
                             <li>
-                                <a href="">Danh Sách Mã Giảm Giá</a>
+                                <a href="{{route('home.voucher.list')}}">Danh Sách Mã Giảm Giá</a>
                             </li>
                            
                         </ul>
