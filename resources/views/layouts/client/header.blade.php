@@ -112,13 +112,10 @@
                         </ul>
                     </li>
                     <li>
-                        <a href="#0">blog</a>
+                        <a href="#0">Bài Viết</a>
                         <ul class="submenu">
-                            <li>
-                                <a href="">Blog</a>
-                            </li>
-                            <li>
-                                <a href="blog-details.html">Blog Single</a>
+                        <li>
+                                <a href="{{ route('blog') }}">Bài Viết</a>
                             </li>
                         </ul>
                     </li>

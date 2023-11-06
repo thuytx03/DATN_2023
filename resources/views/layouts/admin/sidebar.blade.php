@@ -133,6 +133,8 @@
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="{{ route('post-type.index') }}">Danh mục bài viết</a>
                 <a class="collapse-item" href="{{ route('post.index') }}">Bài viết</a>
+                <a class="collapse-item" href="{{ route('comment.index') }}">Bình luận bài viết</a>
+                <a class="collapse-item" href="{{ route('reply.index') }}"> Trả lời bình luận </a>
             </div>
         </div>
     </li>
