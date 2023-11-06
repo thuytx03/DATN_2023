@@ -77,7 +77,7 @@
 
                         <div class="form-group">
                             <div class="item md-order-1">
-                                <a href="{{ route('movie.detail',['id'=>$movie->id]) }}" class="custom-button back-button" >
+                                <a href="{{ route('movie.detail',['slug'=>$movie->slug,'id'=>$movie->id]) }}" class="custom-button back-button" >
                                     Quay lại </a>
                             </div>
                         </div>

@@ -29,7 +29,7 @@ class HomeController extends Controller
             $sevenDaysLater = Carbon::now()->addDays(7)->format('d/m/Y'); // Lấy ngày 7 ngày sau
 
 
-            return view('client.index', compact('movies', 'cinemas', 'currentDate', 'sevenDaysLater', 'provinces'));
+            return view('client.index', compact('movies', 'cinemas', 'currentDate', 'sevenDaysLater', 'provinces','user'));
         }
 
         $movies = Movie::all();
