@@ -40,10 +40,10 @@
                         <a href="#0">Phim</a>
                         <ul class="submenu">
                             <li>
-                                <a href="movie-grid.html">Movie Grid</a>
+                                <a href="{{ route('phim.danh-sach') }}">Danh sách phim</a>
                             </li>
                             <li>
-                                <a href="">Movie List</a>
+                                <a href="movie-details-2.html">Movie Details 2</a>
                             </li>
                             <li>
                                 <a href="{{route('home.favorite.list')}}">Phim Yêu Thích</a>
@@ -88,7 +88,7 @@
                             <li>
                                 <a href="{{route('home.voucher.list')}}">Danh Sách Mã Giảm Giá</a>
                             </li>
-                           
+
                         </ul>
                     </li>
                     <li>
@@ -114,7 +114,7 @@
                     <li>
                         <a href="#0">Bài Viết</a>
                         <ul class="submenu">
-                        <li>
+                            <li>
                                 <a href="{{ route('blog') }}">Bài Viết</a>
                             </li>
                         </ul>
@@ -127,10 +127,10 @@
                     </li>
                 </ul>
                 <div class="header-bar d-lg-none">
-					<span></span>
-					<span></span>
-					<span></span>
-				</div>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </div>
         </div>
     </header>

@@ -9,18 +9,18 @@
         <div class="tab">
             <div class="section-header-2">
                 <div class="left">
-                    <h2 class="title">movies</h2>
-                    <p>Be sure not to miss these Movies today.</p>
+                    <h2 class="title">Phim</h2>
+                    <p>Hãy chắc chắn không bỏ lỡ những bộ phim này hôm nay.</p>
                 </div>
                 <ul class="tab-menu">
                     <li class="active">
-                        now showing
+                        Đang chiếu
                     </li>
                     <li>
-                        coming soon
+                        Sắp tới
                     </li>
                     <li>
-                        exclusive
+                        Chọn lọc
                     </li>
                 </ul>
             </div>
@@ -32,12 +32,14 @@
                             <div class="movie-grid">
                                 <div class="movie-thumb c-thumb">
                                     <a href="#0">
-                                    <img alt="movies" width="60" src="{{ $movie->poster ? Storage::url($movie->poster) : asset('images/image-not-found.jpg') }}" alt="Image">
+                                        <img alt="movies" width="60" src="{{ $movie->poster ? Storage::url($movie->poster) : asset('images/image-not-found.jpg') }}" alt="Image">
                                     </a>
                                 </div>
                                 <div class="movie-content bg-one">
                                     <h5 class="title m-0">
-                                        <a href="{{route('movie.detail', ['id' => $movie->id])}}">{{$movie->name}}</a>
+                                        <a href="{{ route('movie.detail', ['slug' => Str::slug($movie->name), 'id' => $movie->id]) }}">
+                                            {{$movie->name}}
+                                        </a>
                                     </h5>
                                     <ul class="movie-rating-percent">
                                         <li>
@@ -55,19 +57,18 @@
                                         <li>
                                             <div class="thumb1">
                                                 @if(auth()->check())
-                                               
+
                                                 <form action="{{route('home.favorite.add',['id'=>$movie->id])}}">
-                                                    <button type="submit"  id="favorite-link" style="color: white" class="button5" data-movie-id="{{ $movie->id }}">
+                                                    <button type="submit" id="favorite-link" style="color: white" class="button5" data-movie-id="{{ $movie->id }}">
                                                         <i id="heart-icon" class="fas fa-heart {{ $user->favoriteMovies->contains($movie) ? 'text-danger' : '' }}"></i>
-                                                       
+
                                                     </button>
                                                 </form>
                                                 @else
-                                                    <a href="{{route('home.favorite.add',['id'=>$movie->id])}}" style="color: white">
-                                                        <i id="heart-icon" class="fas fa-heart"></i>
-                                                    </a>
+                                                <a href="{{route('home.favorite.add',['id'=>$movie->id])}}" style="color: white">
+                                                    <i id="heart-icon" class="fas fa-heart"></i>
+                                                </a>
                                                 @endif
-                                            
                                         </li>
                                     </ul>
                                 </div>
@@ -80,7 +81,6 @@
         </div>
     </div>
 </section>
-
 <script>
     // Select all elements with the "favorite-button" class
     const favoriteButtons = document.querySelectorAll(".favorite-button");
@@ -105,4 +105,3 @@
         });
     });
 </script>
-

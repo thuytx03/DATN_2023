@@ -32,13 +32,17 @@ use App\Http\Controllers\Client\BookingController;
 use App\Http\Controllers\Client\MovieSeatPlanController;
 use App\Http\Controllers\Client\MovieTicketPlanController;
 use App\Http\Controllers\Client\PostController;
+use App\Http\Controllers\Client\MovieControllerClient;
+
 
 Route::get('/', [HomeController::class, 'index'])->name('index');
 
 // phim
-Route::prefix('movie-client')->group(function () {
-    Route::get('/list', [HomeController::class, 'list'])->name('movie.list');
-    Route::get('/detail/{id}', [HomeController::class, 'detail'])->name('movie.detail');
+Route::prefix('phim')->group(function () {
+    Route::get('/danh-sach', [MovieControllerClient::class, 'list'])->name('phim.danh-sach');
+    Route::get('/{slug}/{id}', [MovieControllerClient::class, 'detail'])->name('movie.detail');
+    Route::post('/filter', [MovieControllerClient::class, 'filter'])->name('movie.filter')->middleware('web');
+    Route::post('/search', [MovieControllerClient::class, 'search'])->name('movie.search');
 });
 
 //lịch chiếu
@@ -256,7 +260,7 @@ Route::prefix('admin')->group(function () {
             //
 
 
-            
+
             // ///// trả lời bình luận
             Route::prefix('reply')->group(function () {
                 Route::get('/', [App\Http\Controllers\Admin\Post\ReplyController::class, 'index'])->name('reply.index');

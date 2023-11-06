@@ -22,7 +22,7 @@
 
     <link rel="shortcut icon" href=" {{asset('client/assets/images/favicon.png')}}" type="image/x-icon">
 
-    <title>Boleto  - Online Ticket Booking Website HTML Template</title>
+    <title>Boleto - Online Ticket Booking Website HTML Template</title>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -33,7 +33,7 @@
 <body>
     <!-- header -->
     @include('layouts.client.header')
-  <!-- end-header -->
+    <!-- end-header -->
 
 
     @yield('content')
@@ -47,7 +47,7 @@
 
     <script src="  {{asset('client/assets/js/jquery-3.3.1.min.js')}}"></script>
     <script src=" {{asset('client/assets/js/modernizr-3.6.0.min.js')}}"></script>
-    <script src=" {{asset('client/assets/js/plugins.js')}}"  ></script>
+    <script src=" {{asset('client/assets/js/plugins.js')}}"></script>
     <script src=" {{asset('client/assets/js/bootstrap.min.js')}}"></script>
     <script src="{{asset('client/assets/js/heandline.js ')}}"></script>
     <script src=" {{asset('client/assets/js/isotope.pkgd.min.js')}}"></script>
@@ -59,7 +59,61 @@
     <script src=" {{asset('client/assets/js/viewport.jquery.js')}}"></script>
     <script src=" {{asset('client/assets/js/nice-select.js')}}"></script>
     <script src=" {{asset('client/assets/js/main.js')}}"></script>
-@stack('scripts')
+
+    <script>
+        jQuery(document).ready(function() {
+            $('.ticket-search-form').on('submit', function(e) {
+                e.preventDefault();
+                var formData = $(this).serialize();
+                formData += '&_token={{ csrf_token() }}'; // Thêm token CSRF vào dữ liệu gửi đi
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ route('movie.search') }}",
+                    data: formData,
+                    success: function(response) {
+                        $('#movie-list').html(response);
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkboxes = document.querySelectorAll('input[name="genre"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const selectedGenres = Array.from(document.querySelectorAll('input[name="genre"]:checked'))
+                        .map(checkbox => checkbox.getAttribute('data-genre-id'));
+                    // console.log(selectedGenres);
+
+                    // Lấy token CSRF từ thẻ meta
+                    const token = document.head.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                    $.ajax({
+                        type: 'POST',
+                        url: "{{ route('movie.filter') }}",
+                        data: {
+                            _token: token,
+                            genres: selectedGenres
+                        },
+                        success: function(data) {
+                            document.getElementById('movie-list').innerHTML = data;
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Lỗi trong quá trình gửi yêu cầu:', error);
+                        }
+                    });
+
+                });
+            });
+        });
+    </script>
+    @stack('scripts')
 
 </body>
 

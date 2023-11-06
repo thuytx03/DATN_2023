@@ -1,4 +1,4 @@
-   @extends('layouts.client')
+@extends('layouts.client')
    @section('content')
 
    <!-- ==========Banner-Section========== -->
@@ -31,10 +31,10 @@
                    </div>
                    <div class="widget-1 widget-check">
                        <div class="widget-header">
-                           <h5 class="m-title">Filter By</h5> <a href="#0" class="clear-check">Clear All</a>
+                           <h5 class="m-title">Lọc theo</h5> <a href="#0" class="clear-check">Xóa tất cả</a>
                        </div>
                        <div class="widget-1-body">
-                           <h6 class="subtitle">Language</h6>
+                           <h6 class="subtitle">Ngôn ngữ</h6>
                            <div class="check-area">
                                <div class="form-group">
                                    <input type="checkbox" name="lang" id="lang1"><label for="lang1">Tamil</label>
@@ -62,7 +62,7 @@
                    </div>
                    <div class="widget-1 widget-check">
                        <div class="widget-1-body">
-                           <h6 class="subtitle">experience</h6>
+                           <h6 class="subtitle">Trải nghiệm</h6>
                            <div class="check-area">
                                <div class="form-group">
                                    <input type="checkbox" name="mode" id="mode1"><label for="mode1">2d</label>
@@ -72,47 +72,22 @@
                                </div>
                            </div>
                            <div class="add-check-area">
-                               <a href="#0">view more <i class="plus"></i></a>
+                               <a href="#0">Xem thêm <i class="plus"></i></a>
                            </div>
                        </div>
                    </div>
                    <div class="widget-1 widget-check">
                        <div class="widget-1-body">
-                           <h6 class="subtitle">genre</h6>
+                           <h6 class="subtitle">Thể loại</h6>
                            <div class="check-area">
+                               @foreach ($genres as $genre)
                                <div class="form-group">
-                                   <input type="checkbox" name="genre" id="genre1"><label for="genre1">thriller</label>
+                                   <input type="checkbox" name="genre" id="genre{{$genre->id}}" data-genre-id="{{$genre->id}}"><label for="genre{{$genre->id}}">{{$genre->name}}</label>
                                </div>
-                               <div class="form-group">
-                                   <input type="checkbox" name="genre" id="genre2"><label for="genre2">horror</label>
-                               </div>
-                               <div class="form-group">
-                                   <input type="checkbox" name="genre" id="genre3"><label for="genre3">drama</label>
-                               </div>
-                               <div class="form-group">
-                                   <input type="checkbox" name="genre" id="genre4"><label for="genre4">romance</label>
-                               </div>
-                               <div class="form-group">
-                                   <input type="checkbox" name="genre" id="genre5"><label for="genre5">action</label>
-                               </div>
-                               <div class="form-group">
-                                   <input type="checkbox" name="genre" id="genre6"><label for="genre6">comedy</label>
-                               </div>
-                               <div class="form-group">
-                                   <input type="checkbox" name="genre" id="genre7"><label for="genre7">romantic</label>
-                               </div>
-                               <div class="form-group">
-                                   <input type="checkbox" name="genre" id="genre8"><label for="genre8">animation</label>
-                               </div>
-                               <div class="form-group">
-                                   <input type="checkbox" name="genre" id="genre9"><label for="genre9">sci-fi</label>
-                               </div>
-                               <div class="form-group">
-                                   <input type="checkbox" name="genre" id="genre10"><label for="genre10">adventure</label>
-                               </div>
+                               @endforeach
                            </div>
                            <div class="add-check-area">
-                               <a href="#0">view more <i class="plus"></i></a>
+                               <a href="#0">Xem thêm <i class="plus"></i></a>
                            </div>
                        </div>
                    </div>
@@ -130,7 +105,7 @@
                            <div class="filter-main">
                                <div class="left">
                                    <div class="item">
-                                       <span class="show">Show :</span>
+                                       <span class="show">Xem :</span>
                                        <select class="select-bar">
                                            <option value="12">12</option>
                                            <option value="15">15</option>
@@ -142,12 +117,12 @@
                                        </select>
                                    </div>
                                    <div class="item">
-                                       <span class="show">Sort By :</span>
+                                       <span class="show">Sắp xếp theo :</span>
                                        <select class="select-bar">
-                                           <option value="showing">now showing</option>
+                                           <option value="showing">Đang chiếu</option>
                                            <option value="exclusive">exclusive</option>
                                            <option value="trending">trending</option>
-                                           <option value="most-view">most view</option>
+                                           <option value="most-view">Lượt xem</option>
                                        </select>
                                    </div>
                                </div>
@@ -162,38 +137,9 @@
                            </div>
                        </div>
                        <div class="tab-area">
-                           <div class="tab-item">
-                               <div class="row mb-10 justify-content-center">
-                                   @foreach($movies as $movie)
-                                   <div class="col-sm-6 col-lg-4">
-                                       <div class="movie-grid">
-                                           <div class="movie-thumb c-thumb">
-                                               <a href="movie-details.html">
-                                                   <img src="{{ $movie->poster ? Storage::url($movie->poster) : asset('images/image-not-found.jpg') }}" alt="movie">
-                                               </a>
-                                           </div>
-                                           <div class="movie-content bg-one">
-                                               <h5 class="title m-0">
-                                                   <a href="">{{$movie->name}}</a>
-                                               </h5>
-                                               <ul class="movie-rating-percent">
-                                                   <li>
-                                                       <div class="thumb">
-                                                           <img src="{{asset('client/assets/images/movie/tomato.png')}}" alt="movie">
-                                                       </div>
-                                                       <span class="content">88%</span>
-                                                   </li>
-                                                   <li>
-                                                       <div class="thumb">
-                                                           <img src="{{asset('client/assets/images/movie/cake.png')}}" alt="movie">
-                                                       </div>
-                                                       <span class="content">88%</span>
-                                                   </li>
-                                               </ul>
-                                           </div>
-                                       </div>
-                                   </div>
-                                   @endforeach
+                           <div class="tab-item active">
+                               <div class="row mb-10 justify-content-center" id="movie-list">
+                                   @include("client.movies.partial-movies")
                                </div>
                            </div>
                        </div>
@@ -212,4 +158,7 @@
        </div>
    </section>
    <!-- ==========Movie-Section========== -->
+
+
    @endsection
+
