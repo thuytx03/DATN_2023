@@ -158,7 +158,59 @@
        </div>
    </section>
    <!-- ==========Movie-Section========== -->
+   <script>
+    jQuery(document).ready(function() {
+        $('.ticket-search-form').on('submit', function(e) {
+            e.preventDefault();
+            var formData = $(this).serialize();
+            formData += '&_token={{ csrf_token() }}'; // Thêm token CSRF vào dữ liệu gửi đi
 
+            $.ajax({
+                type: 'POST',
+                url: "{{ route('movie.search') }}",
+                data: formData,
+                success: function(response) {
+                    $('#movie-list').html(response);
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkboxes = document.querySelectorAll('input[name="genre"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const selectedGenres = Array.from(document.querySelectorAll('input[name="genre"]:checked'))
+                    .map(checkbox => checkbox.getAttribute('data-genre-id'));
+                // console.log(selectedGenres);
+
+                // Lấy token CSRF từ thẻ meta
+                const token = document.head.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ route('movie.filter') }}",
+                    data: {
+                        _token: token,
+                        genres: selectedGenres
+                    },
+                    success: function(data) {
+                        document.getElementById('movie-list').innerHTML = data;
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Lỗi trong quá trình gửi yêu cầu:', error);
+                    }
+                });
+
+            });
+        });
+    });
+</script>
 
    @endsection
 

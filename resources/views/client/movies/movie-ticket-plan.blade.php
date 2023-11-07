@@ -73,7 +73,7 @@
 
                 <div class="tab-item active">
 
-                    <form class="ticket-search-form" action="{{ route('lich-chieu',['id'=>$movie->id,'slug'=>$movie->slug]) }}">
+                    <form class="ticket-search-form" method="get" action="{{ route('lich-chieu',['id'=>$movie->id,'slug'=>$movie->slug]) }}">
 
                         <div class="form-group">
                             <div class="item md-order-1">
