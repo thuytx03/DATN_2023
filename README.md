@@ -17,5 +17,6 @@ PAYPAL_SANDBOX_CLIENT_SECRET=EHzeNtvo021R4vIFN9Lhb61RWZEXMSJIBvuH6nUPfnuxKoiOU_Q
     email : sb-ybezt28014971@personal.example.com
     mk : 4Fdq@16*
     test hết tiền thì báo t tăng hạn mức 
-
+- Cấp Độ Thành Viên :  sau khi pull về vào db members chèn 1 bản ghi có dữ liệu là :
+member max_limit = 4.000.000 benefits = 5 benefits_food = 3;
 

@@ -172,6 +172,15 @@ Route::prefix('admin')->group(function () {
     Route::prefix('member')->group(function () {
         Route::match(['GET', 'POST'], '/', [MemberController::class, 'index'])->name('member.list');
         Route::get('/changeStatus/{id}', [MemberController::class, 'changeStatus'])->name('member.changeStatus');
+        Route::match(['GET', 'POST'], '/edit/{id}', [MemberController::class, 'edit'])->name('member.edit');
+        Route::match(['GET', 'POST'], '/update/{id}', [MemberController::class, 'update'])->name('member.update');
+        Route::match(['GET', 'POST'], '/delete/{id}', [MemberController::class, 'destroy'])->name('member.destroy');
+        Route::get('/trash', [MemberController::class, 'trash'])->name('member.trash');
+        Route::post('/unTrashAll', [MemberController::class, 'restoreSelected'])->name('member.unTrashAll');
+        Route::get('/restore/{id}', [MemberController::class, 'restore'])->name('member.restore');
+        Route::post('/deleteAll', [MemberController::class, 'deleteAll'])->name('member.deleteAll');
+        Route::get('/permanentlyDelete/{id}', [MemberController::class, 'permanentlyDelete'])->name('member.permanentlyDelete');
+        Route::post('/permanentlyDeleteSelected', [MemberController::class, 'permanentlyDeleteSelected'])->name('member.permanentlyDeleteSelected');
     });
     //room
     Route::prefix('room')->group(function () {

@@ -28,8 +28,10 @@
                                 Hành động
                             </button>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item" href="{{ route('member.trash') }}">Thùng rác</a>
-                                <a href="{{route('member.deleteAll')}}" id="delete-selected" class="dropdown-item">Xoá đã chọn</a>
+                               
+                            
+                                <a class="dropdown-item" href="{{route('member.unTrashAll')}}" id="restore-selected" >Khôi phục mục đã chọn</a>
+                                <a href="{{route('member.permanentlyDeleteSelected')}}" id="delete-selected" class="dropdown-item">Xoá vĩnh viễn các mục đã chọn</a>
                             </div>
                         </div>
                     </div>
@@ -107,79 +109,63 @@
                                                 <input type="checkbox" class="child-checkbox" name="ids[]" value="{{ $value->id }}">
                                             </td>
                                             @php
-                                            $user = $users->firstWhere('id', $value->user_id);
-                                            $userBookings = $bookings->where('user_id', $user->id);
-                                            
-                                            // Khởi tạo biến điểm thưởng
-                                            $currentYear = date('Y'); // Lấy năm hiện tại
-                                            $total = 0; // Khởi tạo biến tổng
-                                            $MembershipLevel = $MembershipLevels->firstWhere('id', $value->level_id);
+                                  $user = $users->firstWhere('id', $value->user_id);
+$userBookings = $bookings->where('user_id', $user->id);
+$poin_will_cailm = 0; // Khởi tạo biến điểm thưởng
+$currentYear = date('Y'); // Lấy năm hiện tại
+$total = 0; // Khởi tạo biến tổng
+$MembershipLevel = $MembershipLevels->firstWhere('id', $value->level_id);
                                             $MembershipLevel1 = $MembershipLevels->firstWhere('id', $value->level_id_old);
-                                            $poin_will_claim = 0; // Initialize poin_will_claim
-                                            
-                                            foreach ($userBookings as $booking) {
-                                                if (is_numeric($booking->total)) {
-                                                    $createdAtYear = date('Y', strtotime($booking->created_at));
-                                                    $updatedAtYear = date('Y', strtotime($booking->updated_at));
-                                                    $showtime_id = $booking->showtime_id;
-                                            
-                                                    $showtime = $ShowTimes->where('id', $showtime_id)->first();
-                                            
-                                                    if ($showtime) {
-                                                        $showtime_end = strtotime($showtime->end_date);
-                                                        $current_time = time();
-                                            
-                                                        // Kiểm tra xem đã tính điểm cho giao dịch này chưa
-                                                        $transactionKey = "transaction_" . $booking->id;
-                                                        $transactionFinished = isset($_SESSION[$transactionKey]) && $_SESSION[$transactionKey]['finished'];
-                                            
-                                                        if (!$transactionFinished) {
-                                                            if ($current_time < $showtime_end) {
-                                                                if (isset($booking->price_ticket) && isset($booking->price_food)) {
-                                                                    $benefit_percentage = $MembershipLevel->benefits / 100;
-                                                                    $benefit_percentage1 = $MembershipLevel->benefits_food / 100;
-                                                                    $price_ticket_point = ($booking->price_ticket) * $benefit_percentage;
-                                                                    $price_ticket_food_point = ($booking->price_food) * $benefit_percentage1;
-                                                                    $poin_will_claim += $price_ticket_point + $price_ticket_food_point;
-                                                                } elseif (isset($booking->price_ticket)) {
-                                                                    $benefit_percentage = $MembershipLevel->benefits / 100;
-                                                                    $price_ticket_point = ($booking->price_ticket) * $benefit_percentage;
-                                                                    $poin_will_claim += $price_ticket_point;
-                                                                }
-                                                            }
-                                            
-                                                            if ($current_time >= $showtime_end) {
-                                                                if ($poin_will_claim > 0) { // Check if there are new points to claim
-                                                                    if ($value->bonus_points_will_be_received == 0) {
-                                                                        $value->bonus_points_will_be_received = $poin_will_claim;
-                                                                    } else {
-                                                                        $value->bonus_points_will_be_received += $poin_will_claim; // Add new points to existing points
-                                                                    }
-                                                                    
-                                                                    $poin_will_claim = 0; // Reset poin_will_claim
-                                                                }
-                                            
-                                                                $value->current_bonus_points += $value->bonus_points_will_be_received;
-                                                                $value->total_bonus_points += $value->bonus_points_will_be_received;
-                                            
-                                                                $value->bonus_points_will_be_received = 0;
-                                                                // Optionally, you can mark the transaction as finished in the session here if needed
-                                                                // $_SESSION[$transactionKey] = ['finished' => true];
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                if($MembershipLevel){
-                                                    $total += $booking->total;
-                                                }
-                                                
-                                            }
-                                            if ($booking->user_id == $value->user_id) {
-                                            $value->bonus_points_will_be_received += $poin_will_claim;
-                                                     }
-                                            
+
+foreach ($userBookings as $booking) {
+    if (is_numeric($booking->total)) {
+        $createdAtYear = date('Y', strtotime($booking->created_at));
+        $updatedAtYear = date('Y', strtotime($booking->updated_at));
+        $showtime_id = $booking->showtime_id;
+
+        $showtime = $ShowTimes->where('id', $showtime_id)->first();
+
+        if ($showtime) {
+            $showtime_end = strtotime($showtime->end_date);
+            $current_time = time();
+
+            // Kiểm tra xem thời gian hiện tại có lớn hơn thời gian showtime_end
+            if ($current_time < $showtime_end) {
+              
+                if (isset($booking->price_ticket) && isset($booking->price_food)) {
+                    $benefit_percentage = $MembershipLevel->benefits / 100;
+                    $benefit_percentage1 = $MembershipLevel->benefits_food / 100;
+                    $price_ticket_poin = ($booking->price_ticket) * $benefit_percentage;
+                    $price_ticket__food_poin = ($booking->price_food) * $benefit_percentage1;
+                    $poin_will_cailm += $price_ticket_poin + $price_ticket__food_poin;
+                }
+                elseif(isset($booking->price_ticket)) {
+                    $benefit_percentage = $MembershipLevel->benefits / 100;
+                    $price_ticket_poin = ($booking->price_ticket) * $benefit_percentage;
+                    $poin_will_cailm += $price_ticket_poin;
+                }
+            }elseif($current_time > $showtime_end && $booking->status == 3) {
+                $MembershipLevel->current_bonus_points += $poin_will_cailm;
+                $MembershipLevel->total_bonus_poin += $poin_will_cailm;
+            $MembershipLevel->save();
+            } 
+        }
+
+        // Kiểm tra xem booking được tạo hoặc cập nhật trong năm hiện tại
+        if ($createdAtYear == $currentYear && $updatedAtYear == $currentYear) {
+            $total += $booking->total;
+        }
+    }
+}
+      
+                                            // Sử dụng $total theo nhu cầu
+                                        //   dd($poin_will_cailm);
+                                            // Lưu giá trị total tính toán được vào biến $totalForUser
                                             $totalForUser = $total;
                                             $value->total_spending = $totalForUser;
+                                            $value->save();
+                                            // Tìm các mức MembershipLevel có min_limit cao hơn nhưng nhỏ nhất trong danh sách tìm được
+                                         
                                             @endphp
                                     
                                             <td>{{ $user->name }}</td>
@@ -195,31 +181,13 @@
                                                 @endif
                                             </td>
                                             <td>
-                                              @php
-                                                  if ($updatedAtYear < $currentYear) {
-            // Nếu đã hết năm, cập nhật `level_id` thành `level_id_old`
-        $cbd  = $value->total_bonus_points = 0;
-            if($cbd) {
-                $value->save();
-            }
-        }
-                                              @endphp
-                                                @if ($value->bonus_points_will_be_received <= 0)
+                                                @if ($poin_will_cailm <= 0)
                                                 Chưa có thanh toán
                                                 @else
-                                                {{$value->bonus_points_will_be_received}}
+                                                {{$poin_will_cailm}}
                                                 @endif
                                             </td>
                                             <td>
-                                                @php
-                                                     if ($updatedAtYear < $currentYear) {
-            // Nếu đã hết năm, cập nhật `level_id` thành `level_id_old`
-          $abc  = $value->current_bonus_points = 0;
-            if($abc) {
-                $value->save();
-            }
-        }
-                                                @endphp
                                                 @if ($value->current_bonus_points <= 0)
                                                 Chưa có thanh toán
                                                 @else
@@ -227,7 +195,7 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                @if ($value->total_spending <= 0)
+                                                @if ($totalForUser <= 0)
                                                 Chưa có thanh toán
                                                 @else
                                                 @php
@@ -241,13 +209,21 @@
     $sortedMembershipLevels = $MembershipLevels->sortBy('min_limit');
 
 // Tìm mức MembershipLevel có khoảng min_limit và max_limit mà số tiền chi tiêu nằm trong đó
-$selectedMembershipLevel = $sortedMembershipLevels->first(function ($level) use ($totalForUser, $value) {
-    return $totalForUser >= $level->min_limit && ($level->max_limit === null || $totalForUser <= $level->max_limit) && $value->level_id < $level->id;
+$selectedMembershipLevel = $sortedMembershipLevels->first(function ($level) use ($totalForUser) {
+    if ($totalForUser >= $level->min_limit && ($level->max_limit === null || $totalForUser <= $level->max_limit)) {
+        
+    }elseif ($totalForUser !=$level->min_limit && ($level->max_limit === null || $totalForUser <= $level->max_limit)) {
+        return;
+    } 
 });
 
 if ($selectedMembershipLevel) {
-    $value->level_id = $selectedMembershipLevel->id;
-    $value->save();
+    // Kiểm tra nếu level_id mới lớn hơn hoặc bằng level_id hiện tại của người dùng
+    // và min_limit của mức đã chọn lớn hơn hoặc bằng min_limit hiện tại của người dùng
+    if ($value->max_limit <= $selectedMembershipLevel->min_limit) {
+        $value->level_id = $selectedMembershipLevel->id;
+        $value->save();
+    }
 }
 @endphp
 
@@ -270,9 +246,9 @@ if ($selectedMembershipLevel) {
                                                         <i class="fa-solid fa-ellipsis-vertical"></i>
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="{{ route('member.edit', ['id' => $value->id]) }}">Sửa</a>
+                                                        <a class="dropdown-item" href="{{ route('member.restore', ['id' => $value->id]) }}">Khôi Phục</a>
                                                         <a class="dropdown-item show_confirm"
-                                                            href="{{ route('member.destroy', ['id' => $value->id]) }}">Xoá
+                                                            href="{{ route('member.permanentlyDelete', ['id' => $value->id]) }}">Xoá
                                                         </a>
                                     
                                                     </div>
@@ -399,6 +375,52 @@ if ($selectedMembershipLevel) {
             });
         }
         updateStatus();
+        function restoreSelected() {
+            $(document).ready(function() {
+                $('#restore-selected').click(function(e) {
+                    e.preventDefault();
+
+                    var selectedCheckboxes = $('.child-checkbox:checked');
+
+                    if (selectedCheckboxes.length > 0) {
+                        Swal.fire({
+                            title: 'Xác nhận khôi phục',
+                            text: 'Bạn có chắc chắn muốn khôi phục các mục đã chọn?',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Khôi phục',
+                            cancelButtonText: 'Hủy',
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                var selectedIds = [];
+                                selectedCheckboxes.each(function() {
+                                    selectedIds.push($(this).val());
+                                });
+
+                                $.ajax({
+                                    type: 'POST',
+                                    url: '/admin/member/unTrashAll',
+                                    data: {
+                                        ids: selectedIds,
+                                        _token: '{{ csrf_token() }}',
+                                    },
+                                    success: function(response) {
+                                        // Xử lý phản hồi từ máy chủ nếu cần
+                                        location.reload();
+                                    },
+                                    error: function() {
+                                        location.reload();
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+
+
+        }
+        restoreSelected();
 
         function deleteSelected() {
             $(document).ready(function() {
@@ -410,7 +432,7 @@ if ($selectedMembershipLevel) {
                     if (selectedCheckboxes.length > 0) {
                         Swal.fire({
                             title: 'Xác nhận xóa',
-                            text: 'Bạn có chắc chắn muốn xóa các mục đã chọn?',
+                            text: 'Bạn có chắc chắn muốn xóa vĩnh viễn các mục đã chọn?',
                             icon: 'warning',
                             showCancelButton: true,
                             confirmButtonText: 'Xóa',
@@ -424,7 +446,7 @@ if ($selectedMembershipLevel) {
 
                                 $.ajax({
                                     type: 'POST',
-                                    url: '/admin/member/deleteAll', // Thay thế bằng tuyến đường xử lý xoá của bạn
+                                    url: '/admin/member/permanentlyDeleteSelected', // Thay thế bằng tuyến đường xử lý xoá của bạn
                                     data: {
                                         ids: selectedIds,
                                         _token: '{{ csrf_token() }}',
