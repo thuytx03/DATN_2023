@@ -72,7 +72,7 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('food')->group(function () {
         Route::match(['GET', 'POST'], '/', [FoodController::class, 'food'])->name('food');
         Route::match(['GET', 'POST'],'/get-food-by-type/{foodTypeId}', [FoodController::class, 'getFoodByType']);
-        Route::match(['GET', 'POST'],'/check-voucher', [FoodController::class, 'checkDiscountCode']);
+        Route::match(['GET', 'POST'],'/check-voucher', [FoodController::class, 'checkVoucher']);
     });
 });
 //ghế
