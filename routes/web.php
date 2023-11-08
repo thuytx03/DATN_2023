@@ -92,9 +92,6 @@ Route::get('paypal/payment/success/{id}', [BookingController::class, 'paymentSuc
 Route::get('paypal/payment/cancel', [BookingController::class, 'paymentCancel'])->name('paypal.payment/cancel');
 // hết paypal
 
-
-
-
 // phim yeu thich
 Route::prefix('favorite')->group(function () {
     // Route::get('/favorite-list', [favorite::class, 'favorite'])->name('home.favorite.list');
