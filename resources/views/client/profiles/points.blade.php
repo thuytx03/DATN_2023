@@ -11,7 +11,7 @@
 </style>
 <section>
     <h4 class="mt-2">Điểm Thưởng Của Bạn :</h4>
-    <h6 class="mt-2">ĐIỂM CỦA BẠN SẼ ĐƯỢC CỘNG SAU KHI KẾT THÚC XUẤT CHIẾU</h6>
+    <h6 class="mt-2">ĐIỂM CỦA BẠN SẼ ĐƯỢC CỘNG SAU KHI CHÚNG TÔI KIỂM TRA</h6>
     @if ($errors->any())
     <div class="alert alert-danger">
         @foreach ($errors->all() as $error)
