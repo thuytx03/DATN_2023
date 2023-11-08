@@ -34,3 +34,16 @@ if(!function_exists('delete_file')){
     return false;   
 
 }
+function countCommentsAndReplies($comments) {
+    $count = 0;
+
+    foreach ($comments as $comment) {
+        $count++; // Increment for the current comment
+
+        if ($comment->replies->isNotEmpty()) {
+            $count += countCommentsAndReplies($comment->replies); // Recursively count replies
+        }
+    }
+
+    return $count;
+}

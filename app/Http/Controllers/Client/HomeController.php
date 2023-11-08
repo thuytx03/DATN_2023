@@ -10,48 +10,36 @@ use Illuminate\Support\Facades\DB;
 use App\Models\moviefavorite;
 use App\Models\User;
 use App\Models\Genre;
+use App\Models\Cinema;
+use App\Models\Province;
+use Carbon\Carbon;
 
 class HomeController extends Controller
 {
     public function index()
-{
-    if (auth()->check()) {
-        $userID = auth()->user()->id;
-        $user = User::with('favoriteMovies')->find($userID); // Assuming you have defined the relationship in the User model.
-        $movies = Movie::all();
-        return view('client.index', compact('user','movies'));
-    }
-
-    $movies = Movie::all();
-    return view('client.index', compact('movies'));
-}
-    public function list()
     {
-       
-        $movies = Movie::all();
-        
-        return view('client.movies.movie-list', compact('movies'));
-    }
-
-    public function detail($id)
-    {    $movie = Movie::find($id);
         if (auth()->check()) {
             $userID = auth()->user()->id;
             $user = User::with('favoriteMovies')->find($userID); // Assuming you have defined the relationship in the User model.
-            $genres = $movie->genres;
-            $genresName = $genres->pluck('name')->toArray();
-            $nameGenres = implode(',', $genresName);
-            $images = $movie->images;
-           
-            return view('client.movies.movie-detail', compact('user','movie','images','nameGenres'));
+            $movies = Movie::all();
+            $cinemas = Cinema::all();
+            $provinces = Province::all();
+
+            $currentDate = Carbon::now()->format('d/m/Y'); // Lấy ngày hiện tại
+            $sevenDaysLater = Carbon::now()->addDays(7)->format('d/m/Y'); // Lấy ngày 7 ngày sau
+
+
+            return view('client.index', compact('movies', 'cinemas', 'currentDate', 'sevenDaysLater', 'provinces','user'));
         }
-       
-        if ($movie) {
-            $genres = $movie->genres;
-            $genresName = $genres->pluck('name')->toArray();
-            $nameGenres = implode(',', $genresName);
-            $images = $movie->images;
-            return view('client.movies.movie-detail', compact('movie', 'nameGenres', 'images'));
-        }
+
+        $movies = Movie::all();
+        $cinemas = Cinema::all();
+        $provinces = Province::all();
+
+        $currentDate = Carbon::now()->format('d/m/Y'); // Lấy ngày hiện tại
+        $sevenDaysLater = Carbon::now()->addDays(7)->format('d/m/Y'); // Lấy ngày 7 ngày sau
+
+
+        return view('client.index', compact('movies', 'cinemas', 'currentDate', 'sevenDaysLater', 'provinces'));
     }
 }

@@ -4,15 +4,15 @@
    <section class="main-page-header speaker-banner bg_img" data-background="./assets/images/banner/banner07.jpg">
         <div class="container">
             <div class="speaker-banner-content">
-                <h2 class="title">blog - 01</h2>
+                <h2 class="title">Bài Viết</h2>
                 <ul class="breadcrumb">
                     <li>
-                        <a href="index.html">
-                            Home
+                        <a href="{{ route('index') }}">
+                            Trang Chủ
                         </a>
                     </li>
                     <li>
-                        blog
+                        Bài Viết
                     </li>
                 </ul>
             </div>
@@ -22,231 +22,105 @@
 
     <!-- ==========Blog-Section========== -->
     <section class="blog-section padding-top padding-bottom">
+
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-8 mb-50 mb-lg-0">
                     <article>
+                        @foreach($data1 as $post)
+                        @if($post->status === 1)
                         <div class="post-item">
                             <div class="post-thumb">
                                 <a href="blog-details.html">
-                                    <img src=" {{asset('client/assets/images/blog/blog01.jpg')}}" alt="blog">
+                                    <img src=" {{asset($post->image)}}" alt="blog">
                                 </a>
                             </div>
                             <div class="post-content">
                                 <div class="post-header">
-                                    <h4 class="title">
-                                        <a href="blog-details.html">
-                                            Increase Event Ticket Sales For Film Production With the Right Advertising
-                                            Strategies
+                                    <h4 class="title" >
+                                        <a href="{{route('blog-detail',[ $post->slug, 'id' => $post->id])}}" >
+                                        {{$post->title}}
                                         </a>
                                     </h4>
                                     <div class="meta-post">
-                                        
-                                        <a href="#0" class="mr-4"><i class="fa-regular fa-comment"></i>20 Comments</a>
-                                        <a href="#0"><i class="fa-regular fa-eye"></i>466 View</a>
+                                        <a href="#0" class="mr-4"><i class="fa-regular fa-comment"></i> {{ countCommentsAndReplies($post->comments) }} Bình Luận</a>
+                                        <a href="#0"><i class="fa-regular fa-eye"></i> {{ $post->view}}   Lượt Xem</a>
                                     </div>
                                     <p>
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus ac cursus
-                                        leo. Nullam dolor nunc, hendrerit non velit id, pharetra viverra elit.
+                                    {!! \Illuminate\Support\Str::limit(strip_tags($post->content), 100) !!}
                                     </p>
-                                </div>
+                                 </div>
                                 <div class="entry-content">
                                     <div class="left">
-                                        <span class="date">Dece 15, 2020 BY </span>
+                                    <span class="date">
+                                        {{ $post->created_at->diffForHumans() }}
+                                    </span>
                                         <div class="authors">
                                             <div class="thumb">
-                                                <a href="#0"><img src="{{asset('client/assets/images/blog/author.jpg')}}" alt="#0"></a>
+                                                <a href="#0"><img src="{{$post->user->avatar}}" alt="#0"></a>
                                             </div>
-                                            <h6 class="title"><a href="#0">Alvin Mcdaniel</a></h6>
+                                            <h6 class="title"><a href="#0">{{$post->user->name}}</a></h6>
                                         </div>
                                     </div>
-                                    <a href="#0" class="buttons">Read More <i class="fa-solid fa-arrow-right"></i></a>
+                                    <a href="{{route('blog-detail',[ $post->slug, 'id' => $post->id])}}" class="buttons">Đọc thêm...<i class="fa-solid fa-arrow-right"></i></a>
                                 </div>
                             </div>
                         </div>
-                        <div class="post-item">
-                            <div class="post-thumb">
-                                <div class="owl-carousel owl-theme blog-slider">
-                                    <img src="{{asset('client/assets/images/blog/blog02.jpg')}}" alt="blog">
-                                    <img src="{{asset('client/assets/images/blog/blog03.jpg')}}" alt="blog">
-                                    <img src="{{asset('client/assets/images/blog/blog04.jpg')}}" alt="blog">
-                                    <img src="{{asset('client/assets/images/blog/blog01.jpg')}}" alt="blog">
-                                </div>
-                                <div class="blog-prev">
-                                    <!-- <i class="flaticon-double-right-arrows-angles"></i> -->
-                                    <i class="fa-solid fa-arrow-right"></i>
-                                </div>
-                                <div class="blog-next active">
-                                    <!-- <i class="flaticon-double-right-arrows-angles"></i> -->
-                                    <i class="fa-solid fa-arrow-right"></i>
-                                </div>
-                            </div>
-                            <div class="post-content">
-                                <div class="post-header">
-                                    <h4 class="title">
-                                        <a href="blog-details.html">
-                                            Factors To Take Into Consideration When You Want To Buy Tickets Online
-                                        </a>
-                                    </h4>
-                                    <div class="meta-post">
-                                        <a href="#0" class="mr-4"><i class="fa-regular fa-comment"></i>20 Comments</a>
-                                        <a href="#0"><i class="fa-regular fa-eye"></i>466 View</a>
-                                    </div>
-                                    <p>
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus ac cursus
-                                        leo. Nullam dolor nunc, hendrerit non velit id, pharetra viverra elit.
-                                    </p>
-                                </div>
-                                <div class="entry-content">
-                                    <div class="left">
-                                        <span class="date">Dece 15, 2020 BY </span>
-                                        <div class="authors">
-                                            <div class="thumb">
-                                                <a href="#0"><img src="{{asset('client/assets/images/blog/author.jpg')}}" alt="#0"></a>
-                                            </div>
-                                            <h6 class="title"><a href="#0">Alvin Mcdaniel</a></h6>
-                                        </div>
-                                    </div>
-                                    <a href="#0" class="buttons">Read More <i class="fa-solid fa-arrow-right"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="post-item">
-                            <div class="post-thumb">
-                                <img src="{{asset('client/assets/images/blog/blog03.jpg')}}" alt="blog">
-                                <a href="https://www.youtube.com/embed/GT6-H4BRyqQ" class="video-button video-popup">
-                                    <i class="flaticon-play-button"></i>
-                                </a>
-                            </div>
-                            <div class="post-content">
-                                <div class="post-header">
-                                    <h4 class="title">
-                                        <a href="blog-details.html">
-                                            Movie Ticket Prices: One Size Fits All? It's Time to Experiment
-                                        </a>
-                                    </h4>
-                                    <div class="meta-post">
-                                        <a href="#0" class="mr-4"><i class="fa-regular fa-comment"></i>20 Comments</a>
-                                        <a href="#0"><i class="fa-regular fa-eye"></i>466 View</a>
-                                    </div>
-                                    <p>
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus ac cursus
-                                        leo. Nullam dolor nunc, hendrerit non velit id, pharetra viverra elit.
-                                    </p>
-                                </div>
-                                <div class="entry-content">
-                                    <div class="left">
-                                        <span class="date">Dece 15, 2020 BY </span>
-                                        <div class="authors">
-                                            <div class="thumb">
-                                                <a href="#0"><img src="{{asset('client/assets/images/blog/author.jpg')}}" alt="#0"></a>
-                                            </div>
-                                            <h6 class="title"><a href="#0">Alvin Mcdaniel</a></h6>
-                                        </div>
-                                    </div>
-                                    <a href="#0" class="buttons">Read More <i class="fa-solid fa-arrow-right"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="post-item">
-                            <div class="post-thumb">
-                                <a href="blog-details.html">
-                                    <img src="{{asset('client/assets/images/blog/blog04.jpg')}}" alt="blog">
-                                </a>
-                            </div>
-                            <div class="post-content">
-                                <div class="post-header">
-                                    <h4 class="title">
-                                        <a href="blog-details.html">
-                                            Movie Ticket Prices: One Size Fits All? It's Time to Experiment
-                                        </a>
-                                    </h4>
-                                    <div class="meta-post">
-                                        <a href="#0" class="mr-4"><i class="fa-regular fa-comment"></i>20 Comments</a>
-                                        <a href="#0"><i class="fa-regular fa-eye"></i>466 View</a>
-                                    </div>
-                                    <p>
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus ac cursus
-                                        leo. Nullam dolor nunc, hendrerit non velit id, pharetra viverra elit.
-                                    </p>
-                                </div>
-                                <div class="entry-content">
-                                    <div class="left">
-                                        <span class="date">Dece 15, 2020 BY </span>
-                                        <div class="authors">
-                                            <div class="thumb">
-                                                <a href="#0"><img src="{{asset('client/assets/images/blog/author.jpg')}}" alt="#0"></a>
-                                            </div>
-                                            <h6 class="title"><a href="#0">Alvin Mcdaniel</a></h6>
-                                        </div>
-                                    </div>
-                                    <a href="#0" class="buttons">Read More <i class="fa-solid fa-arrow-right"></i></a>
-                                </div>
-                            </div>
-                        </div>
+                        @endif
+                        @endforeach
+                  
                     </article>
-                    <div class="pagination-area text-center">
-                        <a href="#0"><i class="fas fa-angle-double-left"></i><span>Prev</span></a>
-                        <a href="#0">1</a>
-                        <a href="#0">2</a>
-                        <a href="#0" class="active">3</a>
-                        <a href="#0">4</a>
-                        <a href="#0">5</a>
-                        <a href="#0"><span>Next</span><i class="fas fa-angle-double-right"></i></a>
-                    </div>
+                    <div class="col-sm-12 col-md-7">
+                                <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+                                    <ul class="pagination">
+                                        {{ $data1->links('pagination::bootstrap-4') }}
+                                    </ul>
+                                </div>
+                            </div>
                 </div>
                 <div class="col-lg-4 col-sm-10 col-md-8">
                     <aside>
                         <div class="widget widget-search">
-                            <h5 class="title">search</h5>
+                            <h5 class="title">Tìm Kiếm</h5>
                             <form class="search-form">
-                                <input type="text" placeholder="Enter your Search Content" required>
-                                <button type="submit"><i class="fa-solid fa-magnifying-glass"></i>Search</button>
+                            <input type="search" name="search" id="search" placeholder="Tìm kiếm theo tên" >
+
+                                <!-- <button type="submit"><i class="fa-solid fa-magnifying-glass"></i>Search</button> -->
                             </form>
                         </div>
                         <div class="widget widget-post">
-                            <h5 class="title">latest post</h5>
+                            <h5 class="title">Tin Mới Nhất</h5>
                             <div class="slider-nav">
                                 <span class="fa-solid fa-arrow-left widget-prev"></span>
                                 <span class="fa-solid fa-arrow-right widget-next active"></span>
                             </div>
                             <div class="widget-slider owl-carousel owl-theme">
+                               
+                                @foreach($data1->take(3) as $postNew)
+                                 @if($postNew->status === 1)
+
                                 <div class="item">
                                     <div class="thumb">
-                                        <a href="#0">
-                                            <img src=" {{asset('client/assets/images/blog/slider01.jpg')}}" alt="blog">
+                                        <a href="">
+                                            <img src="{{$postNew -> image}}" alt="blog">
                                         </a>
                                     </div>
                                     <div class="content">
                                         <h6 class="p-title">
-                                            <a href="#0">Three Ways to Book Sporting Event Tickets</a>
+                                            <a href="#0">{{$postNew->title}}</a>
                                         </h6>
                                         <div class="meta-post">
-                                            <a href="#0" class="mr-4"><i class="fa-regular fa-comment"></i>20 Comments</a>
-                                            <a href="#0"><i class="fa-regular fa-eye"></i>466 View</a>
+                                            <a href="#0" class="mr-4"><i class="fa-regular fa-comment"></i>{{ countCommentsAndReplies($postNew->comments) }} Bình Luận</a>
+                                            <a href="#0"><i class="fa-regular fa-eye"></i>{{ $postNew->view }}  Lượt Xem</a>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="item">
-                                    <div class="thumb">
-                                        <a href="#0">
-                                            <img src=" {{asset('client/assets/images/blog/slider01.jpg')}}" alt="blog">
-                                        </a>
-                                    </div>
-                                    <div class="content">
-                                        <h6 class="p-title">
-                                            <a href="#0">Three Ways to Book Sporting Event Tickets</a>
-                                        </h6>
-                                        <div class="meta-post">
-                                            <a href="#0" class="mr-4"><i class="fa-regular fa-comment"></i>20 Comments</a>
-                                            <a href="#0"><i class="fa-regular fa-eye"></i>466 View</a>
-                                        </div>
-                                    </div>
-                                </div>
+                                @endif
+                                @endforeach
                             </div>
                         </div>
                         <div class="widget widget-follow">
-                            <h5 class="title">Follow Us</h5>
+                            <h5 class="title">Theo Dõi</h5>
                             <ul class="social-icons">
                                 <li>
                                     <a href="#0" class="">
@@ -276,63 +150,36 @@
                             </ul>
                         </div>
                         <div class="widget widget-categories">
-                            <h5 class="title">categories</h5>
-                            <ul>
-                                <li>
-                                    <a href="#0">
-                                        <span>Showtimes & Tickets</span><span>50</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#0">
-                                        <span>Latest Trailers</span><span>43</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#0">
-                                        <span>Coming Soon </span><span>34</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#0">
-                                        <span>In Theaters</span><span>63</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#0">
-                                        <span>Release Calendar </span><span>11</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#0">
-                                        <span>Stars</span><span>30</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#0">
-                                        <span>Horror Movie </span><span>55</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="widget widget-tags">
-                            <h5 class="title">featured tags</h5>
-                            <ul>
-                                <li>
-                                    <a href="#0">creative</a>
-                                </li>
-                                <li>
-                                    <a href="#0">design</a>
-                                </li>
-                                <li>
-                                    <a href="#0">skill</a>
-                                </li>
-                                <li>
-                                    <a href="#0">template</a>
-                                </li>
-                                <li>
-                                    <a href="#0" class="active">landing</a>
-                                </li>
+                        <h5 class="title">Danh Mục</h5>
+                                <ul>
+                                    @foreach($postTypes as $post_type)
+                                 @if($post_type->status === 1)
+                                    @if ($post_type->parent_id == 0)
+                                        <li>
+                                            <a href="#0" onclick="submitForm(this)">
+                                                <span class="post-type" data-value="{{$post_type->id}}">{{$post_type->name}}</span>
+                                            </a>
+                                            <ul>
+                                            @foreach ($postTypes as $child)
+                                             @if($child->status === 1)
+
+                                                @if ($child->parent_id == $post_type->id)
+                                                    <li>
+                                                    <a href="#0" onclick="submitForm(this)">
+                                                    <span class="post-type" data-value="{{$child->id}}">-{{$child->name}}</span>
+                                                    </a>
+                                                    </li>
+                                                @endif
+                                                @endif
+                                            @endforeach
+                                        </ul>
+                                        </li>
+                                        @endif
+                                        @endif
+
+                                    @endforeach
+                                    <form action="{{ route('blog')}}" method="get" id="postTypeSearch">
+                                    </form>
                             </ul>
                         </div>
                     </aside>
@@ -342,3 +189,78 @@
     </section>
     <!-- ==========Blog-Section========== -->
 @endsection
+@push('style')
+<link rel="stylesheet" type="text/css" href="styles.css">
+<style>
+
+.date {
+  font-size: 16px;
+  font-weight: bold;
+  color: blue;
+}
+
+/* Giới hạn nội dung trong 2 dòng */
+
+
+
+    /* Tùy chỉnh CSS cho số trang trong phân trang */
+.pagination li {
+    display: inline-block;
+    margin: 0 5px; /* Khoảng cách giữa các số trang */
+    padding: 5px 10px; /* Định dạng kích thước và khoảng cách xung quanh số trang */
+    border: 1px solid #ccc;
+    background-color: #fff;
+    color: #333;
+    cursor: pointer;
+    border-radius: 3px;
+    text-align: center;
+}
+
+/* CSS cho số trang hiện tại */
+.pagination .active {
+    background-color: #007BFF;
+    color: #fff;
+    border: 1px solid #007BFF;
+}
+
+</style>
+@endpush
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/momentjs/2.29.1/moment.min.js"></script>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        var titles = $('.post-item'); // Select all the <h4> elements initially
+        $('#search').on('input', function() {
+            var searchText = $(this).val().toLowerCase();
+            titles.each(function() {
+                var text = $(this).text().toLowerCase();
+                if (text.indexOf(searchText) === -1) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+    function submitForm(element) {
+        var postType = element.querySelector('.post-type').getAttribute('data-value');
+        var form = document.getElementById('postTypeSearch');
+        var hiddenField = document.createElement('input');
+        hiddenField.type = 'hidden';
+        hiddenField.name = 'postTypes';
+        hiddenField.value = postType;
+        form.appendChild(hiddenField);
+        form.submit();
+    }
+</script>
+
+
+
+@endpush

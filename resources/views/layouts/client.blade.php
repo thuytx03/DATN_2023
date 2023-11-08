@@ -22,7 +22,7 @@
 
     <link rel="shortcut icon" href=" {{asset('client/assets/images/favicon.png')}}" type="image/x-icon">
 
-    <title>Boleto  - Online Ticket Booking Website HTML Template</title>
+    <title>Boleto - Online Ticket Booking Website HTML Template</title>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -33,7 +33,7 @@
 <body>
     <!-- header -->
     @include('layouts.client.header')
-  <!-- end-header -->
+    <!-- end-header -->
 
 
     @yield('content')
@@ -47,7 +47,7 @@
 
     <script src="  {{asset('client/assets/js/jquery-3.3.1.min.js')}}"></script>
     <script src=" {{asset('client/assets/js/modernizr-3.6.0.min.js')}}"></script>
-    <script src=" {{asset('client/assets/js/plugins.js')}}"  ></script>
+    <script src=" {{asset('client/assets/js/plugins.js')}}"></script>
     <script src=" {{asset('client/assets/js/bootstrap.min.js')}}"></script>
     <script src="{{asset('client/assets/js/heandline.js ')}}"></script>
     <script src=" {{asset('client/assets/js/isotope.pkgd.min.js')}}"></script>
@@ -59,7 +59,9 @@
     <script src=" {{asset('client/assets/js/viewport.jquery.js')}}"></script>
     <script src=" {{asset('client/assets/js/nice-select.js')}}"></script>
     <script src=" {{asset('client/assets/js/main.js')}}"></script>
-@stack('scripts')
+
+   
+    @stack('scripts')
 
 </body>
 

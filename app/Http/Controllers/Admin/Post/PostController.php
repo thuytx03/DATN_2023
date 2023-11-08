@@ -103,12 +103,21 @@ $postTypes = PostType::all();
             }
             $model->save();
 
-            //gán dữ liệu vào bảng post_type_posts
-            foreach ($request->post_type as $post_type) {
+            if (empty($request->post_type)) {
+                // Trường hợp khi mảng danh mục rỗng
                 $post_type_posts = new Post_Type_Post();
                 $post_type_posts->post_id = $model->id;
-                $post_type_posts->post_type = $post_type;
-                $post_type_posts->save();
+                // dd($post_type_posts->post_id);
+                $post_type_posts->post_type ==null;
+                
+            } else {
+                // Trường hợp khi mảng danh mục không rỗng
+                foreach ($request->post_type as $post_type) {
+                    $post_type_posts = new Post_Type_Post();
+                    $post_type_posts->post_id = $model->id;
+                    $post_type_posts->post_type = $post_type;
+                    $post_type_posts->save();
+                }
             }
             if ($model->save()) {
                 toastr()->success('Thêm bài viết thành công!', 'success');
@@ -192,11 +201,16 @@ $postTypes = PostType::all();
             $model->save();
             $postTypes = $request->input('post_type', []);    //lấy mảng dữ liệu ngoài giao diện 
             $model->postTypePosts()->delete();               //xóa dự liệu cũ trong bảng post_type_posts
-            foreach ($request->post_type as $post_type) {
-                $post_type_posts = new Post_Type_Post();
-                $post_type_posts->post_id = $model->id;
-                $post_type_posts->post_type = $post_type;
-                $post_type_posts->save();
+            if (empty($request->post_type)) {
+                // Trường hợp khi mảng danh mục rỗng
+            } else {
+                // Trường hợp khi mảng danh mục không rỗng
+                foreach ($request->post_type as $post_type) {
+                    $post_type_posts = new Post_Type_Post();
+                    $post_type_posts->post_id = $model->id;
+                    $post_type_posts->post_type = $post_type;
+                    $post_type_posts->save();
+                }
             }
             if ($model->save()) {
                 toastr()->success('Sửa mới bài viết thành công!', 'success');
