@@ -3,11 +3,11 @@
 <style>
     #profile_cont {
         background-color: #032055;
-        height: 600px;
+        height:100%;
         margin-top: 150px;
         padding-top: 20px;
         margin-bottom: 40px;
-        padding-bottom: 50px;   
+        padding-bottom: 50px;
     }
 
     #left-col {
@@ -16,7 +16,7 @@
         height: 400px;
         margin-left: 20px;
         padding-top: 20px;
-        
+
     }
     #left-col a{
         margin: 10px 20px;
@@ -45,7 +45,7 @@
                 <a href="{{route('profile.changePassword')}}">Đổi mật khẩu</a>
                 <a href="{{route('profile')}}">Phiếu giảm giá</a>
                 <a href="{{route('profile.history')}}">Lịch sử giao dịch</a>
-                
+
             </div>
             <div class="col-8" id="right-col">
                 @yield('profile')

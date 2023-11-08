@@ -10,6 +10,12 @@ php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvid
 -Hình ảnh: php artisan storage:link
 -TEST VNPAY :
     https://sandbox.vnpayment.vn/apis/vnpay-demo/
+    Ngân hàng: NCB
+    Số thẻ: 9704198526191432198
+    Tên chủ thẻ:NGUYEN VAN A
+    Ngày phát hành:07/15
+    Mật khẩu OTP:123456
+
 - Thư Viện PayPal : composer require srmklive/paypal
 - Thêm Cái này vào .env
 PAYPAL_MODE=sandbox

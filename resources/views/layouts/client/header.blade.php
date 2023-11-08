@@ -29,17 +29,10 @@
                     <img src=" {{asset('client/assets/images/logo/logo.png')}}" alt="logo">
                 </a>
             </div>
-            <ul class="menu">
+            <ul class="menu mx-auto">
                 <li>
-                    <a href="#0" class="active">Home</a>
-                    <ul class="submenu">
-                        <li>
-                            <a href="{{ route('index') }}">Home One</a>
-                        </li>
-                        <li>
-                            <a href="#0" class="active">Home Two</a>
-                        </li>
-                    </ul>
+                    <a href="{{ route('index') }}" class="active">Trang chủ</a>
+
                 </li>
                 <li>
                     <a href="#0">Phim</a>
@@ -47,45 +40,18 @@
                         <li>
                             <a href="{{ route('phim.danh-sach') }}">Danh sách phim</a>
                         </li>
-                        <li>
-                            <a href="movie-details-2.html">Movie Details 2</a>
-                        </li>
+
                         <li>
                             <a href="{{route('home.favorite.list')}}">Phim Yêu Thích</a>
                         </li>
-                        <li>
-                            <a href="">Movie Ticket Plan</a>
-                        </li>
-                        <li>
-                            <a href="">Movie Seat Plan</a>
-                        </li>
-                        <li>
-                            <a href="">Movie Checkout</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('food') }}">Movie Food</a>
-                        </li>
+
+
                     </ul>
                 </li>
+
                 <li>
-                    <a href="#0">events</a>
-                    <ul class="submenu">
-                        <li>
-                            <a href="events.html">Events</a>
-                        </li>
-                        <li>
-                            <a href="event-details.html">Event Details</a>
-                        </li>
-                        <li>
-                            <a href="event-speaker.html">Event Speaker</a>
-                        </li>
-                        <li>
-                            <a href="event-ticket.html">Event Ticket</a>
-                        </li>
-                        <li>
-                            <a href="event-checkout.html">Event Checkout</a>
-                        </li>
-                    </ul>
+                    <a href="{{ route('food') }}">Đồ ăn</a>
+
                 </li>
                 <li>
                     <a href="#0">Mã Giảm Giá</a>
@@ -96,26 +62,7 @@
 
                     </ul>
                 </li>
-                <li>
-                    <a href="#0">pages</a>
-                    <ul class="submenu">
-                        <li>
-                            <a href="{{ route('about-us') }}">About Us</a>
-                        </li>
-                        <li>
-                            <a href="apps-download.html">Apps Download</a>
-                        </li>
-                        <li>
-                            <a href="sign-in.html">Sign In</a>
-                        </li>
-                        <li>
-                            <a href="sign-up.html">Sign Up</a>
-                        </li>
-                        <li>
-                            <a href="404.html">404</a>
-                        </li>
-                    </ul>
-                </li>
+
                 <li>
                     <a href="#0">Bài Viết</a>
                     <ul class="submenu">
@@ -125,7 +72,7 @@
                     </ul>
                 </li>
                 <li>
-                    <a href="{{ route('contact') }}">contact</a>
+                    <a href="{{ route('contact') }}">Liên hệ</a>
                 </li>
                 @guest
                 <li class="header-button ">

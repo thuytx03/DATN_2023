@@ -105,9 +105,10 @@ Route::post('them-binh-luan-bai-viet', [PostController::class, 'store'])->name('
 Route::post('tra-loi-binh-luan-bai-viet', [PostController::class, 'repStore'])->name('replie.repStore');
 //contact
 
-//profile 
+//profile
 Route::get('/profile', [ProfileController::class, 'profile'])->name('profile');
-Route::get('/purchase-history', [ProfileController::class, 'purchase_history'])->name('profile.history');
+Route::get('/lich-su-giao-dich-ve', [ProfileController::class, 'transaction_history'])->name('profile.history');
+Route::get('/chi-tiet/lich-su-giao-dich-ve/{id}', [ProfileController::class, 'transaction_history_detail'])->name('transaction.history.detail');
 Route::match(['GET', 'POST'], '/change-password', [ProfileController::class, 'change_password'])->name('profile.changePassword');
 Route::match(['GET', 'POST'], '/edit-profile', [ProfileController::class, 'edit_profile'])->name('profile.edit');
 
@@ -532,7 +533,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/restore/{id}', [CinemaController::class, 'restore'])->name('cinema.restore');
     });
 
-    //route quốc gia 
+    //route quốc gia
     Route::prefix('country')->group(function () {
         Route::get('/', [CountryController::class, 'index'])->name('country.index');
         Route::get('/create', [CountryController::class, 'create'])->name('country.add');

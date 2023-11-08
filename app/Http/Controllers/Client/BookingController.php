@@ -380,10 +380,5 @@ class BookingController extends Controller
         return view('client.movies.movie-ticket-food', compact('food'));
     }
 
-    public function transaction_history()
-    {
-        $user = auth()->user()->id;
-        $booking = Booking::where('user_id', $user)->get();
-        $booking_detail = Booking::where('booking_id', $booking)->get();
-    }
+  
 }

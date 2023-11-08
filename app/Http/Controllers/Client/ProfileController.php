@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\profileRequest;
+use App\Models\Booking;
+use App\Models\BookingDetail;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -25,7 +27,7 @@ class ProfileController extends Controller
     }
 
     public function edit_profile(profileRequest $request)
-    {   
+    {
         $user = auth()->user();
 
         if ($request->isMethod('post')) {
@@ -54,11 +56,22 @@ class ProfileController extends Controller
 
         return view('client.profiles.edit-profile', compact('user'));
     }
-    public function purchase_history()
-    {
 
-        return view('client.profiles.purchase-history');
+    public function transaction_history()
+    {
+        $user = auth()->user()->id;
+        $booking = Booking::where('user_id', $user)->paginate(3);
+
+        return view('client.profiles.transaction_history', compact('booking'));
     }
+
+    public function transaction_history_detail($id)
+    {
+        $booking = Booking::find($id);
+        $booking_detail = BookingDetail::where('booking_id', $booking->id)->get();
+        return view('client.profiles.transaction_history_detail', compact('booking','booking_detail'));
+    }
+
 
     public function change_password(profileRequest $request)
     {
@@ -69,7 +82,7 @@ class ProfileController extends Controller
                 $user->password = bcrypt($request->input('password'));
                 $user->save();
                 toastr()->success('Đổi mật khẩu thành công!', 'success');
-            }else{
+            } else {
                 toastr()->error('Mật khẩu cũ không khớp', 'error');
             }
         }
