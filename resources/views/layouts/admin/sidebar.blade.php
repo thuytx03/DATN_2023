@@ -63,6 +63,17 @@
         </div>
     </li>
     <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#orderTicker" aria-expanded="true" aria-controls="orderTicker">
+            <i class="fa-solid fa-ticket"></i>
+            <span>Quản lý đơn đặt vé</span>
+        </a>
+        <div id="orderTicker" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{ route('booking.index') }}">Quản lý đặt vé</a>
+            </div>
+        </div>
+    </li>
+    <li class="nav-item">
 
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseFour"
            aria-expanded="true" aria-controls="collapseFour">

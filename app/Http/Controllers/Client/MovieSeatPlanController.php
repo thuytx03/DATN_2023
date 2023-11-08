@@ -19,8 +19,7 @@ class MovieSeatPlanController extends Controller
 {
     public function index(Request $request, $room_id, $slug, $showtime_id)
     {
-        //xoá session khi chuyển sang lịch chiếu khác
-        session()->forget('selectedSeats');
+
 
         $room = Room::where('id', $room_id)->first();
         // Lấy danh sách ghế của phòng chiếu $room, lọc theo loại ghế

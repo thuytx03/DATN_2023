@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\Admin\BookingsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\SocialController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\PostTypeController;
 use App\Http\Controllers\Admin\GenreController;
 use App\Http\Controllers\Admin\MovieController;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Admin\ProvinceController;
 use App\Http\Controllers\Admin\CinemaController;
@@ -195,6 +195,26 @@ Route::prefix('admin')->group(function () {
         Route::match(['GET', 'POST'], '/update-status/{id}', [OrderFoodController::class, 'updateStatus'])->name('food.update-status');
         Route::match(['GET', 'POST'], '/deleteAll', [OrderFoodController::class, 'deleteAll'])->name('food.delete-all');
 
+    });
+
+
+    //booking
+    Route::prefix('booking')->group(function () {
+        Route::get('/', [BookingsController::class, 'index'])->name('booking.index');
+        Route::match(['GET', 'POST'], '/store', [BookingsController::class, 'store'])->name('booking.store');
+        Route::match(['GET', 'POST'], '/update/{id}', [BookingsController::class, 'update'])->name('booking.update');
+        Route::get('/destroy/{id}', [BookingsController::class, 'destroy'])->name('booking.destroy');
+        Route::post('/deleteAll', [BookingsController::class, 'deleteAll'])->name('booking.deleteAll');
+        Route::post('/update-status/{id}', [BookingsController::class, 'updateStatus'])->name('booking.updateStatus');
+        Route::get('/trash', [BookingsController::class, 'trash'])->name('booking.trash');
+        Route::get('/permanentlyDelete/{id}', [BookingsController::class, 'permanentlyDelete'])->name('booking.permanentlyDelete');
+        Route::post('/permanentlyDeleteSelected', [BookingsController::class, 'permanentlyDeleteSelected'])->name('booking.permanentlyDeleteSelected');
+        Route::post('/restoreSelected', [BookingsController::class, 'restoreSelected'])->name('booking.restoreSelected');
+        Route::get('/restore/{id}', [BookingsController::class, 'restore'])->name('booking.restore');
+        Route::get('/{id}/detail', [BookingsController::class, 'detail'])->name('booking.detail');
+        Route::get('/{id}/confirm', [BookingsController::class, 'confirm'])->name('booking.confirm');
+        Route::get('/{id}/unconfirm', [BookingsController::class, 'unConfirm'])->name('booking.unConfirm');
+        Route::post('/{id}/cancel', [BookingsController::class, 'cancel'])->name('booking.cancel');
     });
     /*
      * Category Blog
