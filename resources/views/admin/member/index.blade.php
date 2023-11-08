@@ -17,8 +17,8 @@
             <div class="card-header py-3">
                 <div class="row align-items-center">
                     <div class="col">
-                        <a href="" class="btn btn-success">
-                            Danh Sách
+                        <a href="{{route('member.list')}}" class="btn btn-success">
+                           Cập Nhật Điểm
                         </a>
                     </div>
                     <div class="col text-right">
@@ -114,6 +114,7 @@
                                             $currentYear = date('Y'); // Lấy năm hiện tại
                                             $total = 0; // Khởi tạo biến tổng
                                             $MembershipLevel = $MembershipLevels->firstWhere('id', $value->level_id);
+                                          
                                             $MembershipLevel1 = $MembershipLevels->firstWhere('id', $value->level_id_old);
                                             $poin_will_claim = 0; // Initialize poin_will_claim
                                             
@@ -135,34 +136,38 @@
                                             
                                                         if (!$transactionFinished) {
                                                             if ($current_time < $showtime_end) {
-                                                                if (isset($booking->price_ticket) && isset($booking->price_food)) {
+                                                                if (isset($booking->price_ticket) > 0 && isset($booking->price_food) > 0) {
                                                                     $benefit_percentage = $MembershipLevel->benefits / 100;
                                                                     $benefit_percentage1 = $MembershipLevel->benefits_food / 100;
                                                                     $price_ticket_point = ($booking->price_ticket) * $benefit_percentage;
                                                                     $price_ticket_food_point = ($booking->price_food) * $benefit_percentage1;
                                                                     $poin_will_claim += $price_ticket_point + $price_ticket_food_point;
-                                                                } elseif (isset($booking->price_ticket)) {
+                                                                        $value->bonus_points_will_be_received =  $poin_will_claim;
+                                                                        $value->save();
+                                                                 
+                                                                   
+                                                                } elseif (isset($booking->price_ticket) > 0 || isset($booking->price_food)) {
                                                                     $benefit_percentage = $MembershipLevel->benefits / 100;
                                                                     $price_ticket_point = ($booking->price_ticket) * $benefit_percentage;
                                                                     $poin_will_claim += $price_ticket_point;
+                                                                        $value->bonus_points_will_be_received =  $poin_will_claim;
+                                                                        $value->save();
+                                                                   
+                                                                 
                                                                 }
+
                                                             }
-                                            
+                                                   
                                                             if ($current_time >= $showtime_end) {
-                                                                if ($poin_will_claim > 0) { // Check if there are new points to claim
-                                                                    if ($value->bonus_points_will_be_received == 0) {
-                                                                        $value->bonus_points_will_be_received = $poin_will_claim;
-                                                                    } else {
-                                                                        $value->bonus_points_will_be_received += $poin_will_claim; // Add new points to existing points
-                                                                    }
-                                                                    
+                                                                if ( $value->bonus_points_will_be_received > 0) { // Check if there are new points to claim
+                                                                    $value->current_bonus_points += $value->bonus_points_will_be_received;
+                                                                    $value->total_bonus_points += $value->bonus_points_will_be_received;
                                                                     $poin_will_claim = 0; // Reset poin_will_claim
+                                                                    $value->bonus_points_will_be_received = 0;
+                                                                    $value->save();
                                                                 }
-                                            
-                                                                $value->current_bonus_points += $value->bonus_points_will_be_received;
-                                                                $value->total_bonus_points += $value->bonus_points_will_be_received;
-                                            
-                                                                $value->bonus_points_will_be_received = 0;
+                                                               
+                                                              
                                                                 // Optionally, you can mark the transaction as finished in the session here if needed
                                                                 // $_SESSION[$transactionKey] = ['finished' => true];
                                                             }
@@ -171,15 +176,17 @@
                                                 }
                                                 if($MembershipLevel){
                                                     $total += $booking->total;
+                                                   
                                                 }
                                                 
                                             }
                                             if ($booking->user_id == $value->user_id) {
                                             $value->bonus_points_will_be_received += $poin_will_claim;
                                                      }
-                                            
-                                            $totalForUser = $total;
-                                            $value->total_spending = $totalForUser;
+                                                     $totalForUser = $total;
+        
+                                        $value->total_spending = $totalForUser;
+                                           
                                             @endphp
                                     
                                             <td>{{ $user->name }}</td>
@@ -188,7 +195,7 @@
                                             <td>{{ $MembershipLevel->name ?? 'Chưa có level' }}</td>
                                     
                                             <td>
-                                                @if ($value->total_bonus_points <= 0)
+                                                @if ($value->total_bonus_points<= 0)
                                                 Chưa có thanh toán
                                                 @else
                                                 {{ $value->total_bonus_points }}
@@ -199,15 +206,13 @@
                                                   if ($updatedAtYear < $currentYear) {
             // Nếu đã hết năm, cập nhật `level_id` thành `level_id_old`
         $cbd  = $value->total_bonus_points = 0;
-            if($cbd) {
-                $value->save();
-            }
+           
         }
                                               @endphp
-                                                @if ($value->bonus_points_will_be_received <= 0)
+                                                @if ( $poin_will_claim <= 0)
                                                 Chưa có thanh toán
                                                 @else
-                                                {{$value->bonus_points_will_be_received}}
+                                                {{ $poin_will_claim}}
                                                 @endif
                                             </td>
                                             <td>
@@ -215,9 +220,7 @@
                                                      if ($updatedAtYear < $currentYear) {
             // Nếu đã hết năm, cập nhật `level_id` thành `level_id_old`
           $abc  = $value->current_bonus_points = 0;
-            if($abc) {
-                $value->save();
-            }
+            
         }
                                                 @endphp
                                                 @if ($value->current_bonus_points <= 0)
@@ -228,6 +231,7 @@
                                             </td>
                                             <td>
                                                 @if ($value->total_spending <= 0)
+                                                
                                                 Chưa có thanh toán
                                                 @else
                                                 @php
@@ -237,22 +241,25 @@
             $value->level_id = // Đặt giá trị mới tại đây;
             $levelIdUpdated = true; // Đánh dấu đã cập nhật
         }
+           
     // Tạo một danh sách MembershipLevels theo thứ tự tăng dần của min_limit
     $sortedMembershipLevels = $MembershipLevels->sortBy('min_limit');
-
+    
+    
 // Tìm mức MembershipLevel có khoảng min_limit và max_limit mà số tiền chi tiêu nằm trong đó
-$selectedMembershipLevel = $sortedMembershipLevels->first(function ($level) use ($totalForUser, $value) {
-    return $totalForUser >= $level->min_limit && ($level->max_limit === null || $totalForUser <= $level->max_limit) && $value->level_id < $level->id;
+$selectedMembershipLevel = $sortedMembershipLevels->first(function ($MembershipLevel) use ($value) {
+    return $value->total_spending >= $MembershipLevel->min_limit && ($MembershipLevel->max_limit == null || $value->total_spending <= $MembershipLevel->max_limit) && $value->level_id < $MembershipLevel->id;
 });
 
 if ($selectedMembershipLevel) {
     $value->level_id = $selectedMembershipLevel->id;
     $value->save();
 }
+// $value->save();
 @endphp
 
 
-                                                {{ number_format($totalForUser, 0, '.', ',') }} VND
+                                                {{ number_format($value->total_spending, 0, '.', ',') }} VND
                                                 @endif
                                             </td>
                                             </td>

@@ -16,6 +16,9 @@ use Doctrine\ORM\EntityManager;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Member;
+use App\Models\MembershipLevel;
+
 
 class ProfileController extends Controller
 {
@@ -88,5 +91,12 @@ class ProfileController extends Controller
         }
 
         return view('client.profiles.change-password', compact('user'));
+    }
+    public function points(){
+        $user = auth()->user();
+        $members = Member::find($user->id);
+       $MembershipLevels = MembershipLevel::all();
+       $bookings = Booking::all();
+        return view('client.profiles.points',compact('members','MembershipLevels','bookings'));
     }
 }

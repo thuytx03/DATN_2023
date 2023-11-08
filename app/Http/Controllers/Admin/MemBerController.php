@@ -239,4 +239,5 @@ public function permanentlyDeleteSelected(Request $request)
     }
     return redirect()->route('member.trash');
 }
+
 }

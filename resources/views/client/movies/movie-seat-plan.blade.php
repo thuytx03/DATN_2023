@@ -315,7 +315,12 @@
                                     </td>
 
                                     <td id="price-{{ $value->id }}" data-price="{{ $value->price }}">
-                                        {{ number_format($value->price, 0, ',', '.') }} VNĐ</td>
+                                      
+                                        @if (is_numeric($value->price))
+                                        {{ number_format($value->price, 0, ',', '.') }} VNĐ
+                                    @else
+                                        {{ $value->price }} VNĐ
+                                    @endif
 
                                 </tr>
                             @endforeach
