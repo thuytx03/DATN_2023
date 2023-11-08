@@ -33,7 +33,6 @@ class GenreRequest extends FormRequest
                         $rules = [
                             'name' => 'required',
                             'status' => 'required',
-                            'slug' => 'unique:genres'
                         ];
                         break;
                 }
@@ -48,7 +47,6 @@ class GenreRequest extends FormRequest
         return [
             'name.required' => 'Vui lòng nhập tên thể loại',
             'status.required' => 'Vui lòng nhập trạng thái',
-            'slug.unique' => 'Slug đã tồn tại. Vui lòng nhập slug khác.'
         ];
     }
 }

@@ -40,7 +40,6 @@ class MovieRequest extends FormRequest
                             'start_date' => 'required',
                             'manufacturer' => 'required:string',
                             'genre_id' => 'required',
-                            'slug' => 'unique:movies',
                             'country_id' => 'required'
 
                         ];
@@ -58,7 +57,6 @@ class MovieRequest extends FormRequest
                             'start_date' => 'required',
                             'manufacturer' => 'required',
                             'genre_id' => 'required',
-                            'slug' => 'unique:movies',
                             'country_id' => 'required'
                         ];
                         break;
