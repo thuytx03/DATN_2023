@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Country extends Model
 {
     use HasFactory,SoftDeletes;
-    protected $table = 'countries';
+    protected $table = 'country';
     public $timestamps = true;
     protected $fillable = ['name','image','description','status'];
 }
