@@ -114,11 +114,9 @@ Danh sách đơn đặt đồ ăn
                                         <td>{{$orders->total_amount}}</td>
                                         <td>
                                             @if($orders->payment_method == 1)
-                                            Thanh toán nội địa Napas
+                                            Thanh toán nội địa Vnpay
                                             @elseif($orders->payment_method == 2)
-                                            Thanh toán quốc tế Visa
-                                            @elseif($orders->payment_method == 3)
-                                            Thanh toán ví MoMo
+                                            Thanh toán quốc tế Paypal
                                             @endif
                                         </td>
                                         <td>{{$orders->note}}</td>

@@ -62,7 +62,8 @@ Route::group(['middleware' => 'guest'], function () {
 Route::middleware(['auth'])->group(function () {
     Route::prefix('food')->group(function () {
         Route::match(['GET', 'POST'], '/', [FoodController::class, 'food'])->name('food');
-        Route::get('/get-food-by-type/{foodTypeId}', [FoodController::class, 'getFoodByType']);
+        Route::match(['GET', 'POST'],'/get-food-by-type/{foodTypeId}', [FoodController::class, 'getFoodByType']);
+        Route::match(['GET', 'POST'],'/check-voucher', [FoodController::class, 'checkDiscountCode']);
     });
 });
     //ghế
@@ -84,7 +85,6 @@ Route::middleware(['auth'])->group(function () {
 
 
     // Spatie
-    Route::match(['GET', 'POST'], '/admin/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
     // phim yeu thich
     Route::prefix('favorite')->group(function () {
@@ -103,6 +103,9 @@ Route::get('logout', [SocialController::class, 'logout'])->name('logout');
 
 // ket thuc route mang xa hoi
 Route::prefix('admin')->group(function () {
+    //dashboard
+    Route::match(['GET', 'POST'], '/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+
     //login
     Route::match(['GET', 'POST'], '/login', [AuthAdminController::class, 'login'])->name('login.admin');
     //dashboard

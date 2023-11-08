@@ -4,6 +4,9 @@
 -Thư viện confirm: composer require realrashid/sweet-alert
 -Thư viện thông báo: composer require yoeunes/toastr
 -Thư viện phân quyền: composer require spatie/laravel-permission
+php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
+ php artisan optimize:clear
+  php artisan config:clear
 -Hình ảnh: php artisan storage:link
 -TEST VNPAY :
     https://sandbox.vnpayment.vn/apis/vnpay-demo/
