@@ -52,7 +52,6 @@ class MovieTicketPlanController extends Controller
                             $query->where('id', $selectedCinemaId);
                         }
                     });
-
                 if ($selectedDate) {
                     $showTimeQuery->whereDate('start_date', $selectedDate); // Lọc theo ngày bắt đầu
                 }
@@ -64,6 +63,8 @@ class MovieTicketPlanController extends Controller
                 }
 
                 $showTimes = $showTimeQuery->get();
+//                dd($showTimes);
+
 
                 if ($showTimes->count() > 0) {
                     $cinemaSchedules[$cinema->name] = [];
