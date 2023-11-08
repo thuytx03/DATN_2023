@@ -6,7 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Foodstypes;
 use App\Models\MovieFoodsTypes;
 use App\Models\MovieFood;
-
+use App\Models\Voucher;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -30,7 +31,7 @@ class FoodController extends Controller
             }
         }
 
-        $foodType = Foodstypes::orderBy('id', 'DESC')->where('status',1)->get();
+        $foodType = Foodstypes::orderBy('id', 'DESC')->where('status', 1)->get();
         $food = $query->orderBy('id', 'DESC')->paginate(6);
 
         return view('client.foods.food', compact('foodType', 'food'));
@@ -46,5 +47,31 @@ class FoodController extends Controller
             ->get();
 
         return response()->json($foods);
+    }
+    public function checkVoucher(Request $request)
+    {
+        $userVoucher = $request->input('voucher');
+        $totalPrice = $request->input('totalPrice');
+
+        $voucher = Voucher::where('code', $userVoucher)->first();
+
+        if ($voucher && $voucher->quantity > 0) {
+            $now = Carbon::now();
+
+            if ($now >= $voucher->start_date && $now <= $voucher->end_date) {
+                // Additional check for total price
+                if ($totalPrice >= $voucher->min_order_amount && $totalPrice <= $voucher->max_order_amount) {
+                    return response()->json(['discount' => $voucher->value]);
+                } else {
+                    return response()->json(['error' => 'Tổng tiền không đáp ứng yêu cầu.'], 422);
+                }
+            } else {
+                return response()->json(['error' => 'Mã giảm giá đã hết hạn hoặc chưa đến ngày áp dụng.'], 422);
+            }
+        } elseif ($voucher && $voucher->quantity == 0) {
+            return response()->json(['error' => 'Mã giảm giá đã hết.'], 422);
+        } else {
+            return response()->json(['error' => 'Mã giảm giá không hợp lệ.'], 422);
+        }
     }
 }

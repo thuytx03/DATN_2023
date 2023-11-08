@@ -13,9 +13,9 @@
 
     <!-- Nav Item - Dashboard -->
     <li class="nav-item active">
-        <a class="nav-link" href="">
+        <a class="nav-link" href="{{ route('dashboard') }}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Dashboard</span></a>
+            <span>Thống kê</span></a>
     </li>
 
     <!-- Divider -->
@@ -59,6 +59,17 @@
         <div id="order" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="{{ route('food.list') }}">Quản lý đặt đồ ăn</a>
+            </div>
+        </div>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#orderTicker" aria-expanded="true" aria-controls="orderTicker">
+            <i class="fa-solid fa-ticket"></i>
+            <span>Quản lý đơn đặt vé</span>
+        </a>
+        <div id="orderTicker" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{ route('booking.index') }}">Quản lý đặt vé</a>
             </div>
         </div>
     </li>
@@ -151,6 +162,31 @@
             </div>
 
     </li>
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#country" aria-expanded="true" aria-controls="country">
+        <i class="fas fa-film"></i>
+            <span>Quản lý quốc gia</span>
+        </a>
+        <div id="country" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{ route('country.index') }}">Danh sách quốc gia</a>
+                <!-- link -->
+            </div>
+        </div>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mailbox" aria-expanded="true" aria-controls="mailbox">
+        <i class="fas fa-film"></i>
+            <span>Quản lý hòm thư</span>
+        </a>
+        <div id="mailbox" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{ route('contact.index') }}">Danh sách hòm thư</a>
+                <!-- link -->
+            </div>
+        </div>
+    </li>
     <!-- logo -->
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#logo-slider" aria-expanded="true" aria-controls="logo-slider">
@@ -184,6 +220,19 @@
                 <!-- link -->
             </div>
         </div>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#MBSL" aria-expanded="true" aria-controls="MBSL">
+            <i class="fa-solid fa-person-arrow-up-from-line"></i>
+            <span>Quản lý hội viên  </span>
+        </a>
+        <div id="MBSL" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{ route('MBSL.list') }}">Quản lý cấp độ </a>
+                <a class="collapse-item" href="{{route('member.list')}}">Quản lý điểm thưởng </a>
+            </div>
+        </div>
+       
     </li>
     <!-- Divider -->
     <hr class="sidebar-divider">

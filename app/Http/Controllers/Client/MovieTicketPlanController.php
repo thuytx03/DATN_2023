@@ -17,6 +17,10 @@ class MovieTicketPlanController extends Controller
 
     public function index(Request $request, $id, $slug)
     {
+         //xoá session khi chuyển sang lịch chiếu khác
+        session()->forget('selectedSeats');
+        session()->forget('selectedProducts');
+        session()->forget('totalPriceFood');
         $selectedDate = $request->input('selected_date'); // Lấy ngày đã chọn từ query parameter
         $selectedProvinceId = $request->input('province_id'); // Lấy province_id từ query parameter
         $selectedCinemaId = $request->input('cinema_id'); // Lấy cinema_id từ query parameter

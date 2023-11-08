@@ -13,12 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('countries', function (Blueprint $table) {
+        Schema::create('membership_levels', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('image')->nullable();
-            $table->text('description')->nullable();
+            $table->float('min_limit')->nullable();
+            $table->float('max_limit')->nullable();
+            $table->integer('benefits');
             $table->tinyInteger('status')->default(1);
+            $table->string('Description')->nullable();
+            $table->string('benefits_food')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -30,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('countries');
+        Schema::dropIfExists('membership_levels');
     }
 };

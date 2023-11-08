@@ -19,14 +19,23 @@ class MovieSeatPlanController extends Controller
 {
     public function index(Request $request, $room_id, $slug, $showtime_id)
     {
-        //xoá session khi chuyển sang lịch chiếu khác
         session()->forget('selectedSeats');
-
+            session()->forget('selectedProducts');
+            session()->forget('totalPriceFood');
         $room = Room::where('id', $room_id)->first();
         // Lấy danh sách ghế của phòng chiếu $room, lọc theo loại ghế
-        $seatsThuong = $room->seats()->where('seat_type_id', 1)->get();
-        $seatsVip = $room->seats()->where('seat_type_id', 2)->get();
-        $seatsDoi = $room->seats()->where('seat_type_id', 3)->get();
+        $seatsThuong = $room
+            ->seats()
+            ->where('seat_type_id', 1)
+            ->get();
+        $seatsVip = $room
+            ->seats()
+            ->where('seat_type_id', 2)
+            ->get();
+        $seatsDoi = $room
+            ->seats()
+            ->where('seat_type_id', 3)
+            ->get();
 
         // Sắp xếp danh sách ghế theo hàng và cột
         $seatsThuong = $seatsThuong->sortBy('row');
@@ -50,14 +59,12 @@ class MovieSeatPlanController extends Controller
         $province = Province::all();
 
         //Danh sách đồ ăn
-        $food=MovieFood::paginate(6);
+        $food = MovieFood::paginate(6);
 
-            // session()->forget('selectedProducts');
-            // session()->forget('totalPriceFood');
+        // session()->forget('selectedProducts');
+        // session()->forget('totalPriceFood');
 
-        return view('client.movies.movie-seat-plan',
-        compact('seatsVip', 'seatsThuong', 'seatsDoi', 'room', 'showTime', 'bookedSeats','province','food',
-    ));
+        return view('client.movies.movie-seat-plan', compact('seatsVip', 'seatsThuong', 'seatsDoi', 'room', 'showTime', 'bookedSeats', 'province', 'food'));
     }
 
     public function saveSelectedSeats(Request $request)
@@ -78,7 +85,4 @@ class MovieSeatPlanController extends Controller
 
         return response()->json(['success' => true]);
     }
-
-
-
 }

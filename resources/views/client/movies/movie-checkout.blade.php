@@ -90,6 +90,7 @@
                                 $totalPrice = $totalPriceFood + $totalPriceTicket;
                                 // dd($totalPrice);
                             @endphp
+                            <input type="hidden" name="totalPriceFood" value="{{  $totalPriceFood }}">
                             <input type="hidden" name="totalPrice" value="{{ $totalPrice }}">
 
                         </form>

@@ -69,7 +69,8 @@
                                                     <i id="heart-icon" class="fas fa-heart"></i>
                                                 </a>
                                                 @endif
-                                        </li>
+                                            
+                                        </li> 
                                     </ul>
                                 </div>
                             </div>
@@ -81,6 +82,9 @@
         </div>
     </div>
 </section>
+
+
+
 <script>
     // Select all elements with the "favorite-button" class
     const favoriteButtons = document.querySelectorAll(".favorite-button");
