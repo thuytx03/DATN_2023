@@ -184,8 +184,9 @@
                                             $value->bonus_points_will_be_received += $poin_will_claim;
                                                      }
                                                      $totalForUser = $total;
-        
-                                        $value->total_spending = $totalForUser;
+     
+                                        // $value->total_spending = $totalForUser;
+                                     
                                            
                                             @endphp
                                     
@@ -245,6 +246,7 @@
     // Tạo một danh sách MembershipLevels theo thứ tự tăng dần của min_limit
     $sortedMembershipLevels = $MembershipLevels->sortBy('min_limit');
     
+
     
 // Tìm mức MembershipLevel có khoảng min_limit và max_limit mà số tiền chi tiêu nằm trong đó
 $selectedMembershipLevel = $sortedMembershipLevels->first(function ($MembershipLevel) use ($value) {
