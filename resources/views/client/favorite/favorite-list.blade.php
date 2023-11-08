@@ -129,13 +129,13 @@
                                 <div class="col-sm-6 col-lg-4">
                                     <div class="movie-grid">
                                         <div class="movie-thumb c-thumb">
-                                            <a href="{{route('movie.detail',['id' => $movie->id])}}">
+                                            <a href="{{route('movie.detail',['slug'=>$movie->slug,'id' => $movie->id])}}">
                                                 <img src="{{ $movie->poster ? Storage::url($movie->poster) : asset('images/image-not-found.jpg') }}" alt="movie">
                                             </a>
                                         </div>
                                         <div class="movie-content bg-one">
                                             <h5 class="title m-0">
-                                                <a href="{{route('movie.detail',['id' => $movie->id])}}">
+                                                <a href="{{route('movie.detail',['slug'=>$movie->slug,'id' => $movie->id])}}">
                                                     <span class="content">{{$movie->name}} </span>
                                                 </a>
                                             </h5>
@@ -144,12 +144,17 @@
                                                 Thời Lượng:
                                                 <?php
                                                 $duration = $movie->duration;
-                                                if ($duration >= 60) {
-                                                    $hours = floor($duration / 60);
-                                                    $minutes = $duration % 60;
-                                                    echo $hours . "h " . $minutes . "p";
+                                                if ($duration !== null) {
+                                                    $duration = (int)$duration; // Convert to an integer
+                                                    if ($duration >= 60) {
+                                                        $hours = floor($duration / 60);
+                                                        $minutes = $duration % 60;
+                                                        echo $hours . "h " . $minutes . "p";
+                                                    } else {
+                                                        echo $duration . "p";
+                                                    }
                                                 } else {
-                                                    echo $duration . "p";
+                                                    echo "Unknown";
                                                 }
                                                 ?>
                                             </div>

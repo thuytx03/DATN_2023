@@ -35,8 +35,8 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="email" class="form-label">Đường Dẫn</label>
-                                <input target="_blank" class="form-control" name="slug" id="slug">
+                            <label for="name" class="form-label">Đường dẫn</label>
+                            <input type="text" class="form-control" name="slug" id="slug">
                             </div>
 
                             <div class="mb-3">
@@ -236,20 +236,22 @@
         <script src="{{ asset('upload_file/input-mask/jquery.inputmask.date.extensions.js') }}"></script>
         <!-- check đường dẫn -->
         <script>
-            function removeAccents(str) {
-                return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-            }
-
-            function createSlug(title) {
-                var titleWithoutAccents = removeAccents(title);
-                var slug = titleWithoutAccents.toLowerCase().replace(/\s+/g, '-');
-                document.getElementById('slug').value = slug;
+            function removeVietnameseSigns(str) {
+                str = str.toLowerCase();
+                str = str.replace(/đ/g, 'd'); // Thay thế ký tự "đ" thành "d"
+                str = str.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // Loại bỏ dấu thanh
+                return str;
             }
 
             document.getElementById('title').addEventListener('input', function() {
-                var title = this.value;
-                createSlug(title);
-            });
+                let nameValue = this.value;
+                let slugValue = removeVietnameseSigns(nameValue)
+                    .replace(/[^\w\s-]/g, '') // Loại bỏ các ký tự đặc biệt, chỉ giữ lại khoảng trắng và dấu gạch ngang
+                    .replace(/\s+/g, '-') // Thay thế khoảng trắng bằng dấu gạch ngang
+                    .replace(/-+/g, '-'); // Loại bỏ các dấu gạch ngang liên tiếp
+
+    document.getElementById('slug').value = slugValue;
+});
         </script>
 
 

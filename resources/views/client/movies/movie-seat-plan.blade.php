@@ -274,10 +274,7 @@
                 </div>
             </div>
         </div>
-
     </div>
-    </div>
-
 
     <!-- ==========Movie-Section========== -->
     <div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -340,6 +337,70 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $('#thanh-toan-button').on('click', function(event) {
+            const selectedSeats = $seats.filter('.seat-click.selected');
+            const selectedSeatNumbers = selectedSeats.map(function() {
+                return $(this).find('.sit-num').text();
+            }).get();
+
+
+            // Tạo một danh sách các hàng A đến Z
+            const rows = [];
+            for (let row = 'A'.charCodeAt(0); row <= 'Z'.charCodeAt(0); row++) {
+                rows.push(String.fromCharCode(row));
+            }
+
+            // Kiểm tra từng hàng A đến Z
+            for (let i = 0; i < rows.length; i++) {
+                const currentRow = rows[i];
+                if (selectedSeatNumbers.includes(currentRow + '2') && !selectedSeatNumbers.includes(currentRow +
+                        '1')) {
+                    event.preventDefault();
+                    alert('Vui lòng không để trống ghế ' + currentRow + '1.');
+                }
+                if (selectedSeatNumbers.includes(currentRow + '9') && !selectedSeatNumbers.includes(currentRow +
+                        '10')) {
+                    event.preventDefault();
+                    alert('Vui lòng không để trống ghế ' + currentRow + '10.');
+                }
+            }
+
+            // Tạo một danh sách tất cả các ghế từ 'A' đến 'Z'
+            const allSeats = [];
+            for (let row = 'A'.charCodeAt(0); row <= 'Z'.charCodeAt(0); row++) {
+                for (let seatNum = 1; seatNum <= 10; seatNum++) {
+                    allSeats.push(String.fromCharCode(row) + seatNum);
+                }
+            }
+
+            // Kiểm tra xem có ghế nào bị bỏ trống giữa các ghế đã chọn
+            let isAnySeatEmpty = false;
+            for (let i = 0; i < allSeats.length; i++) {
+                if (selectedSeatNumbers.includes(allSeats[i])) {
+                    continue;
+                }
+                // Kiểm tra xem có ghế nào bị bỏ trống giữa các ghế đã chọn
+                if (i > 0 && i < allSeats.length - 1) {
+                    const prevSeat = allSeats[i - 1];
+                    const nextSeat = allSeats[i + 1];
+                    if (
+                        selectedSeatNumbers.includes(prevSeat) &&
+                        selectedSeatNumbers.includes(nextSeat)
+                    ) {
+                        isAnySeatEmpty = true;
+                        break;
+                    }
+                }
+            }
+
+            if (isAnySeatEmpty) {
+                event.preventDefault();
+                alert('Vui lòng không chừa 1 ghế trống bên trái hoặc bên phải của các ghế bạn đã chọn.');
+            }
+        });
+    </script>
 
     {{-- kiểm tra người dùng đã chon ghế hay chưa  --}}
     <script>

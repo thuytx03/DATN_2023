@@ -36,7 +36,6 @@ Danh sách ghế
                             Hành động
                         </button>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="{{route('list-bin-room')}}">Thùng rác</a>
                             <a href="#" id="delete-selected" class="dropdown-item">Xoá đã chọn</a>
                         </div>
                     </div>

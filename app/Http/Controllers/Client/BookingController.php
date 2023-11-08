@@ -65,6 +65,8 @@ class BookingController extends Controller
             $booking->email = $request->email;
             $booking->phone = $request->phone;
             $booking->address = $request->address;
+            $booking->price_ticket = $totalPriceTicket;
+            $booking->price_food = $request->totalPriceFood;
             $booking->total = $request->total;
             $booking->payment = $request->payment;
             $booking->status = 1;
@@ -79,13 +81,13 @@ class BookingController extends Controller
             $booking->total = $request->totalPrice;
             $booking->save();
 
-            if(session()->has('selectedProducts')){
-                foreach (session('selectedProducts') as $food){
-                    $bookingDetail=new BookingDetail();
-                    $bookingDetail->booking_id=$booking->id;
-                    $bookingDetail->food_id=$food['id'];
-                    $bookingDetail->quantity=$food['quantity'];
-                    $bookingDetail->price=$food['price'];
+            if (session()->has('selectedProducts')) {
+                foreach (session('selectedProducts') as $food) {
+                    $bookingDetail = new BookingDetail();
+                    $bookingDetail->booking_id = $booking->id;
+                    $bookingDetail->food_id = $food['id'];
+                    $bookingDetail->quantity = $food['quantity'];
+                    $bookingDetail->price = $food['price'];
                     $bookingDetail->save();
                 }
             }
@@ -102,11 +104,9 @@ class BookingController extends Controller
             session()->forget('selectedProducts');
             session()->forget('totalPriceFood');
             toastr()->success('Đặt vé thành công');
-
         }
 
         return view('client.movies.movie-checkout', compact('showTime', 'room', 'totalPriceTicket'));
-
     }
 
 
@@ -183,8 +183,6 @@ class BookingController extends Controller
         } else {
             echo json_encode($returnData);
         }
-
-
     }
     public function thanks(Request $request)
     {
@@ -332,7 +330,7 @@ class BookingController extends Controller
         if (isset($response['status']) && $response['status'] == 'COMPLETED') {
 
             $booking = Booking::find($id); // Tìm đặt phòng dựa trên booking_id
-            $total = ceil($booking->total/22000);
+            $total = ceil($booking->total / 22000);
             $add =     payment_paypal::create([
                 'booking_id' => $booking->id, // Liên kết thông tin thanh toán với đặt phòng
                 'total' => $total,
@@ -349,7 +347,7 @@ class BookingController extends Controller
 
                 }
             }
-// code mac dinh cua paypal
+            // code mac dinh cua paypal
             return redirect()
                 ->route('camonthanhtoan')
                 ->with('success', 'Transaction complete.');
@@ -365,5 +363,12 @@ class BookingController extends Controller
         $food = MovieFood::all();
 
         return view('client.movies.movie-ticket-food', compact('food'));
+    }
+
+    public function transaction_history(){
+        $user=auth()->user()->id;
+        $booking=Booking::where('user_id',$user)->get();
+        $booking_detail=Booking::where('booking_id',$booking)->get();
+
     }
 }

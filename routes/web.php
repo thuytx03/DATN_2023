@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\Admin\BookingsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\SocialController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -8,10 +8,12 @@ use App\Http\Controllers\Admin\PostTypeController;
 use App\Http\Controllers\Admin\GenreController;
 use App\Http\Controllers\Admin\MovieController;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Admin\ProvinceController;
 use App\Http\Controllers\Admin\CinemaController;
+use App\Http\Controllers\Admin\ContactController;
+use App\Http\Controllers\Admin\CountryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MovieFoodsController;
 use App\Http\Controllers\Admin\FoodTypesController;
@@ -31,13 +33,21 @@ use App\Http\Controllers\Admin\SeatTypeController;
 use App\Http\Controllers\Client\BookingController;
 use App\Http\Controllers\Client\MovieSeatPlanController;
 use App\Http\Controllers\Client\MovieTicketPlanController;
+use App\Http\Controllers\admin\MemberShipLevelsController;
+use App\Http\Controllers\admin\MemberController;
+use App\Http\Controllers\Client\PostController;
+use App\Http\Controllers\Client\MovieControllerClient;
+use App\Http\Controllers\Client\ProfileController;
+
 
 Route::get('/', [HomeController::class, 'index'])->name('index');
 
 // phim
-Route::prefix('movie-client')->group(function () {
-    Route::get('/list', [HomeController::class, 'list'])->name('movie.list');
-    Route::get('/detail/{id}', [HomeController::class, 'detail'])->name('movie.detail');
+Route::prefix('phim')->group(function () {
+    Route::get('/danh-sach', [MovieControllerClient::class, 'list'])->name('phim.danh-sach');
+    Route::get('/{slug}/{id}', [MovieControllerClient::class, 'detail'])->name('movie.detail');
+    Route::post('/filter', [MovieControllerClient::class, 'filter'])->name('movie.filter')->middleware('web');
+    Route::post('/search', [MovieControllerClient::class, 'search'])->name('movie.search');
 });
 
 //lịch chiếu
@@ -50,7 +60,6 @@ Route::prefix('vouchers')->group(function () {
     Route::get('/voucher-list', [VouchersController::class, 'vouchers'])->name('home.voucher.list');
     Route::get('/voucher-detail/{id}', [VouchersController::class, 'detailVouchers'])->name('home.voucher.detail');
     Route::post('/apllyVouchers', [VouchersController::class, 'apllyVouchers'])->name('home.voucher.apllyVouchers');
-
 });
 
 Route::group(['middleware' => 'guest'], function () {
@@ -66,32 +75,49 @@ Route::middleware(['auth'])->group(function () {
         Route::match(['GET', 'POST'],'/check-voucher', [FoodController::class, 'checkDiscountCode']);
     });
 });
-    //ghế
-    Route::get('/lich-chieu/chon-ghe/{room_id}/{slug}/{showtime_id}', [MovieSeatPlanController::class, 'index'])->name('chon-ghe');
-    Route::post('/save-selected-seats', [MovieSeatPlanController::class, 'saveSelectedSeats'])->name('save-selected-seats');
-    Route::post('/luu-thong-tin-san-pham', [MovieSeatPlanController::class, 'luuThongTinSanPham'])->name('luu-thong-tin-san-pham');
+//ghế
+Route::get('/lich-chieu/chon-ghe/{room_id}/{slug}/{showtime_id}', [MovieSeatPlanController::class, 'index'])->name('chon-ghe');
+Route::post('/save-selected-seats', [MovieSeatPlanController::class, 'saveSelectedSeats'])->name('save-selected-seats');
+Route::post('/luu-thong-tin-san-pham', [MovieSeatPlanController::class, 'luuThongTinSanPham'])->name('luu-thong-tin-san-pham');
 
-    //thanh toán
-    Route::match(['GET', 'POST'], '/thanh-toan/{room_id}/{slug}/{showtime_id}', [BookingController::class, 'index'])->name('thanh-toan');
-    Route::match(['GET', 'POST'], '/thanh-toan/do-an', [BookingController::class, 'ticketFood'])->name('thanh-toan.do-an');
-    Route::get('/camon', [BookingController::class, 'thanks'])->name('camonthanhtoan');
+//thanh toán
+Route::match(['GET', 'POST'], '/thanh-toan/{room_id}/{slug}/{showtime_id}', [BookingController::class, 'index'])->name('thanh-toan');
+Route::match(['GET', 'POST'], '/thanh-toan/do-an', [BookingController::class, 'ticketFood'])->name('thanh-toan.do-an');
+Route::get('/camon', [BookingController::class, 'thanks'])->name('camonthanhtoan');
 
-    // paypal
-    Route::get('paypal', [BookingController::class, 'paypal'])->name('paypal');
-    Route::get('paypal/payment/{id}', [BookingController::class, 'payment'])->name('paypal.payment');
-    Route::get('paypal/payment/success/{id}', [BookingController::class, 'paymentSuccess'])->name('paypal.payment.success');
-    Route::get('paypal/payment/cancel', [BookingController::class, 'paymentCancel'])->name('paypal.payment/cancel');
-    // hết paypal
+// paypal
+Route::get('paypal', [BookingController::class, 'paypal'])->name('paypal');
+Route::get('paypal/payment/{id}', [BookingController::class, 'payment'])->name('paypal.payment');
+Route::get('paypal/payment/success/{id}', [BookingController::class, 'paymentSuccess'])->name('paypal.payment.success');
+Route::get('paypal/payment/cancel', [BookingController::class, 'paymentCancel'])->name('paypal.payment/cancel');
+// hết paypal
 
 
-    // Spatie
 
-    // phim yeu thich
-    Route::prefix('favorite')->group(function () {
-        // Route::get('/favorite-list', [favorite::class, 'favorite'])->name('home.favorite.list');
-        Route::get('/add/{id}', [FavoriteController::class, 'addFavorite'])->name('home.favorite.add');
-        Route::get('/list', [FavoriteController::class, 'listFavorite'])->name('home.favorite.list');
-    });
+
+// phim yeu thich
+Route::prefix('favorite')->group(function () {
+    // Route::get('/favorite-list', [favorite::class, 'favorite'])->name('home.favorite.list');
+    Route::get('/add/{id}', [FavoriteController::class, 'addFavorite'])->name('home.favorite.add');
+    Route::get('/list', [FavoriteController::class, 'listFavorite'])->name('home.favorite.list');
+});
+//blogs
+Route::get('bai-viet', [PostController::class, 'index'])->name('blog');
+Route::get('/bai-viet-chi-tiet/{slug}/{id}', [PostController::class, 'show'])->name('blog-detail');
+Route::post('them-binh-luan-bai-viet', [PostController::class, 'store'])->name('blog-cmt.store');
+Route::post('tra-loi-binh-luan-bai-viet', [PostController::class, 'repStore'])->name('replie.repStore');
+//contact
+
+//profile 
+Route::get('/profile', [ProfileController::class, 'profile'])->name('profile');
+Route::get('/purchase-history', [ProfileController::class, 'purchase_history'])->name('profile.history');
+Route::match(['GET', 'POST'], '/change-password', [ProfileController::class, 'change_password'])->name('profile.changePassword');
+Route::match(['GET', 'POST'], '/edit-profile', [ProfileController::class, 'edit_profile'])->name('profile.edit');
+
+////
+Route::get('contact', function () {
+    return view('client.contacts.contact');
+})->name('contact');
 
 
 // route cua google
@@ -140,6 +166,26 @@ Route::prefix('admin')->group(function () {
         Route::match(['GET', 'POST'], '/delete/{id}', [PermissionController::class, 'delete_bin'])->name('bin.delete-permission');
         Route::match(['GET', 'POST'], '/permanentlyDeleteSelected', [PermissionController::class, 'delete_bin_all'])->name('bin.delete-permission-all');
     });
+    Route::prefix('membershiplevels')->group(function () {
+        Route::match(['GET', 'POST'], '/', [MemberShipLevelsController::class, 'index'])->name('MBSL.list');
+        Route::match(['GET', 'POST'], '/create', [MemberShipLevelsController::class, 'create'])->name('MBSL.add');
+        Route::match(['GET', 'POST'], '/store', [MemberShipLevelsController::class, 'store'])->name('MBSL.store');
+        Route::match(['GET', 'POST'], '/edit/{id}', [MemberShipLevelsController::class, 'edit'])->name('MBSL.edit');
+        Route::match(['GET', 'POST'], '/update/{id}', [MemberShipLevelsController::class, 'update'])->name('MBSL.update');
+        Route::get('/changeStatus/{id}', [MemberShipLevelsController::class, 'changeStatus'])->name('MBSL.changeStatus');
+        Route::get('/destroy/{id}', [MemberShipLevelsController::class, 'destroy'])->name('MBSL.destroy');
+        Route::get('/trash', [MemberShipLevelsController::class, 'trash'])->name('MBSL.trash');
+        Route::post('/unTrashAll', [MemberShipLevelsController::class, 'restoreSelected'])->name('MBSL.unTrashAll');
+        Route::get('/restore/{id}', [MemberShipLevelsController::class, 'restore'])->name('MBSL.restore');
+        Route::get('/permanentlyDelete/{id}', [MemberShipLevelsController::class, 'permanentlyDelete'])->name('MBSL.permanentlyDelete');
+        Route::post('/deleteAll', [MemberShipLevelsController::class, 'deleteAll'])->name('MBSL.deleteAll');
+        Route::post('/permanentlyDeleteSelected', [MemberShipLevelsController::class, 'permanentlyDeleteSelected'])->name('MBSL.permanentlyDeleteSelected');
+    });
+    // member
+    Route::prefix('member')->group(function () {
+        Route::match(['GET', 'POST'], '/', [MemberController::class, 'index'])->name('member.list');
+        Route::get('/changeStatus/{id}', [MemberController::class, 'changeStatus'])->name('member.changeStatus');
+    });
     //room
     Route::prefix('room')->group(function () {
         Route::match(['GET', 'POST'], '/', [RoomController::class, 'index'])->name('room.list');
@@ -183,7 +229,26 @@ Route::prefix('admin')->group(function () {
         Route::match(['GET', 'POST'], '/food/{id}', [OrderFoodController::class, 'food'])->name('food.detail');
         Route::match(['GET', 'POST'], '/update-status/{id}', [OrderFoodController::class, 'updateStatus'])->name('food.update-status');
         Route::match(['GET', 'POST'], '/deleteAll', [OrderFoodController::class, 'deleteAll'])->name('food.delete-all');
+    });
 
+
+    //booking
+    Route::prefix('booking')->group(function () {
+        Route::get('/', [BookingsController::class, 'index'])->name('booking.index');
+        Route::match(['GET', 'POST'], '/store', [BookingsController::class, 'store'])->name('booking.store');
+        Route::match(['GET', 'POST'], '/update/{id}', [BookingsController::class, 'update'])->name('booking.update');
+        Route::get('/destroy/{id}', [BookingsController::class, 'destroy'])->name('booking.destroy');
+        Route::post('/deleteAll', [BookingsController::class, 'deleteAll'])->name('booking.deleteAll');
+        Route::post('/update-status/{id}', [BookingsController::class, 'updateStatus'])->name('booking.updateStatus');
+        Route::get('/trash', [BookingsController::class, 'trash'])->name('booking.trash');
+        Route::get('/permanentlyDelete/{id}', [BookingsController::class, 'permanentlyDelete'])->name('booking.permanentlyDelete');
+        Route::post('/permanentlyDeleteSelected', [BookingsController::class, 'permanentlyDeleteSelected'])->name('booking.permanentlyDeleteSelected');
+        Route::post('/restoreSelected', [BookingsController::class, 'restoreSelected'])->name('booking.restoreSelected');
+        Route::get('/restore/{id}', [BookingsController::class, 'restore'])->name('booking.restore');
+        Route::get('/{id}/detail', [BookingsController::class, 'detail'])->name('booking.detail');
+        Route::get('/{id}/confirm', [BookingsController::class, 'confirm'])->name('booking.confirm');
+        Route::get('/{id}/unconfirm', [BookingsController::class, 'unConfirm'])->name('booking.unConfirm');
+        Route::post('/{id}/cancel', [BookingsController::class, 'cancel'])->name('booking.cancel');
     });
     /*
      * Category Blog
@@ -224,6 +289,46 @@ Route::prefix('admin')->group(function () {
         Route::get('/force-delete/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'forceDelete'])->name('post.forceDelete');
     });
     ///
+
+    //// Bình luận bài viết
+    Route::prefix('comment')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'index'])->name('comment.index');
+        // Route::get('/create', [App\Http\Controllers\Admin\Post\PostController::class, 'create'])->name('post.add');
+        // Route::post('/store', [App\Http\Controllers\Admin\Post\PostController::class, 'store'])->name('post.store');
+        Route::post('/status/{id}', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'updateStatus']);
+        Route::post('/deleteAll', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'deleteAll'])->name('comment.deleteAll');
+        // Route::get('/edit/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'edit'])->name('post.edit');
+        // Route::get('/show/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'show'])->name('post.show');
+        // Route::put('/update/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'update'])->name('post.update');
+        // Route::post('/destroy/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'destroy'])->name('post.destroy');
+        Route::get('/destroy/{id}', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'destroy'])->name('comment.destroy');
+        Route::get('/trash',  [App\Http\Controllers\Admin\Post\CommentPostController::class, 'trash'])->name('comment.trash');
+        Route::post('/permanentlyDeleteSelected', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'permanentlyDeleteSelected'])->name('comment.permanentlyDeleteSelected');
+        Route::post('/restoreSelected', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'restoreSelected'])->name('comment.restoreSelected');
+
+        Route::get('/restore/{id}',  [App\Http\Controllers\Admin\Post\CommentPostController::class, 'restore'])->name('comment.restore');
+        Route::get('/force-delete/{id}', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'forceDelete'])->name('comment.forceDelete');
+    });
+
+
+    //
+
+
+
+    // ///// trả lời bình luận
+    Route::prefix('reply')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\Post\ReplyController::class, 'index'])->name('reply.index');
+        Route::post('/status/{id}', [App\Http\Controllers\Admin\Post\ReplyController::class, 'updateStatus']);
+        Route::post('/deleteAll', [App\Http\Controllers\Admin\Post\ReplyController::class, 'deleteAll'])->name('reply.deleteAll');
+        Route::get('/destroy/{id}', [App\Http\Controllers\Admin\Post\ReplyController::class, 'destroy'])->name('reply.destroy');
+        Route::get('/trash',  [App\Http\Controllers\Admin\Post\ReplyController::class, 'trash'])->name('reply.trash');
+        Route::post('/permanentlyDeleteSelected', [App\Http\Controllers\Admin\Post\ReplyController::class, 'permanentlyDeleteSelected'])->name('reply.permanentlyDeleteSelected');
+        Route::post('/restoreSelected', [App\Http\Controllers\Admin\Post\ReplyController::class, 'restoreSelected'])->name('reply.restoreSelected');
+        Route::get('/restore/{id}',  [App\Http\Controllers\Admin\Post\ReplyController::class, 'restore'])->name('reply.restore');
+        Route::get('/force-delete/{id}', [App\Http\Controllers\Admin\Post\ReplyController::class, 'forceDelete'])->name('reply.forceDelete');
+    });
+
+    // ///////////
     /*
      * Movie Genre
      */
@@ -429,6 +534,37 @@ Route::prefix('admin')->group(function () {
         Route::post('/restoreSelected', [CinemaController::class, 'restoreSelected'])->name('cinema.restoreSelected');
         Route::get('/restore/{id}', [CinemaController::class, 'restore'])->name('cinema.restore');
     });
+
+    //route quốc gia 
+    Route::prefix('country')->group(function () {
+        Route::get('/', [CountryController::class, 'index'])->name('country.index');
+        Route::get('/create', [CountryController::class, 'create'])->name('country.add');
+        Route::post('/store', [CountryController::class, 'store'])->name('country.store');
+        Route::get('/edit/{id}', [CountryController::class, 'edit'])->name('country.edit');
+        Route::post('/update/{id}', [CountryController::class, 'update'])->name('country.update');
+        Route::get('/destroy/{id}', [CountryController::class, 'destroy'])->name('country.destroy');
+        Route::get('/trash', [CountryController::class, 'trash'])->name('country.trash');
+        Route::get('/restore/{id}', [CountryController::class, 'restore'])->name('country.restore');
+        Route::get('/delete/{id}', [CountryController::class, 'delete'])->name('country.delete');
+        Route::post('/update-status/{id}', [CountryController::class, 'updateStatus'])->name('country.updateStatus');
+        Route::post('/deleteAll', [CountryController::class, 'deleteAll'])->name('country.deleteAll');
+        Route::post('/permanentlyDeleteSelected', [CountryController::class, 'permanentlyDeleteSelected'])->name('country.permanentlyDeleteSelected');
+        Route::post('/restoreSelected', [CountryController::class, 'restoreSelected'])->name('country.restoreSelected');
+        Route::get('/search', [CountryController::class, 'search'])->name('country.search');
+        Route::get('/permanentlyDelete/{id}', [CountryController::class, 'permanentlyDelete'])->name('country.permanentlyDelete');
+    });
+    Route::prefix('contact')->group(function () {
+        Route::get('/', [ContactController::class, 'index'])->name('contact.index');
+        Route::post('/send', [ContactController::class, 'sendContact'])->name('contact.send');
+        Route::get('/reply/{id}', [ContactController::class, 'reply'])->name('contact.reply');
+        Route::post('/replied/{id}', [ContactController::class, 'replied'])->name('contact.replied');
+        Route::get('/destroy/{id}', [ContactController::class, 'destroy'])->name('contact.destroy');
+        Route::get('/trash', [ContactController::class, 'trash'])->name('contact.trash');
+        Route::get('/restore/{id}', [ContactController::class, 'restore'])->name('contact.restore');
+        Route::get('/delete/{id}', [ContactController::class, 'delete'])->name('contact.delete');
+        Route::get('/search', [CountryController::class, 'search'])->name('contact.search');
+        Route::post('/store', [ContactController::class, 'store'])->name('contact.store');
+    });
 });
 
 //route ảnh
@@ -458,14 +594,8 @@ Route::get('movie-food', function () {
     return view('client.movies.movie-food');
 })->name('movie-food');
 
-Route::get('blog', function () {
-    return view('client.blogs.blog');
-})->name('blog');
+
 
 Route::get('about-us', function () {
     return view('client.pages.about-us');
 })->name('about-us');
-
-Route::get('contact', function () {
-    return view('client.contacts.contact');
-})->name('contact');

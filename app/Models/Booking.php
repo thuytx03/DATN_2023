@@ -13,4 +13,7 @@ class Booking extends Model
     protected $fillable=["name",'user_id','showtime_id','list_seat',
     'email', 'phone', 'address', 'total','payment','status','note','cancel_reason'
 ];
+public function showtime(){
+    return $this->belongsTo(ShowTime::class);
+}
 }
