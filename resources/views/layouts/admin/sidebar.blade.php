@@ -183,6 +183,19 @@
             </div>
         </div>
     </li>
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#MBSL" aria-expanded="true" aria-controls="MBSL">
+            <i class="fa-solid fa-person-arrow-up-from-line"></i>
+            <span>Quản lý hội viên  </span>
+        </a>
+        <div id="MBSL" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{ route('MBSL.list') }}">Quản lý cấp độ </a>
+                <a class="collapse-item" href="{{route('member.list')}}">Quản lý điểm thưởng </a>
+            </div>
+        </div>
+       
+    </li>
     <!-- Divider -->
     <hr class="sidebar-divider">
 

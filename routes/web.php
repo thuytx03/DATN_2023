@@ -31,6 +31,8 @@ use App\Http\Controllers\Admin\SeatTypeController;
 use App\Http\Controllers\Client\BookingController;
 use App\Http\Controllers\Client\MovieSeatPlanController;
 use App\Http\Controllers\Client\MovieTicketPlanController;
+use App\Http\Controllers\admin\MemberShipLevelsController;
+use App\Http\Controllers\admin\MemberController;
 
 Route::get('/', [HomeController::class, 'index'])->name('index');
 
@@ -136,6 +138,26 @@ Route::prefix('admin')->group(function () {
         Route::match(['GET', 'POST'], '/restoreSelected', [PermissionController::class, 'restore_bin_all'])->name('bin.restore-permission-all');
         Route::match(['GET', 'POST'], '/delete/{id}', [PermissionController::class, 'delete_bin'])->name('bin.delete-permission');
         Route::match(['GET', 'POST'], '/permanentlyDeleteSelected', [PermissionController::class, 'delete_bin_all'])->name('bin.delete-permission-all');
+    });
+    Route::prefix('membershiplevels')->group(function () {
+        Route::match(['GET', 'POST'], '/', [MemberShipLevelsController::class, 'index'])->name('MBSL.list');
+        Route::match(['GET', 'POST'], '/create', [MemberShipLevelsController::class, 'create'])->name('MBSL.add');
+        Route::match(['GET', 'POST'], '/store', [MemberShipLevelsController::class, 'store'])->name('MBSL.store');
+        Route::match(['GET', 'POST'], '/edit/{id}', [MemberShipLevelsController::class, 'edit'])->name('MBSL.edit');
+        Route::match(['GET', 'POST'], '/update/{id}', [MemberShipLevelsController::class, 'update'])->name('MBSL.update');
+        Route::get('/changeStatus/{id}', [MemberShipLevelsController::class, 'changeStatus'])->name('MBSL.changeStatus');
+        Route::get('/destroy/{id}', [MemberShipLevelsController::class, 'destroy'])->name('MBSL.destroy');
+        Route::get('/trash', [MemberShipLevelsController::class, 'trash'])->name('MBSL.trash');
+        Route::post('/unTrashAll', [MemberShipLevelsController::class, 'restoreSelected'])->name('MBSL.unTrashAll');
+        Route::get('/restore/{id}', [MemberShipLevelsController::class, 'restore'])->name('MBSL.restore');
+        Route::get('/permanentlyDelete/{id}', [MemberShipLevelsController::class, 'permanentlyDelete'])->name('MBSL.permanentlyDelete');
+        Route::post('/deleteAll', [MemberShipLevelsController::class, 'deleteAll'])->name('MBSL.deleteAll');
+        Route::post('/permanentlyDeleteSelected', [MemberShipLevelsController::class, 'permanentlyDeleteSelected'])->name('MBSL.permanentlyDeleteSelected');
+    });
+    // member
+    Route::prefix('member')->group(function () {
+        Route::match(['GET', 'POST'], '/', [MemberController::class, 'index'])->name('member.list');
+        Route::get('/changeStatus/{id}', [MemberController::class, 'changeStatus'])->name('member.changeStatus');
     });
     //room
     Route::prefix('room')->group(function () {
