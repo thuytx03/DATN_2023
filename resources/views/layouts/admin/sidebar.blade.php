@@ -13,9 +13,9 @@
 
     <!-- Nav Item - Dashboard -->
     <li class="nav-item active">
-        <a class="nav-link" href="">
+        <a class="nav-link" href="{{ route('dashboard') }}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Dashboard</span></a>
+            <span>Thống kê</span></a>
     </li>
 
     <!-- Divider -->
@@ -161,6 +161,31 @@
                 <a class="collapse-item" href="{{ route('movie-foode.index') }}"> Danh sách món ăn</a>
             </div>
 
+    </li>
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#country" aria-expanded="true" aria-controls="country">
+        <i class="fas fa-film"></i>
+            <span>Quản lý quốc gia</span>
+        </a>
+        <div id="country" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{ route('country.index') }}">Danh sách quốc gia</a>
+                <!-- link -->
+            </div>
+        </div>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mailbox" aria-expanded="true" aria-controls="mailbox">
+        <i class="fas fa-film"></i>
+            <span>Quản lý hòm thư</span>
+        </a>
+        <div id="mailbox" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{ route('contact.index') }}">Danh sách hòm thư</a>
+                <!-- link -->
+            </div>
+        </div>
     </li>
     <!-- logo -->
     <li class="nav-item">

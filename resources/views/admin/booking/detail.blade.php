@@ -36,7 +36,6 @@
                                 <th>Ảnh</th>
                                 <th>Danh sách ghế</th>
                                 <th>Giá</th>
-
                             </tr>
                         </thead>
                         <tbody class="">

@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Exception;
 use App\Models\Payment_Vnpay;
 use App\Models\PayMent_PayPal;
-
+use App\Models\Voucher;
 
 class BookingController extends Controller
 {
@@ -58,6 +58,7 @@ class BookingController extends Controller
         // dd($totalPriceTicket);
 
         if ($request->isMethod('POST')) {
+
             $booking = new Booking();
             $booking->user_id = auth()->user()->id;
             $booking->showtime_id = $showTime->id;
@@ -92,13 +93,23 @@ class BookingController extends Controller
                 }
             }
 
+
+
             if ($booking->payment == 1) {
                 // Thực hiện thanh toán VNPay
                 $result = $this->paymentVNP($booking->id, $booking->total);
             } elseif ($booking->payment == 2) {
                 return redirect()->route('paypal.payment', ['id' => $booking->id]);
             }
-
+             // Lấy thông tin mã voucher từ session
+            //  $voucherData = session('voucher');
+            //  if($voucherData){
+            //     $voucher=Voucher::where('code', $voucherData['code'])->first();
+            //     if ($voucher->quantity > 0) {
+            //         $voucher->quantity--;
+            //         $voucher->save();
+            //     }
+            //  }
             session()->forget('voucher');
             session()->forget('selectedSeats');
             session()->forget('selectedProducts');
@@ -186,6 +197,10 @@ class BookingController extends Controller
     }
     public function thanks(Request $request)
     {
+        session()->forget('voucher');
+        session()->forget('selectedSeats');
+        session()->forget('selectedProducts');
+        session()->forget('totalPriceFood');
         if ($request->has('vnp_Amount')) {
             $vnp_Amount = $request->query('vnp_Amount');
             $vnp_BankCode = $request->query('vnp_BankCode');
@@ -365,10 +380,5 @@ class BookingController extends Controller
         return view('client.movies.movie-ticket-food', compact('food'));
     }
 
-    public function transaction_history(){
-        $user=auth()->user()->id;
-        $booking=Booking::where('user_id',$user)->get();
-        $booking_detail=Booking::where('booking_id',$booking)->get();
-
-    }
+  
 }
