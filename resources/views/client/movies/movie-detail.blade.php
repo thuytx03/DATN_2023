@@ -3,7 +3,6 @@
     <style>
         .abc {
             margin-left: 10px;
-
         }
     </style>
     <!-- ==========Banner-Section========== -->
@@ -103,29 +102,27 @@
                     <div class="item">
                         <div class="item-header">
                             <h5 class="title">4.5</h5>
-                            <div class="rated">
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
+                            <div class="rated list-inline d-flex">
+                                <span class="rating" style="font-size: 25px;margin: 0 2px;color: #ffcc00">&#9733;</span>
+                                <span class="rating" style="font-size: 25px;margin: 0 2px;color: #ffcc00">&#9733;</span>
+                                <span class="rating" style="font-size: 25px;margin: 0 2px;color: #ffcc00">&#9733;</span>
+                                <span class="rating" style="font-size: 25px;margin: 0 2px;color: #ffcc00">&#9733;</span>
+                                <span class="rating" style="font-size: 25px;margin: 0 2px;color: #ffcc00">&#9733;</span>
                             </div>
                         </div>
                         <p>Người dùng đánh giá</p>
                     </div>
                     <div class="item">
                         <div class="item-header">
-                            <div class="rated rate-it">
-                                <i class="fa-regular fa-star"></i>
-                                <i class="fa-regular fa-star"></i>
-                                <i class="fa-regular fa-star"></i>
-                                <i class="fa-regular fa-star"></i>
-                                <i class="fa-regular fa-star"></i>
+                            <div class="rate-it list-inline d-flex" style="cursor: pointer">
+                                    @for ($count = 1; $count <= 5; $count++)
+                                        <span class="rating-it" data-rating="{{ $count }}" data-movie-id="{{ $movie->id }}" style="font-size: 25px; margin: 0 2px">&#9733;</span>
+                                    @endfor
                             </div>
-                            <h5 class="title">0.0</h5>
                         </div>
-                        <p><a href="#0">Đánh giá phim</a></p>
+                        <p>Đánh giá phim</p>
                     </div>
+                    <div id="rating-message"></div>
                 </div>
                 <div class="button-container">
                     <a href="{{ route('lich-chieu',['id'=>$movie->id,'slug'=>$movie->slug]) }}" class="custom-button">Mua
@@ -226,14 +223,14 @@
                                 <div class="tab-item">
                                     <div class="item">
                                         <h5 class="sub-title">Mô tả phim</h5>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vehicula eros
-                                            sit amet est tincidunt aliquet. Fusce laoreet ligula ac ultrices eleifend.
-                                            Donec hendrerit fringilla odio, ut feugiat mi convallis nec. Fusce elit ex,
-                                            blandit vitae mattis sit amet, iaculis ac elit. Ut diam mauris, viverra sit
-                                            amet dictum vel, aliquam ac quam. Ut mi nisl, fringilla sit amet erat et,
-                                            convallis porttitor ligula. Sed auctor, orci id luctus venenatis, dui dolor
-                                            euismod risus, et pharetra orci lectus quis sapien. Duis blandit ipsum ac
-                                            consectetur scelerisque. </p>
+                                        <p>Lấy cảm hứng từ tiểu thuyết Hồ Oán Hận, của nhà văn Hồng Thái, Người Vợ Cuối
+                                            Cùng là một bộ phim tâm lý cổ trang, lấy bối cảnh Việt Nam vào triều Nguyễn.
+                                            LINH - Người vợ bất đắc dĩ của một viên quan tri huyện, xuất thân là con của
+                                            một gia đình nông dân nghèo khó, vì không thể hoàn thành nghĩa vụ sinh con
+                                            nối dõi nên đã chịu sự chèn ép của những người vợ lớn trong gia đình. Sự gặp
+                                            gỡ tình cờ của cô và người yêu thời thanh mai trúc mã của mình - NHÂN đã dẫn
+                                            đến nhiều câu chuyện bất ngờ xảy ra khiến cuộc sống cô hoàn toàn thay
+                                            đổi. </p>
                                     </div>
                                     <div class="item">
                                         <div class="header">
@@ -365,7 +362,11 @@
                                 <div class="tab-item active">
                                     <div class="container">
                                         <div class="form-group row">
-                                            <div class="col-md-10">
+                                            <div class="col-md-1">
+                                                <img width="50px" class="img-fluid"
+                                                     src="{{ (Auth::user()->avatar == null) ? asset('admin/img/undraw_profile_1.svg') : Storage::url(Auth::user()->avatar) }}">
+                                            </div>
+                                            <div class="col-md-9 pl-1">
                                                 <input type="text" placeholder="Nhập bình luận về phim ..."
                                                        name="message">
                                             </div>
@@ -389,12 +390,16 @@
                                             </div>
                                         </div>
                                         <div class="movie-review-content">
-                                            <div class="review" >
-                                                <i class="fa-solid fa-star"></i>
-                                                <i class="fa-solid fa-star"></i>
-                                                <i class="fa-solid fa-star"></i>
-                                                <i class="fa-solid fa-star"></i>
-                                                <i class="fa-solid fa-star"></i>
+                                            <div class="review">
+                                                <span class="rating"
+                                                      style="font-size: 25px;margin: 0 2px;color: #ffcc00">&#9733;</span>
+                                                <span class="rating"
+                                                      style="font-size: 25px;margin: 0 2px;color: #ffcc00">&#9733;</span>
+                                                <span class="rating"
+                                                      style="font-size: 25px;margin: 0 2px;color: #ffcc00">&#9733;</span>
+                                                <span class="rating" style="font-size: 25px;margin: 0 2px;color: #ccc">&#9733;</span>
+                                                <span class="rating" style="font-size: 25px;margin: 0 2px;color: #ccc">&#9733;</span>
+
                                             </div>
                                             <h6 class="cont-title">Bộ phim trên cả tuyệt vời</h6>
                                         </div>
@@ -411,3 +416,60 @@
         </div>
     </section>
 @endsection
+@push('scripts')
+    <script>
+        $(document).ready(function () {
+            var selectedRating = 0;
+            var selectedMovieId = $(this).data('movie-id');;
+
+            $('.rating-it').mouseenter(function () {
+                var rating = $(this).data('rating');
+                highlightStars(rating);
+            });
+
+            $('.rating-it').mouseleave(function () {
+                resetStars();
+            });
+
+            $('.rating-it').click(function () {
+                var rating = $(this).data('rating');
+                selectedRating = rating;
+                sendRating(rating);
+            });
+
+            function highlightStars(rating) {
+                $('.rating-it').css('color', '#ccc');
+                $('.rating-it').each(function (index) {
+                    if (index < rating) {
+                        $(this).css('color', '#ffcc00');
+                    }
+                });
+            }
+
+            function resetStars() {
+                $('.rating-it').css('color', '#ccc');
+                $('.rating-it').each(function (index) {
+                    if (index < selectedRating) {
+                        $(this).css('color', '#ffcc00');
+                    }
+                });
+            }
+
+            function sendRating(rating) {
+                var movieId = selectedMovieId;
+                $.ajax({
+                    type: 'POST',
+                    url: '/submit-rating',
+                    data: { rating: rating },
+                    success: function (response) {
+                        $('#rating-message').html('Đánh giá của bạn là ' + rating + ' sao.');
+                    },
+                    error: function (xhr) {
+                        console.error(xhr.responseText);
+                    }
+                });
+            }
+        });
+    </script>
+
+@endpush

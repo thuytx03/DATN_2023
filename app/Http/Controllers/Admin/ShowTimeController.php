@@ -51,8 +51,16 @@ class ShowTimeController extends Controller
                 $roomQuery->where('name', 'like', '%' . $searchRoom . '%');
             });
         }
+        // Lấy danh sách tất cả ShowTime
+        $showTimes = $query->orderBy('id', 'DESC')->get();
+        // Kiểm tra và cập nhật status
+        $now = now(); // Lấy ngày hiện tại
+        foreach ($showTimes as $showTime) {
+            if ($showTime->start_date < $now) {
+                $showTime->update(['status' => 0]);
+            }
+        }
         $showTimes = $query->orderBy('id', 'DESC')->paginate(5);
-//        dd($showTimes);
         return view('admin.show-time.index', compact('showTimes'));
     }
 

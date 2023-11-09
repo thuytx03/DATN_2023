@@ -27,12 +27,13 @@
             <div class="tab-area mb-30-none">
                 <div class="tab-item active">
                     <div class="owl-carousel owl-theme tab-slider">
+
                         @foreach ($movies as $movie)
                         <div class="item">
                             <div class="movie-grid">
                                 <div class="movie-thumb c-thumb">
                                     <a href="#0">
-                                        <img alt="movies" width="60" src="{{ $movie->poster ? Storage::url($movie->poster) : asset('images/image-not-found.jpg') }}" alt="Image">
+                                        <img alt="movies" class="img-fluid" width="60" src="{{ $movie->poster ? Storage::url($movie->poster) : asset('images/image-not-found.jpg') }}" alt="Image">
                                     </a>
                                 </div>
                                 <div class="movie-content bg-one">
@@ -69,8 +70,8 @@
                                                     <i id="heart-icon" class="fas fa-heart"></i>
                                                 </a>
                                                 @endif
-                                            
-                                        </li> 
+
+                                        </li>
                                     </ul>
                                 </div>
                             </div>
