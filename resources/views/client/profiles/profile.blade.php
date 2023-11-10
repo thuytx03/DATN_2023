@@ -37,6 +37,9 @@
     <div class="vertical-hr"></div>
     <div class="col-5">
         <h5>Mã giảm giá</h5>
+        <div class="container mt-4">
+            <div class="mb-3">{!! DNS2D::getBarcodeHTML($user->name, 'QRCODE') !!}</div>   
+        </div>
         <br>
         <p>Vé xem phim: 0 Voucher</p>
         <p>Bỏng nước: 0 Voucher</p>

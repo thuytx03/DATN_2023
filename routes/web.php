@@ -38,6 +38,8 @@ use App\Http\Controllers\admin\MemberController;
 use App\Http\Controllers\Client\PostController;
 use App\Http\Controllers\Client\MovieControllerClient;
 use App\Http\Controllers\Client\ProfileController;
+use App\Http\Controllers\client\QrcodeController;
+use App\Http\Controllers\Admin\QrAdminController;
 
 
 Route::get('/', [HomeController::class, 'index'])->name('index');
@@ -83,7 +85,7 @@ Route::post('/luu-thong-tin-san-pham', [MovieSeatPlanController::class, 'luuThon
 //thanh toán
 Route::match(['GET', 'POST'], '/thanh-toan/{room_id}/{slug}/{showtime_id}', [BookingController::class, 'index'])->name('thanh-toan');
 Route::match(['GET', 'POST'], '/thanh-toan/do-an', [BookingController::class, 'ticketFood'])->name('thanh-toan.do-an');
-Route::get('/camon', [BookingController::class, 'thanks'])->name('camonthanhtoan');
+Route::get('/camon/{id}', [BookingController::class, 'thanks'])->name('camonthanhtoan');
 
 // paypal
 Route::get('paypal', [BookingController::class, 'paypal'])->name('paypal');
@@ -114,6 +116,9 @@ Route::match(['GET', 'POST'], '/edit-profile', [ProfileController::class, 'edit_
 Route::match(['GET', 'POST'], '/points', [ProfileController::class, 'points'])->name('profile.points');
 
 
+// route Qrcode 
+Route::get('/generate-barcode/{id}', [QrcodeController::class, 'index'])->name('Qrcode.barcode');
+Route::get('/qr-redirect/{param}', [QrcodeController::class, 'redirect'])->name('qr.redirect');
 ////
 Route::get('contact', function () {
     return view('client.contacts.contact');
@@ -165,6 +170,9 @@ Route::prefix('admin')->group(function () {
         Route::match(['GET', 'POST'], '/restoreSelected', [PermissionController::class, 'restore_bin_all'])->name('bin.restore-permission-all');
         Route::match(['GET', 'POST'], '/delete/{id}', [PermissionController::class, 'delete_bin'])->name('bin.delete-permission');
         Route::match(['GET', 'POST'], '/permanentlyDeleteSelected', [PermissionController::class, 'delete_bin_all'])->name('bin.delete-permission-all');
+    });
+    Route::prefix('qrcode')->group(function () { 
+        Route::match(['GET', 'POST'], '/', [QrAdminController::class, 'index'])->name('qr.scanner');
     });
     Route::prefix('membershiplevels')->group(function () {
         Route::match(['GET', 'POST'], '/', [MemberShipLevelsController::class, 'index'])->name('MBSL.list');

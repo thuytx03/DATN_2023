@@ -195,13 +195,17 @@ class BookingController extends Controller
             echo json_encode($returnData);
         }
     }
-    public function thanks(Request $request)
+    public function thanks(Request $request,$id)
     {
+        
+    
         session()->forget('voucher');
         session()->forget('selectedSeats');
         session()->forget('selectedProducts');
         session()->forget('totalPriceFood');
+       
         if ($request->has('vnp_Amount')) {
+           
             $vnp_Amount = $request->query('vnp_Amount');
             $vnp_BankCode = $request->query('vnp_BankCode');
             $vnp_BankTranNo = $request->query('vnp_BankTranNo');
@@ -233,7 +237,8 @@ class BookingController extends Controller
 
             // Add more fields to store, such as vnp_BankCode, vnp_ResponseCode, etc.
             $payment->save();
-
+           
+          
             // Update the booking status
             $booking = Booking::find($vnp_TxnRef);
             if ($booking) {
@@ -253,9 +258,9 @@ class BookingController extends Controller
         } else {
             $thongbao = "Bạn Đã Thanh Toán Thành Công";
         }
-
+   
         $thongbao = $thongbao;
-        return view('client.movies.thank', compact('thongbao'));
+        return view('client.movies.thank', compact('thongbao','id'));
 
         // Now you have inserted payment data and updated the booking status based on the payment result
         // You can add further logic as needed
@@ -337,14 +342,16 @@ class BookingController extends Controller
      */
     public function paymentSuccess(Request $request, $id)
     {
+      
         $provider = new PayPalClient;
         $provider->setApiCredentials(config('paypal'));
         $provider->getAccessToken();
         $response = $provider->capturePaymentOrder($request['token']);
 
         if (isset($response['status']) && $response['status'] == 'COMPLETED') {
-
+            
             $booking = Booking::find($id); // Tìm đặt phòng dựa trên booking_id
+          
             $total = ceil($booking->total / 22000);
             $add =     payment_paypal::create([
                 'booking_id' => $booking->id, // Liên kết thông tin thanh toán với đặt phòng
@@ -352,7 +359,7 @@ class BookingController extends Controller
             ]);
             if ($add) {
                 $booking->status = 2; // Thành Công
-
+                
                 $booking->save();
             } else {
                 // Payment failed, set status to an appropriate code for failed payments
@@ -363,12 +370,13 @@ class BookingController extends Controller
                 }
             }
             // code mac dinh cua paypal
+            
             return redirect()
-                ->route('camonthanhtoan')
+                ->route('camonthanhtoan',['id'=>$booking->id])
                 ->with('success', 'Transaction complete.');
         } else {
             return redirect()
-                ->route('camonthanhtoan')
+                ->route('camonthanhtoan',['id'=>$id])
                 ->with('error', $response['message'] ?? 'Something went wrong.');
         }
     }

@@ -185,6 +185,8 @@ return [
         Barryvdh\Debugbar\ServiceProvider::class,
         Laravel\Socialite\SocialiteServiceProvider::class,
         Srmklive\PayPal\Providers\PayPalServiceProvider::class,
+        Milon\Barcode\BarcodeServiceProvider::class,
+        
     ],
 
     /*
@@ -202,7 +204,9 @@ return [
         'Debugbar' => Barryvdh\Debugbar\Facades\Debugbar::class,
         'socialite' => Laravel\Socialite\Facade\socialite::class,
         'Alert' => RealRashid\SweetAlert\Facades\Alert::class,
-        'PayPal' => Srmklive\PayPal\Facades\PayPal::class
+        'PayPal' => Srmklive\PayPal\Facades\PayPal::class,
+        'DNS1D' => Milon\Barcode\Facades\DNS1DFacade::class,
+        'DNS2D' => Milon\Barcode\Facades\DNS2DFacade::class
 
     ])->toArray(),
 
