@@ -87,7 +87,7 @@
     </div>
     <div class="container mt-4"> <!-- Thêm container và margin từ trên xuống -->
         <div class="text-center"> <!-- Căn giữa nút -->
-            <button type="submit" class="btn btn-primary">In</button> <!-- Màu xanh và thiết lập kiểu nút -->
+            <button type="submit" class="btn btn-primary">In <i class="fa fa-print" aria-hidden="true"></i></button> <!-- Màu xanh và thiết lập kiểu nút -->
         </div>
     </div>
 

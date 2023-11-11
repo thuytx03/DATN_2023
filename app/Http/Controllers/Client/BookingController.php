@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Client;
 
-use Srmklive\PayPal\Services\PayPal as PayPalClient;
+
 use App\Http\Controllers\Controller;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use App\Http\Requests\BookingRequest;
 use App\Models\Booking;
 use App\Models\BookingDetail;
@@ -21,6 +21,10 @@ use App\Models\Payment_Vnpay;
 use App\Models\PayMent_PayPal;
 use App\Models\Voucher;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use App\Mail\YourMailable;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+
 
 
 class BookingController extends Controller
@@ -206,8 +210,8 @@ class BookingController extends Controller
         session()->forget('selectedSeats');
         session()->forget('selectedProducts');
         session()->forget('totalPriceFood');
-
-        if ($request->has('vnp_Amount')) {
+    
+        if ($request->query('vnp_Amount')) {
 
             $vnp_Amount = $request->query('vnp_Amount');
             $vnp_BankCode = $request->query('vnp_BankCode');
@@ -245,39 +249,37 @@ class BookingController extends Controller
             // Update the booking status
             $booking1 = Booking::find($payment->booking_id);
             $booking = Payment_Vnpay::where('booking_id',$payment->vnp_TxnRef)->first();
-            $id = $payment->vnp_TxnRef;
+            
+           
             if ($booking) {
                 if ($booking->vnp_ResponseCode == '00') {
-
-
-                    $qrCode = QrCode::format('png')
-                    // ->merge('images/image-not-found.png', 0.5, true)
-                    ->size(500)->errorCorrection('H')
-                    ->generate('abc/cdf/{$booking1->id}');
-
-
-                    // $qrCode = \SimpleSoftwareIO\QrCode\Facades\QrCode::format('png')->size(500)->generate("abc/cdf/{$booking1->id}");
-                    $qrCodeImageBase64 = base64_encode($qrCode);
-
-// Nội dung email
-$name = 'Thông tin đơn hàng   ' . '  ' . $request->input('name') . '' . 'đến với boleto';
-
-// Gửi email
-Mail::send('admin.qr.mail', compact('name', 'id', 'booking1', 'qrCodeImageBase64'), function ($message) use ($booking1, $qrCodeImageBase64) {
-    $message->from('dumpfuck@gmail.com', 'Boleto');
-    $message->sender('john@johndoe.com', 'John Doe');
-    $message->to($booking1->email, $booking1->name);
-    $message->subject('Thông Tin Đơn Hàng');
-
-    // Đính kèm ảnh QR Code từ base64
-
-
-    // Đặt inline để hiển thị ảnh trực tiếp trong email (tùy chọn)
-    $message->embedData(base64_decode($qrCodeImageBase64), 'qrcode.png', 'image/png');
-});
-                    $booking1->status = 2; // Thành Công
+                    // Tạo mã QR dưới dạng hình ảnh PNG
+                    $image = QrCode::size(300)->errorCorrection('H')
+                        ->generate("abc/xyz/{$booking1->id}");
+            
+                    // Lưu hình ảnh vào ổ đĩa cục bộ
+                    $output_file = 'qr-code/img1.png'; // Đường dẫn tương đối
+                    Storage::disk('local')->put($output_file, $image);
+            
+                    // Nội dung email
+                    $name = 'Thông tin đơn hàng ' . $request->input('name') . ' đến với boleto';
+            
+                    // Gửi email
+                    Mail::send('admin.qr.mail', compact('name', 'booking1'), function ($message) use ($booking1, $output_file) {
+                        $message->from('youremail@gmail.com', 'Your Name');
+                        $message->to($booking1->email, $booking1->name);
+                        $message->subject('Thông Tin Đơn Hàng');
+            
+                        // Đính kèm ảnh QR Code từ file
+                        $message->attach(storage_path("app/$output_file"), [
+                            'as' => 'qrcode.png',
+                            'mime' => 'image/png',
+                        ]);
+                    });
+                    $booking1->status = 2;
+                    $booking1->save();
+            
                     $thongbao = 'Cảm ơn bạn đã thanh toán!';
-                    $booking->save();
 
                 } else {
                     // Payment failed, set status to an appropriate code for failed payments
@@ -288,9 +290,13 @@ Mail::send('admin.qr.mail', compact('name', 'id', 'booking1', 'qrCodeImageBase64
                     }
                 }
             }
-        } else {
-            $thongbao = "Bạn Đã Thanh Toán Thành Công";
         }
+        else {
+           
+        
+            $thongbao = 'Cảm ơn bạn đã thanh toán!';
+        }
+        
 
         $thongbao = $thongbao;
         return view('client.movies.thank', compact('thongbao'));
@@ -298,6 +304,7 @@ Mail::send('admin.qr.mail', compact('name', 'id', 'booking1', 'qrCodeImageBase64
         // Now you have inserted payment data and updated the booking status based on the payment result
         // You can add further logic as needed
     }
+
     public function checkStatus()
     {
         try {
@@ -315,7 +322,7 @@ Mail::send('admin.qr.mail', compact('name', 'id', 'booking1', 'qrCodeImageBase64
     }
     public function payment($id)
     {
-        $provider = new PayPalClient;
+        $provider = new PayPalClient();
         $provider->setApiCredentials(config('paypal'));
         $paypalToken = $provider->getAccessToken();
         $booking = Booking::find($id)->first();
@@ -383,22 +390,48 @@ Mail::send('admin.qr.mail', compact('name', 'id', 'booking1', 'qrCodeImageBase64
 
         if (isset($response['status']) && $response['status'] == 'COMPLETED') {
 
-            $booking = Booking::find($id); // Tìm đặt phòng dựa trên booking_id
+            $booking1 = Booking::find($id); // Tìm đặt phòng dựa trên booking_id
 
-            $total = ceil($booking->total / 22000);
+            $total = ceil($booking1->total / 22000);
             $add =     payment_paypal::create([
-                'booking_id' => $booking->id, // Liên kết thông tin thanh toán với đặt phòng
+                'booking_id' => $booking1->id, // Liên kết thông tin thanh toán với đặt phòng
                 'total' => $total,
             ]);
             if ($add) {
-                $booking->status = 2; // Thành Công
+                $booking1->status = 2; // Thành Công
+                $image = QrCode::size(300)->errorCorrection('H')
+                ->generate("abc/xyz/{$booking1->id}");
+        
+            // Lưu hình ảnh vào ổ đĩa cục bộ
+            $output_file = 'qr-code/img1.png'; // Đường dẫn tương đối
+            Storage::disk('local')->put($output_file, $image);
+        
+            // Nội dung email
+            $name = 'Thông tin đơn hàng ' . $request->input('name') . ' đến với boleto';
+        
+            // Gửi email
+            Mail::send('admin.qr.mail', compact('name', 'booking1'), function ($message) use ($booking1, $output_file) {
+                $message->from('youremail@gmail.com', 'Your Name');
+                $message->to($booking1->email, $booking1->name);
+                $message->subject('Thông Tin Đơn Hàng');
+        
+                // Đính kèm ảnh QR Code từ file
+                $message->attach(storage_path("app/$output_file"), [
+                    'as' => 'qrcode.png',
+                    'mime' => 'image/png',
+                ]);
+            });
+        
+            // Đánh dấu đơn hàng là Thành Công
+            $booking1->status = 2;
+            $booking1->save();
 
-                $booking->save();
+               
             } else {
                 // Payment failed, set status to an appropriate code for failed payments
-                $booking->status = 3; // Thất Bại
-                if ($booking->status == 3) {
-                    $booking->delete(); // Delete the record
+                $booking1->status = 3; // Thất Bại
+                if ($booking1->status == 3) {
+                    $booking1->delete(); // Delete the record
 
                 }
             }

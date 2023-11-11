@@ -59,13 +59,8 @@
         <p>Thời Gian Đặt {{ $booking1->created_at }}</p>
         <p>Danh Sách Ghế {!! \Illuminate\Support\Str::limit(strip_tags($booking1->list_seat), 20) !!} </p>
 
-        <div class="card">
-            <div class="card-body">
-                <h1>Đây là mã QR của bạn</h1>
-                <img src="data:image/png;base64, {!! $qrCodeImage !!}" alt="Mã QR">
-            </div>
-        </div>
-
+       
+       
 
 
 
