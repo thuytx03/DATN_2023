@@ -43,10 +43,8 @@
 
         <h1>{{$thongbao}}</h1>
         <p>Thanh toán của bạn đã được xác nhận, Kiểm Tra thông tin hóa đơn qua email của bạn</p>
-        <?php $qrCodeUrl = route('qr.redirect', ['param' => "generate-barcode/{$id}"]); ?> 
-        <div class="d-flex justify-content-center mb-4" style="margin-top: 30px;">
-            {!! DNS2D::getBarcodeHTML($qrCodeUrl, 'QRCODE', 4, 4, '#0077cc', true) !!}
-        </div>
+
+
     </div>
 </body>
 </html>

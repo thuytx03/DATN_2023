@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use App\Http\Controllers\Controller;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Http\Requests\BookingRequest;
 use App\Models\Booking;
 use App\Models\BookingDetail;
@@ -19,6 +20,8 @@ use Exception;
 use App\Models\Payment_Vnpay;
 use App\Models\PayMent_PayPal;
 use App\Models\Voucher;
+use Illuminate\Support\Facades\Mail;
+
 
 class BookingController extends Controller
 {
@@ -195,17 +198,17 @@ class BookingController extends Controller
             echo json_encode($returnData);
         }
     }
-    public function thanks(Request $request,$id)
+    public function thanks(Request $request)
     {
-        
-    
+
+
         session()->forget('voucher');
         session()->forget('selectedSeats');
         session()->forget('selectedProducts');
         session()->forget('totalPriceFood');
-       
+
         if ($request->has('vnp_Amount')) {
-           
+
             $vnp_Amount = $request->query('vnp_Amount');
             $vnp_BankCode = $request->query('vnp_BankCode');
             $vnp_BankTranNo = $request->query('vnp_BankTranNo');
@@ -237,19 +240,49 @@ class BookingController extends Controller
 
             // Add more fields to store, such as vnp_BankCode, vnp_ResponseCode, etc.
             $payment->save();
-           
-          
+
+
             // Update the booking status
-            $booking = Booking::find($vnp_TxnRef);
+            $booking1 = Booking::find($payment->booking_id);
+            $booking = Payment_Vnpay::where('booking_id',$payment->vnp_TxnRef)->first();
+            $id = $payment->vnp_TxnRef;
             if ($booking) {
-                if ($vnp_ResponseCode == '00') {
-                    $booking->status = 2; // Thành Công
+                if ($booking->vnp_ResponseCode == '00') {
+
+
+                    $qrCode = QrCode::format('png')
+                    // ->merge('images/image-not-found.png', 0.5, true)
+                    ->size(500)->errorCorrection('H')
+                    ->generate('abc/cdf/{$booking1->id}');
+
+
+                    // $qrCode = \SimpleSoftwareIO\QrCode\Facades\QrCode::format('png')->size(500)->generate("abc/cdf/{$booking1->id}");
+                    $qrCodeImageBase64 = base64_encode($qrCode);
+
+// Nội dung email
+$name = 'Thông tin đơn hàng   ' . '  ' . $request->input('name') . '' . 'đến với boleto';
+
+// Gửi email
+Mail::send('admin.qr.mail', compact('name', 'id', 'booking1', 'qrCodeImageBase64'), function ($message) use ($booking1, $qrCodeImageBase64) {
+    $message->from('dumpfuck@gmail.com', 'Boleto');
+    $message->sender('john@johndoe.com', 'John Doe');
+    $message->to($booking1->email, $booking1->name);
+    $message->subject('Thông Tin Đơn Hàng');
+
+    // Đính kèm ảnh QR Code từ base64
+
+
+    // Đặt inline để hiển thị ảnh trực tiếp trong email (tùy chọn)
+    $message->embedData(base64_decode($qrCodeImageBase64), 'qrcode.png', 'image/png');
+});
+                    $booking1->status = 2; // Thành Công
                     $thongbao = 'Cảm ơn bạn đã thanh toán!';
                     $booking->save();
+
                 } else {
                     // Payment failed, set status to an appropriate code for failed payments
-                    $booking->status = 3; // Thất Bại
-                    if ($booking->status == 3) {
+                    $booking->status = 4; // Thất Bại
+                    if ($booking->status == 4) {
                         $booking->delete(); // Delete the record
                         $thongbao = 'Thanh Toán Thất Bại';
                     }
@@ -258,9 +291,9 @@ class BookingController extends Controller
         } else {
             $thongbao = "Bạn Đã Thanh Toán Thành Công";
         }
-   
+
         $thongbao = $thongbao;
-        return view('client.movies.thank', compact('thongbao','id'));
+        return view('client.movies.thank', compact('thongbao'));
 
         // Now you have inserted payment data and updated the booking status based on the payment result
         // You can add further logic as needed
@@ -340,18 +373,18 @@ class BookingController extends Controller
      *
      * @return response()
      */
-    public function paymentSuccess(Request $request, $id)
+    public function paymentSuccess(Request $request,$id)
     {
-      
+
         $provider = new PayPalClient;
         $provider->setApiCredentials(config('paypal'));
         $provider->getAccessToken();
         $response = $provider->capturePaymentOrder($request['token']);
 
         if (isset($response['status']) && $response['status'] == 'COMPLETED') {
-            
+
             $booking = Booking::find($id); // Tìm đặt phòng dựa trên booking_id
-          
+
             $total = ceil($booking->total / 22000);
             $add =     payment_paypal::create([
                 'booking_id' => $booking->id, // Liên kết thông tin thanh toán với đặt phòng
@@ -359,7 +392,7 @@ class BookingController extends Controller
             ]);
             if ($add) {
                 $booking->status = 2; // Thành Công
-                
+
                 $booking->save();
             } else {
                 // Payment failed, set status to an appropriate code for failed payments
@@ -370,13 +403,13 @@ class BookingController extends Controller
                 }
             }
             // code mac dinh cua paypal
-            
+
             return redirect()
-                ->route('camonthanhtoan',['id'=>$booking->id])
+                ->route('camonthanhtoan')
                 ->with('success', 'Transaction complete.');
         } else {
             return redirect()
-                ->route('camonthanhtoan',['id'=>$id])
+                ->route('camonthanhtoan')
                 ->with('error', $response['message'] ?? 'Something went wrong.');
         }
     }
@@ -388,5 +421,5 @@ class BookingController extends Controller
         return view('client.movies.movie-ticket-food', compact('food'));
     }
 
-  
+
 }

@@ -13,6 +13,7 @@
         "baum/baum": "3.x-dev",
         "fruitcake/laravel-cors": "^2.0.5",
         "guzzlehttp/guzzle": "^7.2",
+        "intervention/image": "^2.7",
         "kalnoy/nestedset": "^6.0",
         "laravel/framework": "^9.0",
         "laravel/sanctum": "^2.14",
@@ -20,7 +21,9 @@
         "laravel/tinker": "^2.7",
         "milon/barcode": "^10.0",
         "nesbot/carbon": "^2.71",
+        "phpoffice/phpword": "^1.1",
         "realrashid/sweet-alert": "^7.1",
+        "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-permission": "^6.0",
         "srmklive/paypal": "^3.0",
         "yoeunes/toastr": "^2.3"

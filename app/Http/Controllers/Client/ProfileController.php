@@ -94,7 +94,7 @@ class ProfileController extends Controller
     }
     public function points(){
         $user = auth()->user();
-        $members = Member::find($user->id);
+        $members = Member::where('user_id',$user->id)->first();
        $MembershipLevels = MembershipLevel::all();
        $bookings = Booking::all();
         return view('client.profiles.points',compact('members','MembershipLevels','bookings'));

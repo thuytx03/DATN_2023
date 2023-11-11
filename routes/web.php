@@ -40,10 +40,30 @@ use App\Http\Controllers\Client\MovieControllerClient;
 use App\Http\Controllers\Client\ProfileController;
 use App\Http\Controllers\client\QrcodeController;
 use App\Http\Controllers\Admin\QrAdminController;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 
 Route::get('/', [HomeController::class, 'index'])->name('index');
 
+
+route::get('/word',function(){
+return view('word');
+});
+Route::get('/qr-code/{id}', function ($id) {
+
+    $backgroundColor = [255, 255, 255]; // Màu trắng cho nền
+    return QrCode::size(200)
+    ->backgroundColor(...$backgroundColor) // Kích thước ảnh// Màu nền (màu xanh)
+    ->generate("/generate-barcode/$id");
+
+});
+Route::get('qrcode-with-image', function () {
+    $image = \QrCode::format('png')
+
+                    ->size(500)->errorCorrection('H')
+                    ->generate('A simple example of QR code!');
+ return response($image)->header('Content-type','image/png');
+});
 // phim
 Route::prefix('phim')->group(function () {
     Route::get('/danh-sach', [MovieControllerClient::class, 'list'])->name('phim.danh-sach');
@@ -85,7 +105,7 @@ Route::post('/luu-thong-tin-san-pham', [MovieSeatPlanController::class, 'luuThon
 //thanh toán
 Route::match(['GET', 'POST'], '/thanh-toan/{room_id}/{slug}/{showtime_id}', [BookingController::class, 'index'])->name('thanh-toan');
 Route::match(['GET', 'POST'], '/thanh-toan/do-an', [BookingController::class, 'ticketFood'])->name('thanh-toan.do-an');
-Route::get('/camon/{id}', [BookingController::class, 'thanks'])->name('camonthanhtoan');
+Route::get('/camon', [BookingController::class, 'thanks'])->name('camonthanhtoan');
 
 // paypal
 Route::get('paypal', [BookingController::class, 'paypal'])->name('paypal');
@@ -116,10 +136,7 @@ Route::match(['GET', 'POST'], '/edit-profile', [ProfileController::class, 'edit_
 Route::match(['GET', 'POST'], '/points', [ProfileController::class, 'points'])->name('profile.points');
 
 
-// route Qrcode 
-Route::get('/generate-barcode/{id}', [QrcodeController::class, 'index'])->name('Qrcode.barcode');
-Route::get('/qr-redirect/{param}', [QrcodeController::class, 'redirect'])->name('qr.redirect');
-////
+
 Route::get('contact', function () {
     return view('client.contacts.contact');
 })->name('contact');
@@ -171,8 +188,10 @@ Route::prefix('admin')->group(function () {
         Route::match(['GET', 'POST'], '/delete/{id}', [PermissionController::class, 'delete_bin'])->name('bin.delete-permission');
         Route::match(['GET', 'POST'], '/permanentlyDeleteSelected', [PermissionController::class, 'delete_bin_all'])->name('bin.delete-permission-all');
     });
-    Route::prefix('qrcode')->group(function () { 
+    Route::prefix('qrcode')->group(function () {
         Route::match(['GET', 'POST'], '/', [QrAdminController::class, 'index'])->name('qr.scanner');
+        Route::match(['GET', 'POST'], '/store', [QrAdminController::class, 'store'])->name('qr.store');
+        Route::match(['GET', 'POST'], '/qrcodeScanner/{id}', [QrcodeController::class, 'checkQr'])->name('qr.scan');
     });
     Route::prefix('membershiplevels')->group(function () {
         Route::match(['GET', 'POST'], '/', [MemberShipLevelsController::class, 'index'])->name('MBSL.list');

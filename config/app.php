@@ -186,7 +186,9 @@ return [
         Laravel\Socialite\SocialiteServiceProvider::class,
         Srmklive\PayPal\Providers\PayPalServiceProvider::class,
         Milon\Barcode\BarcodeServiceProvider::class,
-        
+        SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
+        Intervention\Image\ImageServiceProvider::class,
+
     ],
 
     /*
@@ -206,7 +208,9 @@ return [
         'Alert' => RealRashid\SweetAlert\Facades\Alert::class,
         'PayPal' => Srmklive\PayPal\Facades\PayPal::class,
         'DNS1D' => Milon\Barcode\Facades\DNS1DFacade::class,
-        'DNS2D' => Milon\Barcode\Facades\DNS2DFacade::class
+        'DNS2D' => Milon\Barcode\Facades\DNS2DFacade::class,
+        'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
+
 
     ])->toArray(),
 
