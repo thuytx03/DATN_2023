@@ -44,6 +44,8 @@
             <thead>
                 <tr>
                     <th scope="col">Thông tin khách hàng</th>
+                    <th scope="col">Tên Phim</th>
+                    <th scope="col">Rạp Chiếu</th>
                     <th scope="col">Danh sách ghế</th>
                     <th scope="col" >Thời Gian Đặt</th>
                     <th scope="col">Lịch chiếu</th>
@@ -61,6 +63,8 @@
                         - SĐT:{{ $booking1->phone }} <br>
                         - Địa chỉ:{{ $booking1->address }} <br>
                     </td>
+                    <td>{{$movieName->name}}</td>
+                    <td>{{$room->name}}</td>
                     <td>
                         {!! \Illuminate\Support\Str::limit(strip_tags($booking1->list_seat), 20) !!}
                     </td>
@@ -85,11 +89,27 @@
             </tbody>
         </table>
     </div>
+
     <div class="container mt-4"> <!-- Thêm container và margin từ trên xuống -->
         <div class="text-center"> <!-- Căn giữa nút -->
-            <button type="submit" class="btn btn-primary">In <i class="fa fa-print" aria-hidden="true"></i></button> <!-- Màu xanh và thiết lập kiểu nút -->
+            <form action="{{route('qr.printfWord')}}">
+                <input type="hidden" name="name" value="{{$booking1->name}}">
+                <input type="hidden" name="moviename" value="{{$movieName->name}}">
+                <input type="hidden" name="email" value="{{$booking1->email}}">
+                <input type="hidden" name="roomname" value="{{$room->name}}">
+                <input type="hidden" name="phone" value="{{$booking1->phone}}">
+                <input type="hidden" name="list_seat" value="{{$booking1->list_seat}}">
+                <input type="hidden" name="created_at" value="{{$booking1->created_at}}">
+                <input type="hidden" name="start_date" value="{{isset($showTime1->start_date) ? $showTime1->start_date : ''}}">
+
+                <input type="hidden" name="payment" value="{{$booking1->payment}}">
+                <input type="hidden" name="total" value="{{$booking1->total}}">
+
+                <button type="submit" class="btn btn-primary">In <i class="fa fa-print" aria-hidden="true"></i></button> <!-- Màu xanh và thiết lập kiểu nút -->
+            </form>
         </div>
     </div>
+
 
 @else
     <div class="container mt-4">
@@ -97,7 +117,9 @@
             <thead>
                 <tr>
                     <th scope="col">Thông tin khách hàng</th>
-                    <th scope="col">Danh sách ghế</th>
+                    <th scope="col"> Tên Phim</th>
+                    <th scope="col">Ca Chiếu</th>
+                    <th scope="col">Phòng Chiếu</th>
                     <th scope="col">Thời Gian Đặt</th>
                     <th scope="col">Lịch chiếu</th>
                     <th scope="col">Số tiền</th>
@@ -115,6 +137,14 @@
                         - SĐT:{{ $value->phone }} <br>
                         - Địa chỉ:{{ $value->address }} <br>
                     </td>
+                    @php
+    $showtime1 = $showTime->where('id', $value->showtime_id)->first();
+    $movie1 = $showtime1 ? $movie->where('id', $showtime1->movie_id)->first() : null;
+    $room1 = $showtime1 ? $rooms->where('id', $showtime1->room_id)->first() : null;
+@endphp
+
+<td>{{ $movie1 ? $movie1->name : '' }}</td>
+<td>{{ $room1 ? $room1->name : '' }}</td>
                     <td>
                         {!! \Illuminate\Support\Str::limit(strip_tags($value->list_seat), 20) !!}
                     </td>

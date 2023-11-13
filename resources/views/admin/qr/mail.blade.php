@@ -10,9 +10,6 @@
             background-color: #f4f4f4;
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             height: 100vh;
         }
 
@@ -22,6 +19,8 @@
             border-radius: 5px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             text-align: center;
+            max-width: 90%;
+            margin: auto;
         }
 
         .order-heading {
@@ -45,6 +44,12 @@
         .button:hover {
             background-color: #0056b3;
         }
+
+        @media only screen and (min-width: 600px) {
+            .order-info-box {
+                max-width: 600px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -56,15 +61,12 @@
            - SĐT: {{ $booking1->phone }} <br>
            - Địa chỉ: {{ $booking1->address }} <br>
         </p>
+
+
         <p>Thời Gian Đặt {{ $booking1->created_at }}</p>
-        <p>Danh Sách Ghế {!! \Illuminate\Support\Str::limit(strip_tags($booking1->list_seat), 20) !!} </p>
+         <p>Danh Sách Ghế {!! \Illuminate\Support\Str::limit(strip_tags($booking1->list_seat), 20) !!} </p>
 
-       
-       
-
-
-
-        <button class="button">Xem chi tiết đơn hàng</button>
+        <button class="button">Mã QR THÔNG TIN VÉ CỦA BẠN Ở TRONG FILE ĐÍNH KÈM, HÃY ĐƯA ẢNH QR NÀY CHO NHÂN VIÊN XUẤT VÉ</button>
     </div>
 </body>
 </html>

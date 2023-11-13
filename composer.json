@@ -9,8 +9,8 @@
     "license": "MIT",
     "require": {
         "php": "^8.0",
-        "bacon/bacon-qr-code": "^2.0",
         "baum/baum": "3.x-dev",
+        "endroid/qr-code": "^5.0",
         "fruitcake/laravel-cors": "^2.0.5",
         "guzzlehttp/guzzle": "^7.2",
         "intervention/image": "^2.7",
@@ -23,7 +23,6 @@
         "nesbot/carbon": "^2.71",
         "phpoffice/phpword": "^1.1",
         "realrashid/sweet-alert": "^7.1",
-        "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-permission": "^6.0",
         "srmklive/paypal": "^3.0",
         "yoeunes/toastr": "^2.3"

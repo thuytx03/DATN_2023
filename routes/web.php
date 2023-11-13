@@ -40,30 +40,18 @@ use App\Http\Controllers\Client\MovieControllerClient;
 use App\Http\Controllers\Client\ProfileController;
 use App\Http\Controllers\client\QrcodeController;
 use App\Http\Controllers\Admin\QrAdminController;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
+use Endroid\QrCode\QrCode;
 
 Route::get('/', [HomeController::class, 'index'])->name('index');
 
 
-route::get('/word',function(){
-return view('word');
-});
-Route::get('/qr-code/{id}', function ($id) {
 
-    $backgroundColor = [255, 255, 255]; // Màu trắng cho nền
-    return QrCode::size(200)
-    ->backgroundColor(...$backgroundColor) // Kích thước ảnh// Màu nền (màu xanh)
-    ->generate("/generate-barcode/$id");
 
-});
-Route::get('qrcode-with-image', function () {
-    $image = \QrCode::format('png')
 
-                    ->size(500)->errorCorrection('H')
-                    ->generate('A simple example of QR code!');
- return response($image)->header('Content-type','image/png');
-});
+// qrclinet
+Route::match(['GET', 'POST'], '/qrtiketinfo/{id}', [QrcodeController::class, 'qrtiketinfo'])->name('qr.qrtiketinfo');
+// ket thuc
 // phim
 Route::prefix('phim')->group(function () {
     Route::get('/danh-sach', [MovieControllerClient::class, 'list'])->name('phim.danh-sach');
@@ -192,6 +180,8 @@ Route::prefix('admin')->group(function () {
         Route::match(['GET', 'POST'], '/', [QrAdminController::class, 'index'])->name('qr.scanner');
         Route::match(['GET', 'POST'], '/store', [QrAdminController::class, 'store'])->name('qr.store');
         Route::match(['GET', 'POST'], '/qrcodeScanner/{id}', [QrcodeController::class, 'checkQr'])->name('qr.scan');
+
+        Route::match(['GET', 'POST'], '/printfWord', [QrAdminController::class, 'processForm'])->name('qr.printfWord');
     });
     Route::prefix('membershiplevels')->group(function () {
         Route::match(['GET', 'POST'], '/', [MemberShipLevelsController::class, 'index'])->name('MBSL.list');
