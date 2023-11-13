@@ -26,6 +26,19 @@
         Quản lý
     </div>
     <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#qr" aria-expanded="true" aria-controls="qr">
+            <i class="fa fa-qrcode" aria-hidden="true"></i>
+            <span>Quét QR  </span>
+        </a>
+        <div id="qr" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{route('qr.scanner')}}">Quét Mã Cho Khách </a>
+               
+            </div>
+        </div>
+       
+    </li>
+    <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwosss" aria-expanded="true" aria-controls="collapseTwosss">
             <i class="fa-solid fa-location-pin"></i>
             <span>Quản lý rạp phim</span>

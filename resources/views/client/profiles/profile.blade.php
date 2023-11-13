@@ -11,7 +11,7 @@
         margin-top: 40px;
     }
     .vertical-hr {
-      border-left: 1px solid white; 
+      border-left: 1px solid white;
       height: 200px;
       /* margin-left: 20px;  */
     }
@@ -23,7 +23,7 @@
 <div class="row" id="profile-top">
     <img src="{{ ($user->avatar == null) ? asset('admin/img/undraw_profile_1.svg') : Storage::url($user->avatar) }}" alt="" srcset="" id="avatar">
     <h4 style="margin: 40px 40px;">Xin chào, {{$user->name}}</h4>
-    
+
 </div>
 <div class="row" id="profile-info">
     <div class="col-5">
@@ -37,11 +37,12 @@
     <div class="vertical-hr"></div>
     <div class="col-5">
         <h5>Mã giảm giá</h5>
+
         <br>
         <p>Vé xem phim: 0 Voucher</p>
         <p>Bỏng nước: 0 Voucher</p>
         <p>Quà tặng: 0 Voucher</p>
-        
+
     </div>
 </div>
 @endsection
