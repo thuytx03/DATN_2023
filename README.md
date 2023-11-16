@@ -28,4 +28,10 @@ PAYPAL_SANDBOX_CLIENT_SECRET=EHzeNtvo021R4vIFN9Lhb61RWZEXMSJIBvuH6nUPfnuxKoiOU_Q
     test hết tiền thì báo t tăng hạn mức 
 - Cấp Độ Thành Viên :  sau khi pull về vào db members chèn 1 bản ghi có dữ liệu là :
 member max_limit = 4.000.000 benefits = 5 benefits_food = 3;
+thư viện qrcode : 
+composer require endroid/qr-code
+thư viện word :
+composer require phpoffice/phpword
+đối với laravel : 
++ chuột phải vào icon laravel ở bên góc phải -> php -> php.init -> search(dynamic) tìm chỗ có các extention -> bỏ dấu phẩy ở chỗ zip (đầu tiên : ;extension=zip bỏ phẩy đi thành -> extension=zip)
 

@@ -185,6 +185,9 @@ return [
         Barryvdh\Debugbar\ServiceProvider::class,
         Laravel\Socialite\SocialiteServiceProvider::class,
         Srmklive\PayPal\Providers\PayPalServiceProvider::class,
+
+        Intervention\Image\ImageServiceProvider::class,
+
     ],
 
     /*
@@ -202,7 +205,9 @@ return [
         'Debugbar' => Barryvdh\Debugbar\Facades\Debugbar::class,
         'socialite' => Laravel\Socialite\Facade\socialite::class,
         'Alert' => RealRashid\SweetAlert\Facades\Alert::class,
-        'PayPal' => Srmklive\PayPal\Facades\PayPal::class
+        'PayPal' => Srmklive\PayPal\Facades\PayPal::class,
+
+
 
     ])->toArray(),
 

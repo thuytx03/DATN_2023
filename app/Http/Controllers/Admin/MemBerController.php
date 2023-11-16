@@ -13,43 +13,45 @@ use App\Models\ShowTime;
 class MemBerController extends Controller
 {
     public function index(Request $request)
-    {
-        $query = Member::query();
-        if ($request->has('search')) {
-            $search = $request->input('search');
-            $query->where('name', 'like', '%' . $search . '%');
-        }
-    
-        if ($request->has('status')) {
-            $status = $request->input('status');
-            
-            if ($status == 1 || $status == 0) {
-                $query->where('status', $status);
-            } elseif ($status == 'all') {
-                $query->get();
-            }
-        }
-        $users = User::all();
-        $bookings = Booking::all();
-        $ShowTimes = ShowTime::all();
-        $MembershipLevels  = MembershipLevel::all();
-        
-     
-        $lastYear = date('Y') - 1;
-      
-       
-        $listLevel = $query->paginate(5);
-    
-        return view('admin.member.index', compact('listLevel','users','MembershipLevels','lastYear','query','bookings','ShowTimes'));
+{
+    $query = Member::query();
+
+    // Search condition
+    if ($request->has('search')) {
+        $search = $request->input('search');
+        $query->where('card_number', 'like', '%' . $search . '%');
     }
+    $lastYear = date('Y') - 1;
+    // Status condition
+    if ($request->has('status')) {
+        $status = $request->input('status');
+
+        if ($status == 1 || $status == 0) {
+            $query->where('status', $status);
+        } elseif ($status == 'all') {
+            // Do nothing here, no need to call $query->get() without conditions
+        }
+    }
+
+    // Retrieve necessary data
+    $users = User::all();
+    $bookings = Booking::all();
+    $ShowTimes = ShowTime::all();
+    $MembershipLevels  = MembershipLevel::all();
+
+    // Pagination
+    $listLevel = $query->get();
+
+    return view('admin.member.index', compact('listLevel', 'users', 'MembershipLevels', 'lastYear', 'query', 'bookings', 'ShowTimes'));
+}
 
     public function restoreSelected(Request $request)
     {
-      
+
         $ids = $request->ids;
         if ($ids) {
             $Member = Member::withTrashed()->whereIn('id', $ids);
-       
+
             $Member->restore();
             toastr()->success('Thành công', 'Thành công khôi phục ');
         } else {
@@ -71,9 +73,9 @@ class MemBerController extends Controller
 
 
     public function changeStatus(Request $request, $id){
-        
-      
-  
+
+
+
         if($id){
             $Member = Member::find($id);
             $newStatus = $Member->status == 1 ? 0 : 1;
@@ -81,7 +83,7 @@ class MemBerController extends Controller
             $Member->save();
             return redirect()->route('member.list');
            }
-           
+
       else
        {
         toastr()->error('Có lỗi xảy ra', 'error');
@@ -89,7 +91,7 @@ class MemBerController extends Controller
       }
     }
     public function edit($id){
-        
+
         $member = Member::find($id);
         $membershipLevels = MembershipLevel::all();
         return view('admin.member.edit',compact('member','membershipLevels'));
@@ -109,7 +111,7 @@ class MemBerController extends Controller
     public function deleteAll(Request $request)
     {
         $ids = $request->ids;
-      
+
         if ($ids) {
             Member::whereIn('id', $ids)->delete();
             toastr()->success( 'Thành công xoá  đã chọn');
@@ -126,17 +128,17 @@ class MemBerController extends Controller
             $search = $request->input('search');
             $query->where('name', 'like', '%' . $search . '%');
         }
-    
+
         if ($request->has('status')) {
             $status = $request->input('status');
-            
+
             if ($status == 1 || $status == 0) {
                 $query->where('status', $status);
             } elseif ($status == 'all') {
                 $query->get();
             }
         }
-        
+
         $lastYear = date('Y') - 1;
         $users = User::all();
         $bookings = Booking::all();
@@ -147,8 +149,8 @@ class MemBerController extends Controller
 
 
     }
-   
-    public function update(Request $request, $id)   
+
+    public function update(Request $request, $id)
 {
     // Kiểm tra dữ liệu đầu vào từ biểu mẫu
     $request->validate([
@@ -156,7 +158,7 @@ class MemBerController extends Controller
             'required', // Đảm bảo cấp độ được chọn
             function ($attribute, $value, $fail) use ($id) {
                 $member = Member::find($id);
-    
+
                 if ($member) {
                     $selectedLevel = MembershipLevel::find($value);
                     if ($selectedLevel) {
@@ -176,7 +178,7 @@ class MemBerController extends Controller
     // Tìm thành viên cần cập nhật
     $member = Member::find($id);
 
-  
+
 
     if ($member) {
         // Cập nhật các trường thông tin thành viên
@@ -208,7 +210,7 @@ class MemBerController extends Controller
     if($request->has('status')){
             $member->status = $request->input('status');
         }
-       
+
         // Cập nhật các trường thông tin khác nếu cần
 
         // Lưu thông tin thành viên đã cập nhật

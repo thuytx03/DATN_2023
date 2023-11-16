@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Client;
 
-use Srmklive\PayPal\Services\PayPal as PayPalClient;
+
 use App\Http\Controllers\Controller;
+use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use App\Http\Requests\BookingRequest;
 use App\Models\Booking;
 use App\Models\BookingDetail;
@@ -19,6 +20,16 @@ use Exception;
 use App\Models\Payment_Vnpay;
 use App\Models\PayMent_PayPal;
 use App\Models\Voucher;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
+use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelHigh;
+
+
+
+
+
 
 class BookingController extends Controller
 {
@@ -197,11 +208,15 @@ class BookingController extends Controller
     }
     public function thanks(Request $request)
     {
+
+
         session()->forget('voucher');
         session()->forget('selectedSeats');
         session()->forget('selectedProducts');
         session()->forget('totalPriceFood');
-        if ($request->has('vnp_Amount')) {
+
+        if ($request->query('vnp_Amount')) {
+
             $vnp_Amount = $request->query('vnp_Amount');
             $vnp_BankCode = $request->query('vnp_BankCode');
             $vnp_BankTranNo = $request->query('vnp_BankTranNo');
@@ -234,25 +249,68 @@ class BookingController extends Controller
             // Add more fields to store, such as vnp_BankCode, vnp_ResponseCode, etc.
             $payment->save();
 
+
             // Update the booking status
-            $booking = Booking::find($vnp_TxnRef);
+            $booking1 = Booking::find($payment->booking_id);
+            $booking = Payment_Vnpay::where('booking_id',$payment->vnp_TxnRef)->first();
+
+
             if ($booking) {
-                if ($vnp_ResponseCode == '00') {
-                    $booking->status = 2; // Thành Công
+                if ($booking->vnp_ResponseCode == '00') {
+                       // Tạo mã QR
+                $qrCode = QrCode::create("/qrtiketinfo/$booking1->id")
+                ->setSize(200);
+
+            // Kiểm tra và tạo thư mục nếu nó không tồn tại
+            if (!file_exists(public_path('qrcodes'))) {
+                mkdir(public_path('qrcodes'), 0777, true);
+            }
+
+            // Tạo và lưu mã QR như một tệp hình ảnh
+            $writer = new PngWriter();
+            $result = $writer->write($qrCode);
+            $qrcodePath = 'qrcodes/' . $booking1->id . '.png';
+            $result->saveToFile(public_path($qrcodePath));
+
+            // Đọc tệp hình ảnh và mã hóa nó thành base64
+            $qrcodeBase64 = base64_encode(file_get_contents(public_path($qrcodePath)));
+
+            // Nội dung email
+            $name = 'Thông tin đơn hàng ' . $request->input('name') . ' đến với boleto';
+
+            // Gửi email
+            Mail::send('admin.qr.mail', compact('name', 'booking1', 'qrcodeBase64'), function ($message) use ($booking1, $qrcodePath) {
+                $message->from('youremail@gmail.com', 'Your Name');
+                $message->to($booking1->email, $booking1->name);
+                $message->subject('Thông Tin Đơn Hàng');
+
+                // Gắn thêm ảnh QR Code vào file đi kèm
+                $message->attach(public_path($qrcodePath));
+            });
+
+            // Xóa tệp hình ảnh tạm thời
+            unlink(public_path($qrcodePath));
+        // Đánh dấu đơn hàng là Thành Công
+             $booking1->status = 2;
+                     $booking1->save();
                     $thongbao = 'Cảm ơn bạn đã thanh toán!';
-                    $booking->save();
+
                 } else {
                     // Payment failed, set status to an appropriate code for failed payments
-                    $booking->status = 3; // Thất Bại
-                    if ($booking->status == 3) {
+                    $booking->status = 4; // Thất Bại
+                    if ($booking->status == 4) {
                         $booking->delete(); // Delete the record
                         $thongbao = 'Thanh Toán Thất Bại';
                     }
                 }
             }
-        } else {
-            $thongbao = "Bạn Đã Thanh Toán Thành Công";
         }
+        else {
+
+
+            $thongbao = 'Cảm ơn bạn đã thanh toán!';
+        }
+
 
         $thongbao = $thongbao;
         return view('client.movies.thank', compact('thongbao'));
@@ -260,6 +318,7 @@ class BookingController extends Controller
         // Now you have inserted payment data and updated the booking status based on the payment result
         // You can add further logic as needed
     }
+
     public function checkStatus()
     {
         try {
@@ -277,7 +336,7 @@ class BookingController extends Controller
     }
     public function payment($id)
     {
-        $provider = new PayPalClient;
+        $provider = new PayPalClient();
         $provider->setApiCredentials(config('paypal'));
         $paypalToken = $provider->getAccessToken();
         $booking = Booking::find($id)->first();
@@ -335,8 +394,9 @@ class BookingController extends Controller
      *
      * @return response()
      */
-    public function paymentSuccess(Request $request, $id)
+    public function paymentSuccess(Request $request,$id)
     {
+
         $provider = new PayPalClient;
         $provider->setApiCredentials(config('paypal'));
         $provider->getAccessToken();
@@ -344,25 +404,64 @@ class BookingController extends Controller
 
         if (isset($response['status']) && $response['status'] == 'COMPLETED') {
 
-            $booking = Booking::find($id); // Tìm đặt phòng dựa trên booking_id
-            $total = ceil($booking->total / 22000);
+            $booking1 = Booking::find($id); // Tìm đặt phòng dựa trên booking_id
+
+            $total = ceil($booking1->total / 22000);
             $add =     payment_paypal::create([
-                'booking_id' => $booking->id, // Liên kết thông tin thanh toán với đặt phòng
+                'booking_id' => $booking1->id, // Liên kết thông tin thanh toán với đặt phòng
                 'total' => $total,
             ]);
             if ($add) {
-                $booking->status = 2; // Thành Công
 
-                $booking->save();
+
+                // Tạo mã QR
+                $qrCode = QrCode::create("/qrtiketinfo/$booking1->id")
+                    ->setSize(200);
+
+                // Kiểm tra và tạo thư mục nếu nó không tồn tại
+                if (!file_exists(public_path('qrcodes'))) {
+                    mkdir(public_path('qrcodes'), 0777, true);
+                }
+
+                // Tạo và lưu mã QR như một tệp hình ảnh
+                $writer = new PngWriter();
+                $result = $writer->write($qrCode);
+                $qrcodePath = 'qrcodes/' . $booking1->id . '.png';
+                $result->saveToFile(public_path($qrcodePath));
+
+                // Đọc tệp hình ảnh và mã hóa nó thành base64
+                $qrcodeBase64 = base64_encode(file_get_contents(public_path($qrcodePath)));
+
+                // Nội dung email
+                $name = 'Thông tin đơn hàng ' . $request->input('name') . ' đến với boleto';
+
+                // Gửi email
+                Mail::send('admin.qr.mail', compact('name', 'booking1', 'qrcodeBase64'), function ($message) use ($booking1, $qrcodePath) {
+                    $message->from('youremail@gmail.com', 'Your Name');
+                    $message->to($booking1->email, $booking1->name);
+                    $message->subject('Thông Tin Đơn Hàng');
+
+                    // Gắn thêm ảnh QR Code vào file đi kèm
+                    $message->attach(public_path($qrcodePath));
+                });
+
+                // Xóa tệp hình ảnh tạm thời
+                unlink(public_path($qrcodePath));
+            // Đánh dấu đơn hàng là Thành Công
+            $booking1->status = 2;
+            $booking1->save();
+
+
             } else {
                 // Payment failed, set status to an appropriate code for failed payments
-                $booking->status = 3; // Thất Bại
-                if ($booking->status == 3) {
-                    $booking->delete(); // Delete the record
+                $booking1->status = 3; // Thất Bại
+                if ($booking1->status == 3) {
+                    $booking1->delete(); // Delete the record
 
                 }
             }
             // code mac dinh cua paypal
+
             return redirect()
                 ->route('camonthanhtoan')
                 ->with('success', 'Transaction complete.');
@@ -380,5 +479,5 @@ class BookingController extends Controller
         return view('client.movies.movie-ticket-food', compact('food'));
     }
 
-  
+
 }
