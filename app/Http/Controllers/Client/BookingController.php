@@ -280,7 +280,7 @@ class BookingController extends Controller
 
             // Gửi email
             Mail::send('admin.qr.mail', compact('name', 'booking1', 'qrcodeBase64'), function ($message) use ($booking1, $qrcodePath) {
-                $message->from('youremail@gmail.com', 'Your Name');
+                $message->from('anhandepgiai22@gmail.com', 'BoleTo');
                 $message->to($booking1->email, $booking1->name);
                 $message->subject('Thông Tin Đơn Hàng');
 
@@ -494,7 +494,7 @@ public function checkStatus2($id) {
 
                 // Gửi email
                 Mail::send('admin.qr.mail', compact('name', 'booking1', 'qrcodeBase64'), function ($message) use ($booking1, $qrcodePath) {
-                    $message->from('youremail@gmail.com', 'Your Name');
+                    $message->from('anhandepgiai22@gmail.com', 'BoleTo');
                     $message->to($booking1->email, $booking1->name);
                     $message->subject('Thông Tin Đơn Hàng');
 
