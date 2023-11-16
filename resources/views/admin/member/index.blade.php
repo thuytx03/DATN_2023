@@ -169,6 +169,7 @@
                                 $value->total_bonus_points += $poin_will_claim;
                                 $value->bonus_points_will_be_received =  $value->bonus_points_will_be_received-$poin_will_claim;
                                 $booking->hasUpdated = true;
+                                $value->total_spending = $total_spending;
                                 $booking->save();
                                 $value->save();
                             }
