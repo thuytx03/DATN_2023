@@ -6,6 +6,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 @endpush
+<style>
+
+    #preview {
+        width: 100%;
+        max-width: 600px;
+    }
+    .sanner {
+        position: absolute;
+        border: 3px solid #00ff00; /* Màu của đường scan */
+        box-sizing: border-box;
+        pointer-events: none;
+    }
+</style>
 
 @section('content')
 <!doctype html>
@@ -17,11 +30,52 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
   </head>
   <style>
-    #preview {
-        margin-left: 300px;
-        margin-top: 50px;
-        width: 40%; /* Adjust the width as needed */
-    }
+  /* body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background: #000;
+} */
+
+#preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1; /* This will ensure the video is always on top */
+}
+
+.scanner {
+    position: relative;
+    height: 400px;
+    width: 400px;
+    margin-left: 300px;
+    border-radius: 20px;
+    border: solid 1px white; /* Change the border color to white */
+    background-color: blue; /* Change the background color to turquoise */
+    overflow: hidden; /* This will keep the scanning line within the scanner box */
+}
+
+.scanner::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 10px;
+    width: 100%;
+    background: rgba(0, 255, 0, 0.6);
+    animation: scan 1s linear infinite;
+    z-index: 2; /* This will ensure the scanning line is always on top of the video */
+}
+
+@keyframes scan {
+    0% { top: 0; }
+    100% { top: 100%; }
+}
+
   </style>
   <body>
 
@@ -31,8 +85,9 @@
         {{ $thongbao }}
     </div>
 @endif
+<div class="scanner">
     <video id="preview"></video>
-
+</div>
     <form action="{{ route('qr.store') }}" method="POST" id="form">
         @csrf
         <input type="hidden" name="param" id="id" >
@@ -90,25 +145,25 @@
         </table>
     </div>
 
-    <div class="container mt-4"> <!-- Thêm container và margin từ trên xuống -->
-        <div class="text-center"> <!-- Căn giữa nút -->
-            <form action="{{route('qr.printfWord')}}">
-                <input type="hidden" name="name" value="{{$booking1->name}}">
-                <input type="hidden" name="moviename" value="{{$movieName->name}}">
-                <input type="hidden" name="email" value="{{$booking1->email}}">
-                <input type="hidden" name="roomname" value="{{$room->name}}">
-                <input type="hidden" name="phone" value="{{$booking1->phone}}">
-                <input type="hidden" name="list_seat" value="{{$booking1->list_seat}}">
-                <input type="hidden" name="created_at" value="{{$booking1->created_at}}">
-                <input type="hidden" name="start_date" value="{{isset($showTime1->start_date) ? $showTime1->start_date : ''}}">
+   <div class="container mt-4"> <!-- Thêm container và margin từ trên xuống -->
+    <div class="text-center"> <!-- Căn giữa nút -->
+        <form action="{{route('qr.printfWord')}}">
+            <input type="hidden" name="name" value="{{$booking1->name}}">
+            <input type="hidden" name="moviename" value="{{$movieName->name}}">
+            <input type="hidden" name="email" value="{{$booking1->email}}">
+            <input type="hidden" name="roomname" value="{{$room->name}}">
+            <input type="hidden" name="phone" value="{{$booking1->phone}}">
+            <input type="hidden" name="list_seat" value="{{$booking1->list_seat}}">
+            <input type="hidden" name="created_at" value="{{$booking1->created_at}}">
+            <input type="hidden" name="start_date" value="{{isset($showTime1->start_date) ? $showTime1->start_date : ''}}">
 
-                <input type="hidden" name="payment" value="{{$booking1->payment}}">
-                <input type="hidden" name="total" value="{{$booking1->total}}">
+            <input type="hidden" name="payment" value="{{$booking1->payment}}">
+            <input type="hidden" name="total" value="{{$booking1->total}}">
 
-                <button type="submit" class="btn btn-primary">In <i class="fa fa-print" aria-hidden="true"></i></button> <!-- Màu xanh và thiết lập kiểu nút -->
-            </form>
-        </div>
+            <button type="submit" class="btn btn-primary" onclick="printDocument()">In <i class="fa fa-print" aria-hidden="true"></i></button> <!-- Màu xanh và thiết lập kiểu nút -->
+        </form>
     </div>
+</div>
 
 
 @else

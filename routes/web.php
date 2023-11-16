@@ -122,6 +122,7 @@ Route::get('/chi-tiet/lich-su-giao-dich-ve/{id}', [ProfileController::class, 'tr
 Route::match(['GET', 'POST'], '/change-password', [ProfileController::class, 'change_password'])->name('profile.changePassword');
 Route::match(['GET', 'POST'], '/edit-profile', [ProfileController::class, 'edit_profile'])->name('profile.edit');
 Route::match(['GET', 'POST'], '/points', [ProfileController::class, 'points'])->name('profile.points');
+Route::match(['GET', 'POST'], '/member', [ProfileController::class, 'member'])->name('profile.member');
 
 
 

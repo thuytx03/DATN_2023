@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Member;
 use App\Models\MembershipLevel;
-
+use App\Http\Controllers\Client\BookingController;
 
 class ProfileController extends Controller
 {
@@ -93,10 +93,52 @@ class ProfileController extends Controller
         return view('client.profiles.change-password', compact('user'));
     }
     public function points(){
+        $booking123 = new BookingController();
+
         $user = auth()->user();
+        if (!isset($user)) {
+            return view('admin.auth.login');
+        }else {
+        $booking123->checkstatus2($user->id);
         $members = Member::where('user_id',$user->id)->first();
        $MembershipLevels = MembershipLevel::all();
        $bookings = Booking::all();
         return view('client.profiles.points',compact('members','MembershipLevels','bookings'));
+        }
+    }
+
+
+    public function member() {
+        $user = auth()->user();
+
+        if (!isset($user)) {
+            return view('admin.auth.login');
+        } else {
+            $member = DB::table('members')->where('user_id', $user->id)->first();
+            $user_name = DB::table('users')->where('id',$user->id)->first();
+            $membershiplv = DB::table('membership_levels')->where('id',$member->level_id)->first();
+            // Check if the member is found
+            if (!$member) {
+                return abort(404); // or redirect to an error page
+            }
+
+            $totalSpending = $member->total_spending;
+            $limits = DB::table('membership_levels')->get();
+
+            // Get the highest spending limit
+            $highestLimit = MembershipLevel::max('min_limit');
+
+            // Check if the highest limit is greater than zero
+            if ($highestLimit > 0) {
+                // Calculate the percentage spent
+                $percentSpent = ($totalSpending / $highestLimit) * 100;
+            } else {
+                // Handle the case where $highestLimit is zero to avoid division by zero
+                $percentSpent = 0;
+            }
+
+            return view('client.profiles.member-profile', compact('member', 'percentSpent', 'limits', 'totalSpending', 'highestLimit','membershiplv','user_name'));
+        }
     }
 }
+

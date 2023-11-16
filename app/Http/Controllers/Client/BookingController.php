@@ -322,13 +322,70 @@ class BookingController extends Controller
     public function checkStatus()
     {
         try {
-            // Replace 'your_table_name' with the actual name of the table
+            // Delete bookings with status 1
             DB::table('bookings')->where('status', 1)->delete();
-            return "Records with status 1 deleted successfully";
+
+            // Get all bookings
+            $bookings = DB::table('bookings')->get();
+
+            // Loop through each booking
+            foreach ($bookings as $booking) {
+                // Check if the movie time has ended for this booking
+                $show_time = DB::table('show_times')->where('id', $booking->showtime_id)->first();
+
+                // Replace 'your_condition' with the actual condition to check if the movie time has ended
+                if (strtotime($show_time->end_date) < time()) {
+                    // If the status is 5, change it to 3
+                    if ($booking->status == 5) {
+                        DB::table('bookings')->where('id', $booking->id)->update(['status' => 3]);
+                    }
+                    // If the status is not 3 or 5, change it to 4
+                    elseif ($booking->status != 3) {
+                        DB::table('bookings')->where('id', $booking->id)->update(['status' => 4]);
+                    }
+                }
+            }
+
+            return "Records updated successfully";
         } catch (\Exception $e) {
             return "Error: " . $e->getMessage();
         }
     }
+
+
+
+
+public function checkStatus2($id) {
+    $bookings = DB::table('bookings')->where('user_id',$id)->get();
+
+    foreach ($bookings as $booking) {
+        $show_time = DB::table('show_times')->where('id', $booking->showtime_id)->first();
+        // Kiểm tra nếu không có dữ liệu
+
+        if (!$show_time) {
+            continue;
+        }
+
+        // Replace 'your_condition' with the actual condition to check if the movie time has ended
+        if (strtotime($show_time->end_date) < time()) {
+
+            // If the status is 3, change it to 5
+            if ($booking->status == 3) {
+                DB::table('bookings')->where('id', $booking->id)->update(['status' => 5]);
+            }
+            // If the status is not 3, change it to 4
+            elseif ($booking->status != 3) {
+                DB::table('bookings')->where('id', $booking->id)->update(['status' => 4]);
+            }
+        }
+    }
+}
+
+
+
+
+
+
     // code của paypal
     public function paypal()
     {
