@@ -119,7 +119,14 @@ Danh sách phòng
                                             @endif
                                         </td>
                                         <td><img src="{{ $room->image?''.Storage::url($room->image):''}}" alt="" width="80px"></td>
-                                        <td>{{$room->cinema_id}}</td>
+                                        <td>
+                                            @if($room->cinema)
+                                            {{$room->cinema->name}}
+                                            @else
+                                            <!-- Hiển thị một giá trị mặc định khi không có loại phòng tương ứng -->
+                                            Không có rạp
+                                            @endif
+                                        </td>
                                         <td>
                                             <div class="form-check form-switch">
                                                 <input type="checkbox" value="{{$room->status}}" name="status" data-item-id="{{$room->id}}" class="switch1 switch-status" {{$room->status == 1 ?'checked':''}} />
