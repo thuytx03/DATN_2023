@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RoomRequest;
+use App\Models\Cinema;
 use App\Models\Room;
 use App\Models\RoomType;
 use Illuminate\Http\Request;
@@ -31,7 +32,7 @@ class RoomController extends Controller
                 $query->where('status', $status);
             }
         }
-        $room = $query->with('typeRoom')->orderBy('id', 'DESC')->get();
+        $room = $query->with(['typeRoom', 'cinema'])->orderBy('id', 'DESC')->get();
         return view('admin.room_type.room.index', compact('room'));
     }
 
@@ -43,7 +44,8 @@ class RoomController extends Controller
     public function create()
     {
         $typeRoom = RoomType::orderBy('id', 'DESC')->get();
-        return view('admin.room_type.room.add', compact('typeRoom'));
+        $cinema = Cinema::orderBy('id', 'DESC')->get();
+        return view('admin.room_type.room.add', compact('typeRoom', 'cinema'));
     }
 
     /**
@@ -87,7 +89,8 @@ class RoomController extends Controller
             abort(404); // Nếu không tìm thấy bản ghi, trả về trang 404 hoặc xử lý tùy ý.
         }
         $typeRoom = RoomType::orderBy('id', 'DESC')->get();
-        return view('admin.room_type.room.edit', compact('room', 'typeRoom'));
+        $cinema = Cinema::orderBy('id', 'DESC')->get();
+        return view('admin.room_type.room.edit', compact('room', 'typeRoom', 'cinema'));
     }
 
     /**

@@ -63,7 +63,7 @@
                                     <hr>
                                     @foreach($per as $item)
                                     <div class="form-check">
-                                        <input class="form-check-input permission-checkbox" type="checkbox" value="{{$item->id}}" id="{{$item->id}}" name="permission[]">
+                                        <input class="form-check-input permission-checkbox" type="checkbox" value="{{$item->name}}" id="{{$item->id}}" name="permission[]">
                                         <label class="form-check-label" for="{{$item->id}}">
                                             {{$item->name}}
                                         </label>

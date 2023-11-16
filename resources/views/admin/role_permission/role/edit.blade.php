@@ -69,7 +69,7 @@
                                     checked
                                     @endif
                                     @endforeach
-                                    type="checkbox" value="{{$item->id}}" id="{{$item->id}}" name="permission[]">
+                                    type="checkbox" value="{{$item->name}}" id="{{$item->id}}" name="permission[]">
                                     <label class="form-check-label" for="{{$item->id}}">
                                         {{$item->name}}
                                     </label>

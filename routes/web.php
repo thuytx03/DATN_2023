@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\Admin\BookingsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\SocialController;
@@ -40,7 +41,6 @@ use App\Http\Controllers\Client\MovieControllerClient;
 use App\Http\Controllers\Client\ProfileController;
 use App\Http\Controllers\client\QrcodeController;
 use App\Http\Controllers\Admin\QrAdminController;
-
 use Endroid\QrCode\QrCode;
 
 Route::get('/', [HomeController::class, 'index'])->name('index');
@@ -81,8 +81,8 @@ Route::group(['middleware' => 'guest'], function () {
 Route::middleware(['auth'])->group(function () {
     Route::prefix('food')->group(function () {
         Route::match(['GET', 'POST'], '/', [FoodController::class, 'food'])->name('food');
-        Route::match(['GET', 'POST'],'/get-food-by-type/{foodTypeId}', [FoodController::class, 'getFoodByType']);
-        Route::match(['GET', 'POST'],'/check-voucher', [FoodController::class, 'checkVoucher']);
+        Route::match(['GET', 'POST'], '/get-food-by-type/{foodTypeId}', [FoodController::class, 'getFoodByType']);
+        Route::match(['GET', 'POST'], '/check-voucher', [FoodController::class, 'checkVoucher']);
     });
 });
 //ghế
@@ -140,13 +140,23 @@ Route::get('logout', [SocialController::class, 'logout'])->name('logout');
 
 // ket thuc route mang xa hoi
 Route::prefix('admin')->group(function () {
-    //dashboard
-    Route::match(['GET', 'POST'], '/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-
     //login
     Route::match(['GET', 'POST'], '/login', [AuthAdminController::class, 'login'])->name('login.admin');
     //dashboard
-    Route::match(['GET', 'POST'], '/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::prefix('dashboard')->group(function () {
+        Route::match(['GET', 'POST'], '/user', [DashboardController::class, 'user'])->name('dashboard.user');
+        Route::match(['GET', 'POST'], '/invoice/day', [DashboardController::class, 'day'])->name('dashboard.invoice.day');
+        Route::match(['GET', 'POST'], '/invoice/day/hourly-data', [DashboardController::class, 'getHourlyRevenue']);
+        Route::match(['GET', 'POST'], '/invoice/day/getCountStatusDay', [DashboardController::class, 'getCountStatusDay']);
+        Route::match(['GET', 'POST'], '/invoice/week', [DashboardController::class, 'week'])->name('dashboard.invoice.week');
+        Route::match(['GET', 'POST'], '/invoice/week/weekly-data', [DashboardController::class, 'getWeeklyRevenue']);
+        Route::match(['GET', 'POST'], '/invoice/week/getCountStatusWeek', [DashboardController::class, 'getCountStatusWeek']);
+        Route::match(['GET', 'POST'], '/invoice/month', [DashboardController::class, 'month'])->name('dashboard.invoice.month');
+        Route::match(['GET', 'POST'], '/invoice/month/monthly-data', [DashboardController::class, 'getMonthlyRevenue']);
+        Route::match(['GET', 'POST'], '/invoice/month/getCountStatusMonth', [DashboardController::class, 'getCountStatusMonth']);
+        Route::match(['GET', 'POST'], '/getMonthlyStats', [DashboardController::class, 'getMonthlyStats']);
+        Route::match(['GET', 'POST'], '/getUserCounts', [DashboardController::class, 'getUserCounts']);
+    });
     //role
     Route::prefix('role')->group(function () {
         Route::match(['GET', 'POST'], '/', [RoleController::class, 'index'])->name('role.list');
