@@ -9,7 +9,9 @@
         margin-top: 20px;
     }
 </style>
+
 @php
+
 $MembershipLevel = $MembershipLevels->firstWhere('id', $members->level_id);
 $bookings = $bookings->where('user_id', $members->user_id);
 

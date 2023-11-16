@@ -39,7 +39,7 @@ $numberAfterSlash = str_replace(['{', '}'], '', $numberAfterSlash);
 
         $booking1 = Booking::where('id',$numberAfterSlash)->first();
 if(isset($booking1)) {
-        if($booking1->status == 2 && $booking1->status != 3 && $booking1->status != 4) {
+        if($booking1->status == 2 && $booking1->status != 3 && $booking1->status != 4 || $booking1->status == 5 ) {
             if($booking1) {
                 $showTime1 = ShowTime::where('id',$booking1->showtime_id)->first();
                 $movieName = Movie::where('id',$showTime1->movie_id)->first();

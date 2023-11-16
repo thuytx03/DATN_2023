@@ -122,67 +122,62 @@
                                             $total_spending = 0;
 
                                             foreach ($userBookings as $booking) {
-                                                if($booking->status == 2 || $booking->status == 5 || $booking->status == 3) {
-                                                if (is_numeric($booking->total)) {
-                                                    $total_spending += $booking->total;
-                                                    $createdAtYear = date('Y', strtotime($booking->created_at));
-                                                    $updatedAtYear = date('Y', strtotime($booking->updated_at));
-                                                    $showtime_id = $booking->showtime_id;
+    if ($booking->status == 2 || $booking->status == 5 || $booking->status == 3) {
+        if (is_numeric($booking->total)) {
+            $total_spending += $booking->total;
+            $createdAtYear = date('Y', strtotime($booking->created_at));
+            $updatedAtYear = date('Y', strtotime($booking->updated_at));
+            $showtime_id = $booking->showtime_id;
 
-                                                    $showtime = $ShowTimes->where('id', $showtime_id)->first();
+            $showtime = $ShowTimes->where('id', $showtime_id)->first();
 
-                                                    if ($showtime) {
-                                                        $showtime_end = strtotime($showtime->end_date);
-                                                        $current_time = time();
+            if ($showtime) {
+                $showtime_end = strtotime($showtime->end_date);
+                $current_time = time();
 
-                                                        // Kiểm tra xem đã tính điểm cho giao dịch này chưa
-                                                        $transactionKey = "transaction_" . $booking->id;
-                                                        $transactionFinished = isset($_SESSION[$transactionKey]) && $_SESSION[$transactionKey]['finished'];
+                // Check if points have already been awarded for this transaction
+                $transactionKey = "transaction_" . $booking->id;
+                $transactionFinished = isset($_SESSION[$transactionKey]) && $_SESSION[$transactionKey]['finished'];
 
-                                                        if (!$transactionFinished) {
-                                                            if ($current_time < $showtime_end) {
-    if (isset($booking->price_ticket) > 0 && isset($booking->price_food) > 0) {
-        $benefit_percentage = $MembershipLevel->benefits / 100;
-        $benefit_percentage1 = $MembershipLevel->benefits_food / 100;
-        $price_ticket_point = ($booking->price_ticket) * $benefit_percentage;
-        $price_ticket_food_point = ($booking->price_food) * $benefit_percentage1;
-        $poin_will_claim += $price_ticket_point + $price_ticket_food_point;
+                if (!$transactionFinished) {
+                    if ($current_time < $showtime_end) {
+                        if (isset($booking->price_ticket) > 0 && isset($booking->price_food) > 0) {
+                            $benefit_percentage = $MembershipLevel->benefits / 100;
+                            $benefit_percentage1 = $MembershipLevel->benefits_food / 100;
+                            $price_ticket_point = ($booking->price_ticket) * $benefit_percentage;
+                            $price_ticket_food_point = ($booking->price_food) * $benefit_percentage1;
+                            $poin_will_claim += $price_ticket_point + $price_ticket_food_point;
+                        } elseif (isset($booking->price_ticket) > 0 || isset($booking->price_food)) {
+                            $benefit_percentage = $MembershipLevel->benefits / 100;
+                            $price_ticket_point = ($booking->price_ticket) * $benefit_percentage;
+                            $poin_will_claim += $price_ticket_point;
+                        }
 
-    } elseif (isset($booking->price_ticket) > 0 || isset($booking->price_food)) {
-        $benefit_percentage = $MembershipLevel->benefits / 100;
-        $price_ticket_point = ($booking->price_ticket) * $benefit_percentage;
-        $poin_will_claim += $price_ticket_point;
+                        if (!$value->total_spending) {
+                            $value->bonus_points_will_be_received = $poin_will_claim;
+                            $value->total_spending = $total_spending;
+                        } elseif ($value->total_spending) {
+                            $value->bonus_points_will_be_received = $poin_will_claim;
+                            $value->total_spending = $total_spending;
+                        }
+                    }
 
-    }
+                    if ($current_time >= $showtime_end && $booking->status == 3) {
+                        if ($value->bonus_points_will_be_received > 0 && $booking->hasUpdated == 0) {
+                            if ($booking->status == 3) {
+                                $value->current_bonus_points += $poin_will_claim;
+                                $value->total_bonus_points += $poin_will_claim;
+                                $value->bonus_points_will_be_received =  $value->bonus_points_will_be_received-$poin_will_claim;
+                                $booking->hasUpdated = true;
+                                $booking->save();
+                                $value->save();
+                            }
+                            $poin_will_claim = 0; // Reset poin_will_claim
+                        }
+                        $poin_will_claim = 0;
+                    }
+                }
 
-    if (!$value->total_spending) {
-        $value->bonus_points_will_be_received = $poin_will_claim;
-        $value->total_spending = $total_spending;
-
-    }elseif($value->total_spending) {
-
-        $value->bonus_points_will_be_received = $poin_will_claim;
-        $value->total_spending = $total_spending;
-
-    }
-}
-
-if ($current_time >= $showtime_end && $booking->status == 3 ) {
-    if ($value->bonus_points_will_be_received > 0) {
-        // Kiểm tra xem phim đã chiếu hết chưa
-        if ($booking->status == 3 && !$value->hasUpdated) {
-            $value->current_bonus_points += $value->bonus_points_will_be_received;
-            $value->total_bonus_points += $value->bonus_points_will_be_received;
-            $poin_will_claim = 0; // Reset poin_will_claim
-            $value->bonus_points_will_be_received = 0;
-            $value->save();
-            $value->hasUpdated = true; // Set a flag to indicate that the update has occurred
-            $value->total_spending = false; // Đặt lại cờ cho giao dịch tiếp theo
-        }
-        $poin_will_claim = 0;
-    }
-}
-}
                                                     }
                                                 }
                                             }
