@@ -82,12 +82,12 @@ class AuthClientController extends Controller
             ->where('name', 'member')
             ->pluck('id')
             ->first();
-           
+
             if($user) {
                 $member = MemBer::create([
                     'user_id' => $user->id,
                     'card_number' => 'BLT'.'123'.'1804'.$user->id,
-                    //'level_id' => $idmember,
+                    'level_id' => $idmember,
                     'status' => 1
                 ]);
             };

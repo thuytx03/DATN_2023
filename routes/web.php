@@ -87,6 +87,7 @@ Route::middleware(['auth'])->group(function () {
 });
 //ghế
 Route::get('/lich-chieu/chon-ghe/{room_id}/{slug}/{showtime_id}', [MovieSeatPlanController::class, 'index'])->name('chon-ghe');
+Route::get('/lich-chieu/chon-do-an/{room_id}/{slug}/{showtime_id}', [MovieSeatPlanController::class, 'foodPlan'])->name('chon-do-an');
 Route::post('/save-selected-seats', [MovieSeatPlanController::class, 'saveSelectedSeats'])->name('save-selected-seats');
 Route::post('/luu-thong-tin-san-pham', [MovieSeatPlanController::class, 'luuThongTinSanPham'])->name('luu-thong-tin-san-pham');
 

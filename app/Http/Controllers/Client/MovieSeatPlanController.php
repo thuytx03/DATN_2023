@@ -20,8 +20,8 @@ class MovieSeatPlanController extends Controller
     public function index(Request $request, $room_id, $slug, $showtime_id)
     {
         session()->forget('selectedSeats');
-            session()->forget('selectedProducts');
-            session()->forget('totalPriceFood');
+        session()->forget('selectedProducts');
+        session()->forget('totalPriceFood');
         $room = Room::where('id', $room_id)->first();
         // Lấy danh sách ghế của phòng chiếu $room, lọc theo loại ghế
         $seatsThuong = $room
@@ -67,22 +67,70 @@ class MovieSeatPlanController extends Controller
         return view('client.movies.movie-seat-plan', compact('seatsVip', 'seatsThuong', 'seatsDoi', 'room', 'showTime', 'bookedSeats', 'province', 'food'));
     }
 
+    public function seatPrice()
+    {
+        // Tạo một mảng để lưu giá của từng ghế.
+        $prices = [];
+        foreach (Session::get('selectedSeats', []) as $seat) {
+            // Tách hàng và cột từ chuỗi ghế (ví dụ: "J6" -> hàng "J", cột "6").
+            $row = substr($seat, 0, 1); // Lấy ký tự đầu tiên
+            $column = substr($seat, 1);
+
+            // Lấy thông tin của ghế từ bảng 'seats'.
+            $seatInfo = Seat::where('row', $row)
+                ->where('column', $column)
+                ->first();
+
+            if ($seatInfo) {
+                // Lấy giá dựa trên 'seat_type_id' từ bảng 'seat_types'.
+                $seatType = SeatType::find($seatInfo->seat_type_id);
+                if ($seatType) {
+                    // Lưu giá của từng ghế vào mảng $prices.
+                    $prices[] = $seatType->price;
+                }
+            }
+        }
+
+        // Tính tổng giá của tất cả các ghế.
+        $totalPriceTicket = array_sum($prices);
+
+        // Trả về giá của ghế
+        return $totalPriceTicket;
+    }
+
+
+
+
+    public function foodPlan(Request $request, $room_id, $slug, $showtime_id)
+    {
+        $showTime = ShowTime::find($showtime_id);
+        $room = Room::where('id', $room_id)->first();
+        $food = MovieFood::where('status', 1)->get();
+        // $sesion=session('selectedProducts');
+        // dd($sesion);
+        // session()->forget('selectedProducts');
+        // session()->forget('totalPriceFood');
+        return view('client.movies.movie-food', compact('room', 'showTime', 'food'));
+    }
     public function saveSelectedSeats(Request $request)
     {
         $selectedSeats = $request->input('selectedSeats');
         Session::put('selectedSeats', $selectedSeats);
-        // Trả về số ghế đã chọn cùng với phản hồi JSON
-        return response()->json(['message' => 'Selected seats saved successfully']);
+
+        // Gọi hàm seatPrice để tính toán tổng giá ghế và trả về giá trị đó
+        $totalPrice = $this->seatPrice();
+
+        // Trả về giá trị JSON chứa tổng giá ghế
+        return response()->json(['message' => 'Selected seats saved successfully', 'totalPrice' => $totalPrice]);
     }
+
 
     public function luuThongTinSanPham(Request $request)
     {
         $selectedProducts = $request->input('selectedProducts');
         $totalPriceFood = $request->input('totalPriceFood');
-
         // Lưu dữ liệu vào session
         session(['selectedProducts' => $selectedProducts, 'totalPriceFood' => $totalPriceFood]);
-
         return response()->json(['success' => true]);
     }
 }
