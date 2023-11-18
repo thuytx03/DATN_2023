@@ -32,6 +32,7 @@ thư viện qrcode :
 composer require endroid/qr-code
 thư viện word :
 composer require phpoffice/phpword
-đối với laravel : 
-+ chuột phải vào icon laravel ở bên góc phải -> php -> php.init -> search(dynamic) tìm chỗ có các extention -> bỏ dấu phẩy ở chỗ zip (đầu tiên : ;extension=zip bỏ phẩy đi thành -> extension=zip)
+đối với laragon : 
++ chuột phải vào icon laragon ở bên góc phải -> php -> php.init -> search(dynamic) tìm chỗ có các extention -> bỏ dấu phẩy ở chỗ zip (đầu tiên : ;extension=zip bỏ phẩy đi thành -> extension=zip) 
+- Chạy seeder trước khi đăng kí để không bị lỗi 
 

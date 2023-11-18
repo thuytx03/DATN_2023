@@ -120,8 +120,11 @@
                                             $MembershipLevel1 = $MembershipLevels->firstWhere('id', $value->level_id_old);
                                             $poin_will_claim = 0; // Initialize poin_will_claim
                                             $total_spending = 0;
-
+                                          
                                             foreach ($userBookings as $booking) {
+                                             
+                                                if(isset($booking)) {
+                                                    
     if ($booking->status == 2 || $booking->status == 5 || $booking->status == 3) {
         if (is_numeric($booking->total)) {
             $total_spending += $booking->total;
@@ -140,45 +143,85 @@
                 $transactionFinished = isset($_SESSION[$transactionKey]) && $_SESSION[$transactionKey]['finished'];
 
                 if (!$transactionFinished) {
-                    if ($current_time < $showtime_end) {
-                        if (isset($booking->price_ticket) > 0 && isset($booking->price_food) > 0) {
-                            $benefit_percentage = $MembershipLevel->benefits / 100;
-                            $benefit_percentage1 = $MembershipLevel->benefits_food / 100;
-                            $price_ticket_point = ($booking->price_ticket) * $benefit_percentage;
-                            $price_ticket_food_point = ($booking->price_food) * $benefit_percentage1;
-                            $poin_will_claim += $price_ticket_point + $price_ticket_food_point;
-                        } elseif (isset($booking->price_ticket) > 0 || isset($booking->price_food)) {
-                            $benefit_percentage = $MembershipLevel->benefits / 100;
-                            $price_ticket_point = ($booking->price_ticket) * $benefit_percentage;
-                            $poin_will_claim += $price_ticket_point;
-                        }
-
-                        if (!$value->total_spending) {
-                            $value->bonus_points_will_be_received = $poin_will_claim;
+    if ($current_time < $showtime_end) {
+        if (isset($booking->price_ticket) > 0 && isset($booking->price_food) > 0) {
+            $benefit_percentage = $MembershipLevel->benefits / 100;
+            $benefit_percentage1 = $MembershipLevel->benefits_food / 100;
+            $price_ticket_point = ($booking->price_ticket) * $benefit_percentage;
+            $price_ticket_food_point = ($booking->price_food) * $benefit_percentage1;
+            $poin_will_claim += $price_ticket_point + $price_ticket_food_point;
+        } elseif (isset($booking->price_ticket) > 0 || isset($booking->price_food)) {
+            $benefit_percentage = $MembershipLevel->benefits / 100;
+            $price_ticket_point = ($booking->price_ticket) * $benefit_percentage;
+            $poin_will_claim += $price_ticket_point;
+        }
+        if (!$value->total_spending) {
+                            $value->points_received_in_batches = $poin_will_claim;
                             $value->total_spending = $total_spending;
                         } elseif ($value->total_spending) {
-                            $value->bonus_points_will_be_received = $poin_will_claim;
+                            $value->points_received_in_batches = $poin_will_claim;
                             $value->total_spending = $total_spending;
                         }
-                    }
 
-                    if ($current_time >= $showtime_end && $booking->status == 3) {
-                        if ($value->bonus_points_will_be_received > 0 && $booking->hasUpdated == 0) {
-                            if ($booking->status == 3) {
-                                $value->current_bonus_points += $poin_will_claim;
-                                $value->total_bonus_points += $poin_will_claim;
-                                $value->bonus_points_will_be_received =  $value->bonus_points_will_be_received-$poin_will_claim;
-                                $booking->hasUpdated = true;
-                                $value->total_spending = $total_spending;
-                                $booking->save();
-                                $value->save();
+                       
+    }
+   
+             
+      
+  
+    if ($current_time >= $showtime_end && $booking->status == 3) {
+    if ($booking->hasUpdated == 0) {
+
+        $remainingBills = $booking->where('status', 2)
+    ->where('user_id', $booking->user_id)
+    ->count();
+               
+        if ($booking->status == 3) {
+            // Kiểm tra các hóa đơn còn lại có trạng thái 2 cho người dùng này
+            if ($remainingBills > 1) {
+                // Cập nhật số điểm thưởng sẽ nhận được dựa trên các hóa đơn còn lại
+                $value->bonus_points_will_be_received =  $value->points_received_in_batches;
+         
+                // Cộng số điểm thưởng của status vào database
+                $value->total_bonus_points += $value->bonus_points_will_be_received;
+                $value->current_bonus_points += $value->bonus_points_will_be_received;
+                // Đặt lại số điểm thưởng sẽ nhận được
+                $value->bonus_points_will_be_received = 0;
+               
+                $value->total_spending = $total_spending;
+
+                // Cập nhật trạng thái đặt chỗ
+                $booking->hasUpdated = 1;
+
+                // Lưu thay đổi vào cơ sở dữ liệu
+                $value->save();
+                $booking->save();
+            } elseif($remainingBills == 1) {
+              
+                // Cập nhật điểm thưởng hiện tại và tổng điểm thưởng
+                $value->bonus_points_will_be_received =  $value->points_received_in_batches;
+                $value->current_bonus_points += $value->bonus_points_will_be_received;
+                $value->total_bonus_points += $value->bonus_points_will_be_received;
+               
+                // Đặt lại số điểm thưởng sẽ nhận được
+                $value->bonus_points_will_be_received = 0;
+                $value->points_received_in_batches = 0;
+                $value->total_spending = $total_spending;
+
+                // Cập nhật trạng thái đặt chỗ
+                $booking->hasUpdated = 1;
+
+                // Lưu thay đổi vào cơ sở dữ liệu
+                $value->save();
+                $booking->save();
+            }
                             }
-                            $poin_will_claim = 0; // Reset poin_will_claim
+                        
                         }
-                        $poin_will_claim = 0;
+                      
                     }
                 }
-
+            }
                                                     }
                                                 }
                                             }
@@ -204,15 +247,17 @@
                                             </td>
                                             <td>
                                                @php
+                                               if(isset($booking)) {
                                           if($booking->status == 2 || $booking->status == 5 || $booking->status == 3)  {
     $updatedAtYear = date("Y", strtotime($booking->updated_at));
 
     if ($updatedAtYear < $currentYear) {
-        dd(1);
+        
         // Nếu đã hết năm, cập nhật `level_id` thành `level_id_old`
         $cbd  = $value->total_bonus_points = 0;
     }
 }
+                                               }
                                               @endphp
                                                 @if ( $poin_will_claim <= 0)
                                                 Chưa có thanh toán
@@ -223,6 +268,7 @@
                                             </td>
                                             <td>
                                                 @php
+                                                if(isset($booking)) {
                                                    if(($booking->status == 2 || $booking->status == 2 && $booking->status == 3 || $booking->status == 3)) {
     $updatedAtYear = date("Y", strtotime($booking->updated_at));
     if ($updatedAtYear < $currentYear) {
@@ -230,6 +276,7 @@
         $abc  = $value->current_bonus_points = 0;
     }
 }
+                                                }
                                                 @endphp
                                                 @if ($value->current_bonus_points <= 0)
                                                 Chưa có thanh toán
