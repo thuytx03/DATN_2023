@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Storage;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelHigh;
+use Carbon\Carbon;
 
 
 
@@ -327,24 +328,22 @@ class BookingController extends Controller
 
             // Get all bookings
             $bookings = DB::table('bookings')->get();
-
+        if(isset($bookings)) {
             // Loop through each booking
             foreach ($bookings as $booking) {
+                if(isset($booking)) {
                 // Check if the movie time has ended for this booking
                 $show_time = DB::table('show_times')->where('id', $booking->showtime_id)->first();
+                if ($booking->status == 5 && $booking->hasUpdated == 0 ) {
+                    DB::table('bookings')->where('id', $booking->id)->update(['status' => 3]);
+                }elseif ($booking->status != 3 && $booking->hasUpdated == 0 && $booking->status == 2 && Carbon::now()->gt($show_time->end_date)) {
+                    DB::table('bookings')->where('id', $booking->id)->update(['status' => 4]);
+                }
 
                 // Replace 'your_condition' with the actual condition to check if the movie time has ended
-                if (strtotime($show_time->end_date) < time()) {
-                    // If the status is 5, change it to 3
-                    if ($booking->status == 5) {
-                        DB::table('bookings')->where('id', $booking->id)->update(['status' => 3]);
-                    }
-                    // If the status is not 3 or 5, change it to 4
-                    elseif ($booking->status != 3) {
-                        DB::table('bookings')->where('id', $booking->id)->update(['status' => 4]);
-                    }
-                }
             }
+            }
+        }
 
             return "Records updated successfully";
         } catch (\Exception $e) {
@@ -356,29 +355,29 @@ class BookingController extends Controller
 
 
 public function checkStatus2($id) {
-    $bookings = DB::table('bookings')->where('user_id',$id)->get();
-
+    
+    $bookings = Booking::where('user_id',$id)->get();
+  
+if(isset($bookings)) {
     foreach ($bookings as $booking) {
+     
+        if(isset($booking)) {
         $show_time = DB::table('show_times')->where('id', $booking->showtime_id)->first();
         // Kiểm tra nếu không có dữ liệu
-
+           
         if (!$show_time) {
             continue;
-        }
-
-        // Replace 'your_condition' with the actual condition to check if the movie time has ended
-        if (strtotime($show_time->end_date) < time()) {
-
-            // If the status is 3, change it to 5
-            if ($booking->status == 3) {
-                DB::table('bookings')->where('id', $booking->id)->update(['status' => 5]);
-            }
-            // If the status is not 3, change it to 4
-            elseif ($booking->status != 3) {
-                DB::table('bookings')->where('id', $booking->id)->update(['status' => 4]);
-            }
+        }elseif (strtotime($show_time->end_date) < time()) {
+        if ($booking->status == 2 && $booking->hasUpdated == 0 ) {
+            DB::table('bookings')->where('id', $booking->id)->update(['status' => 5]);
         }
     }
+        // Replace 'your_condition' with the actual condition to check if the movie time has ended
+       
+    }
+    }
+    
+}
 }
 
 

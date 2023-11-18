@@ -9,13 +9,17 @@ use App\Models\User;
 use App\Models\MembershipLevel;
 use App\Models\Booking;
 use App\Models\ShowTime;
-
+use App\Http\Controllers\Client\BookingController;
 class MemBerController extends Controller
 {
     public function index(Request $request)
+    
 {
+   
     $query = Member::query();
-
+ $bookingstatus = new BookingController();
+ $bookingstatus->checkStatus();
+ $membernumber = new MemBerController();
     // Search condition
     if ($request->has('search')) {
         $search = $request->input('search');
@@ -42,7 +46,7 @@ class MemBerController extends Controller
     // Pagination
     $listLevel = $query->get();
 
-    return view('admin.member.index', compact('listLevel', 'users', 'MembershipLevels', 'lastYear', 'query', 'bookings', 'ShowTimes'));
+    return view('admin.member.index', compact('listLevel', 'users', 'MembershipLevels', 'lastYear', 'query', 'bookings', 'ShowTimes','membernumber'));
 }
 
     public function restoreSelected(Request $request)
@@ -242,4 +246,22 @@ public function permanentlyDeleteSelected(Request $request)
     return redirect()->route('member.trash');
 }
 
+
+
+function roundNumber($number)
+{
+  $precision = 1;
+
+  $roundedNumber = round($number, $precision);
+
+  $digit = $roundedNumber - floor($roundedNumber);
+
+  if ($digit <= 0.4) {
+    $roundedNumber = floor($roundedNumber);
+  } else {
+    $roundedNumber = ceil($roundedNumber);
+  }
+
+  return $roundedNumber;
+}
 }

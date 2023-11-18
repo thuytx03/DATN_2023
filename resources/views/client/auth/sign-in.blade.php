@@ -29,7 +29,7 @@
                         <input type="password" placeholder="Mật khẩu" id="pass3" name="password">
                     </div>
                     <div class="form-group checkgroup">
-                        <input type="checkbox" id="bal2" required checked>
+                        <input type="checkbox" id="bal2" name="remember">
                         <label for="bal2">Nhớ mật khẩu</label>
                         <a href="{{route('forgotPassword')}}" class="forget-pass">Quên mật khẩu</a>
                     </div>

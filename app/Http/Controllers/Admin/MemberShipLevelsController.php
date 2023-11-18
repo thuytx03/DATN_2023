@@ -71,7 +71,7 @@ class MemberShipLevelsController extends Controller
     public function store(Request $request)
     {
         if ($request->isMethod('POST')) {
-            try {
+            // try {
                 $this->validate($request, [
                     'name' => 'required|unique:membership_levels,name',
                     'min_limit' => 'nullable|min:0',
@@ -109,13 +109,14 @@ class MemberShipLevelsController extends Controller
                     return redirect()->route('MBSL.list');
                 }
     
-            }
-             catch (QueryException $e) {
-                // Handle the database query exception
-                return redirect()->back()->with('error', 'Có Lỗi xảy ra');
-            }
+             // }
+            //  catch (QueryException $e) {
+            //     // Handle the database query exception
+            //     return redirect()->back()->with('error', 'Có Lỗi xảy ra');
+            // }
         }
     }
+
 
 
     /**

@@ -94,7 +94,10 @@ class ProfileController extends Controller
     }
     public function points(){
         $booking123 = new BookingController();
+        
 
+        $profile = new ProfileController();
+      
         $user = auth()->user();
         if (!isset($user)) {
             return view('admin.auth.login');
@@ -103,7 +106,7 @@ class ProfileController extends Controller
         $members = Member::where('user_id',$user->id)->first();
        $MembershipLevels = MembershipLevel::all();
        $bookings = Booking::all();
-        return view('client.profiles.points',compact('members','MembershipLevels','bookings'));
+        return view('client.profiles.points',compact('members','MembershipLevels','bookings','profile'));
         }
     }
 
@@ -139,6 +142,24 @@ class ProfileController extends Controller
 
             return view('client.profiles.member-profile', compact('member', 'percentSpent', 'limits', 'totalSpending', 'highestLimit','membershiplv','user_name'));
         }
-    }
+    } 
+
+    // hàm làm tròn điểm ví dụ 0,1-0,4 sẽ lấy về số trước còn 0,5->0,9 lấy theo số sau
+    function roundNumber($number)
+{
+  $precision = 1;
+
+  $roundedNumber = round($number, $precision);
+
+  $digit = $roundedNumber - floor($roundedNumber);
+
+  if ($digit <= 0.4) {
+    $roundedNumber = floor($roundedNumber);
+  } else {
+    $roundedNumber = ceil($roundedNumber);
+  }
+
+  return $roundedNumber;
+}
 }
 

@@ -17,8 +17,8 @@
             <div class="card-header py-3">
                 <div class="row align-items-center">
                     <div class="col">
-                        <a href="{{route('member.list')}}" class="btn btn-success">
-                           Cập Nhật Điểm
+                        <a href="{{route('member.list')}}" class="btn btn-success resetdiem">
+                          RESET điểm sắp nhận được của khách 
                         </a>
                     </div>
                     <div class="col text-right">
@@ -124,79 +124,167 @@
                                             foreach ($userBookings as $booking) {
                                              
                                                 if(isset($booking)) {
+                                                    $total_spending += $booking->total;
                                                     
-    if ($booking->status == 2 || $booking->status == 5 || $booking->status == 3) {
+    if ($booking->status == 2 && $booking->hasUpdated == 0|| $booking->status == 5 || $booking->status == 3 && $booking->hasUpdated == 0) {
         if (is_numeric($booking->total)) {
-            $total_spending += $booking->total;
+           
             $createdAtYear = date('Y', strtotime($booking->created_at));
             $updatedAtYear = date('Y', strtotime($booking->updated_at));
             $showtime_id = $booking->showtime_id;
 
             $showtime = $ShowTimes->where('id', $showtime_id)->first();
+            $remainingBills1 = $booking->where('status', 3)
+    ->where('user_id', $booking->user_id)
+    ->count();
+    $remainingBills = $booking->where('status', 2)
+    ->where('user_id', $booking->user_id)
+    ->count();
+   
+    
 
             if ($showtime) {
                 $showtime_end = strtotime($showtime->end_date);
                 $current_time = time();
 
                 // Check if points have already been awarded for this transaction
-                $transactionKey = "transaction_" . $booking->id;
-                $transactionFinished = isset($_SESSION[$transactionKey]) && $_SESSION[$transactionKey]['finished'];
-
-                if (!$transactionFinished) {
-    if ($current_time < $showtime_end) {
-        if (isset($booking->price_ticket) > 0 && isset($booking->price_food) > 0) {
+                // $transactionKey = "transaction_" . $booking->id;
+                // $transactionFinished = isset($_SESSION[$transactionKey]) && $_SESSION[$transactionKey]['finished'];
+                if (isset($booking->price_ticket) > 0 && isset($booking->price_food) > 0) {
             $benefit_percentage = $MembershipLevel->benefits / 100;
             $benefit_percentage1 = $MembershipLevel->benefits_food / 100;
             $price_ticket_point = ($booking->price_ticket) * $benefit_percentage;
             $price_ticket_food_point = ($booking->price_food) * $benefit_percentage1;
+        
             $poin_will_claim += $price_ticket_point + $price_ticket_food_point;
+            $poin_will_claim = $membernumber->roundNumber($poin_will_claim);
+           
         } elseif (isset($booking->price_ticket) > 0 || isset($booking->price_food)) {
             $benefit_percentage = $MembershipLevel->benefits / 100;
             $price_ticket_point = ($booking->price_ticket) * $benefit_percentage;
             $poin_will_claim += $price_ticket_point;
+            $poin_will_claim = $membernumber->roundNumber($poin_will_claim);
         }
+        if ($current_time < $showtime_end) {
         if (!$value->total_spending) {
+            
                             $value->points_received_in_batches = $poin_will_claim;
                             $value->total_spending = $total_spending;
+                        
                         } elseif ($value->total_spending) {
                             $value->points_received_in_batches = $poin_will_claim;
                             $value->total_spending = $total_spending;
+                           
                         }
+                    }elseif($booking->hasUpdated == 0) {
+                      
+                        if (!$value->total_spending) {
+                            
+                            $value->points_received_in_batches = $poin_will_claim;
+                          
+                            $value->total_spending = $total_spending;
+                        
+                        } elseif ($value->total_spending) {
+                         
+                            $value->points_received_in_batches = $poin_will_claim;
+                            
+                            $value->total_spending = $total_spending;
+                           
+                        }
+                    }
 
-                       
-    }
+                        
+                      
+    
+
+
+
+               
    
-             
-      
   
-    if ($current_time >= $showtime_end && $booking->status == 3) {
+    
+    
+  
+
+
+      
+   
+    
+             
+          if ($current_time >= $showtime_end && $booking->status == 3 || $current_time >= $showtime_end && $booking->status == 5 ) {
     if ($booking->hasUpdated == 0) {
 
         $remainingBills = $booking->where('status', 2)
     ->where('user_id', $booking->user_id)
     ->count();
-               
-        if ($booking->status == 3) {
+    $remainingBills1 = $booking->where('status', 3)
+    ->where('user_id', $booking->user_id)
+    ->count();
+    
+    
+              
+        if ($booking->status == 3 || $booking->status == 5) {
             // Kiểm tra các hóa đơn còn lại có trạng thái 2 cho người dùng này
-            if ($remainingBills > 1) {
+            if ($remainingBills > 0  && $remainingBills == 1 ||  $remainingBills1 > 0 && $remainingBills1 == 1) {
                 // Cập nhật số điểm thưởng sẽ nhận được dựa trên các hóa đơn còn lại
                 $value->bonus_points_will_be_received =  $value->points_received_in_batches;
-         
                 // Cộng số điểm thưởng của status vào database
-                $value->total_bonus_points += $value->bonus_points_will_be_received;
                 $value->current_bonus_points += $value->bonus_points_will_be_received;
+                $value->total_bonus_points += $value->bonus_points_will_be_received;
                 // Đặt lại số điểm thưởng sẽ nhận được
+                $poin_will_claim =  $poin_will_claim -  $value->bonus_points_will_be_received;
                 $value->bonus_points_will_be_received = 0;
-               
-                $value->total_spending = $total_spending;
-
+                $value->points_received_in_batches = 0;
+                $value->total_spending =  $value->total_spending;
+                
+             
                 // Cập nhật trạng thái đặt chỗ
                 $booking->hasUpdated = 1;
 
                 // Lưu thay đổi vào cơ sở dữ liệu
                 $value->save();
                 $booking->save();
-            } elseif($remainingBills == 1) {
+            }  
+            elseif ($remainingBills = 0  && $remainingBills == 1 ||  $remainingBills1 = 0 && $remainingBills1 == 1) {
+                // Cập nhật số điểm thưởng sẽ nhận được dựa trên các hóa đơn còn lại
+                $value->bonus_points_will_be_received =  $value->points_received_in_batches;
+                // Cộng số điểm thưởng của status vào database
+                $value->current_bonus_points += $value->bonus_points_will_be_received;
+                $value->total_bonus_points += $value->bonus_points_will_be_received;
+                // Đặt lại số điểm thưởng sẽ nhận được
+                $poin_will_claim =  $poin_will_claim -  $value->bonus_points_will_be_received;
+                $value->bonus_points_will_be_received = 0;
+                $value->points_received_in_batches = 0;
+                $value->total_spending =  $value->total_spending;
+             
+                // Cập nhật trạng thái đặt chỗ
+                $booking->hasUpdated = 1;
+
+                // Lưu thay đổi vào cơ sở dữ liệu
+                $value->save();
+                $booking->save();
+            }  elseif($remainingBills > 1 || $remainingBills1 > 1) {
+              
+              // Cập nhật điểm thưởng hiện tại và tổng điểm thưởng
+              $value->bonus_points_will_be_received =  $value->points_received_in_batches;
+              $value->current_bonus_points += $value->bonus_points_will_be_received;
+              $value->total_bonus_points += $value->bonus_points_will_be_received;
+             
+              // Đặt lại số điểm thưởng sẽ nhận được
+              $poin_will_claim =  $poin_will_claim -  $value->bonus_points_will_be_received;
+              $value->bonus_points_will_be_received = 0;
+              $value->points_received_in_batches = 0;
+              $value->total_spending = $total_spending;
+            
+              // Cập nhật trạng thái đặt chỗ
+              $booking->hasUpdated = 1;
+
+              // Lưu thay đổi vào cơ sở dữ liệu
+              $value->save();
+              $booking->save(); 
+          }
+            
+            elseif($remainingBills == 0 || $remainingBills1 == 0) {
               
                 // Cập nhật điểm thưởng hiện tại và tổng điểm thưởng
                 $value->bonus_points_will_be_received =  $value->points_received_in_batches;
@@ -204,28 +292,34 @@
                 $value->total_bonus_points += $value->bonus_points_will_be_received;
                
                 // Đặt lại số điểm thưởng sẽ nhận được
+                $poin_will_claim =  $poin_will_claim -  $value->bonus_points_will_be_received;
                 $value->bonus_points_will_be_received = 0;
                 $value->points_received_in_batches = 0;
                 $value->total_spending = $total_spending;
-
+                
                 // Cập nhật trạng thái đặt chỗ
                 $booking->hasUpdated = 1;
 
                 // Lưu thay đổi vào cơ sở dữ liệu
                 $value->save();
-                $booking->save();
+                $booking->save(); 
             }
+        }
+    }
                             }
+                        
+                        
                         
                         }
                       
-                    }
-                }
+                    
+                
             }
+        }
                                                     }
                                                 }
-                                            }
-                                            }
+                                            // }
+                                            
 
 
 
