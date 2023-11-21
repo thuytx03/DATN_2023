@@ -38,10 +38,13 @@ use App\Http\Controllers\admin\MemberController;
 use App\Http\Controllers\Client\PostController;
 use App\Http\Controllers\Client\MovieControllerClient;
 use App\Http\Controllers\Client\ProfileController;
+use App\Http\Controllers\Client\RatingController;
 
 
 Route::get('/', [HomeController::class, 'index'])->name('index');
 
+Route::post('/submit-rating',[RatingController::class,'submitRating'])->name('submit-rating');
+Route::post('/submit-message',[RatingController::class,'submitMessage'])->name('submit-message');
 // phim
 Route::prefix('phim')->group(function () {
     Route::get('/danh-sach', [MovieControllerClient::class, 'list'])->name('phim.danh-sach');
@@ -91,6 +94,7 @@ Route::get('paypal/payment/{id}', [BookingController::class, 'payment'])->name('
 Route::get('paypal/payment/success/{id}', [BookingController::class, 'paymentSuccess'])->name('paypal.payment.success');
 Route::get('paypal/payment/cancel', [BookingController::class, 'paymentCancel'])->name('paypal.payment/cancel');
 // hết paypal
+
 
 // phim yeu thich
 Route::prefix('favorite')->group(function () {

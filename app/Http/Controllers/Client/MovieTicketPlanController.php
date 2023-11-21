@@ -10,6 +10,7 @@ use App\Models\Room;
 use App\Models\ShowTime;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class MovieTicketPlanController extends Controller
 {
@@ -87,8 +88,7 @@ class MovieTicketPlanController extends Controller
                     }
                 }
             }
-
-            return view('client.movies.movie-ticket-plan', compact('cinemaSchedules', 'movie', 'province', 'selectedCinemaId'));
+            return view('client.movies.movie-ticket-plan', compact('cinemaSchedules', 'movie', 'province', 'selectedCinemaId',));
         }
     }
 

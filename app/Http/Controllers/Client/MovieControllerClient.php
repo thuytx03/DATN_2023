@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\FeedBack;
 use Illuminate\Http\Request;
 use App\Models\Movie;
 use App\Models\Genre;
 use App\Models\Cinema;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Province;
 use Carbon\Carbon;
@@ -35,6 +37,19 @@ class MovieControllerClient extends Controller
     public function detail($slug, $id)
     {
         $movie = Movie::find($id);
+        $averageRating = FeedBack::where('movie_id', $id)->avg('rating');
+        $reviews = DB::table('feed_backs')
+            ->join('users', 'feed_backs.user_id', '=', 'users.id')
+            ->join('movies', 'feed_backs.movie_id', '=', 'movies.id')
+            ->select('feed_backs.created_at as feed_back_created_at', 'users.name as user_name', 'users.avatar as avatar', 'feed_backs.message', 'feed_backs.rating')
+            ->where('feed_backs.movie_id', $id)
+            ->whereNotNull('feed_backs.rating') // Chỉ lấy các bản ghi có đánh giá
+            ->whereNotNull('feed_backs.message') // Chỉ lấy các bản ghi có bình luận
+            ->get();
+//        dd($reviews);
+        // Làm tròn điểm trung bình nếu cần
+        $averageRating = round($averageRating, 1);
+
         if (auth()->check()) {
             $userID = auth()->user()->id;
             $user = User::with('favoriteMovies')->find($userID); // Assuming you have defined the relationship in the User model.
@@ -42,15 +57,16 @@ class MovieControllerClient extends Controller
             $genresName = $genres->pluck('name')->toArray();
             $nameGenres = implode(',', $genresName);
             $images = $movie->images;
-
-            return view('client.movies.movie-detail', compact('user', 'movie', 'images', 'nameGenres'));
+            $hasMovieBooked = $this->hasUserBookedMovie($userID,$id);
+            $hasUserCommented = $this->hasUserCommented($userID,$id);
+            return view('client.movies.movie-detail', compact('user', 'movie', 'images', 'nameGenres','averageRating','hasMovieBooked','reviews','hasUserCommented'));
         }
         if ($movie) {
             $genres = $movie->genres;
             $genresName = $genres->pluck('name')->toArray();
             $nameGenres = implode(',', $genresName);
             $images = $movie->images;
-            return view('client.movies.movie-detail', compact('movie', 'nameGenres', 'images'));
+            return view('client.movies.movie-detail', compact('movie', 'nameGenres', 'images','averageRating','reviews'));
         }
     }
 
@@ -94,5 +110,22 @@ class MovieControllerClient extends Controller
             Log::error('Lỗi trong quá trình lọc: ' . $e->getMessage());
             // Xử lý exception ở đây
         }
+    }
+    public function hasUserBookedMovie($userId, $movieId)
+    {
+        $bookingCount = DB::table('bookings')
+            ->join('show_times', 'bookings.showtime_id', '=', 'show_times.id')
+            ->where('bookings.user_id', $userId)
+            ->where('show_times.movie_id', $movieId)
+            ->count();
+
+        return $bookingCount > 0;
+    }
+    public function hasUserCommented($userId, $movieId)
+    {
+        return !Feedback::where('user_id', $userId)
+            ->where('movie_id', $movieId)
+            ->whereNotNull('message') // hoặc ->where('message', '<>', '')
+            ->exists();
     }
 }

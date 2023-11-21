@@ -30,4 +30,10 @@ class Movie extends Model
     {
         return $this->hasMany(ShowTime::class, 'movie_id');
     }
+    public function userRating()
+    {
+        $user_id = auth()->user()->id;
+        $rating = Feedback::where(['user_id' => $user_id, 'movie_id' => $this->id])->latest()->value('rating');
+        return $rating ?? 0;
+    }
 }

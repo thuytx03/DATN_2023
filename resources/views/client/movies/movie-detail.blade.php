@@ -4,7 +4,14 @@
         .abc {
             margin-left: 10px;
         }
+
+        .rating-it.highlight {
+            color: #ffcc00; /* hoặc màu khác để làm nổi bật */
+        }
     </style>
+    @push('styles')
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    @endpush
     <!-- ==========Banner-Section========== -->
     <section class="details-banner bg_img" data-background="{{asset('assets/images/banner/banner03.jpg')}}">
         <div class="container">
@@ -101,28 +108,33 @@
                     </div>
                     <div class="item">
                         <div class="item-header">
-                            <h5 class="title">4.5</h5>
+                            <h5 class="title">{{ $averageRating }}</h5>
                             <div class="rated list-inline d-flex">
-                                <span class="rating" style="font-size: 25px;margin: 0 2px;color: #ffcc00">&#9733;</span>
-                                <span class="rating" style="font-size: 25px;margin: 0 2px;color: #ffcc00">&#9733;</span>
-                                <span class="rating" style="font-size: 25px;margin: 0 2px;color: #ffcc00">&#9733;</span>
-                                <span class="rating" style="font-size: 25px;margin: 0 2px;color: #ffcc00">&#9733;</span>
-                                <span class="rating" style="font-size: 25px;margin: 0 2px;color: #ffcc00">&#9733;</span>
+                                @for ($i = 1; $i <= 5; $i++)
+                                    <span class="rating"
+                                          style="font-size: 25px; margin: 0 2px; color: {{ $i <= $averageRating ? '#ffcc00' : '#ccc' }}">&#9733;</span>
+                                @endfor
                             </div>
                         </div>
                         <p>Người dùng đánh giá</p>
                     </div>
-                    <div class="item">
-                        <div class="item-header">
-                            <div class="rate-it list-inline d-flex" style="cursor: pointer">
+                    @if(auth()->check() && $hasMovieBooked)
+                        <div class="item" id="item-star">
+                            <div class="item-header">
+                                <div class="rate-it list-inline d-flex" style="cursor: pointer">
                                     @for ($count = 1; $count <= 5; $count++)
-                                        <span class="rating-it" data-rating="{{ $count }}" data-movie-id="{{ $movie->id }}" style="font-size: 25px; margin: 0 2px">&#9733;</span>
+                                        <span class="rating-it {{ $count <= $movie->userRating() ? 'highlight' : '' }}"
+                                              data-rating="{{ $count }}" data-movie-id="{{ $movie->id }}"
+                                              style="font-size: 25px; margin: 0 2px">&#9733;</span>
+                                        @if($count == 1)
+                                            <span style="display: none" id="movieID">{{ $movie->id }}</span>
+                                        @endif
                                     @endfor
+                                </div>
                             </div>
+                            <p>Đánh giá phim</p>
                         </div>
-                        <p>Đánh giá phim</p>
-                    </div>
-                    <div id="rating-message"></div>
+                    @endif
                 </div>
                 <div class="button-container">
                     <a href="{{ route('lich-chieu',['id'=>$movie->id,'slug'=>$movie->slug]) }}" class="custom-button">Mua
@@ -232,178 +244,57 @@
                                             đến nhiều câu chuyện bất ngờ xảy ra khiến cuộc sống cô hoàn toàn thay
                                             đổi. </p>
                                     </div>
-                                    <div class="item">
-                                        <div class="header">
-                                            <h5 class="sub-title">cast</h5>
-                                            <div class="navigation">
-                                                <div class="cast-prev"><i
-                                                        class="flaticon-double-right-arrows-angles"></i></div>
-                                                <div class="cast-next"><i
-                                                        class="flaticon-double-right-arrows-angles"></i></div>
-                                            </div>
-                                        </div>
-                                        <div class="casting-slider owl-carousel">
-                                            <div class="cast-item">
-                                                <div class="cast-thumb">
-                                                    <a href="#0">
-                                                        <img src="{{asset('assets/images/cast/cast01.jpg')}}"
-                                                             alt="cast">
-                                                    </a>
-                                                </div>
-                                                <div class="cast-content">
-                                                    <h6 class="cast-title"><a href="#0">Bill Hader</a></h6>
-                                                    <span class="cate">actor</span>
-                                                    <p>As Richie Tozier</p>
-                                                </div>
-                                            </div>
-                                            <div class="cast-item">
-                                                <div class="cast-thumb">
-                                                    <a href="#0">
-                                                        <img src="{{asset('assets/images/cast/cast02.jpg')}}"
-                                                             alt="cast">
-                                                    </a>
-                                                </div>
-                                                <div class="cast-content">
-                                                    <h6 class="cast-title"><a href="#0">nora hardy</a></h6>
-                                                    <span class="cate">actor</span>
-                                                    <p>As raven</p>
-                                                </div>
-                                            </div>
-                                            <div class="cast-item">
-                                                <div class="cast-thumb">
-                                                    <a href="#0">
-                                                        <img src="{{asset('assets/images/cast/cast03.jpg')}}"
-                                                             alt="cast">
-                                                    </a>
-                                                </div>
-                                                <div class="cast-content">
-                                                    <h6 class="cast-title"><a href="#0">alvin peters</a></h6>
-                                                    <span class="cate">actor</span>
-                                                    <p>As magneto</p>
-                                                </div>
-                                            </div>
-                                            <div class="cast-item">
-                                                <div class="cast-thumb">
-                                                    <a href="#0">
-                                                        <img src="{{asset('assets/images/cast/cast04.jpg')}}"
-                                                             alt="cast">
-                                                    </a>
-                                                </div>
-                                                <div class="cast-content">
-                                                    <h6 class="cast-title"><a href="#0">josh potter</a></h6>
-                                                    <span class="cate">actor</span>
-                                                    <p>As quicksilver</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="item">
-                                        <div class="header">
-                                            <h5 class="sub-title">crew</h5>
-                                            <div class="navigation">
-                                                <div class="cast-prev-2"><i
-                                                        class="flaticon-double-right-arrows-angles"></i></div>
-                                                <div class="cast-next-2"><i
-                                                        class="flaticon-double-right-arrows-angles"></i></div>
-                                            </div>
-                                        </div>
-                                        <div class="casting-slider-two owl-carousel">
-                                            <div class="cast-item">
-                                                <div class="cast-thumb">
-                                                    <a href="#0">
-                                                        <img src="{{asset('assets/images/cast/cast05.jpg')}}"
-                                                             alt="cast">
-                                                    </a>
-                                                </div>
-                                                <div class="cast-content">
-                                                    <h6 class="cast-title"><a href="#0">pete warren</a></h6>
-                                                    <span class="cate">actor</span>
-                                                </div>
-                                            </div>
-                                            <div class="cast-item">
-                                                <div class="cast-thumb">
-                                                    <a href="#0">
-                                                        <img src="{{asset('assets/images/cast/cast06.jpg')}}"
-                                                             alt="cast">
-                                                    </a>
-                                                </div>
-                                                <div class="cast-content">
-                                                    <h6 class="cast-title"><a href="#0">howard bass</a></h6>
-                                                    <span class="cate">executive producer</span>
-                                                </div>
-                                            </div>
-                                            <div class="cast-item">
-                                                <div class="cast-thumb">
-                                                    <a href="#0">
-                                                        <img src="{{asset('assets/images/cast/cast07.jpg')}}"
-                                                             alt="cast">
-                                                    </a>
-                                                </div>
-                                                <div class="cast-content">
-                                                    <h6 class="cast-title"><a href="#0">naomi smith</a></h6>
-                                                    <span class="cate">producer</span>
-                                                </div>
-                                            </div>
-                                            <div class="cast-item">
-                                                <div class="cast-thumb">
-                                                    <a href="#0">
-                                                        <img src="{{asset('assets/images/cast/cast08.jpg')}}"
-                                                             alt="cast">
-                                                    </a>
-                                                </div>
-                                                <div class="cast-content">
-                                                    <h6 class="cast-title"><a href="#0">tom martinez</a></h6>
-                                                    <span class="cate">producer</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                                 <div class="tab-item active">
-                                    <div class="container">
-                                        <div class="form-group row">
-                                            <div class="col-md-1">
-                                                <img width="50px" class="img-fluid"
-                                                     src="{{ (Auth::user()->avatar == null) ? asset('admin/img/undraw_profile_1.svg') : Storage::url(Auth::user()->avatar) }}">
-                                            </div>
-                                            <div class="col-md-9 pl-1">
-                                                <input type="text" placeholder="Nhập bình luận về phim ..."
-                                                       name="message">
-                                            </div>
-                                            <div class="col-md-2">
-                                                <button class="btn btn-info" type="submit">Bình luận</button>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="movie-review-item">
-                                        <div class="author">
-                                            <div class="thumb">
-                                                <a href="#0">
-                                                    <img src="{{asset('assets/images/cast/cast02.jpg')}}" alt="cast">
-                                                </a>
-                                            </div>
-                                            <div class="movie-review-info">
-                                                <span class="reply-date">13 ngày trước</span>
-                                                <h6 class="subtitle"><a href="#0">Nguyễn Đức Quý</a></h6>
-                                                <span><i class="fas fa-check"></i>Đánh giá được xác minh</span>
+                                    @if(auth()->check() && $hasMovieBooked && $hasUserCommented)
+                                        <div class="container" id="review-message">
+                                            <div class="form-group row">
+                                                <div class="col-md-1">
+                                                    <img width="50px" class="img-fluid"
+                                                         src="{{ (Auth::user()->avatar == null) ? asset('admin/img/undraw_profile_1.svg') : Storage::url(Auth::user()->avatar) }}">
+                                                </div>
+                                                <div class="col-md-9 pl-1">
+                                                    <input type="text" placeholder="Nhập bình luận về phim ..."
+                                                           name="message" id="message">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button class="btn btn-info" type="submit" id="submitComment">Bình
+                                                        luận
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="movie-review-content">
-                                            <div class="review">
-                                                <span class="rating"
-                                                      style="font-size: 25px;margin: 0 2px;color: #ffcc00">&#9733;</span>
-                                                <span class="rating"
-                                                      style="font-size: 25px;margin: 0 2px;color: #ffcc00">&#9733;</span>
-                                                <span class="rating"
-                                                      style="font-size: 25px;margin: 0 2px;color: #ffcc00">&#9733;</span>
-                                                <span class="rating" style="font-size: 25px;margin: 0 2px;color: #ccc">&#9733;</span>
-                                                <span class="rating" style="font-size: 25px;margin: 0 2px;color: #ccc">&#9733;</span>
-
+                                    @endif
+                                    @foreach($reviews as $review)
+                                        <div class="movie-review-item">
+                                            <div class="author">
+                                                <div class="thumb">
+                                                    <img
+                                                        src="{{ $review->avatar == null ? asset('admin/img/undraw_profile_1.svg') : Storage::url($review->avatar)}}"
+                                                        alt="cast">
+                                                </div>
+                                                <div class="movie-review-info">
+                                                    <span class="reply-date">{{ $review->feed_back_created_at }}</span>
+                                                    <h6 class="subtitle">{{ $review->user_name }}</h6>
+                                                    <span><i class="fas fa-check"></i>Đánh giá được xác minh</span>
+                                                </div>
                                             </div>
-                                            <h6 class="cont-title">Bộ phim trên cả tuyệt vời</h6>
+                                            <div class="movie-review-content">
+                                                <div class="review">
+                                                    @for($i = 1; $i <= 5; $i++)
+                                                        @if($i <= $review->rating)
+                                                            <span class="rating"
+                                                                  style="font-size: 25px; margin: 0 2px; color: #ffcc00">&#9733;</span>
+                                                        @else
+                                                            <span class="rating"
+                                                                  style="font-size: 25px; margin: 0 2px; color: #ccc">&#9733;</span>
+                                                        @endif
+                                                    @endfor
+                                                </div>
+                                                <h6 class="cont-title">{{ $review->message }}</h6>
+                                            </div>
                                         </div>
-                                    </div>
+                                    @endforeach
                                     <div class="load-more text-center">
                                         <a href="#0" class="custom-button transparent">Xem thêm</a>
                                     </div>
@@ -417,24 +308,27 @@
     </section>
 @endsection
 @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script>
         $(document).ready(function () {
             var selectedRating = 0;
-            var selectedMovieId = $(this).data('movie-id');;
-
+            // Kiểm tra xem đã có xếp hạng từ trước không
+            var initialRating = $('.rating-it.highlight').length;
             $('.rating-it').mouseenter(function () {
                 var rating = $(this).data('rating');
                 highlightStars(rating);
             });
-
             $('.rating-it').mouseleave(function () {
-                resetStars();
+                if (selectedRating === 0) {
+                    resetStars();
+                }
             });
-
             $('.rating-it').click(function () {
                 var rating = $(this).data('rating');
+                var movieId = $(this).data('movie-id');
                 selectedRating = rating;
-                sendRating(rating);
+                sendRating(rating, movieId);
             });
 
             function highlightStars(rating) {
@@ -446,6 +340,11 @@
                 });
             }
 
+            if (initialRating > 0) {
+                highlightStars(initialRating);
+                $('.rating-it').unbind('mouseenter mouseleave');
+            }
+
             function resetStars() {
                 $('.rating-it').css('color', '#ccc');
                 $('.rating-it').each(function (index) {
@@ -455,21 +354,123 @@
                 });
             }
 
-            function sendRating(rating) {
-                var movieId = selectedMovieId;
+            function sendMessage(rating) {
+                $('#submitComment').on('click', function () {
+                    var movieId = $('#movieID').text(); // hoặc .html()
+                    movieId = parseInt(movieId);
+                    var message = ($('#message').val() === '') ? null : $('#message').val();
+                    $.ajax({
+                        type: 'POST',
+                        url: '/submit-message', // Thay đổi route tùy thuộc vào tên route của bạn
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            "message": message,
+                            'movie_id': movieId,
+                            'rating': $('.rating-it.highlight').length
+                        },
+                        success: function(response) {
+                            if (response.message) {
+                                Swal.fire({
+                                    title: 'Bình luận thành công',
+                                    text: response.message,
+                                    icon: 'success',
+                                    cancelButtonText: 'Đóng',
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        $("#review-message").hide();
+                                    }
+                                });
+                            }
+                        },
+                        error: function(error) {
+                            if (error.responseJSON && error.responseJSON.messageNotNull) {
+                                Swal.fire({
+                                    title: 'Đánh giá thất bại',
+                                    text: error.responseJSON.messageNotNull,
+                                    icon: 'warning',
+                                    cancelButtonText: 'Đóng',
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        // resetStars();
+                                    }
+                                });
+                            }
+                        }
+                    });
+                });
+            }
+
+            sendMessage(initialRating);
+
+            function sendRating(rating, movie_id) {
                 $.ajax({
                     type: 'POST',
                     url: '/submit-rating',
-                    data: { rating: rating },
+                    data: {
+                        rating: rating,
+                        movie_id: movie_id,
+                        _token: '{{ csrf_token() }}',
+                    },
                     success: function (response) {
-                        $('#rating-message').html('Đánh giá của bạn là ' + rating + ' sao.');
+                        if (response.messageSuccess) {
+                            Swal.fire({
+                                title: 'Đánh giá thành công',
+                                text: response.messageSuccess,
+                                icon: 'success',
+                                cancelButtonText: 'Đóng',
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    highlightStars(response.rating);
+                                    initialRating = response.rating;
+                                    $('.rating-it').unbind('mouseenter mouseleave');
+                                }
+                            });
+                        }
                     },
                     error: function (xhr) {
-                        console.error(xhr.responseText);
-                    }
+                        if (xhr.responseJSON && xhr.responseJSON.messageOver) {
+                            Swal.fire({
+                                title: 'Đánh giá thất bại',
+                                text: xhr.responseJSON.messageOver,
+                                icon: 'warning',
+                                cancelButtonText: 'Đóng',
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // resetStars();
+                                }
+                            });
+                        }
+
+                        if (xhr.responseJSON && xhr.responseJSON.messageBookingMovie) {
+                            Swal.fire({
+                                title: 'Đánh giá thất bại',
+                                text: xhr.responseJSON.messageBookingMovie,
+                                icon: 'warning',
+                                cancelButtonText: 'Đóng',
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    resetStars();
+                                    $('.rating-it').css('color', '#ccc');
+                                }
+                            });
+                        }
+                        if (xhr.responseJSON && xhr.responseJSON.messageEnough) {
+                            Swal.fire({
+                                title: 'Đánh giá thất bại',
+                                text: xhr.responseJSON.messageEnough,
+                                icon: 'warning',
+                                cancelButtonText: 'Đóng',
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    resetStars();
+                                }
+                            });
+                        }
+                    },
                 });
             }
         });
+
     </script>
 
 @endpush
