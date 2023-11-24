@@ -15,6 +15,11 @@ use App\Models\Movie;
 use App\Models\Room;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\IOFactory;
+use App\Models\Seat;
+use pdf;
+use Dompdf\Options;
+use Dompdf\Dompdf;
+use App\Models\SeatType;
 class QrAdminController extends Controller
 {
     public function index() {
@@ -22,7 +27,7 @@ class QrAdminController extends Controller
         $showTime = ShowTime::all();
         $movie = Movie::all();
         $rooms = Room::all();
-        return view('admin.qr.qrscanner',compact('bookings','showTime','movie','rooms'));
+        return view('admin.qr.index',compact('bookings','showTime','movie','rooms'));
     }
     public function store(Request $request){
 
@@ -43,7 +48,6 @@ if(isset($booking1)) {
             if($booking1) {
                 $showTime1 = ShowTime::where('id',$booking1->showtime_id)->first();
                 $movieName = Movie::where('id',$showTime1->movie_id)->first();
-
                 $room = Room::where('id',$showTime1->room_id)->first();
                 $status = 3;
                 $booking1->status = $status;
@@ -52,12 +56,24 @@ if(isset($booking1)) {
                 return view('admin.qr.qrscanner',compact('booking1','thongbao','showTime1','room','movieName'));
             }
         }elseif($booking1->status == 3) {
+            $showTime1 = ShowTime::where('id',$booking1->showtime_id)->first();
+          if($showTime1) {
+
+            $movieName = Movie::where('id',$showTime1->movie_id)->first();
+            $room = Room::where('id',$showTime1->room_id)->first();
+            $thongbao = 'Vé này Đã được quét';
+            return view('admin.qr.qrscanner',compact('booking1','thongbao','showTime1','room','movieName'));
+
+          }else {
             $bookings = Booking::orderBy('updated_at', 'desc')->get();
             $showTime = ShowTime::all();
             $movie = Movie::all();
             $rooms = Room::all();
             $thongbao = 'Vé này Đã được quét';
             return view('admin.qr.qrscanner',compact('bookings','showTime','movie','rooms','thongbao'));
+          }
+            // $thongbao = 'Vé này Đã được quét';
+            // return view('admin.qr.qrscanner',compact('booking1','thongbao','showTime1'));
 
         }elseif($booking1->status == 4) {
             $bookings = Booking::orderBy('updated_at', 'desc')->get();
@@ -65,7 +81,7 @@ if(isset($booking1)) {
             $movie = Movie::all();
             $rooms = Room::all();
             $thongbao = 'Vé này Đã bị hủy';
-            return view('admin.qr.qrscanner',compact('bookings','showTime','movie','rooms','thongbao'));
+            return view('admin.qr.index',compact('bookings','showTime','movie','rooms','thongbao'));
         }
     }else {
         $bookings = Booking::orderBy('updated_at', 'desc')->get();
@@ -137,6 +153,57 @@ if(isset($booking1)) {
         return response()->download(public_path('2023/phpflow.docx'));
 
         // Trả về tệp để tải xuống
+    }
+    public function inPdf(Request $request)
+    {
+        $data = [
+            'booking_id' => $request->input('booking_id'),
+            'name' => $request->input('name'),
+            'moviename' => $request->input('moviename'),
+            'roomname' => $request->input('roomname'),
+            'email' => $request->input('email'),
+            'phone' => $request->input('phone'),
+            'list_seat' => $request->input('list_seat'),
+            'created_at' => $request->input('created_at'),
+            'start_date' => $request->input('start_date'),
+            'payment' => $request->input('payment'),
+            'total' => $request->input('total'),
+        ];
+
+        $list_seat = explode(",", $data['list_seat']);
+        $number_of_seats = count($list_seat);
+
+        $pdf = \App::make('dompdf.wrapper');
+        $pdf->getDomPDF()->getOptions()->set('isHtml5ParserEnabled', true);
+
+
+        // Nếu có nhiều ghế, tạo nhiều hóa đơn
+        if ($number_of_seats > 1) {
+            foreach ($list_seat as $seat) {
+                $individual_data = $data; // Tạo một bản sao của dữ liệu để không ảnh hưởng đến các hóa đơn khác nhau
+                $seat1 = Seat::all();
+                $seat_type = SeatType::all();
+                // Remove brackets and keep alphanumeric characters only
+                $individual_data['list_seat'] = trim($seat, '[]');
+                $startDate = date('d/m/Y', strtotime($individual_data['start_date']));
+                $screeningTime = date('H:i', strtotime($individual_data['start_date']));
+
+                $pdf->loadHTML(view('admin.qr.bills', compact('seat_type','individual_data', 'startDate', 'screeningTime', 'list_seat','seat1'))->render());
+
+                // Xuất hóa đơn cho từng ghế
+                return   $pdf->stream('bill_seat_' . $individual_data['list_seat'] . '.pdf');
+            }
+        }else {
+            // Nếu chỉ có một ghế, thì xử lý như bình thường
+            $startDate = date('d/m/Y', strtotime($data['start_date']));
+            $screeningTime = date('H:i', strtotime($data['start_date']));
+            $pdf->loadHTML(view('admin.qr.bill', compact('data', 'startDate', 'screeningTime'))->render());
+
+
+            // Xuất hóa đơn
+
+            return $pdf->stream();
+        }
     }
 
 

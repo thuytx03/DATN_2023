@@ -109,6 +109,12 @@ Route::get('paypal/payment/cancel', [BookingController::class, 'paymentCancel'])
 // hết paypal
 
 
+
+// thanh toan do an
+
+
+// het thanh toan do an
+
 // phim yeu thich
 Route::prefix('favorite')->group(function () {
     // Route::get('/favorite-list', [favorite::class, 'favorite'])->name('home.favorite.list');
@@ -198,7 +204,7 @@ Route::prefix('admin')->group(function () {
         Route::match(['GET', 'POST'], '/', [QrAdminController::class, 'index'])->name('qr.scanner');
         Route::match(['GET', 'POST'], '/store', [QrAdminController::class, 'store'])->name('qr.store');
         Route::match(['GET', 'POST'], '/qrcodeScanner/{id}', [QrcodeController::class, 'checkQr'])->name('qr.scan');
-
+        Route::match(['GET', 'POST'], '/printfPDF', [QrAdminController::class, 'inPdf'])->name('qr.inPdf');
         Route::match(['GET', 'POST'], '/printfWord', [QrAdminController::class, 'processForm'])->name('qr.printfWord');
     });
     Route::prefix('membershiplevels')->group(function () {
@@ -622,22 +628,22 @@ Route::get('{filename}', function ($filename) {
 })
     ->where('filename', '(.*)')
     ->name('admin.sliders.images.show');
-Route::get('movie-ticket-plan', function () {
-    return view('client.movies.movie-ticket-plan');
-})->name('movie-ticket-plan');
-
-Route::get('movie-seat-plan', function () {
-    return view('client.movies.movie-seat-plan');
-})->name('movie-seat-plan');
-
-Route::get('movie-checkout', function () {
-    return view('client.movies.movie-checkout');
-})->name('movie-checkout');
-
-Route::get('movie-food', function () {
-    return view('client.movies.movie-food');
-})->name('movie-food');
-
-Route::get('about-us', function () {
-    return view('client.pages.about-us');
-})->name('about-us');
+//Route::get('movie-ticket-plan', function () {
+//    return view('client.movies.movie-ticket-plan');
+//})->name('movie-ticket-plan');
+//
+//Route::get('movie-seat-plan', function () {
+//    return view('client.movies.movie-seat-plan');
+//})->name('movie-seat-plan');
+//
+//Route::get('movie-checkout', function () {
+//    return view('client.movies.movie-checkout');
+//})->name('movie-checkout');
+//
+//Route::get('movie-food', function () {
+//    return view('client.movies.movie-food');
+//})->name('movie-food');
+//
+//Route::get('about-us', function () {
+//    return view('client.pages.about-us');
+//})->name('about-us');

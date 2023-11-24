@@ -44,8 +44,6 @@ class MovieControllerClient extends Controller
             ->join('movies', 'feed_backs.movie_id', '=', 'movies.id')
             ->select('feed_backs.created_at as feed_back_created_at', 'users.name as user_name', 'users.avatar as avatar', 'feed_backs.message', 'feed_backs.rating')
             ->where('feed_backs.movie_id', $id)
-            ->whereNotNull('feed_backs.rating') // Chỉ lấy các bản ghi có đánh giá
-            ->whereNotNull('feed_backs.message') // Chỉ lấy các bản ghi có bình luận
             ->get();
 //        dd($reviews);
         // Làm tròn điểm trung bình nếu cần
