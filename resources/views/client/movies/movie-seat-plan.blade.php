@@ -116,7 +116,7 @@
                     <img src="{{ asset('client/assets/images/movie/screen-thumb.png') }}" alt="movie">
                 </div>
 
-                <h5 class="subtitle">Ghế thường</h5>
+
                 <div class="screen-wrapper">
                     <ul class="seat-area">
                         @php
@@ -137,11 +137,15 @@
                         <ul class="seat--area">
                             @endif
                             <li class="front-seat">
+                                <input type="hidden" value="{{ $isBooked ? 0 : $thuong->seatType->price }}"
+                                    name="seatThuong">
+
                                 <ul>
                                     <li
                                         class="single-seat seat-type1 {{ $isBooked ? 'not-allowed' : 'single-seat1 seat-click ' }} ">
-                                        <img src="{{ $isBooked ? asset('client/assets/images/movie/seat01-free.png') : asset('client/assets/images/movie/seat01.png') }}"
-                                            alt="seat">
+                                        <img src="{{ $isBooked ? asset('client/assets/images/movie/seatDaChon.png') : asset('client/assets/images/movie/seatThuong.png') }}"
+                                            width="64" alt="seat" class="{{ $isBooked ? 'not-allowed' : 'thuy' }}"
+                                           >
                                         <span class="sit-num">{{ $thuong->row }}{{ $thuong->column }}</span>
 
                                     </li>
@@ -155,8 +159,6 @@
                     </li>
                     </ul>
                 </div>
-
-                <h5 class="subtitle">Ghế VIP</h5>
                 <div class="screen-wrapper">
                     <ul class="seat-area">
                         @php
@@ -177,11 +179,13 @@
                         <ul class="seat--area">
                             @endif
                             <li class="front-seat">
+                                <input type="hidden" value="{{ $isBooked ? 0 : $vip->seatType->price }}" name="seatVip">
                                 <ul>
                                     <li
                                         class="single-seat seat-type1 {{ $isBooked ? 'not-allowed' : 'single-seat1 seat-click ' }} ">
-                                        <img src="{{ $isBooked ? asset('client/assets/images/movie/seat01-free.png') : asset('client/assets/images/movie/seat01.png') }}"
-                                            alt="seat">
+                                        <img src="{{ $isBooked ? asset('client/assets/images/movie/seatDaChon.png') : asset('client/assets/images/movie/seatVip.png') }}"
+                                            width="64" alt="seat" class="{{ $isBooked ? 'not-allowed' : 'thuy' }}"
+                                         >
                                         <span class="sit-num">{{ $vip->row }}{{ $vip->column }}</span>
 
                                     </li>
@@ -195,8 +199,6 @@
                     </li>
                     </ul>
                 </div>
-
-                <h5 class="subtitle">Ghế đôi</h5>
                 <div class="screen-wrapper">
                     <ul class="seat-area">
                         @php
@@ -216,16 +218,19 @@
                         <span>{{ $doi->row }}</span>
                         <ul class="seat--area">
                             @endif
+
                             <li class="front-seat">
-                                <ul>
+                                <input type="hidden" value="{{ $isBooked ? 0 : $doi->seatType->price }}" name="seatDoi">
+
+                                <ul class="ul-price">
                                     <li
-                                        class="single-seat seat-type1 {{ $isBooked ? 'not-allowed' : 'single-seat1 seat-click ' }} ">
-                                        <img src="{{ $isBooked ? asset('client/assets/images/movie/seat01-free.png') : asset('client/assets/images/movie/seat01.png') }}"
-                                            alt="seat">
+                                        class="single-seat seat-type1  {{ $isBooked ? 'not-allowed' : 'single-seat1 seat-click seat ' }} ">
+                                        <img src="{{ $isBooked ? asset('client/assets/images/movie/seatDaChon.png') : asset('client/assets/images/movie/seatDoi.png') }}"
+                                            width="64" alt="seat"
+                                            class="{{ $isBooked ? 'not-allowed' : ' thuy seat ' }}" id="thuy-img"
+                                            data-seat="{{ $doi->row }}{{ $doi->column }}">
                                         <span class="sit-num">{{ $doi->row }}{{ $doi->column }}</span>
-
                                     </li>
-
                                 </ul>
                             </li>
                             @php
@@ -234,23 +239,45 @@
                             @endforeach
                         </ul>
                     </li>
+
                     </ul>
                 </div>
+
             </div>
+
+
+
+
             <div class="row text-center ">
                 <div class="status mx-auto d-flex">
                     <ul class="m-2">
-                        <li><img src="{{ asset('client/assets/images/movie/seat01-booked.png') }}" alt=""></li>
-                        <li>Đang chọn</li>
-
+                        <li><img src="{{ asset('client/assets/images/movie/seatDangGiu.png') }}" width="64"
+                                alt=""></li>
+                        <li>Đang giữ ghế</li>
                     </ul>
                     <ul class="m-2">
-                        <li><img src="{{ asset('client/assets/images/movie/seat01-free.png') }}" alt=""></li>
+                        <li><img src="{{ asset('client/assets/images/movie/seatDangChon.png') }}" alt=""></li>
+                        <li>Đang chọn</li>
+                    </ul>
+                    <ul class="m-2">
+                        <li><img src="{{ asset('client/assets/images/movie/seatDaChon.png') }}" width="64"
+                                alt=""></li>
                         <li>Đã chọn</li>
                     </ul>
                     <ul class="m-2">
-                        <li><img src="{{ asset('client/assets/images/movie/seat01.png') }}" alt=""></li>
-                        <li>Ghế trống</li>
+                        <li><img src="{{ asset('client/assets/images/movie/seatThuong.png') }}" width="64"
+                                alt=""></li>
+                        <li>Ghế thường</li>
+                    </ul>
+                    <ul class="m-2">
+                        <li><img src="{{ asset('client/assets/images/movie/seatVip.png') }}" width="64" alt="">
+                        </li>
+                        <li>Ghế Vip</li>
+                    </ul>
+                    <ul class="m-2">
+                        <li><img src="{{ asset('client/assets/images/movie/seatDoi.png') }}" width="64"
+                                alt=""></li>
+                        <li>Ghế Đôi</li>
                     </ul>
                 </div>
             </div>
@@ -263,93 +290,235 @@
                     <span>Số ghế bạn chọn</span>
                     <h3 class="title"></h3>
                 </div>
-                <div class="book-item">
-                    <button type="button" class="custom-button" data-toggle="modal" data-target="#exampleModal">
-                        Đặt đồ ăn
-                    </button>
+
+                <div class="book-item ">
+                    <span>Tổng tiền</span>
+                    <h3 class="total-price"></h3>
                 </div>
 
+
                 <div class="book-item">
-                    <a href="#" class="custom-button " id="thanh-toan-button">Thanh toán</a>
+                    <a href="#" class="custom-button " id="thanh-toan-button">Tiếp tục</a>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- ==========Movie-Section========== -->
-    <div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title text-black" style="color: black" id="exampleModalLabel">Danh sách đồ ăn</h5>
-                </div>
-                <div class="modal-body">
-                    <table class="table text-center">
-                        <thead class="">
-                            <tr>
-                                <th scope="col">
-                                    <input type="checkbox" class="select-control " style="width:15px;" id="select-all">
-                                </th>
-                                <th>Tên</th>
-                                <th>Ảnh</th>
-                                <th>Số lượng</th>
-                                <th>Giá</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($food as $value)
-                                <tr>
-                                    <td scope="row">
-                                        <input type="checkbox" class="child-checkbox" style="width:15px" name="ids[]"
-                                            value="{{ $value->id }}">
-                                    </td>
-                                    <td scope="row">{{ $value->name }}</td>
-                                    <td><img src="{{ Storage::url($value->image) }}" width="50" alt=""></td>
-                                    <td>
-                                        <div class="quantity-input">
-                                            <button class="decrease" data-productid="{{ $value->id }}">-</button>
-                                            <input type="number" name="quantity" min="1" max="20"
-                                                value="1" id="quantity-input-{{ $value->id }}">
-                                            <button class="increase" data-productid="{{ $value->id }}">+</button>
-                                        </div>
-                                    </td>
 
-                                    <td id="price-{{ $value->id }}" data-price="{{ $value->price }}">
-                                      
-                                        @if (is_numeric($value->price))
-                                        {{ number_format($value->price, 0, ',', '.') }} VNĐ
-                                    @else
-                                        {{ $value->price }} VNĐ
-                                    @endif
-
-                                </tr>
-                            @endforeach
-
-                        </tbody>
-                    </table>
-
-                    <div id="total-price" class="text-danger">Tổng tiền: 0 VNĐ</div>
-                    <div>
-                        <i class="text-dark">Với những sản phẩm được chọn</i>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                    <button type="button" class="btn btn-primary">Thanh toán</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {{-- giá  --}}
 
+    {{-- <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var seatThuongInput = document.getElementsByName('seatThuong');
+            var seatVipInput = document.getElementsByName('seatVip');
+            var seatDoiInput = document.getElementsByName('seatDoi');
+
+            var seatCountDisplay = document.querySelector('.book-item span');
+            var totalPriceDisplay = document.querySelector('.total-price');
+
+            var seatCount = 0;
+            var totalPrice = 0;
+
+            function updateDisplay() {
+                seatCountDisplay.textContent = 'Số ghế bạn chọn: ' + seatCount;
+                // Format the totalPrice using number_format
+                totalPriceDisplay.textContent = formatCurrency(totalPrice) + ' VNĐ';
+            }
+
+            function formatCurrency(amount) {
+                // Format the amount with the desired currency symbol
+                return amount.toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'VND'
+                }).replace(/^(\D+)/, '');
+            }
+
+            function seatToggleHandler(price) {
+                var seat = this.closest('.front-seat');
+
+                if (seat.classList.contains('not-allowed')) {
+                    return; // Ignore if the seat is not allowed
+                }
+
+                if (seat.classList.contains('thuy')) {
+                    seat.classList.remove('thuy');
+                    seatCount--;
+                    totalPrice -= price ;
+                } else {
+                    seat.classList.add('thuy');
+                    seatCount++;
+                    totalPrice += price;
+                }
+
+                console.log("Seat Count:", seatCount);
+                console.log("Total Price:", totalPrice);
+
+
+                updateDisplay();
+            }
+
+            function attachClickEventToImages(images, price) {
+                images.forEach(function(img) {
+                    img.addEventListener('click', function() {
+                        seatToggleHandler.call(this, price);
+                    });
+                });
+            }
+
+            seatThuongInput.forEach(function(input) {
+                var price = parseFloat(input.value);
+                var images = input.closest('.front-seat').querySelectorAll('.seat-click img');
+                attachClickEventToImages(images, price);
+            });
+
+            seatVipInput.forEach(function(input) {
+                var price = parseFloat(input.value);
+                var images = input.closest('.front-seat').querySelectorAll('.seat-click img');
+                attachClickEventToImages(images, price);
+            });
+
+            seatDoiInput.forEach(function(input) {
+                var price = parseFloat(input.value);
+                console.log("Seat Doi Price:", price);
+                var images = input.closest('.front-seat').querySelectorAll('.seat-click img');
+                attachClickEventToImages(images, price);
+            });
+        });
+    </script> --}}
+
+    {{-- <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var seatThuongInput = document.getElementsByName('seatThuong');
+            var seatVipInput = document.getElementsByName('seatVip');
+            var seatDoiInput = document.getElementsByName('seatDoi');
+
+            var seatCountDisplay = document.querySelector('.book-item span');
+            var totalPriceDisplay = document.querySelector('.total-price');
+
+            var seatCount = 0;
+            var totalPrice = 0;
+
+            function updateDisplay() {
+                seatCountDisplay.textContent = 'Số ghế bạn chọn: ' + seatCount;
+                // Format the totalPrice using number_format
+                totalPriceDisplay.textContent = formatCurrency(totalPrice) + ' VNĐ';
+            }
+
+            function formatCurrency(amount) {
+                // Format the amount with the desired currency symbol
+                return amount.toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'VND'
+                }).replace(/^(\D+)/, '');
+            }
+
+            function seatToggleHandler(price, isDoubleSeat) {
+                var seat = this.closest('.front-seat');
+
+                if (seat.classList.contains('not-allowed')) {
+                    return; // Ignore if the seat is not allowed
+                }
+
+                if (isDoubleSeat) {
+                    // Toggle the class for both seats in the double seat
+                    var doubleSeats = seat.closest('.seat-line').querySelectorAll('.front-seat.thuy');
+                    doubleSeats.forEach(function(doubleSeat) {
+                        doubleSeat.classList.toggle('thuy');
+                    });
+
+                    var isSelected = seat.classList.contains('thuy');
+
+                    if (!isSelected) {
+                        seatCount += isDoubleSeat ? 2 : 1; // Double seat counts as 2
+                        totalPrice += isDoubleSeat ? price * 2 : price; // Double seat has double the price
+
+                        // Automatically select the adjacent seat
+                        var adjacentSeat = seat.nextElementSibling;
+                        if (adjacentSeat && adjacentSeat.classList.contains('front-seat') && !adjacentSeat.classList
+                            .contains('not-allowed')) {
+                            adjacentSeat.classList.add('thuy');
+                            seatCount++;
+                            totalPrice += price; // Adjust the total price for the adjacent seat
+                        }
+                    }
+                } else {
+                    var isSelected = seat.classList.contains('thuy');
+
+                    if (isSelected) {
+                        seatCount--;
+                        totalPrice -= isDoubleSeat ? price * 2 : price;
+                    } else {
+                        seatCount++;
+                        totalPrice += isDoubleSeat ? price * 2 : price;
+                    }
+
+                    seat.classList.toggle('thuy');
+                }
+
+                console.log('Seat Count:', seatCount);
+                console.log('Total Price:', totalPrice);
+
+                updateDisplay();
+            }
+
+
+            function attachClickEventToImages(images, price, isDoubleSeat) {
+                images.forEach(function(img) {
+                    img.addEventListener('click', function() {
+                        seatToggleHandler.call(this, price, isDoubleSeat);
+                    });
+                });
+            }
+
+            seatThuongInput.forEach(function(input) {
+                var price = parseFloat(input.value);
+                var images = input.closest('.front-seat').querySelectorAll('.seat-click img');
+                attachClickEventToImages(images, price);
+            });
+
+            seatVipInput.forEach(function(input) {
+                var price = parseFloat(input.value);
+                var images = input.closest('.front-seat').querySelectorAll('.seat-click img');
+                attachClickEventToImages(images, price);
+            });
+
+            seatDoiInput.forEach(function(input) {
+                var price = parseFloat(input.value);
+                console.log("Seat Doi Price:", price);
+                var images = input.closest('.front-seat').querySelectorAll('.seat-click img');
+                attachClickEventToImages(images, price, true); // Set isDoubleSeat to true for double seats
+            });
+
+
+        });
+    </script> --}}
+
+
+    {{-- kiểm tra ghế  --}}
     <script>
+        // Sử dụng jQuery để chọn tất cả các ghế có class 'seat-click'
+        const $seats = $('.seat-click');
+
+        // Bắt đầu bằng việc vô hiệu hóa nút thanh toán
+        $('#thanh-toan-button').prop('disabled', true);
+
+        // Đặt sự kiện click cho nút thanh toán
         $('#thanh-toan-button').on('click', function(event) {
-            const selectedSeats = $seats.filter('.seat-click.selected');
+            // Kiểm tra xem có bất kỳ ghế nào đã được chọn
+            const selectedSeats = $seats.filter('.seat-selected');
+            if (selectedSeats.length === 0) {
+                // Nếu không có ghế nào được chọn, hiển thị thông báo và ngừng xử lý sự kiện
+                event.preventDefault(); // Ngừng chuyển hướng đến trang thanh toán
+                alert('Vui lòng chọn ghế trước khi thanh toán.');
+                return; // Stop further execution
+            }
+
             const selectedSeatNumbers = selectedSeats.map(function() {
                 return $(this).find('.sit-num').text();
             }).get();
-
 
             // Tạo một danh sách các hàng A đến Z
             const rows = [];
@@ -405,37 +574,17 @@
                 alert('Vui lòng không chừa 1 ghế trống bên trái hoặc bên phải của các ghế bạn đã chọn.');
             }
         });
-    </script>
-
-    {{-- kiểm tra người dùng đã chon ghế hay chưa  --}}
-    <script>
-        // Sử dụng jQuery để chọn tất cả các ghế có class 'seat-click'
-        const $seats = $('.seat-click');
-
-        // Bắt đầu bằng việc vô hiệu hóa nút thanh toán
-        $('#thanh-toan-button').prop('disabled', true);
-
-        // Đặt sự kiện click cho nút thanh toán
-        $('#thanh-toan-button').on('click', function(event) {
-            // Kiểm tra xem có bất kỳ ghế nào đã được chọn
-            const selectedSeats = $seats.filter('.seat-click.selected');
-            if (selectedSeats.length === 0) {
-                // Nếu không có ghế nào được chọn, hiển thị thông báo và ngừng xử lý sự kiện
-                event.preventDefault(); // Ngừng chuyển hướng đến trang thanh toán
-                alert('Vui lòng chọn ghế trước khi thanh toán.');
-            }
-        });
 
         // Đặt sự kiện click cho tất cả ghế
         $seats.on('click', function() {
-            $(this).toggleClass('selected'); // Chuyển trạng thái chọn ghế
+            $(this).toggleClass('seat-selected'); // Chuyển trạng thái chọn ghế
 
             // Kiểm tra xem có bất kỳ ghế nào đã được chọn
-            const selectedSeats = $seats.filter('.seat-click.selected');
+            const selectedSeats = $seats.filter('.seat-selected');
             if (selectedSeats.length > 0) {
                 // Nếu có ghế được chọn, cập nhật thuộc tính href của nút thanh toán
                 $('#thanh-toan-button').attr('href',
-                    '{{ route('thanh-toan', ['room_id' => $room->id, 'slug' => $showTime->movie->slug, 'showtime_id' => $showTime->id]) }}'
+                    '{{ route('chon-do-an', ['room_id' => $room->id, 'slug' => $showTime->movie->slug, 'showtime_id' => $showTime->id]) }}'
                 );
             } else {
                 // Nếu không có ghế nào được chọn, đặt lại thuộc tính href về trống hoặc href="#"
@@ -444,37 +593,85 @@
         });
     </script>
 
-    {{-- kiểm tra ghế và lưu danh sách ghế vào session  --}}
     <script>
-        var chosenSeats1 = @json(Session::get('selectedSeats', [])); // Sử dụng một mảng rỗng mặc định nếu session không tồn tại
-
         document.addEventListener("DOMContentLoaded", function() {
-            var seatElements = document.querySelectorAll(".single-seat1");
-            // if (!Array.isArray(chosenSeats1)) {
-            //     chosenSeats1 = [];
-            // }
+            var chosenSeats = @json(Session::get('selectedSeats', []));
+            var seatElements = document.querySelectorAll(".seat-click");
 
-            // Hàm hiển thị danh sách ghế đã chọn
             function updateChosenSeatsDisplay() {
-                var chosenSeats1Text = chosenSeats1.join(", ");
-                document.querySelector(".proceed-book .title").textContent = chosenSeats1Text;
+                var chosenSeatsText = chosenSeats.join(", ");
+                document.querySelector(".proceed-book .title").textContent = chosenSeatsText;
             }
 
-            seatElements.forEach(function(seat) {
-                seat.addEventListener("click", function() {
-                    var seatNum = seat.querySelector(".sit-num").textContent;
+            seatElements.forEach(function(seat, index) {
+                var imgElement = seat.querySelector("img");
+                var originalImageSrc = imgElement.src;
+                var newImageSrc = "{{ asset('client/assets/images/movie/seatDangChon.png') }}";
+                var seatNum = seat.querySelector(".sit-num").textContent;
 
-                    if (!chosenSeats1.includes(seatNum)) {
-                        chosenSeats1.push(seatNum);
+                if (chosenSeats.includes(seatNum)) {
+                    imgElement.src = newImageSrc;
+                    seat.classList.add("seat-selected");
+                }
+
+                imgElement.addEventListener("click", function(event) {
+                    event.stopPropagation();
+
+                    // Toggle the seat selection state
+                    if (imgElement.src === originalImageSrc) {
+                        imgElement.src = newImageSrc;
+                        chosenSeats.push(seatNum);
                         seat.classList.add("seat-selected");
+
+                        // Auto-select the corresponding seat for seats with the "seat" class
+                        if (seat.classList.contains("seat")) {
+                            var oppositeIndex = (index % 2 === 0) ? index + 1 : index - 1;
+                            var oppositeSeat = seatElements[oppositeIndex];
+
+                            if (oppositeSeat) {
+                                var oppositeImgElement = oppositeSeat.querySelector("img");
+                                var oppositeSeatNum = oppositeSeat.querySelector(".sit-num")
+                                    .textContent;
+
+                                oppositeImgElement.src = newImageSrc;
+                                chosenSeats.push(oppositeSeatNum);
+                                oppositeSeat.classList.add("seat-selected");
+                            }
+                        }
                     } else {
-                        chosenSeats1 = chosenSeats1.filter(function(seat) {
+                        imgElement.src = originalImageSrc;
+                        chosenSeats = chosenSeats.filter(function(seat) {
                             return seat !== seatNum;
                         });
                         seat.classList.remove("seat-selected");
+
+                        // Deselect the corresponding seat for seats with the "seat" class
+                        if (seat.classList.contains("seat")) {
+                            var oppositeIndex = (index % 2 === 0) ? index + 1 : index - 1;
+                            var oppositeSeat = seatElements[oppositeIndex];
+
+                            if (oppositeSeat) {
+                                var oppositeImgElement = oppositeSeat.querySelector("img");
+                                var oppositeSeatNum = oppositeSeat.querySelector(".sit-num")
+                                    .textContent;
+
+                                oppositeImgElement.src = originalImageSrc;
+                                chosenSeats = chosenSeats.filter(function(seat) {
+                                    return seat !== oppositeSeatNum;
+                                });
+                                oppositeSeat.classList.remove("seat-selected");
+                            }
+                        }
                     }
 
-                    // Lưu danh sách ghế đã chọn vào session
+                    function formatCurrency(amount) {
+                        // Format the amount with the desired currency symbol
+                        return amount.toLocaleString('en-US', {
+                            style: 'currency',
+                            currency: 'VND'
+                        }).replace(/^(\D+)/, '');
+                    }
+
                     fetch('/save-selected-seats', {
                             method: 'POST',
                             headers: {
@@ -482,197 +679,33 @@
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
                             },
                             body: JSON.stringify({
-                                selectedSeats: chosenSeats1
+                                selectedSeats: chosenSeats
                             }),
                         })
                         .then(response => response.json())
                         .then(data => {
                             console.log(data.message);
-                            // Sau khi lưu vào session, cập nhật hiển thị danh sách ghế đã chọn
                             updateChosenSeatsDisplay();
+
+                            // Định dạng giá theo VNĐ và cập nhật trên giao diện người dùng
+
+                            document.querySelector(".total-price").textContent = formatCurrency(
+                                data.totalPrice) + " VNĐ";
                         });
+
+
+                    const selectedSeats = $('.seat-click').filter('.seat-selected');
+                    if (selectedSeats.length > 0) {
+                        $('#thanh-toan-button').attr('href',
+                            '{{ route('chon-do-an', ['room_id' => $room->id, 'slug' => $showTime->movie->slug, 'showtime_id' => $showTime->id]) }}'
+                        );
+                    } else {
+                        $('#thanh-toan-button').attr('href', '#');
+                    }
                 });
             });
 
-            // Ban đầu, cập nhật hiển thị danh sách ghế đã chọn
             updateChosenSeatsDisplay();
-        });
-    </script>
-
-    {{-- thay đổi ảnh khi chọn ghế --}}
-    <script>
-        var chosenSeats = @json(Session::get('selectedSeats'));
-
-        document.addEventListener("DOMContentLoaded", function() {
-            var seatElements = document.querySelectorAll(".seat-click");
-
-            seatElements.forEach(function(seat) {
-                var imgElement = seat.querySelector("img");
-                var originalImageSrc = imgElement.src;
-                var newImageSrc = "{{ asset('client/assets/images/movie/seat01-booked.png') }}";
-                var seatNum = seat.querySelector(".sit-num").textContent;
-
-                // Kiểm tra xem ghế có trong danh sách đã chọn hay không và cập nhật trạng thái của ghế
-                if (chosenSeats.includes(seatNum)) {
-                    imgElement.src = newImageSrc;
-                    seat.classList.add("seat-selected");
-                }
-
-                seat.addEventListener("click", function() {
-                    if (imgElement.src === originalImageSrc) {
-                        imgElement.src = newImageSrc;
-                        chosenSeats.push(seatNum); // Thêm ghế vào danh sách đã chọn
-                        seat.classList.add("seat-selected");
-                    } else {
-                        imgElement.src = originalImageSrc;
-                        chosenSeats = chosenSeats.filter(function(seat) {
-                            return seat !== seatNum;
-                        });
-                        seat.classList.remove("seat-selected");
-                    }
-                });
-            });
-        });
-    </script>
-
-    {{-- checkAll selectbox --}}
-    <script>
-        function selectAllCheckbox() {
-            document.getElementById('select-all').addEventListener('change', function() {
-                let checkboxes = document.getElementsByClassName('child-checkbox');
-                for (let checkbox of checkboxes) {
-                    checkbox.checked = this.checked;
-                }
-            });
-
-            let childCheckboxes = document.getElementsByClassName('child-checkbox');
-            for (let checkbox of childCheckboxes) {
-                checkbox.addEventListener('change', function() {
-                    document.getElementById('select-all').checked = false;
-                });
-            }
-        }
-        selectAllCheckbox();
-    </script>
-
-    {{-- tăng giảm số lượng cập nhật giá --}}
-    <script>
-        // Hàm cập nhật tổng tiền dựa trên các checkbox đã chọn và giá của từng sản phẩm
-        function updateTotalPrice() {
-            var total = 0;
-            $("input.child-checkbox:checked").each(function() {
-                var productId = $(this).val();
-                var quantity = parseInt($("#quantity-input-" + productId).val());
-                var price = parseFloat($("#price-" + productId).data("price"));
-                var productTotal = quantity * price;
-                total += productTotal;
-                // Cập nhật giá của từng sản phẩm trong bảng
-                $("#price-" + productId).text(productTotal.toLocaleString("vi-VN") + " VNĐ");
-            });
-
-            $("#total-price").text("Tổng tiền: " + total.toLocaleString("vi-VN") + " VNĐ");
-        }
-
-        // Hàm cập nhật giá sản phẩm khi số lượng thay đổi
-        function updateProductPrice(productId) {
-            var quantity = parseInt($("#quantity-input-" + productId).val());
-            var price = parseFloat($("#price-" + productId).data("price"));
-            var productTotal = quantity * price;
-
-            // Cập nhật giá của từng sản phẩm trong bảng
-            $("#price-" + productId).text(productTotal.toLocaleString("vi-VN") + " VNĐ");
-        }
-
-        // Gắn các trình xử lý sự kiện cho các nút tăng/giảm số lượng
-        $(".quantity-input").on("click", ".increase, .decrease", function() {
-            var productId = $(this).data("productid");
-            var quantityInput = $("#quantity-input-" + productId);
-            var quantity = parseInt(quantityInput.val());
-
-            if ($(this).hasClass("increase")) {
-                quantity += 1;
-            } else {
-                quantity -= 1;
-                if (quantity < 1) {
-                    quantity = 1;
-                }
-            }
-
-            quantityInput.val(quantity);
-            updateProductPrice(productId); // Cập nhật giá sản phẩm
-            updateTotalPrice(); // Cập nhật tổng tiền
-        });
-        // Gắn trình xử lý sự kiện cho các checkbox để cập nhật tổng tiền khi chọn hoặc bỏ chọn
-        $(".child-checkbox").on("change", function() {
-            updateTotalPrice();
-        });
-
-        // Gắn trình xử lý sự kiện cho checkbox "Chọn tất cả"
-        $("#select-all").on("change", function() {
-            $(".child-checkbox").prop("checked", this.checked);
-            updateTotalPrice();
-        });
-
-        // Tính toán ban đầu tổng tiền
-        updateTotalPrice();
-    </script>
-
-    {{-- lưu thông tin đồ ăn  --}}
-    <script type="text/javascript">
-        document.querySelector("button.btn-primary").addEventListener("click", function() {
-            // Thu thập thông tin các sản phẩm được chọn
-            const selectedProducts = [];
-            let totalPriceFood = 0;
-            const checkboxes = document.querySelectorAll("input.child-checkbox:checked");
-
-            if (checkboxes.length === 0) {
-                alert("Vui lòng chọn ít nhất một sản phẩm trước khi thanh toán.");
-                return; // Không thực hiện gửi dữ liệu nếu không có checkbox nào được chọn.
-            }
-
-            checkboxes.forEach(checkbox => {
-                const productId = checkbox.value;
-                const productName = checkbox.parentElement.nextElementSibling.textContent;
-                const quantity = document.querySelector(`#quantity-input-${productId}`).value;
-                const priceText = document.querySelector(`#price-${productId}`)
-                    .textContent; // Lấy giá từ nội dung văn bản
-                const priceParts = priceText.split(' '); // Tách giá và đơn vị tiền tệ
-                const priceValue = parseFloat(priceParts[0].replace('.', '').replace(',',
-                    '')); // Loại bỏ dấu "." và "," và chuyển thành số
-
-                // Cộng giá tiền của sản phẩm vào tổng giá tiền
-                totalPriceFood += priceValue;
-
-                selectedProducts.push({
-                    id: productId,
-                    name: productName,
-                    quantity,
-                    price: priceValue,
-                });
-            });
-
-            // Gửi dữ liệu lên server bằng Ajax hoặc fetch API và lưu vào session
-            fetch('/luu-thong-tin-san-pham', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    },
-                    body: JSON.stringify({
-                        selectedProducts,
-                        totalPriceFood
-                    }),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Thông báo hoặc chuyển hướng đến trang thanh toán
-                        // Đóng modal bằng cách sử dụng Bootstrap 4
-                        $('#exampleModal').modal('hide');
-                    } else {
-                        // Xử lý lỗi nếu cần
-                    }
-                });
         });
     </script>
 @endsection

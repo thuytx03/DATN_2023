@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\Booking;
 use App\Models\FeedBack;
 use Illuminate\Http\Request;
 use App\Models\Movie;
@@ -57,9 +58,8 @@ class MovieControllerClient extends Controller
             $genresName = $genres->pluck('name')->toArray();
             $nameGenres = implode(',', $genresName);
             $images = $movie->images;
-            $hasMovieBooked = $this->hasUserBookedMovie($userID,$id);
-            $hasUserCommented = $this->hasUserCommented($userID,$id);
-            return view('client.movies.movie-detail', compact('user', 'movie', 'images', 'nameGenres','averageRating','hasMovieBooked','reviews','hasUserCommented'));
+            $canUserReviewMovie = $this->canUserReviewMovie($userID,$id);
+            return view('client.movies.movie-detail', compact('user', 'movie', 'images', 'nameGenres','averageRating','canUserReviewMovie','reviews'));
         }
         if ($movie) {
             $genres = $movie->genres;
@@ -111,21 +111,17 @@ class MovieControllerClient extends Controller
             // Xử lý exception ở đây
         }
     }
-    public function hasUserBookedMovie($userId, $movieId)
+    function canUserReviewMovie($user_id, $movie_id)
     {
-        $bookingCount = DB::table('bookings')
-            ->join('show_times', 'bookings.showtime_id', '=', 'show_times.id')
-            ->where('bookings.user_id', $userId)
-            ->where('show_times.movie_id', $movieId)
+        // Lấy số lần đặt vé
+        $numberOfBookings = Booking::join('show_times', 'bookings.showtime_id', '=', 'show_times.id')
+            ->where(['bookings.user_id' => $user_id, 'show_times.movie_id' => $movie_id])
             ->count();
 
-        return $bookingCount > 0;
-    }
-    public function hasUserCommented($userId, $movieId)
-    {
-        return !Feedback::where('user_id', $userId)
-            ->where('movie_id', $movieId)
-            ->whereNotNull('message') // hoặc ->where('message', '<>', '')
-            ->exists();
+        // Lấy số lần đánh giá
+        $numberOfReviews = Feedback::where(['user_id' => $user_id, 'movie_id' => $movie_id])->count();
+
+        // Kiểm tra số lần đánh giá đã vượt quá số lần đặt vé
+        return $numberOfReviews < $numberOfBookings;
     }
 }

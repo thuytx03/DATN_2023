@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\Admin\BookingsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\SocialController;
@@ -43,8 +44,19 @@ use App\Http\Controllers\Client\RatingController;
 
 Route::get('/', [HomeController::class, 'index'])->name('index');
 
-Route::post('/submit-rating',[RatingController::class,'submitRating'])->name('submit-rating');
-Route::post('/submit-message',[RatingController::class,'submitMessage'])->name('submit-message');
+Route::post('/submit-message-rating',[RatingController::class,'submitRatingAndMessage'])->name('submit-message-rating');
+use App\Http\Controllers\client\QrcodeController;
+use App\Http\Controllers\Admin\QrAdminController;
+use Endroid\QrCode\QrCode;
+Route::get('/', [HomeController::class, 'index'])->name('index');
+
+
+
+
+
+// qrclinet
+Route::match(['GET', 'POST'], '/qrtiketinfo/{id}', [QrcodeController::class, 'qrtiketinfo'])->name('qr.qrtiketinfo');
+// ket thuc
 // phim
 Route::prefix('phim')->group(function () {
     Route::get('/danh-sach', [MovieControllerClient::class, 'list'])->name('phim.danh-sach');
@@ -74,12 +86,13 @@ Route::group(['middleware' => 'guest'], function () {
 Route::middleware(['auth'])->group(function () {
     Route::prefix('food')->group(function () {
         Route::match(['GET', 'POST'], '/', [FoodController::class, 'food'])->name('food');
-        Route::match(['GET', 'POST'],'/get-food-by-type/{foodTypeId}', [FoodController::class, 'getFoodByType']);
-        Route::match(['GET', 'POST'],'/check-voucher', [FoodController::class, 'checkVoucher']);
+        Route::match(['GET', 'POST'], '/get-food-by-type/{foodTypeId}', [FoodController::class, 'getFoodByType']);
+        Route::match(['GET', 'POST'], '/check-voucher', [FoodController::class, 'checkVoucher']);
     });
 });
 //ghế
 Route::get('/lich-chieu/chon-ghe/{room_id}/{slug}/{showtime_id}', [MovieSeatPlanController::class, 'index'])->name('chon-ghe');
+Route::get('/lich-chieu/chon-do-an/{room_id}/{slug}/{showtime_id}', [MovieSeatPlanController::class, 'foodPlan'])->name('chon-do-an');
 Route::post('/save-selected-seats', [MovieSeatPlanController::class, 'saveSelectedSeats'])->name('save-selected-seats');
 Route::post('/luu-thong-tin-san-pham', [MovieSeatPlanController::class, 'luuThongTinSanPham'])->name('luu-thong-tin-san-pham');
 
@@ -116,9 +129,10 @@ Route::get('/chi-tiet/lich-su-giao-dich-ve/{id}', [ProfileController::class, 'tr
 Route::match(['GET', 'POST'], '/change-password', [ProfileController::class, 'change_password'])->name('profile.changePassword');
 Route::match(['GET', 'POST'], '/edit-profile', [ProfileController::class, 'edit_profile'])->name('profile.edit');
 Route::match(['GET', 'POST'], '/points', [ProfileController::class, 'points'])->name('profile.points');
+Route::match(['GET', 'POST'], '/member', [ProfileController::class, 'member'])->name('profile.member');
 
 
-////
+
 Route::get('contact', function () {
     return view('client.contacts.contact');
 })->name('contact');
@@ -133,13 +147,23 @@ Route::get('logout', [SocialController::class, 'logout'])->name('logout');
 
 // ket thuc route mang xa hoi
 Route::prefix('admin')->group(function () {
-    //dashboard
-    Route::match(['GET', 'POST'], '/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-
     //login
     Route::match(['GET', 'POST'], '/login', [AuthAdminController::class, 'login'])->name('login.admin');
     //dashboard
-    Route::match(['GET', 'POST'], '/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::prefix('dashboard')->group(function () {
+        Route::match(['GET', 'POST'], '/user', [DashboardController::class, 'user'])->name('dashboard.user');
+        Route::match(['GET', 'POST'], '/invoice/day', [DashboardController::class, 'day'])->name('dashboard.invoice.day');
+        Route::match(['GET', 'POST'], '/invoice/day/hourly-data', [DashboardController::class, 'getHourlyRevenue']);
+        Route::match(['GET', 'POST'], '/invoice/day/getCountStatusDay', [DashboardController::class, 'getCountStatusDay']);
+        Route::match(['GET', 'POST'], '/invoice/week', [DashboardController::class, 'week'])->name('dashboard.invoice.week');
+        Route::match(['GET', 'POST'], '/invoice/week/weekly-data', [DashboardController::class, 'getWeeklyRevenue']);
+        Route::match(['GET', 'POST'], '/invoice/week/getCountStatusWeek', [DashboardController::class, 'getCountStatusWeek']);
+        Route::match(['GET', 'POST'], '/invoice/month', [DashboardController::class, 'month'])->name('dashboard.invoice.month');
+        Route::match(['GET', 'POST'], '/invoice/month/monthly-data', [DashboardController::class, 'getMonthlyRevenue']);
+        Route::match(['GET', 'POST'], '/invoice/month/getCountStatusMonth', [DashboardController::class, 'getCountStatusMonth']);
+        Route::match(['GET', 'POST'], '/getMonthlyStats', [DashboardController::class, 'getMonthlyStats']);
+        Route::match(['GET', 'POST'], '/getUserCounts', [DashboardController::class, 'getUserCounts']);
+    });
     //role
     Route::prefix('role')->group(function () {
         Route::match(['GET', 'POST'], '/', [RoleController::class, 'index'])->name('role.list');
@@ -169,6 +193,13 @@ Route::prefix('admin')->group(function () {
         Route::match(['GET', 'POST'], '/restoreSelected', [PermissionController::class, 'restore_bin_all'])->name('bin.restore-permission-all');
         Route::match(['GET', 'POST'], '/delete/{id}', [PermissionController::class, 'delete_bin'])->name('bin.delete-permission');
         Route::match(['GET', 'POST'], '/permanentlyDeleteSelected', [PermissionController::class, 'delete_bin_all'])->name('bin.delete-permission-all');
+    });
+    Route::prefix('qrcode')->group(function () {
+        Route::match(['GET', 'POST'], '/', [QrAdminController::class, 'index'])->name('qr.scanner');
+        Route::match(['GET', 'POST'], '/store', [QrAdminController::class, 'store'])->name('qr.store');
+        Route::match(['GET', 'POST'], '/qrcodeScanner/{id}', [QrcodeController::class, 'checkQr'])->name('qr.scan');
+
+        Route::match(['GET', 'POST'], '/printfWord', [QrAdminController::class, 'processForm'])->name('qr.printfWord');
     });
     Route::prefix('membershiplevels')->group(function () {
         Route::match(['GET', 'POST'], '/', [MemberShipLevelsController::class, 'index'])->name('MBSL.list');
@@ -606,8 +637,6 @@ Route::get('movie-checkout', function () {
 Route::get('movie-food', function () {
     return view('client.movies.movie-food');
 })->name('movie-food');
-
-
 
 Route::get('about-us', function () {
     return view('client.pages.about-us');

@@ -9,13 +9,13 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <script>
+    <!-- <script>
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-    </script>
+    </script> -->
     <title>@yield('title')</title>
 
     <!-- Custom fonts for this template-->

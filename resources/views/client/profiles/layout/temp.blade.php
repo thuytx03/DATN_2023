@@ -46,7 +46,8 @@
                 <a href="{{route('profile')}}">Phiếu giảm giá</a>
                 <a href="{{route('profile.history')}}">Lịch sử giao dịch</a>
                 <a href="{{route('profile.points')}}">Điểm Thưởng</a>
-              
+                <a href="{{route('profile.member')}}">Thẻ Thành Viên</a>
+
 
             </div>
             <div class="col-8" id="right-col">

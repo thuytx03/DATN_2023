@@ -9,9 +9,9 @@
             color: #ffcc00; /* hoặc màu khác để làm nổi bật */
         }
     </style>
-    @push('styles')
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-    @endpush
+    {{--    @push('styles')--}}
+
+    {{--    @endpush--}}
     <!-- ==========Banner-Section========== -->
     <section class="details-banner bg_img" data-background="{{asset('assets/images/banner/banner03.jpg')}}">
         <div class="container">
@@ -118,23 +118,23 @@
                         </div>
                         <p>Người dùng đánh giá</p>
                     </div>
-                    @if(auth()->check() && $hasMovieBooked)
-                        <div class="item" id="item-star">
-                            <div class="item-header">
-                                <div class="rate-it list-inline d-flex" style="cursor: pointer">
-                                    @for ($count = 1; $count <= 5; $count++)
-                                        <span class="rating-it {{ $count <= $movie->userRating() ? 'highlight' : '' }}"
-                                              data-rating="{{ $count }}" data-movie-id="{{ $movie->id }}"
-                                              style="font-size: 25px; margin: 0 2px">&#9733;</span>
-                                        @if($count == 1)
-                                            <span style="display: none" id="movieID">{{ $movie->id }}</span>
-                                        @endif
-                                    @endfor
-                                </div>
-                            </div>
-                            <p>Đánh giá phim</p>
-                        </div>
-                    @endif
+                    {{--                    @if(auth()->check() && $hasMovieBooked)--}}
+                    {{--                        <div class="item" id="item-star">--}}
+                    {{--                            <div class="item-header">--}}
+                    {{--                                <div class="rate-it list-inline d-flex" style="cursor: pointer">--}}
+                    {{--                                    @for ($count = 1; $count <= 5; $count++)--}}
+                    {{--                                        <span class="rating-it {{ $count <= $movie->userRating() ? 'highlight' : '' }}"--}}
+                    {{--                                              data-rating="{{ $count }}" data-movie-id="{{ $movie->id }}"--}}
+                    {{--                                              style="font-size: 25px; margin: 0 2px">&#9733;</span>--}}
+                    {{--                                        @if($count == 1)--}}
+                    {{--                                            <span style="display: none" id="movieID">{{ $movie->id }}</span>--}}
+                    {{--                                        @endif--}}
+                    {{--                                    @endfor--}}
+                    {{--                                </div>--}}
+                    {{--                            </div>--}}
+                    {{--                            <p>Đánh giá phim</p>--}}
+                    {{--                        </div>--}}
+                    {{--                    @endif--}}
                 </div>
                 <div class="button-container">
                     <a href="{{ route('lich-chieu',['id'=>$movie->id,'slug'=>$movie->slug]) }}" class="custom-button">Mua
@@ -246,7 +246,29 @@
                                     </div>
                                 </div>
                                 <div class="tab-item active">
-                                    @if(auth()->check() && $hasMovieBooked && $hasUserCommented)
+                                    @if(auth()->check() && $canUserReviewMovie)
+                                        <div class="container mb-4 ml-2">
+                                            <div class="item" id="item-star">
+                                                <div class="item-header">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="m-2" style="font-size: 18px">Đánh giá phim :</div>
+                                                        <div class="rate-it list-inline d-flex" style="cursor: pointer">
+                                                            @for ($count = 1; $count <= 5; $count++)
+                                                                <span
+                                                                    class="rating-it"
+                                                                    data-rating="{{ $count }}"
+                                                                    data-movie-id="{{ $movie->id }}"
+                                                                    style="font-size: 30px; margin: 0 4px">&#9733;</span>
+                                                                @if($count == 1)
+                                                                    <span style="display: none"
+                                                                          id="movieID">{{ $movie->id }}</span>
+                                                                @endif
+                                                            @endfor
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div class="container" id="review-message">
                                             <div class="form-group row">
                                                 <div class="col-md-1">
@@ -258,15 +280,15 @@
                                                            name="message" id="message">
                                                 </div>
                                                 <div class="col-md-2">
-                                                    <button class="btn btn-info" type="submit" id="submitComment">Bình
-                                                        luận
+                                                    <button class="btn btn-info" type="submit" id="submitComment">Đánh
+                                                        giá
                                                     </button>
                                                 </div>
                                             </div>
                                         </div>
                                     @endif
                                     @foreach($reviews as $review)
-                                        <div class="movie-review-item">
+                                        <div class="movie-review-item d-flex flex-wrap">
                                             <div class="author">
                                                 <div class="thumb">
                                                     <img
@@ -280,7 +302,7 @@
                                                 </div>
                                             </div>
                                             <div class="movie-review-content">
-                                                <div class="review">
+                                                <div class="review d-flex">
                                                     @for($i = 1; $i <= 5; $i++)
                                                         @if($i <= $review->rating)
                                                             <span class="rating"
@@ -295,180 +317,79 @@
                                             </div>
                                         </div>
                                     @endforeach
-                                    <div class="load-more text-center">
-                                        <a href="#0" class="custom-button transparent">Xem thêm</a>
-                                    </div>
+{{--                                    <div class="load-more text-center">--}}
+{{--                                        <a href="#0" class="custom-button transparent">Xem thêm</a>--}}
+{{--                                    </div>--}}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
     </section>
 @endsection
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"
+            integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script>
         $(document).ready(function () {
-            var selectedRating = 0;
-            // Kiểm tra xem đã có xếp hạng từ trước không
-            var initialRating = $('.rating-it.highlight').length;
-            $('.rating-it').mouseenter(function () {
-                var rating = $(this).data('rating');
-                highlightStars(rating);
-            });
-            $('.rating-it').mouseleave(function () {
-                if (selectedRating === 0) {
-                    resetStars();
+            $(document).ready(function () {
+                let selectedRating = 0;
+                const stars = document.querySelectorAll('.rating-it');
+                // Get the rating from the last highlighted star
+                for (const star of stars) {
+                    star.classList.add('highlight');
+
+                    star.addEventListener('click', () => {
+                        selectedRating = parseInt(star.getAttribute('data-rating'));
+
+                        // Remove the 'highlight' class from all stars
+                        for (const star of stars) {
+                            star.classList.remove('highlight');
+                        }
+
+                        // Add the 'highlight' class to the clicked star and all preceding stars
+                        for (let i = 1; i <= selectedRating; i++) {
+                            const currentStar = stars[i - 1];
+                            currentStar.classList.add('highlight');
+                        }
+                    });
                 }
-            });
-            $('.rating-it').click(function () {
-                var rating = $(this).data('rating');
-                var movieId = $(this).data('movie-id');
-                selectedRating = rating;
-                sendRating(rating, movieId);
-            });
+                const movieID = $('#movieID').text();
 
-            function highlightStars(rating) {
-                $('.rating-it').css('color', '#ccc');
-                $('.rating-it').each(function (index) {
-                    if (index < rating) {
-                        $(this).css('color', '#ffcc00');
-                    }
-                });
-            }
-
-            if (initialRating > 0) {
-                highlightStars(initialRating);
-                $('.rating-it').unbind('mouseenter mouseleave');
-            }
-
-            function resetStars() {
-                $('.rating-it').css('color', '#ccc');
-                $('.rating-it').each(function (index) {
-                    if (index < selectedRating) {
-                        $(this).css('color', '#ffcc00');
-                    }
-                });
-            }
-
-            function sendMessage(rating) {
-                $('#submitComment').on('click', function () {
-                    var movieId = $('#movieID').text(); // hoặc .html()
-                    movieId = parseInt(movieId);
-                    var message = ($('#message').val() === '') ? null : $('#message').val();
+                // Handle the click event on the submit button
+                $('#submitComment').click(function (event) {
+                    event.preventDefault();
+                    // Get the rating and message values
+                    const rating = document.querySelectorAll('.rating-it.highlight').length;
+                    const message = $('#message').val();
+                    // Send the data to the server using AJAX
                     $.ajax({
-                        type: 'POST',
-                        url: '/submit-message', // Thay đổi route tùy thuộc vào tên route của bạn
+                        url: '/submit-message-rating',
+                        method: 'POST',
                         data: {
-                            "_token": "{{ csrf_token() }}",
-                            "message": message,
-                            'movie_id': movieId,
-                            'rating': $('.rating-it.highlight').length
+                            movie_id: movieID,
+                            rating: rating,
+                            message: message,
+                            _token: '{{ csrf_token() }}',
                         },
-                        success: function(response) {
+                        success: function (response) {
                             if (response.message) {
-                                Swal.fire({
-                                    title: 'Bình luận thành công',
-                                    text: response.message,
-                                    icon: 'success',
-                                    cancelButtonText: 'Đóng',
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        $("#review-message").hide();
-                                    }
-                                });
+                                toastr.success(response.message,'Thành công !')
+                            }
+                            if(response.messageError) {
+                                toastr.error(response.messageError,'Thất bại !')
                             }
                         },
-                        error: function(error) {
-                            if (error.responseJSON && error.responseJSON.messageNotNull) {
-                                Swal.fire({
-                                    title: 'Đánh giá thất bại',
-                                    text: error.responseJSON.messageNotNull,
-                                    icon: 'warning',
-                                    cancelButtonText: 'Đóng',
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        // resetStars();
-                                    }
-                                });
-                            }
+                        error: function (error) {
+
+                            toastr.error(error.responseJSON.message, 'Thất bại !');
                         }
                     });
                 });
-            }
-
-            sendMessage(initialRating);
-
-            function sendRating(rating, movie_id) {
-                $.ajax({
-                    type: 'POST',
-                    url: '/submit-rating',
-                    data: {
-                        rating: rating,
-                        movie_id: movie_id,
-                        _token: '{{ csrf_token() }}',
-                    },
-                    success: function (response) {
-                        if (response.messageSuccess) {
-                            Swal.fire({
-                                title: 'Đánh giá thành công',
-                                text: response.messageSuccess,
-                                icon: 'success',
-                                cancelButtonText: 'Đóng',
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    highlightStars(response.rating);
-                                    initialRating = response.rating;
-                                    $('.rating-it').unbind('mouseenter mouseleave');
-                                }
-                            });
-                        }
-                    },
-                    error: function (xhr) {
-                        if (xhr.responseJSON && xhr.responseJSON.messageOver) {
-                            Swal.fire({
-                                title: 'Đánh giá thất bại',
-                                text: xhr.responseJSON.messageOver,
-                                icon: 'warning',
-                                cancelButtonText: 'Đóng',
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    // resetStars();
-                                }
-                            });
-                        }
-
-                        if (xhr.responseJSON && xhr.responseJSON.messageBookingMovie) {
-                            Swal.fire({
-                                title: 'Đánh giá thất bại',
-                                text: xhr.responseJSON.messageBookingMovie,
-                                icon: 'warning',
-                                cancelButtonText: 'Đóng',
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    resetStars();
-                                    $('.rating-it').css('color', '#ccc');
-                                }
-                            });
-                        }
-                        if (xhr.responseJSON && xhr.responseJSON.messageEnough) {
-                            Swal.fire({
-                                title: 'Đánh giá thất bại',
-                                text: xhr.responseJSON.messageEnough,
-                                icon: 'warning',
-                                cancelButtonText: 'Đóng',
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    resetStars();
-                                }
-                            });
-                        }
-                    },
-                });
-            }
+            });
         });
 
     </script>

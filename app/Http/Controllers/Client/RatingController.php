@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\Booking;
 use App\Models\FeedBack;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use SebastianBergmann\Diff\Exception;
 
 class RatingController extends Controller
 {
@@ -14,156 +16,39 @@ class RatingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function submitRating(Request $request)
+    public function submitRatingAndMessage(Request $request)
     {
-        $userId = auth()->id(); // Lấy ID của người dùng hiện tại
-        // Reset biến đếm trên session
-        session()->forget('ratings_performed');
-        $rating = $request->input('rating');
-        $movieId = $request->input('movie_id'); // Chắc chắn rằng bạn đã truyền movie_id từ JavaScript
+        try {
+            $user_id = auth()->user()->id;
+            $movie_id = $request->movie_id;
+            $rating = $request->rating;
+            $message = $request->message; // Nếu cần lưu cả nội dung bình luận
+            $numberOfBookings = Booking::join('show_times', 'bookings.showtime_id', '=', 'show_times.id')
+                ->where(['bookings.user_id' => $user_id, 'show_times.movie_id' => $movie_id])
+                ->count();
 
-        // Kiểm tra xem người dùng đã đặt vé cho phim này bao nhiêu lần
-        $bookingCount = DB::table('bookings')
-            ->join('show_times', 'bookings.showtime_id', '=', 'show_times.id')
-            ->where('bookings.user_id', $userId)
-            ->where('show_times.movie_id', $movieId)
-            ->count();
-        $feedback = Feedback::where('user_id', $userId)
-            ->where('movie_id', $movieId)
-//            ->whereNull('message')
-            ->first();
-        // Kiểm tra xem người dùng đã đánh giá bao nhiêu lần
-        $existingRatings = Feedback::where('user_id', $userId)
-            ->where('movie_id', $movieId)
-            ->count();
-        if ($feedback && $feedback->rating == null) {
-            $feedback->update(['rating' => $rating]);
-            return response()->json(['messageSuccess' => 'Đánh giá đã được gửi thành công', 'rating' => $rating]);
-        }
-        // Kiểm tra số lượt đánh giá đã thực hiện
-        $ratingsPerformed = session()->get('ratings_performed', 0);
-        if ($bookingCount > 0 && $existingRatings < $bookingCount && $ratingsPerformed < $bookingCount) {
-            // Lưu đánh giá vào cơ sở dữ liệu
-            $newRating = new FeedBack([
-                'movie_id' => $movieId,
-                'user_id' => auth()->id(), // Lấy user_id của người đăng nhập
-                'rating' => $rating,
-            ]);
-            $newRating->save();
+            $numberOfReviews = Feedback::where(['user_id' => $user_id, 'movie_id' => $movie_id])->count();
 
-            // Tăng biến đếm số lượt đánh giá đã thực hiện
-            $ratingsPerformed++;
-            session(['ratings_performed' => $ratingsPerformed]);
-            // Trả về thông điệp nếu cần
-            return response()->json(['messageSuccess' => 'Đánh giá đã được gửi thành công', 'rating' => $rating]);
-        } elseif ($bookingCount == 0) {
-            return response()->json(['messageBookingMovie' => 'Bạn cần đặt vé ít nhất 1 lần trước khi đánh giá.'], 422);
-        } elseif ($existingRatings >= $bookingCount) {
-            return response()->json(['messageOver' => 'Bạn đã vượt quá số lần đánh giá cho phép.'], 422);
-        } elseif ($ratingsPerformed >= $bookingCount) {
-            return response()->json(['messageEnough' => 'Bạn đã đánh giá đủ số lần vé đã đặt.'], 422);
-        } else {
-            return response()->json(['message' => 'Có lỗi xảy ra.'], 422);
-        }
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function submitMessage(Request $request)
-    {
-        $userId = auth()->user()->id;
-        $movieId = $request->input('movie_id');
-        $rating = ($request->input('rating') == 0) ? null : $request->input('rating');
-        $message = $request->input('message');
-        $feedback = Feedback::where('user_id', $userId)
-            ->where('movie_id', $movieId)
-            ->first();
-        if ($message == null) {
-            return response()->json(['messageNotNull' => 'Vui lòng không bỏ trống.'], 422);
-        }
-        if ($rating != 0) {
-            if ($feedback) {
-                // Nếu đã có đánh giá, chỉ cập nhật trường message
-                $feedback->update(['message' => $message]);
+            // Kiểm tra số lần đánh giá đã vượt quá số lần đặt vé
+            if ($numberOfReviews >= $numberOfBookings) {
+                return response()->json(['messageError' => 'Bạn không còn lượt đánh giá nào nữa.']);
             }
-            return response()->json(['message' => 'Bình luận thành công']);
-        } else if($feedback) {
-            $feedback->update(['message' => $message]);
-            return response()->json(['message' => 'Bình luận thành công']);
-        }
-        else {
-            // Nếu chưa có đánh giá, tạo mới bản ghi
-            Feedback::create([
-                'user_id' => $userId,
-                'movie_id' => $movieId,
+            // Lưu đánh giá vào bảng feedbacks
+            $feedback = new Feedback([
+                'user_id' => $user_id,
+                'movie_id' => $movie_id,
                 'rating' => $rating,
                 'message' => $message,
             ]);
-            return response()->json(['message' => 'Bình luận thành công']);
+            $feedback->save();
+
+            // Sau khi xử lý, trả về một response (ví dụ: JSON response)
+            return response()->json(['message' => 'Đánh giá và bình luận thành công.']);
+
+        } catch (Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()]);
+
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public
-    function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public
-    function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public
-    function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public
-    function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public
-    function destroy($id)
-    {
-        //
-    }
 }

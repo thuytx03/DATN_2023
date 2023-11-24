@@ -32,9 +32,9 @@ class AuthClientController extends Controller
             ]);
 
             $user = User::where('email', $request->email)->first();
-
+            $remember = $request->has('remember');
             if ($user && $user->status == 1) {
-                if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+                if (Auth::attempt(['email' => $request->email, 'password' => $request->password],$remember)) {
                     toastr()->success('Đăng nhập thành công!');
                     return redirect()->route('index');
                 }else{
@@ -82,7 +82,7 @@ class AuthClientController extends Controller
             ->where('name', 'member')
             ->pluck('id')
             ->first();
-           
+
             if($user) {
                 $member = MemBer::create([
                     'user_id' => $user->id,
