@@ -35,4 +35,6 @@ composer require phpoffice/phpword
 đối với laragon : 
 + chuột phải vào icon laragon ở bên góc phải -> php -> php.init -> search(dynamic) tìm chỗ có các extention -> bỏ dấu phẩy ở chỗ zip (đầu tiên : ;extension=zip bỏ phẩy đi thành -> extension=zip) 
 - Chạy seeder trước khi đăng kí để không bị lỗi 
+- Thư Viện PDF :
+ + composer require barryvdh/laravel-dompdf 
 

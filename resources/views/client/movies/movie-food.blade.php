@@ -107,10 +107,11 @@
                                                 <button class="increase" data-productid="{{ $value->id }}">+</button>
                                             </div>
                                         </td>
-                                        <td>
+                                        <td>{{$value->price}}</td>
+                                        {{-- <td>
                                             {{ number_format($value->price, 0, ',', '.') }} VNĐ
 
-                                        </td>
+                                        </td> --}}
                                         <td id="price-{{ $value->id }}" data-price="{{ $value->price }}">
 
                                             @if (is_numeric($value->price))

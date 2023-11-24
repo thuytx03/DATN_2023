@@ -85,7 +85,7 @@ class OrderFoodController extends Controller
 
         if ($can_place_order) {
             $voucher = Voucher::where('code', $userVoucher)->first();
-            
+
             if ($voucher && $voucher->quantity > 0 && $order_date >= $voucher->start_date && $order_date <= $voucher->end_date && $totalPrice >= $voucher->min_order_amount && $totalPrice <= $voucher->max_order_amount) {
                 // Decrease the voucher quantity by 1
                 $voucher->quantity -= 1;

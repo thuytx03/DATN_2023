@@ -103,6 +103,12 @@ Route::get('paypal/payment/success/{id}', [BookingController::class, 'paymentSuc
 Route::get('paypal/payment/cancel', [BookingController::class, 'paymentCancel'])->name('paypal.payment/cancel');
 // hết paypal
 
+
+// thanh toan do an
+
+
+// het thanh toan do an 
+
 // phim yeu thich
 Route::prefix('favorite')->group(function () {
     // Route::get('/favorite-list', [favorite::class, 'favorite'])->name('home.favorite.list');
@@ -192,7 +198,7 @@ Route::prefix('admin')->group(function () {
         Route::match(['GET', 'POST'], '/', [QrAdminController::class, 'index'])->name('qr.scanner');
         Route::match(['GET', 'POST'], '/store', [QrAdminController::class, 'store'])->name('qr.store');
         Route::match(['GET', 'POST'], '/qrcodeScanner/{id}', [QrcodeController::class, 'checkQr'])->name('qr.scan');
-
+        Route::match(['GET', 'POST'], '/printfPDF', [QrAdminController::class, 'inPdf'])->name('qr.inPdf');
         Route::match(['GET', 'POST'], '/printfWord', [QrAdminController::class, 'processForm'])->name('qr.printfWord');
     });
     Route::prefix('membershiplevels')->group(function () {

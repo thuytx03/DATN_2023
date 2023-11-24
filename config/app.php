@@ -185,7 +185,7 @@ return [
         Barryvdh\Debugbar\ServiceProvider::class,
         Laravel\Socialite\SocialiteServiceProvider::class,
         Srmklive\PayPal\Providers\PayPalServiceProvider::class,
-
+        Barryvdh\DomPDF\ServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
 
     ],
@@ -206,6 +206,7 @@ return [
         'socialite' => Laravel\Socialite\Facade\socialite::class,
         'Alert' => RealRashid\SweetAlert\Facades\Alert::class,
         'PayPal' => Srmklive\PayPal\Facades\PayPal::class,
+        'PDF' => Barryvdh\DomPDF\Facade::class,
 
 
 

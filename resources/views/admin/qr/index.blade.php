@@ -93,84 +93,66 @@
         <input type="hidden" name="param" id="id" >
     </form>
 
-    @if(isset($booking1))
-        <div class="container mt-4">
-          <table class="table table-bordered text-center mx-auto" id="dataTable" style="width: 80%;">
+@if(isset($bookings)) {
+
+    <div class="container mt-4">
+        <table class="table table-bordered text-center mx-auto" id="dataTable" style="width: 80%;">
             <thead>
-              <tr>
-                <th scope="col">Thông tin khách hàng</th>
-                <th scope="col">Tên phim</th>
-                <th scope="col">Rạp chiếu</th>
-                <th scope="col">Danh sách ghế</th>
-                <th scope="col" >Thời gian đặt</th>
-                <th scope="col">Lịch chiếu</th>
-                <th scope="col">Số tiền</th>
-                <th scope="col">Phương thức thanh toán</th>
-                <th scope="col">Trạng Thái</th>
-              </tr>
+                <tr>
+                    <th scope="col">Thông tin khách hàng</th>
+                    <th scope="col"> Tên Phim</th>
+                    <th scope="col">Ca Chiếu</th>
+                    <th scope="col">Phòng Chiếu</th>
+                    <th scope="col">Thời Gian Đặt</th>
+                    <th scope="col">Lịch chiếu</th>
+                    <th scope="col">Số tiền</th>
+                    <th scope="col">PTTT</th>
+                </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>
-                  - Họ và tên:{{ $booking1->name }} <br>
-                  - Email:{{ $booking1->email }} <br>
-                  - Số điện thoại:{{ $booking1->phone }} <br>
-                  - Địa chỉ:{{ $booking1->address }} <br>
-                </td>
-                <td>{{$movieName->name}}</td>
-                <td>{{$room->name}}</td>
-                <td>
-                  {!! \Illuminate\Support\Str::limit(strip_tags($booking1->list_seat), 20) !!}
-                </td>
-                <td>
-                  {{$booking1->created_at}}
-                </td>
-                <td>
-                  @php
-                    echo $showTime1 ? $showTime1->start_date : 'N/A';
-                  @endphp
-                </td>
-                <td>
-                  {{ number_format($booking1->total, 0, ',', '.') }} VNĐ
-                </td>
-                <td>{{ $booking1->payment == 1 ? 'VNPay' : 'Paypal' }}</td>
-             @if($booking1->status == 3)
-             <td>Đã Check-in</td>
-             @elseif($booking1->status == 4)
-             <td>Đã Hủy</td>
-             @endif
-              </tr>
+                @foreach ($bookings as $value)
+                @if($value->status == 3)
+                <tr>
+
+                    <td>
+                        - Họ và tên:{{ $value->name }} <br>
+                        - Email:{{ $value->email }} <br>
+                        - SĐT:{{ $value->phone }} <br>
+                        - Địa chỉ:{{ $value->address }} <br>
+                    </td>
+                    @php
+    $showtime1 = $showTime->where('id', $value->showtime_id)->first();
+    $movie1 = $showtime1 ? $movie->where('id', $showtime1->movie_id)->first() : null;
+    $room1 = $showtime1 ? $rooms->where('id', $showtime1->room_id)->first() : null;
+@endphp
+
+<td>{{ $movie1 ? $movie1->name : '' }}</td>
+<td>{{ $room1 ? $room1->name : '' }}</td>
+                    <td>
+                        {!! \Illuminate\Support\Str::limit(strip_tags($value->list_seat), 20) !!}
+                    </td>
+
+                    <td>{{$value->created_at}}</td>
+                    <td>
+                        @php
+                            $showTime1 = $showTime->firstWhere('id', $value->showtime_id);
+                            echo $showTime1 ? $showTime1->start_date : 'N/A';
+                        @endphp
+                    </td>
+
+
+
+                    <td> {{ number_format($value->total, 0, ',', '.') }} VNĐ
+                    </td>
+                    <td>{{ $value->payment == 1 ? 'VNPay' : 'Paypal' }}</td>
+
+
+@endif
+                @endforeach
+
             </tbody>
-          </table>
-        </div>
-
-        <div class="container mt-4">
-          <div class="text-center">
-
-            <form action="{{route('qr.inPdf')}}" method="post">
-                @csrf
-                    <input type="hidden" name="name" value="{{$booking1->name}}">
-                    <input type="hidden" name="moviename" value="{{$movieName->name}}">
-                    <input type="hidden" name="email" value="{{$booking1->email}}">
-                    <input type="hidden" name="roomname" value="{{$room->name}}">
-                    <input type="hidden" name="phone" value="{{$booking1->phone}}">
-                    <input type="hidden" name="list_seat" value="{{$booking1->list_seat}}">
-                    <input type="hidden" name="created_at" value="{{$booking1->created_at}}">
-                    <input type="hidden" name="start_date" value="{{isset($showTime1->start_date) ? $showTime1->start_date : ''}}">
-                    <input type="hidden" name="payment" value="{{$booking1->payment}}">
-                    <input type="hidden" name="total" value="{{$booking1->total}}">
-                @if ($booking1->status == 3)
-                <button class="btn btn-primary" type="submit" >In Hóa Đơn <i class="fa fa-print" aria-hidden="true"></i></button>
-              @elseif($booking1->status == 2)
-              <button class="btn btn-primary" type="submit" >In Hóa Đơn <i class="fa fa-print" aria-hidden="true"></i></button>
-              @endif
-              </form>
-
-          </div>
-        </div>
-
-
-
+        </table>
+    </div>
 @endif
     <script type="text/javascript" src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
 
@@ -196,8 +178,6 @@
             document.getElementById('form').submit();
         })
     </script>
-
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
   </body>
 </html>
