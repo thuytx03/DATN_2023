@@ -59,7 +59,9 @@
                         <li>
                             <a href="{{route('home.voucher.list')}}">Danh Sách Mã Giảm Giá</a>
                         </li>
-
+                        <li>
+                            <a href="{{route('doi-diem')}}">Đổi điểm</a>
+                        </li>
                     </ul>
                 </li>
 

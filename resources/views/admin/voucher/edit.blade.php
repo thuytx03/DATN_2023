@@ -40,6 +40,23 @@
                     </div>
                 </div>
                 <div class="row mb-3">
+                    <label for="inputText" class="col-sm-2 col-form-label">Cập độ thành viên</label>
+                    <div class="col-sm-10">
+                        <select name="level_id" id="level_id" class="custom-select">
+                            <option value="">Vui lòng chọn cấp độ thành viên</option>
+                            @foreach($level as $value)
+                            <option @if($value->id == $voucher->level_id) selected  @endif value="{{ $value->id }}" >{{ $value->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="inputText" class="col-sm-2 col-form-label">Điểm</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="poin" placeholder="" class="form-control" value="{{ $voucher->poin }}">
+                    </div>
+                </div>
+                <div class="row mb-3">
                     <label for="inputText" class="col-sm-2 col-form-label">Giá trị giảm giá (Số tiền, số %)</label>
                     <div class="col-sm-10">
                         <input type="text" name="value" placeholder="Vui lòng nhập giá trị giảm giá" class="form-control" value="{{ $voucher->value }}">

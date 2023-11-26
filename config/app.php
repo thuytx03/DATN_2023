@@ -178,7 +178,7 @@ return [
          */
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
-        // App\Providers\BroadcastServiceProvider::class,
+        App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
@@ -207,6 +207,7 @@ return [
         'Alert' => RealRashid\SweetAlert\Facades\Alert::class,
         'PayPal' => Srmklive\PayPal\Facades\PayPal::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
+        'Redis' => Illuminate\Support\Facades\Redis::class,
 
 
 

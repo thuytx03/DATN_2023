@@ -22,8 +22,10 @@
         <div class="container">
             <div class="page-title-area">
                 <div class="item md-order-1">
-                    <a href="{{ route('chon-ghe', ['room_id' => $showTime->room_id, 'slug' => $showTime->movie->slug, 'showtime_id' => $showTime->id]) }}" class="custom-button back-button">
-                        Quay lại </a>
+                        <a  href="{{ route('chon-ghe', ['room_id' => $showTime->room_id, 'slug' => $showTime->movie->slug, 'showtime_id' => $showTime->id]) }}" class="custom-button back-button">
+                            Quay lại
+                        </a>
+
                 </div>
                 <div class="item text-white ">
                     <div class="tags ">
@@ -34,8 +36,7 @@
                     </div>
                 </div>
                 <div class="item">
-                    <h5 class="title">05:00</h5>
-                    <p>Mins Left</p>
+                    <h5 class="title" id="countdown">05:00</h5>
                 </div>
             </div>
         </div>
@@ -107,11 +108,10 @@
                                                 <button class="increase" data-productid="{{ $value->id }}">+</button>
                                             </div>
                                         </td>
-                                        <td>{{$value->price}}</td>
-                                        {{-- <td>
+                                        <td>
                                             {{ number_format($value->price, 0, ',', '.') }} VNĐ
 
-                                        </td> --}}
+                                        </td>
                                         <td id="price-{{ $value->id }}" data-price="{{ $value->price }}">
 
                                             @if (is_numeric($value->price))
@@ -275,5 +275,127 @@
                 });
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- Trong view B -->
+    <script>
+        const baseUrl = 'http://127.0.0.1:8000';
+        window.csrfToken = "{{ csrf_token() }}";
+
+        // Khôi phục thời gian từ localStorage
+        const savedTargetTime = window.localStorage.getItem('targetTime');
+        const targetTime = new Date(parseInt(savedTargetTime));
+
+        function updateCountdown() {
+            const currentTime = new Date();
+            const timeDifference = targetTime - currentTime;
+
+            const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+            const countdownElement = document.getElementById("countdown");
+            countdownElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+            if (timeDifference <= 0) {
+                countdownElement.textContent = "00:00";
+                clearSeatsCache(); // Gọi hàm khi đếm ngược đạt 0
+            } else {
+                requestAnimationFrame(updateCountdown);
+            }
+        }
+
+        function clearSeatsCache() {
+            axios.post(`${baseUrl}/clear-seats-cache`, {}, {
+                    headers: {
+                        'X-CSRF-TOKEN': window.csrfToken
+                    }
+                })
+                .then(response => {
+                    // Hiển thị thông báo thành công
+                    window.alert('Bạn đã hết thời gian chọn ghế!!!');
+                    window.location.href = '{{ route('chon-ghe', ['room_id' => $showTime->room_id, 'slug' => $showTime->movie->slug, 'showtime_id' => $showTime->id]) }}';
+                    // window.location.reload();
+                    // Bạn cũng có thể tùy chỉnh thông báo hoặc sử dụng thư viện thông báo ở đây
+
+                    console.log(response.data.message);
+                })
+                .catch(error => {
+                    console.error('Lỗi khi xóa cache và phiên:', error);
+                });
+        }
+
+        requestAnimationFrame(updateCountdown);
+    </script>
+
+
+
+
+
+    {{-- <script>
+        var reloadFlag = false; // Flag to check if the page is being reloaded
+
+        // Function to update the countdown timer
+        function updateCountdown() {
+            var countdownTime = sessionStorage.getItem('countdownTime') || 1 * 60; // 10 minutes in seconds
+
+            var minutes = Math.floor(countdownTime / 60);
+            var seconds = countdownTime % 60;
+
+            // Add leading zero if needed
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+
+            // Update the countdown element
+            document.getElementById('countdown').textContent = minutes + ':' + seconds;
+
+            // Decrease the countdown time
+            countdownTime--;
+
+            // Check if the countdown has reached zero
+            if (countdownTime < 0) {
+                clearInterval(countdownInterval);
+                document.getElementById('countdown').textContent = '00:00';
+                alert('Countdown has finished!');
+            }
+
+            // Save the countdown time to sessionStorage
+            sessionStorage.setItem('countdownTime', countdownTime);
+        }
+
+        // Function to reset the countdown timer
+        function resetCountdown() {
+            // Reset the countdown time to 10 minutes
+            sessionStorage.setItem('countdownTime', 1 * 60);
+
+            // Restart the countdown interval
+            clearInterval(countdownInterval);
+            countdownInterval = setInterval(updateCountdown, 1000);
+
+            // Update the countdown immediately after reset
+            updateCountdown();
+        }
+
+        // Initial update
+        updateCountdown();
+
+        // Update the countdown every second
+        var countdownInterval = setInterval(updateCountdown, 1000);
+
+        // Event listener for page unload
+        window.addEventListener('beforeunload', function (event) {
+            // Check if the reload button is clicked
+            if (event.currentTarget.performance.navigation.type === 1) {
+                reloadFlag = true; // Set the flag if the page is being reloaded
+                resetCountdown();
+            }
+        });
+
+        window.addEventListener('unload', function () {
+            // Save the countdown time before the page is unloaded only if it's not a reload
+            if (!reloadFlag) {
+                sessionStorage.setItem('countdownTime', countdownTime);
+            }
+        });
+    </script> --}}
 
 @endsection

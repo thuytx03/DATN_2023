@@ -75,6 +75,8 @@ Route::prefix('vouchers')->group(function () {
     Route::get('/voucher-list', [VouchersController::class, 'vouchers'])->name('home.voucher.list');
     Route::get('/voucher-detail/{id}', [VouchersController::class, 'detailVouchers'])->name('home.voucher.detail');
     Route::post('/apllyVouchers', [VouchersController::class, 'apllyVouchers'])->name('home.voucher.apllyVouchers');
+    Route::match(['GET','POST'],'/doi-diem', [VouchersController::class, 'exchangePoin'])->name('doi-diem');
+
 });
 
 Route::group(['middleware' => 'guest'], function () {
@@ -95,6 +97,7 @@ Route::get('/lich-chieu/chon-ghe/{room_id}/{slug}/{showtime_id}', [MovieSeatPlan
 Route::get('/lich-chieu/chon-do-an/{room_id}/{slug}/{showtime_id}', [MovieSeatPlanController::class, 'foodPlan'])->name('chon-do-an');
 Route::post('/save-selected-seats', [MovieSeatPlanController::class, 'saveSelectedSeats'])->name('save-selected-seats');
 Route::post('/luu-thong-tin-san-pham', [MovieSeatPlanController::class, 'luuThongTinSanPham'])->name('luu-thong-tin-san-pham');
+Route::post('/clear-seats-cache', [MovieSeatPlanController::class, 'clearSeatsCache']);
 
 //thanh toán
 Route::match(['GET', 'POST'], '/thanh-toan/{room_id}/{slug}/{showtime_id}', [BookingController::class, 'index'])->name('thanh-toan');

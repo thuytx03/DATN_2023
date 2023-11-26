@@ -1,7 +1,8 @@
 @extends('layouts.client')
 @section('content')
     <!-- ==========Banner-Section========== -->
-    <section class="details-banner hero-area bg_img seat-plan-banner" data-background="./assets/images/banner/banner04.jpg">
+    <section class="details-banner hero-area bg_img seat-plan-banner"
+        data-background="{{ asset('client/assets/images/banner/banner04.jpg') }}">
         <div class="container">
             <div class="details-banner-wrapper">
                 <div class="details-banner-content style-two">
@@ -34,12 +35,15 @@
                         <a href="#0" class="text-white">Phòng: {{ $showTime->room->name }}</a> -
                         <a href="#0" class="text-white">Thời gian: {{ date('H:i', strtotime($showTime->start_date)) }}
                             ~ {{ date('H:i', strtotime($showTime->start_end)) }}</a>
+                        <a href="#" style="display:none" id="showtime-link"
+                            data-showtime-id="{{ $showTime->id }}">{{ $showTime->id }}</a>
+
                     </div>
                 </div>
                 <div class="item">
-                    {{-- <h5 class="title">05:00</h5>
-                    <p>Mins Left</p> --}}
+                    <h5 class="title" id="countdown"></h5>
                 </div>
+
             </div>
         </div>
     </section>
@@ -141,14 +145,14 @@
                                     name="seatThuong">
 
                                 <ul>
-                                    <li
-                                        class="single-seat seat-type1 {{ $isBooked ? 'not-allowed' : 'single-seat1 seat-click ' }} ">
-                                        <img src="{{ $isBooked ? asset('client/assets/images/movie/seatDaChon.png') : asset('client/assets/images/movie/seatThuong.png') }}"
-                                            width="64" alt="seat" class="{{ $isBooked ? 'not-allowed' : 'thuy' }}"
-                                           >
-                                        <span class="sit-num">{{ $thuong->row }}{{ $thuong->column }}</span>
 
+                                    <li class="single-seat seat-type1 {{ $isBooked ? 'not-allowed' : 'single-seat1 seat-click ' }} "
+                                        id="seat-{{ $thuong->row }}{{ $thuong->column }}">
+                                        <img src="{{ $isBooked ? asset('client/assets/images/movie/seatDaChon.png') : asset('client/assets/images/movie/seatThuong.png') }}"
+                                            width="64" alt="seat" class="{{ $isBooked ? 'not-allowed' : 'thuy' }}">
+                                        <span class="sit-num">{{ $thuong->row }}{{ $thuong->column }}</span>
                                     </li>
+
                                 </ul>
                             </li>
                             @php
@@ -181,13 +185,13 @@
                             <li class="front-seat">
                                 <input type="hidden" value="{{ $isBooked ? 0 : $vip->seatType->price }}" name="seatVip">
                                 <ul>
-                                    <li
-                                        class="single-seat seat-type1 {{ $isBooked ? 'not-allowed' : 'single-seat1 seat-click ' }} ">
-                                        <img src="{{ $isBooked ? asset('client/assets/images/movie/seatDaChon.png') : asset('client/assets/images/movie/seatVip.png') }}"
-                                            width="64" alt="seat" class="{{ $isBooked ? 'not-allowed' : 'thuy' }}"
-                                         >
-                                        <span class="sit-num">{{ $vip->row }}{{ $vip->column }}</span>
 
+
+                                    <li class="single-seat seat-type1 {{ $isBooked ? 'not-allowed' : 'single-seat1 seat-click ' }} "
+                                        id="seat-{{ $vip->row }}{{ $vip->column }}">
+                                        <img src="{{ $isBooked ? asset('client/assets/images/movie/seatDaChon.png') : asset('client/assets/images/movie/seatVip.png') }}"
+                                            width="64" alt="seat" class="{{ $isBooked ? 'not-allowed' : 'thuy' }}">
+                                        <span class="sit-num">{{ $vip->row }}{{ $vip->column }}</span>
                                     </li>
                                 </ul>
                             </li>
@@ -223,7 +227,7 @@
                                 <input type="hidden" value="{{ $isBooked ? 0 : $doi->seatType->price }}" name="seatDoi">
 
                                 <ul class="ul-price">
-                                    <li
+                                    <li id="seat-{{ $doi->row }}{{ $doi->column }}"
                                         class="single-seat seat-type1  {{ $isBooked ? 'not-allowed' : 'single-seat1 seat-click seat ' }} ">
                                         <img src="{{ $isBooked ? asset('client/assets/images/movie/seatDaChon.png') : asset('client/assets/images/movie/seatDoi.png') }}"
                                             width="64" alt="seat"
@@ -231,6 +235,8 @@
                                             data-seat="{{ $doi->row }}{{ $doi->column }}">
                                         <span class="sit-num">{{ $doi->row }}{{ $doi->column }}</span>
                                     </li>
+
+
                                 </ul>
                             </li>
                             @php
@@ -244,8 +250,6 @@
                 </div>
 
             </div>
-
-
 
 
             <div class="row text-center ">
@@ -270,7 +274,8 @@
                         <li>Ghế thường</li>
                     </ul>
                     <ul class="m-2">
-                        <li><img src="{{ asset('client/assets/images/movie/seatVip.png') }}" width="64" alt="">
+                        <li><img src="{{ asset('client/assets/images/movie/seatVip.png') }}" width="64"
+                                alt="">
                         </li>
                         <li>Ghế Vip</li>
                     </ul>
@@ -303,198 +308,131 @@
             </div>
         </div>
     </div>
-
+    {{-- @if (count($selectedSeats) > 0)
+        <ul>
+            @foreach ($selectedSeats as $seat)
+                <li>{{ $seat }}</li>
+            @endforeach
+        </ul>
+    @else
+        <p>No seats selected.</p>
+    @endif --}}
     <!-- ==========Movie-Section========== -->
 
-
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    {{-- giá  --}}
+    <script src="/js/app.js"></script>
 
-    {{-- <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var seatThuongInput = document.getElementsByName('seatThuong');
-            var seatVipInput = document.getElementsByName('seatVip');
-            var seatDoiInput = document.getElementsByName('seatDoi');
 
-            var seatCountDisplay = document.querySelector('.book-item span');
-            var totalPriceDisplay = document.querySelector('.total-price');
+    <!-- Trong view A -->
+    <script>
+        const baseUrl = 'http://127.0.0.1:8000';
+        window.csrfToken = "{{ csrf_token() }}";
 
-            var seatCount = 0;
-            var totalPrice = 0;
+        // Kiểm tra xem đã lưu trạng thái thời gian vào localStorage chưa
+        const savedTimeExpired = window.localStorage.getItem('timeExpired');
+        let targetTime;
 
-            function updateDisplay() {
-                seatCountDisplay.textContent = 'Số ghế bạn chọn: ' + seatCount;
-                // Format the totalPrice using number_format
-                totalPriceDisplay.textContent = formatCurrency(totalPrice) + ' VNĐ';
+        // Tạo thời gian mục tiêu (target time) chỉ khi cần
+        if (!savedTimeExpired) {
+            targetTime = new Date();
+            targetTime.setMinutes(targetTime.getMinutes() + 1);
+            window.localStorage.setItem('targetTime', targetTime.getTime());
+        } else {
+            // Nếu đã lưu, khôi phục thời gian từ localStorage
+            const savedTargetTime = window.localStorage.getItem('targetTime');
+            targetTime = new Date(parseInt(savedTargetTime));
+        }
+
+        function updateCountdown() {
+            const currentTime = new Date();
+            const timeDifference = targetTime - currentTime;
+
+            const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+            const countdownElement = document.getElementById("countdown");
+            countdownElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+            if (timeDifference <= 0) {
+                countdownElement.textContent = "00:00";
+                clearSeatsCache(); // Gọi hàm khi đếm ngược đạt 0
+            } else {
+                requestAnimationFrame(updateCountdown);
             }
+        }
 
-            function formatCurrency(amount) {
-                // Format the amount with the desired currency symbol
-                return amount.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'VND'
-                }).replace(/^(\D+)/, '');
-            }
+        function clearSeatsCache() {
+            axios.post(`${baseUrl}/clear-seats-cache`, {}, {
+                    headers: {
+                        'X-CSRF-TOKEN': window.csrfToken
+                    }
+                })
+                .then(response => {
+                    // Hiển thị thông báo thành công
+                    window.alert('Bạn đã hết thời gian chọn ghế!!!');
+                    window.location.href = 'path-to-view-a';
+                    window.location.reload();
+                    // Bạn cũng có thể tùy chỉnh thông báo hoặc sử dụng thư viện thông báo ở đây
 
-            function seatToggleHandler(price) {
-                var seat = this.closest('.front-seat');
-
-                if (seat.classList.contains('not-allowed')) {
-                    return; // Ignore if the seat is not allowed
-                }
-
-                if (seat.classList.contains('thuy')) {
-                    seat.classList.remove('thuy');
-                    seatCount--;
-                    totalPrice -= price ;
-                } else {
-                    seat.classList.add('thuy');
-                    seatCount++;
-                    totalPrice += price;
-                }
-
-                console.log("Seat Count:", seatCount);
-                console.log("Total Price:", totalPrice);
-
-
-                updateDisplay();
-            }
-
-            function attachClickEventToImages(images, price) {
-                images.forEach(function(img) {
-                    img.addEventListener('click', function() {
-                        seatToggleHandler.call(this, price);
-                    });
+                    console.log(response.data.message);
+                })
+                .catch(error => {
+                    console.error('Lỗi khi xóa cache và phiên:', error);
                 });
-            }
+        }
 
-            seatThuongInput.forEach(function(input) {
-                var price = parseFloat(input.value);
-                var images = input.closest('.front-seat').querySelectorAll('.seat-click img');
-                attachClickEventToImages(images, price);
-            });
+        requestAnimationFrame(updateCountdown);
+    </script>
 
-            seatVipInput.forEach(function(input) {
-                var price = parseFloat(input.value);
-                var images = input.closest('.front-seat').querySelectorAll('.seat-click img');
-                attachClickEventToImages(images, price);
-            });
 
-            seatDoiInput.forEach(function(input) {
-                var price = parseFloat(input.value);
-                console.log("Seat Doi Price:", price);
-                var images = input.closest('.front-seat').querySelectorAll('.seat-click img');
-                attachClickEventToImages(images, price);
-            });
-        });
-    </script> --}}
+    <script>
+        window.Echo.channel('laravel_database_seat-selected-channel')
+            .listen('.seat-selected', (e) => {
+                console.log(e);
+                // console.log(e.showtime_id);
+                // const userId = {{ auth()->id() }};
+                // console.log("userId: " + userId);
 
-    {{-- <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var seatThuongInput = document.getElementsByName('seatThuong');
-            var seatVipInput = document.getElementsByName('seatVip');
-            var seatDoiInput = document.getElementsByName('seatDoi');
+                const selectedSeats = e.selectedSeats;
 
-            var seatCountDisplay = document.querySelector('.book-item span');
-            var totalPriceDisplay = document.querySelector('.total-price');
+                // Update seat images and cursor based on the selectedSeats array and user ID
+                selectedSeats.forEach((seat) => {
+                    const seatElement = document.getElementById(`seat-${seat}`);
 
-            var seatCount = 0;
-            var totalPrice = 0;
+                    if (seatElement) {
+                        const isSeatSelected = seatElement.classList.contains('seat-selected');
+                        const showTimeId = document.getElementById("showtime-link").getAttribute(
+                            "data-showtime-id");
 
-            function updateDisplay() {
-                seatCountDisplay.textContent = 'Số ghế bạn chọn: ' + seatCount;
-                // Format the totalPrice using number_format
-                totalPriceDisplay.textContent = formatCurrency(totalPrice) + ' VNĐ';
-            }
+                        const check = e.userId === {{ auth()->id() }} && e.showtime_id === showTimeId;
 
-            function formatCurrency(amount) {
-                // Format the amount with the desired currency symbol
-                return amount.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'VND'
-                }).replace(/^(\D+)/, '');
-            }
+                        if (e.showtime_id === showTimeId) {
+                            // Kiểm tra trạng thái hiện tại trước khi cập nhật
+                            if (isSeatSelected === check) {
+                                const imageUrl = check ?
+                                    '{{ asset('client/assets/images/movie/seatDangChon.png') }}' :
+                                    '{{ asset('client/assets/images/movie/seatDangGiu.png') }}';
 
-            function seatToggleHandler(price, isDoubleSeat) {
-                var seat = this.closest('.front-seat');
+                                seatElement.querySelector('img').src = imageUrl;
 
-                if (seat.classList.contains('not-allowed')) {
-                    return; // Ignore if the seat is not allowed
-                }
+                                if (check) {
+                                    seatElement.style.pointerEvents = 'auto';
+                                } else {
+                                    seatElement.style.pointerEvents = 'none';
+                                }
+                            }
 
-                if (isDoubleSeat) {
-                    // Toggle the class for both seats in the double seat
-                    var doubleSeats = seat.closest('.seat-line').querySelectorAll('.front-seat.thuy');
-                    doubleSeats.forEach(function(doubleSeat) {
-                        doubleSeat.classList.toggle('thuy');
-                    });
 
-                    var isSelected = seat.classList.contains('thuy');
-
-                    if (!isSelected) {
-                        seatCount += isDoubleSeat ? 2 : 1; // Double seat counts as 2
-                        totalPrice += isDoubleSeat ? price * 2 : price; // Double seat has double the price
-
-                        // Automatically select the adjacent seat
-                        var adjacentSeat = seat.nextElementSibling;
-                        if (adjacentSeat && adjacentSeat.classList.contains('front-seat') && !adjacentSeat.classList
-                            .contains('not-allowed')) {
-                            adjacentSeat.classList.add('thuy');
-                            seatCount++;
-                            totalPrice += price; // Adjust the total price for the adjacent seat
                         }
                     }
-                } else {
-                    var isSelected = seat.classList.contains('thuy');
-
-                    if (isSelected) {
-                        seatCount--;
-                        totalPrice -= isDoubleSeat ? price * 2 : price;
-                    } else {
-                        seatCount++;
-                        totalPrice += isDoubleSeat ? price * 2 : price;
-                    }
-
-                    seat.classList.toggle('thuy');
-                }
-
-                console.log('Seat Count:', seatCount);
-                console.log('Total Price:', totalPrice);
-
-                updateDisplay();
-            }
-
-
-            function attachClickEventToImages(images, price, isDoubleSeat) {
-                images.forEach(function(img) {
-                    img.addEventListener('click', function() {
-                        seatToggleHandler.call(this, price, isDoubleSeat);
-                    });
                 });
-            }
 
-            seatThuongInput.forEach(function(input) {
-                var price = parseFloat(input.value);
-                var images = input.closest('.front-seat').querySelectorAll('.seat-click img');
-                attachClickEventToImages(images, price);
             });
-
-            seatVipInput.forEach(function(input) {
-                var price = parseFloat(input.value);
-                var images = input.closest('.front-seat').querySelectorAll('.seat-click img');
-                attachClickEventToImages(images, price);
-            });
-
-            seatDoiInput.forEach(function(input) {
-                var price = parseFloat(input.value);
-                console.log("Seat Doi Price:", price);
-                var images = input.closest('.front-seat').querySelectorAll('.seat-click img');
-                attachClickEventToImages(images, price, true); // Set isDoubleSeat to true for double seats
-            });
+    </script>
 
 
-        });
-    </script> --}}
+
 
 
     {{-- kiểm tra ghế  --}}
@@ -597,6 +535,7 @@
         document.addEventListener("DOMContentLoaded", function() {
             var chosenSeats = @json(Session::get('selectedSeats', []));
             var seatElements = document.querySelectorAll(".seat-click");
+            var showTimeId = document.getElementById("showtime-link").getAttribute("data-showtime-id");
 
             function updateChosenSeatsDisplay() {
                 var chosenSeatsText = chosenSeats.join(", ");
@@ -679,6 +618,7 @@
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
                             },
                             body: JSON.stringify({
+                                showtime_id: showTimeId,
                                 selectedSeats: chosenSeats
                             }),
                         })

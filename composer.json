@@ -23,6 +23,7 @@
         "milon/barcode": "^10.0",
         "nesbot/carbon": "^2.71",
         "phpoffice/phpword": "^1.1",
+        "predis/predis": "^2.2",
         "realrashid/sweet-alert": "^7.1",
         "spatie/laravel-permission": "^6.1",
         "srmklive/paypal": "^3.0",
