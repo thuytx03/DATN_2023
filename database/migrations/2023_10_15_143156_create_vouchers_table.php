@@ -19,6 +19,9 @@ return new class extends Migration
             $table->string('type');
             $table->string('value');
             $table->string('quantity');
+            $table->string('poin')->nullable();
+            $table->string('level_id')->nullable();
+            $table->string('level_id_old')->nullable();
             $table->string('min_order_amount')->nullable();
             $table->string('max_order_amount')->nullable();
             $table->dateTime('start_date');

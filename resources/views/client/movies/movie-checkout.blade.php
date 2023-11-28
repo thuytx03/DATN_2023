@@ -57,8 +57,7 @@
                     </div>
                 </div>
                 <div class="item">
-                    {{-- <h5 class="title">05:00</h5>
-                    <p>Mins Left</p> --}}
+                    <h5 class="title" id="countdown">05:00</h5>
                 </div>
             </div>
         </div>
@@ -294,5 +293,55 @@
                 submitButton.setAttribute("disabled", "disabled");
             }
         });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script>
+        const baseUrl = 'http://127.0.0.1:8000';
+        window.csrfToken = "{{ csrf_token() }}";
+
+        // Khôi phục thời gian từ localStorage
+        const savedTargetTime = window.localStorage.getItem('targetTime');
+        const targetTime = new Date(parseInt(savedTargetTime));
+
+        function updateCountdown() {
+            const currentTime = new Date();
+            const timeDifference = targetTime - currentTime;
+
+            const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+            const countdownElement = document.getElementById("countdown");
+            countdownElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+            if (timeDifference <= 0) {
+                countdownElement.textContent = "00:00";
+                clearSeatsCache(); // Gọi hàm khi đếm ngược đạt 0
+            } else {
+                requestAnimationFrame(updateCountdown);
+            }
+        }
+
+        function clearSeatsCache() {
+            axios.post(`${baseUrl}/clear-seats-cache`, {}, {
+                    headers: {
+                        'X-CSRF-TOKEN': window.csrfToken
+                    }
+                })
+                .then(response => {
+                    // Hiển thị thông báo thành công
+                    window.alert('Bạn đã hết thời gian chọn ghế!!!');
+                    window.location.href = '{{ route('chon-ghe', ['room_id' => $showTime->room_id, 'slug' => $showTime->movie->slug, 'showtime_id' => $showTime->id]) }}';
+                    // window.location.reload();
+                    // Bạn cũng có thể tùy chỉnh thông báo hoặc sử dụng thư viện thông báo ở đây
+
+                    console.log(response.data.message);
+                })
+                .catch(error => {
+                    console.error('Lỗi khi xóa cache và phiên:', error);
+                });
+        }
+
+        requestAnimationFrame(updateCountdown);
     </script>
 @endsection

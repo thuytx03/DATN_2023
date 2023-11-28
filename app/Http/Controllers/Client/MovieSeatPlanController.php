@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Client;
 
+
+use App\Events\SeatSelected;
+
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Cinema;
@@ -13,6 +16,8 @@ use App\Models\Seat;
 use App\Models\SeatType;
 use App\Models\ShowTime;
 use Illuminate\Http\Request;
+
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Session;
 
 class MovieSeatPlanController extends Controller
@@ -63,6 +68,13 @@ class MovieSeatPlanController extends Controller
 
         // session()->forget('selectedProducts');
         // session()->forget('totalPriceFood');
+       $this->getSelectedSeats($showTime->id);
+
+
+
+
+
+        // dd(event(new SeatSelected(auth()->id(), $selectedSeats, $showTime->id)));
 
         return view('client.movies.movie-seat-plan', compact('seatsVip', 'seatsThuong', 'seatsDoi', 'room', 'showTime', 'bookedSeats', 'province', 'food'));
     }
@@ -99,6 +111,69 @@ class MovieSeatPlanController extends Controller
     }
 
 
+    public function saveSelectedSeats(Request $request)
+    {
+        $showtime_id = $request->input('showtime_id');
+        $selectedSeats = $request->input('selectedSeats');
+        try {
+            $cacheKey = 'selected_seats_' . auth()->id() . '_showtime_' . $showtime_id;
+            $redisResult = Redis::set($cacheKey, json_encode($selectedSeats));
+            broadcast(new SeatSelected(auth()->id(), $selectedSeats, $showtime_id))->toOthers();
+            Session::put('selectedSeats', $selectedSeats);
+            // Gửi thông báo đến channel để cập nhật trạng thái ghế cho tất cả người dùng
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Redis error: ' . $e->getMessage()], 500);
+        }
+
+        $totalPrice = $this->seatPrice();
+        return response()->json(['message' => 'Selected seats saved successfully', 'totalPrice' => $totalPrice]);
+    }
+
+    public function getSelectedSeats($showtime_id)
+    {
+        $cacheKey = 'selected_seats_' . auth()->id() . '_showtime_' . $showtime_id;
+        $selectedSeatsJson = Redis::get($cacheKey);
+
+        if ($selectedSeatsJson) {
+            $selectedSeats = json_decode($selectedSeatsJson, true);
+            // dd($selectedSeats);
+        } else {
+            $selectedSeats = session()->get('selectedSeats', []); // Lấy từ session trên client side
+        }
+
+        // event(new SeatSelected(auth()->id(), $selectedSeats, $showtime_id));
+        broadcast(new SeatSelected(auth()->id(), $selectedSeats, $showtime_id))->toOthers();
+
+        return $selectedSeats;
+    }
+
+
+    public function clearSeatsCache(Request $request)
+    {
+        $showtime_id=$request->showtime_id;
+        try {
+            $cacheKey = 'selected_seats_' . auth()->id() . '_showtime_' . $showtime_id;
+            Redis::del($cacheKey);
+            Session::forget('selectedSeats');
+            Session::forget('selectedSeatsCreatedAt');
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error clearing cache and session: ' . $e->getMessage()], 500);
+        }
+
+        return response()->json(['message' => 'Cache and session cleared successfully']);
+    }
+
+
+
+
+    public function luuThongTinSanPham(Request $request)
+    {
+        $selectedProducts = $request->input('selectedProducts');
+        $totalPriceFood = $request->input('totalPriceFood');
+        // Lưu dữ liệu vào session
+        session(['selectedProducts' => $selectedProducts, 'totalPriceFood' => $totalPriceFood]);
+        return response()->json(['success' => true]);
+    }
 
 
     public function foodPlan(Request $request, $room_id, $slug, $showtime_id)
@@ -111,26 +186,5 @@ class MovieSeatPlanController extends Controller
         // session()->forget('selectedProducts');
         // session()->forget('totalPriceFood');
         return view('client.movies.movie-food', compact('room', 'showTime', 'food'));
-    }
-    public function saveSelectedSeats(Request $request)
-    {
-        $selectedSeats = $request->input('selectedSeats');
-        Session::put('selectedSeats', $selectedSeats);
-
-        // Gọi hàm seatPrice để tính toán tổng giá ghế và trả về giá trị đó
-        $totalPrice = $this->seatPrice();
-
-        // Trả về giá trị JSON chứa tổng giá ghế
-        return response()->json(['message' => 'Selected seats saved successfully', 'totalPrice' => $totalPrice]);
-    }
-
-
-    public function luuThongTinSanPham(Request $request)
-    {
-        $selectedProducts = $request->input('selectedProducts');
-        $totalPriceFood = $request->input('totalPriceFood');
-        // Lưu dữ liệu vào session
-        session(['selectedProducts' => $selectedProducts, 'totalPriceFood' => $totalPriceFood]);
-        return response()->json(['success' => true]);
     }
 }

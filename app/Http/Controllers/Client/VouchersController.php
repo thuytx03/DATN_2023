@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\client;
 
 use App\Http\Controllers\Controller;
+use App\Models\Member;
 use Illuminate\Http\Request;
 use App\Models\Voucher;
+use App\Models\VoucherUnlocked;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class VouchersController extends Controller
@@ -47,10 +50,39 @@ class VouchersController extends Controller
     public function detailVouchers($id)
     {
         $vouchers = Voucher::query();
-        $vouchers1 =    $vouchers->find($id);
+        $vouchers1 =$vouchers->find($id);
+        $user=auth()->user()->id;
+        // dd($user);
+        $voucher_unlocked=VoucherUnlocked::where('user_id',$user)
+        ->where('voucher_id', $vouchers1->id)->first();
+        $member = Member::where('user_id',$user)->first();
 
+        // dd($member->total_bonus_points);
+        if (!$voucher_unlocked || !$voucher_unlocked->unlocked) {
+            if ($vouchers1->poin > 0 && $member->total_bonus_points < $vouchers1->poin) {
+                return redirect()->back()->with('error', 'Số điểm của bạn không đủ để đổi mã giảm giá. ');
+            }
+            if($vouchers1->poin > 0){
+                $voucherUnlocked = VoucherUnlocked::updateOrCreate(
+                    ['user_id' => $user, 'voucher_id' => $vouchers1->id],
+                    ['unlocked' => true]
+                );
+                $member->total_bonus_points -= $vouchers1->poin; // Trừ Coins khi user mở khoá chapter
+                $member->save();
+            }
+
+        }
         return view('client.vouchers.vouchers-detail', compact('vouchers1'));
     }
+
+    public function exchangePoin(Request $request){
+        $voucher = Voucher::where('poin', '!=', null)->where('poin', '!=', '')->paginate(12);
+        $user = auth()->user();
+        $unlockedVoucherIds = VoucherUnlocked::where('user_id', $user->id)->pluck('voucher_id')->toArray();
+
+        return view('client.vouchers.exchangePoin', compact('voucher', 'unlockedVoucherIds'));
+    }
+
 
     public function apllyVouchers(Request $request){
         $voucher=Voucher::where('code',$request->code)->first();
@@ -80,6 +112,19 @@ class VouchersController extends Controller
             toastr()->error('Mã giảm giá đã hết lượt sử dụng');
             return back();
         }
+        // level được áp mã
+        if(isset($voucher->level_id)){
+            $user=auth()->user()->id;
+            $member = Member::where('user_id',$user)->first();
+            if($voucher->level_id != $member->level_id){
+                toastr()->error('bạn không có quyền hạn sử dụng mã giảm giá này');
+            return back();
+            }
+        }
+
+
+
+        //end level
 
         $totalPrice = $request->totalPrice;
         $discount = 0;

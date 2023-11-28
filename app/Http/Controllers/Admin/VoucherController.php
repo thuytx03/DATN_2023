@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Voucher\StoreRequest;
 use App\Http\Requests\VoucherRequest;
+use App\Models\MembershipLevel;
 use App\Models\Voucher;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -40,11 +41,14 @@ class VoucherController extends Controller
 
     public function store(VoucherRequest $request)
     {
+        $level=MembershipLevel::all();
         if ($request->isMethod('POST')) {
             $voucher = new Voucher();
             $voucher->code = $request->code;
             $voucher->type = $request->type;
             $voucher->value = $request->value ;
+            $voucher->poin = $request->poin ;
+            $voucher->level_id = $request->level_id ;
             $voucher->quantity = $request->quantity;
             $voucher->min_order_amount = $request->min_order_amount;
             $voucher->max_order_amount = $request->max_order_amount;
@@ -57,7 +61,7 @@ class VoucherController extends Controller
                 return redirect()->back();
             }
         }
-        return view('admin.voucher.add');
+        return view('admin.voucher.add', compact('level'));
     }
 
 
@@ -69,11 +73,15 @@ class VoucherController extends Controller
     public function update(VoucherRequest $request, $id)
     {
         $voucher = Voucher::find($id);
+        $level=MembershipLevel::all();
+
         if ($request->isMethod('POST')) {
             $voucher->code = $request->code;
             $voucher->type = $request->type;
             $voucher->value = $request->value ;
             $voucher->quantity = $request->quantity;
+            $voucher->poin = $request->poin ;
+            $voucher->level_id = $request->level_id ;
             $voucher->min_order_amount = $request->min_order_amount;
             $voucher->max_order_amount = $request->max_order_amount;
             $voucher->start_date = $request->start_date;
@@ -86,7 +94,8 @@ class VoucherController extends Controller
 
         }
         return view('admin.voucher.edit', [
-            'voucher' => $voucher
+            'voucher' => $voucher,
+            'level' => $level,
         ]);
     }
 

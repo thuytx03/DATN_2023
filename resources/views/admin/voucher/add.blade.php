@@ -40,6 +40,23 @@
                     </select>
                 </div>
             </div>
+            <div class="row mb-3">
+                <label for="inputText" class="col-sm-2 col-form-label">Cập độ thành viên</label>
+                <div class="col-sm-10">
+                    <select name="level_id" id="level_id" class="custom-select">
+                        <option value="">Vui lòng chọn cấp độ thành viên</option>
+                        @foreach($level as $value)
+                        <option value="{{ $value->id }}" >{{ $value->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="inputText" class="col-sm-2 col-form-label">Điểm</label>
+                <div class="col-sm-10">
+                    <input type="text" name="poin" placeholder="" class="form-control" value="{{ old('poin') }}">
+                </div>
+            </div>
 
             <div class="row mb-3">
                 <label for="inputText" class="col-sm-2 col-form-label">Giá trị giảm giá (Số tiền, số %) <span class="text-danger">(*)</span></label>
@@ -80,6 +97,7 @@
                 </div>
             </div>
 
+
             <div class="row mb-3">
                 <label for="inputText" class="col-sm-2 col-form-label">Mô tả</label>
                 <div class="col-sm-10">
@@ -102,5 +120,5 @@
     </div>
 @endsection
 @push('scripts')
-   
+
 @endpush
