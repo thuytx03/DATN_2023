@@ -65,7 +65,7 @@ class DashboardController extends Controller
             ->whereDate('created_at', Carbon::today())
             ->sum('total');
 
-        $totalBookings = Booking::count();
+        $totalBookings = Booking::whereDate('created_at', Carbon::today())->count();
 
         $statusCounts = Booking::whereDate('created_at', Carbon::today())
             ->selectRaw('status, COUNT(*) as count')
@@ -93,7 +93,8 @@ class DashboardController extends Controller
             'totalBookingsByDate' => $totalBookingsByDate,
             'totalConfirmedAmountByDate' => $totalConfirmedAmountByDate,
             'statusPercentages' => $statusPercentages,
-            'paymentMethodPercentages' => $paymentMethodPercentages
+            'paymentMethodPercentages' => $paymentMethodPercentages,
+            'currentDate'=>$currentDate
         ]);
     }
     public function getHourlyRevenue()
@@ -105,7 +106,6 @@ class DashboardController extends Controller
                 ->where('status', 3)
                 ->whereDate('created_at', Carbon::today())
                 ->get();
-
             return response()->json($hourlyRevenueData);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Lỗi khi lấy dữ liệu số tiền theo từng giờ.'], 500);
@@ -127,6 +127,287 @@ class DashboardController extends Controller
             return response()->json(['error' => 'Lỗi khi lấy thông tin booking theo trạng thái.'], 500);
         }
     }
+    public function sevenDay(Request $request)
+    {
+        $endDate = Carbon::now()->toDateString();
+        $startDate = Carbon::now()->subDays(6)->toDateString();
+
+        $totalBookingsThisSevenDays = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
+
+        $totalConfirmedAmountThisSevenDays = Booking::where('status', 3)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('total');
+
+        $totalBookings = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
+
+        $statusCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('status, COUNT(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status')
+            ->toArray();
+
+        $statusPercentages = [];
+        foreach ($statusCounts as $status => $count) {
+            $percentage = ($count / $totalBookings) * 100;
+            $statusPercentages[$status] = round($percentage, 2);
+        }
+
+        $paymentMethodCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('payment, COUNT(*) as count')
+            ->groupBy('payment')
+            ->pluck('count', 'payment')
+            ->toArray();
+
+        $paymentMethodPercentages = [];
+        foreach ($paymentMethodCounts as $paymentMethod => $count) {
+            $percentage = ($count / $totalBookings) * 100;
+            $paymentMethodPercentages[$paymentMethod] = round($percentage, 2);
+        }
+
+        return view('admin.dashboard.7day', [
+            'totalBookingsThisSevenDay' => $totalBookingsThisSevenDays,
+            'totalConfirmedAmountSevenDay' => $totalConfirmedAmountThisSevenDays,
+            'statusPercentages' => $statusPercentages,
+            'paymentMethodPercentages' => $paymentMethodPercentages
+        ]);
+    }
+    public function calendar(Request $request)
+    {
+        $selectedDate = $request->input('selected_date');
+
+        if ($selectedDate) {
+            $selectedDate = Carbon::parse($selectedDate)->toDateString();
+
+            $totalBookingsThisCalendar = Booking::whereDate('created_at', $selectedDate)->count();
+
+            $totalConfirmedAmountThisCalendar = Booking::where('status', 3)
+                ->whereDate('created_at', $selectedDate)
+                ->sum('total');
+
+            $totalBookings = Booking::whereDate('created_at', $selectedDate)->count();
+
+            $statusCounts = Booking::whereDate('created_at', $selectedDate)
+                ->selectRaw('status, COUNT(*) as count')
+                ->groupBy('status')
+                ->pluck('count', 'status')
+                ->toArray();
+
+            $statusPercentages = [];
+            foreach ($statusCounts as $status => $count) {
+                $percentage = ($count / $totalBookings) * 100;
+                $statusPercentages[$status] = round($percentage, 2);
+            }
+
+            $paymentMethodCounts = Booking::whereDate('created_at', $selectedDate)
+                ->selectRaw('payment, COUNT(*) as count')
+                ->groupBy('payment')
+                ->pluck('count', 'payment')
+                ->toArray();
+
+            $paymentMethodPercentages = [];
+            foreach ($paymentMethodCounts as $paymentMethod => $count) {
+                $percentage = ($count / $totalBookings) * 100;
+                $paymentMethodPercentages[$paymentMethod] = round($percentage, 2);
+            }
+
+            return view('admin.dashboard.calendar', [
+                'totalBookingsThisCalendar' => $totalBookingsThisCalendar,
+                'totalConfirmedAmountThisCalendar' => $totalConfirmedAmountThisCalendar,
+                'statusPercentages' => $statusPercentages,
+                'paymentMethodPercentages' => $paymentMethodPercentages,
+                'selectedDate' => $selectedDate // Truyền ngày đã chọn để sử dụng trong view nếu cần
+            ]);
+        }else{
+            toastr()->error('Vui lòng chọn ngày');
+            return redirect()->route('dashboard.invoice.day');
+        }
+
+        return view('admin.dashboard.28day'); // Trả về view mặc định nếu không có ngày được chọn
+    }
+    public function getCountStatusCalendar(Request $request)
+    {
+        try {
+            $selectedDate = $request->input('selected_date');
+
+            if ($selectedDate) {
+                $endDate = Carbon::parse($selectedDate)->toDateString();
+                $startDate = Carbon::parse($selectedDate)->toDateString(); // Cùng một ngày
+
+                $status2Count = Booking::where('status', 2)
+                    ->whereDate('created_at', $startDate)
+                    ->count();
+
+                $status3Count = Booking::where('status', 3)
+                    ->whereDate('created_at', $startDate)
+                    ->count();
+
+                $status4Count = Booking::where('status', 4)
+                    ->whereDate('created_at', $startDate)
+                    ->count();
+
+                return response()->json([
+                    'status2' => $status2Count,
+                    'status3' => $status3Count,
+                    'status4' => $status4Count,
+                ]);
+            } else {
+                return response()->json(['error' => 'Không có ngày được chọn.'], 400);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Lỗi khi lấy thông tin booking theo trạng thái.'], 500);
+        }
+    }
+
+    public function twentyEight(Request $request)
+    {
+        $endDate = Carbon::now()->toDateString();
+        $startDate = Carbon::now()->subDays(27)->toDateString(); // 28 days ago
+
+        $totalBookingsThisTwentyEight = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
+
+        $totalConfirmedAmountThisTwentyEight = Booking::where('status', 3)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('total');
+
+        $totalBookings = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
+
+        $statusCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('status, COUNT(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status')
+            ->toArray();
+
+        $statusPercentages = [];
+        foreach ($statusCounts as $status => $count) {
+            $percentage = ($count / $totalBookings) * 100;
+            $statusPercentages[$status] = round($percentage, 2);
+        }
+
+        $paymentMethodCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('payment, COUNT(*) as count')
+            ->groupBy('payment')
+            ->pluck('count', 'payment')
+            ->toArray();
+
+        $paymentMethodPercentages = [];
+        foreach ($paymentMethodCounts as $paymentMethod => $count) {
+            $percentage = ($count / $totalBookings) * 100;
+            $paymentMethodPercentages[$paymentMethod] = round($percentage, 2);
+        }
+
+        return view('admin.dashboard.28day', [
+            'totalBookingsThisTwentyEight' => $totalBookingsThisTwentyEight,
+            'totalConfirmedAmountThisTwentyEight' => $totalConfirmedAmountThisTwentyEight,
+            'statusPercentages' => $statusPercentages,
+            'paymentMethodPercentages' => $paymentMethodPercentages
+        ]);
+    }
+    public function getCountStatusSeven()
+    {
+        try {
+            $endDate = Carbon::now()->toDateString();
+            $startDate = Carbon::now()->subDays(6)->toDateString(); // Ngày 7 ngày trước
+
+            $status2Count = Booking::where('status', 2)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->count();
+
+            $status3Count = Booking::where('status', 3)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->count();
+
+            $status4Count = Booking::where('status', 4)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->count();
+
+            return response()->json([
+                'status2' => $status2Count,
+                'status3' => $status3Count,
+                'status4' => $status4Count,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Lỗi khi lấy thông tin booking theo trạng thái.'], 500);
+        }
+    }
+
+    public function getCountStatusTwentyEight()
+    {
+        try {
+            $endDate = Carbon::now()->toDateString();
+            $startDate = Carbon::now()->subDays(27)->toDateString(); // Ngày 28 ngày trước
+
+            $status2Count = Booking::where('status', 2)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->count();
+
+            $status3Count = Booking::where('status', 3)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->count();
+
+            $status4Count = Booking::where('status', 4)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->count();
+
+            return response()->json([
+                'status2' => $status2Count,
+                'status3' => $status3Count,
+                'status4' => $status4Count,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Lỗi khi lấy thông tin booking theo trạng thái.'], 500);
+        }
+    }
+    public function fetchLastSevenDaysData(Request $request)
+    {
+        // Lấy ngày hiện tại
+        $endDate = Carbon::now()->toDateString();
+
+        // Lấy ngày 7 ngày trước
+        $startDate = Carbon::now()->subDays(6)->toDateString();
+
+        // Truy vấn cơ sở dữ liệu để lấy doanh thu từ bảng bookings trong khoảng thời gian này
+        $revenueData = Booking::where('status', 3)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total) as total_amount'))
+            ->groupBy(DB::raw('DATE(created_at)'))
+            ->orderBy(DB::raw('DATE(created_at)'))
+            ->pluck('total_amount', 'date');
+
+        return response()->json(['revenueData' => $revenueData]);
+    }
+    public function fetchLastTwentyEightDaysData(Request $request)
+    {
+        // Lấy ngày hiện tại
+        $endDate = Carbon::now()->toDateString();
+
+        // Lấy ngày 28 ngày trước
+        $startDate = Carbon::now()->subDays(27)->toDateString();
+
+        // Truy vấn cơ sở dữ liệu để lấy doanh thu từ bảng bookings trong khoảng thời gian này
+        $revenueData = Booking::where('status', 3)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total) as total_amount'))
+            ->groupBy(DB::raw('DATE(created_at)'))
+            ->orderBy(DB::raw('DATE(created_at)'))
+            ->pluck('total_amount', 'date');
+
+        return response()->json(['revenueData' => $revenueData]);
+    }
+    public function fetchHourlyData(Request $request)
+    {
+        $selectedDate = $request->input('selected_date');
+
+        // Truy vấn cơ sở dữ liệu để lấy thống kê theo giờ trong ngày được chọn
+        $hourlyData = Booking::where('status', 3)
+            ->whereDate('created_at', $selectedDate)
+            ->selectRaw('HOUR(created_at) as hour, SUM(total) as total_amount')
+            ->groupBy(DB::raw('HOUR(created_at)'))
+            ->orderBy(DB::raw('HOUR(created_at)'))
+            ->pluck('total_amount', 'hour');
+
+        return response()->json(['hourlyData' => $hourlyData]);
+    }
+
     public function week(Request $request)
     {
         $currentWeek = Carbon::now()->startOfWeek();
@@ -139,7 +420,7 @@ class DashboardController extends Controller
             ->whereBetween('created_at', [$currentWeek, $endOfWeek])
             ->sum('total');
 
-        $totalBookings = Booking::count();
+        $totalBookings = Booking::whereBetween('created_at', [$currentWeek, $endOfWeek])->count();
 
         $statusCounts = Booking::whereBetween('created_at', [$currentWeek, $endOfWeek])
             ->selectRaw('status, COUNT(*) as count')
@@ -238,7 +519,7 @@ class DashboardController extends Controller
             ->whereYear('created_at', '=', Carbon::now()->year)
             ->sum('total');
 
-        $totalBookings = Booking::count();
+        $totalBookings = Booking::whereYear('created_at', '=', Carbon::now()->year)->count();
 
         $statusCounts = Booking::whereYear('created_at', '=', Carbon::now()->year)
             ->selectRaw('status, COUNT(*) as count')
@@ -294,10 +575,10 @@ class DashboardController extends Controller
                 ->whereYear('created_at', '=', Carbon::now()->year)
                 ->groupByRaw('YEAR(created_at), MONTH(created_at)')
                 ->get();
-    
+
             // Mảng để lưu trữ dữ liệu cho từng tháng
             $data = [];
-    
+
             // Lặp qua dữ liệu và lưu vào mảng
             foreach ($monthlyRevenueData as $revenue) {
                 $data[] = [
@@ -305,11 +586,10 @@ class DashboardController extends Controller
                     'total_amount' => $revenue->total_amount // Doanh thu tương ứng với tháng đó
                 ];
             }
-    
+
             return response()->json($data);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Lỗi khi lấy dữ liệu số tiền theo từng tháng.'], 500);
         }
     }
-    
 }

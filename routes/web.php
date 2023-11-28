@@ -50,10 +50,6 @@ use App\Http\Controllers\Admin\QrAdminController;
 use Endroid\QrCode\QrCode;
 Route::get('/', [HomeController::class, 'index'])->name('index');
 
-
-
-
-
 // qrclinet
 Route::match(['GET', 'POST'], '/qrtiketinfo/{id}', [QrcodeController::class, 'qrtiketinfo'])->name('qr.qrtiketinfo');
 // ket thuc
@@ -157,10 +153,19 @@ Route::prefix('admin')->group(function () {
     Route::match(['GET', 'POST'], '/login', [AuthAdminController::class, 'login'])->name('login.admin');
     //dashboard
     Route::prefix('dashboard')->group(function () {
-        Route::match(['GET', 'POST'], '/user', [DashboardController::class, 'user'])->name('dashboard.user');
+        Route::match(['GET', 'POST'], '/', [DashboardController::class, 'user'])->name('dashboard.user');
         Route::match(['GET', 'POST'], '/invoice/day', [DashboardController::class, 'day'])->name('dashboard.invoice.day');
         Route::match(['GET', 'POST'], '/invoice/day/hourly-data', [DashboardController::class, 'getHourlyRevenue']);
         Route::match(['GET', 'POST'], '/invoice/day/getCountStatusDay', [DashboardController::class, 'getCountStatusDay']);
+        Route::match(['GET', 'POST'], '/invoice/day/fetchLastSevenDaysData', [DashboardController::class, 'fetchLastSevenDaysData']);
+        Route::match(['GET', 'POST'], '/invoice/day/fetchLastTwentyEightDaysData', [DashboardController::class, 'fetchLastTwentyEightDaysData']);
+        Route::match(['GET', 'POST'], '/invoice/day/fetchHourlyData', [DashboardController::class, 'fetchHourlyData']);
+        Route::match(['GET', 'POST'], '/invoice/day/7', [DashboardController::class, 'sevenDay'])->name('dashboard.invoice.seven');
+        Route::match(['GET', 'POST'], '/invoice/day/28', [DashboardController::class, 'twentyEight'])->name('dashboard.invoice.TwentyEight');
+        Route::match(['GET', 'POST'], '/invoice/day/calendar', [DashboardController::class, 'calendar'])->name('dashboard.invoice.calendar');
+        Route::match(['GET', 'POST'], '/invoice/day/getCountStatusCalendar', [DashboardController::class, 'getCountStatusCalendar']);
+        Route::match(['GET', 'POST'], '/invoice/day/getCountStatusSeven', [DashboardController::class, 'getCountStatusSeven']);
+        Route::match(['GET', 'POST'], '/invoice/day/getCountStatusTwentyEight', [DashboardController::class, 'getCountStatusTwentyEight']);
         Route::match(['GET', 'POST'], '/invoice/week', [DashboardController::class, 'week'])->name('dashboard.invoice.week');
         Route::match(['GET', 'POST'], '/invoice/week/weekly-data', [DashboardController::class, 'getWeeklyRevenue']);
         Route::match(['GET', 'POST'], '/invoice/week/getCountStatusWeek', [DashboardController::class, 'getCountStatusWeek']);

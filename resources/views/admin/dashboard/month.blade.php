@@ -6,6 +6,10 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Thống kê hóa đơn theo tháng</h1>
+        <div class="">
+            <a href="{{route('dashboard.invoice.day')}}" class="btn btn-primary">Doanh thu theo ngày</a>
+            <a href="{{route('dashboard.invoice.week')}}" class="btn btn-primary">Doanh thu theo tuần</a>
+        </div>
     </div>
 
     <!-- Content Row -->

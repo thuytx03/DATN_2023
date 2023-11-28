@@ -1,7 +1,7 @@
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="">
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('dashboard.user') }}">
         <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-laugh-wink"></i>
         </div>
@@ -13,19 +13,10 @@
 
     <!-- Nav Item - Dashboard -->
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#dashboard" aria-expanded="true" aria-controls="dashboard">
+        <a class="nav-link collapsed" href="{{ route('dashboard.user') }}">
             <i class="fa-solid fa-user"></i>
             <span>Thống kê</span>
         </a>
-        <div id="dashboard" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="{{ route('dashboard.user') }}">Thống kê người dùng</a>
-                <a class="collapse-item" href="{{ route('dashboard.invoice.day') }}">Thống kê hóa đơn ngày</a>
-                <a class="collapse-item" href="{{ route('dashboard.invoice.week') }}">Thống kê hóa đơn tuần</a>
-                <a class="collapse-item" href="{{ route('dashboard.invoice.month') }}">Thống kê hóa đơn tháng</a>
-                <!-- link -->
-            </div>
-        </div>
     </li>
 
     <!-- Divider -->
@@ -42,7 +33,7 @@
         </a>
         <div id="qr" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="{{route('qr.scanner')}}">Quét Mã Cho Khách </a>
+                <a class="collapse-item" href="">Quét Mã Cho Khách </a>
                
             </div>
         </div>

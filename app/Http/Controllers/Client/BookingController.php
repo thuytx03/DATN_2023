@@ -104,9 +104,6 @@ class BookingController extends Controller
                     $bookingDetail->save();
                 }
             }
-
-
-
             if ($booking->payment == 1) {
                 // Thực hiện thanh toán VNPay
                 $result = $this->paymentVNP($booking->id, $booking->total);

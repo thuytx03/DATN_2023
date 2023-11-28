@@ -5,8 +5,9 @@
 
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Thống kê hóa đơn theo ngày</h1>
+        <h1 class="h3 mb-0 text-gray-800">Thống kê hóa đơn ngày {{$selectedDate}}</h1>
         <div class="">
+            <a href="{{route('dashboard.invoice.day')}}" class="btn btn-primary">Doanh thu theo ngày</a>
             <a href="{{route('dashboard.invoice.week')}}" class="btn btn-primary">Doanh thu theo tuần</a>
             <a href="{{route('dashboard.invoice.month')}}" class="btn btn-primary">Doanh thu theo tháng</a>
         </div>
@@ -16,13 +17,15 @@
         <a href="{{route('dashboard.invoice.TwentyEight')}}" class="btn btn-primary">28 ngày qua</a>
         <form method="GET" action="{{ route('dashboard.invoice.calendar') }}" class="mt-2">
             @csrf
-            <input type="date" name="selected_date" id="selectedDate" class="btn btn-primary" value="{{$currentDate}}">
+            <input type="date" name="selected_date" id="selectedDate" class="btn btn-primary" value="{{$selectedDate}}">
             <button type="submit" class="btn btn-info"><i class="fas fa-search m-1"></i></button>
         </form>
 
     </div>
+
     <!-- Content Row -->
     <div class="row">
+
         <!-- Earnings (Monthly) Card Example -->
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-primary shadow h-100 py-2">
@@ -32,7 +35,7 @@
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                 Tổng doanh thu
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{$totalConfirmedAmountByDate}} Vnđ</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{$totalConfirmedAmountThisCalendar}} Vnđ</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -51,7 +54,7 @@
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                 Tổng hóa đơn
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{$totalBookingsByDate}}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{$totalBookingsThisCalendar}}</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -63,13 +66,15 @@
     </div>
 
     <!-- Content Row -->
+
     <div class="row">
+
         <!-- Area Chart -->
         <div class="col-xl-8 col-lg-7">
             <div class="card shadow mb-4">
                 <!-- Card Header - Dropdown -->
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Doanh thu theo giờ</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Doanh thu theo ngày {{$selectedDate}}</h6>
                     <div class="dropdown no-arrow">
                         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
@@ -222,47 +227,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 <script>
     $(document).ready(function() {
+        var selectedDate = $('#selectedDate').val(); 
         $.ajax({
-            url: '/admin/dashboard/invoice/day/hourly-data',
+            url: '/admin/dashboard/invoice/day/getCountStatusCalendar',
             method: 'GET',
-            success: function(response) {
-                var hours = [];
-                var amounts = [];
-
-                // Duyệt qua dữ liệu phản hồi
-                for (var i = 0; i < 24; i++) {
-                    var found = response.find(item => item.hour === i);
-                    if (found) {
-                        hours.push(found.hour + 'h');
-                        amounts.push(found.total_amount);
-                    } else {
-                        hours.push(i + 'h');
-                        amounts.push(0);
-                    }
-                }
-
-                var labels = hours;
-
-                // Cập nhật labels và data của biểu đồ từ dữ liệu phản hồi hoặc giá trị mặc định 0
-                myLineChart.data.labels = labels;
-                myLineChart.data.datasets[0].data = amounts;
-
-                // Cấu hình để hiển thị 'VNĐ' sau mỗi giá trị trên trục y
-
-                // Cập nhật biểu đồ
-                myLineChart.update();
-            },
-            error: function(err) {
-                console.error('Lỗi:', err);
-            }
-        });
-    });
-</script>
-<script>
-    $(document).ready(function() {
-        $.ajax({
-            url: '/admin/dashboard/invoice/day/getCountStatusDay',
-            method: 'GET',
+            data: { selected_date: selectedDate }, 
             success: function(response) {
                 var status2Count = response.status2 || 0;
                 var status3Count = response.status3 || 0;
@@ -286,146 +255,44 @@
 </script>
 <script>
     $(document).ready(function() {
-        // Xử lý sự kiện khi người dùng chọn 7 ngày qua từ dropdown menu
-        $('.time-range').click(function(e) {
-            e.preventDefault();
-            var range = $(this).attr('data-range');
-            fetchData(range);
-        });
+        var selectedDate = $('#selectedDate').val(); 
+        $.ajax({
+            url: '/admin/dashboard/invoice/day/fetchHourlyData',
+            type: 'GET',
+            data: { selected_date: selectedDate }, 
+            // Trong hàm success của AJAX
+            // Trong hàm success của AJAX
+            success: function(response) {
+                var hourlyData = response.hourlyData;
 
-        // Hàm gửi yêu cầu AJAX và cập nhật biểu đồ
-        function fetchData(range) {
-            $.ajax({
-                url: '/admin/dashboard/invoice/day/fetchLastSevenDaysData',
-                type: 'GET',
-                data: {
-                    range: range
-                },
-                success: function(response) {
-                    // Nhận dữ liệu từ Controller
-                    var revenueData = response.revenueData;
+                // Tạo mảng chứa giờ và tổng doanh thu tương ứng
+                var hours = [];
+                var revenues = [];
 
-                    // Tạo mảng dữ liệu mới với giá trị mặc định là 0 cho các ngày không có dữ liệu
-                    var newData = [];
-                    var labels = [];
-                    for (var i = 0; i < 7; i++) {
-                        var date = moment().subtract(i, 'days').format('YYYY-MM-DD');
-                        labels.unshift(date);
-                        newData.unshift(revenueData[date] || 0);
-                    }
+                // Lặp qua các giờ từ 0 đến 23 và kiểm tra dữ liệu có trong hourlyData không
+                for (var i = 0; i < 24; i++) {
+                    var hour = i.toString().padStart(2); // Format giờ thành chuỗi 2 chữ số
+                    var hourtime = i.toString().padStart(2) + 'h'; // Format giờ thành chuỗi 2 chữ số
+                    var revenue = hourlyData[hour] || 0; // Nếu không có dữ liệu, gán giá trị 0
 
-                    // Gọi hàm để cập nhật dữ liệu trong biểu đồ
-                    updateChartData(labels, newData);
-                },
-                error: function(error) {
-                    console.error('Error:', error);
+                    // Thêm giờ và doanh thu vào mảng tương ứng
+                    hours.push(hourtime);
+                    revenues.push(revenue);
                 }
-            });
-        }
 
-        // Hàm cập nhật dữ liệu mới trong biểu đồ
-        function updateChartData(labels, newData) {
-            myLineChart.data.labels = labels;
-            myLineChart.data.datasets[0].data = newData;
-            myLineChart.update();
-        }
-    });
-</script>
-<script>
-    $(document).ready(function() {
-        // Xử lý sự kiện khi người dùng chọn 7 ngày qua từ dropdown menu
-        $('.time-range-month').click(function(e) {
-            e.preventDefault();
-            var range = $(this).attr('data-range');
-            fetchData(range);
+                // Cập nhật dữ liệu và nhãn cho biểu đồ
+                myLineChart.data.labels = hours;
+                myLineChart.data.datasets[0].data = revenues;
+
+                // Cập nhật biểu đồ
+                myLineChart.update();
+            },
+
+
+            error: function(error) {
+                console.error('Error:', error);
+            }
         });
-
-        // Hàm gửi yêu cầu AJAX và cập nhật biểu đồ
-        function fetchData(range) {
-            $.ajax({
-                url: '/admin/dashboard/invoice/day/fetchLastTwentyEightDaysData',
-                type: 'GET',
-                data: {
-                    range: range
-                },
-                success: function(response) {
-                    // Nhận dữ liệu từ Controller
-                    var revenueData = response.revenueData;
-
-                    // Tạo mảng dữ liệu mới với giá trị mặc định là 0 cho các ngày không có dữ liệu
-                    var newData = [];
-                    var labels = [];
-                    for (var i = 0; i < 28; i++) {
-                        var date = moment().subtract(i, 'days').format('YYYY-MM-DD');
-                        labels.unshift(date);
-                        newData.unshift(revenueData[date] || 0);
-                    }
-
-                    // Gọi hàm để cập nhật dữ liệu trong biểu đồ
-                    updateChartData(labels, newData);
-                },
-                error: function(error) {
-                    console.error('Error:', error);
-                }
-            });
-        }
-
-        // Hàm cập nhật dữ liệu mới trong biểu đồ
-        function updateChartData(labels, newData) {
-            myLineChart.data.labels = labels;
-            myLineChart.data.datasets[0].data = newData;
-            myLineChart.update();
-        }
-    });
-</script>
-<script>
-    $(document).ready(function() {
-        $('#selectedDate').change(function() {
-            var selectedDate = $(this).val();
-            fetchHourlyData(selectedDate);
-        });
-
-        function fetchHourlyData(date) {
-            $.ajax({
-                url: '/admin/dashboard/invoice/day/fetchHourlyData',
-                type: 'GET',
-                data: {
-                    date: date
-                },
-                // Trong hàm success của AJAX
-                // Trong hàm success của AJAX
-                success: function(response) {
-                    var hourlyData = response.hourlyData;
-
-                    // Tạo mảng chứa giờ và tổng doanh thu tương ứng
-                    var hours = [];
-                    var revenues = [];
-
-                    // Lặp qua các giờ từ 0 đến 23 và kiểm tra dữ liệu có trong hourlyData không
-                    for (var i = 0; i < 24; i++) {
-                        var hour = i.toString().padStart(2); // Format giờ thành chuỗi 2 chữ số
-                        var hourtime = i.toString().padStart(2) + 'h'; // Format giờ thành chuỗi 2 chữ số
-                        var revenue = hourlyData[hour] || 0; // Nếu không có dữ liệu, gán giá trị 0
-
-                        // Thêm giờ và doanh thu vào mảng tương ứng
-                        hours.push(hourtime);
-                        revenues.push(revenue);
-                    }
-
-                    // Cập nhật dữ liệu và nhãn cho biểu đồ
-                    myLineChart.data.labels = hours;
-                    myLineChart.data.datasets[0].data = revenues;
-
-                    // Cập nhật biểu đồ
-                    myLineChart.update();
-                },
-
-
-                error: function(error) {
-                    console.error('Error:', error);
-                }
-            });
-        }
     });
 </script>
 @endpush

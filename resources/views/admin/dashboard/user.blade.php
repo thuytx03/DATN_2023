@@ -6,6 +6,7 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Thống kê người dùng</h1>
+        <a href="{{route('dashboard.invoice.day')}}" class="btn btn-info">Thống kê doanh thu</a>
     </div>
 
     <!-- Content Row -->
@@ -42,7 +43,7 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800" id="week">{{$weekUsersCount}}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -61,7 +62,7 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800" id="month">{{$monthUsersCount}}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
