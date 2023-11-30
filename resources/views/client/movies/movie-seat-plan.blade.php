@@ -146,7 +146,7 @@
 
                                 <ul>
 
-                                    <li class="single-seat seat-type1 {{ $isBooked ? 'not-allowed' : 'single-seat1 seat-click ' }} "
+                                    <li class="single-seat seat-type1  seatThuong {{ $isBooked ? 'not-allowed' : 'single-seat1 seat-click ' }} "
                                         id="seat-{{ $thuong->row }}{{ $thuong->column }}">
                                         <img src="{{ $isBooked ? asset('client/assets/images/movie/seatDaChon.png') : asset('client/assets/images/movie/seatThuong.png') }}"
                                             width="64" alt="seat" class="{{ $isBooked ? 'not-allowed' : 'thuy' }}">
@@ -187,7 +187,7 @@
                                 <ul>
 
 
-                                    <li class="single-seat seat-type1 {{ $isBooked ? 'not-allowed' : 'single-seat1 seat-click ' }} "
+                                    <li class="single-seat seat-type1 seatVip {{ $isBooked ? 'not-allowed' : 'single-seat1 seat-click ' }} "
                                         id="seat-{{ $vip->row }}{{ $vip->column }}">
                                         <img src="{{ $isBooked ? asset('client/assets/images/movie/seatDaChon.png') : asset('client/assets/images/movie/seatVip.png') }}"
                                             width="64" alt="seat" class="{{ $isBooked ? 'not-allowed' : 'thuy' }}">
@@ -228,7 +228,7 @@
 
                                 <ul class="ul-price">
                                     <li id="seat-{{ $doi->row }}{{ $doi->column }}"
-                                        class="single-seat seat-type1  {{ $isBooked ? 'not-allowed' : 'single-seat1 seat-click seat ' }} ">
+                                        class="single-seat seat-type1  seatDoi {{ $isBooked ? 'not-allowed' : 'single-seat1 seat-click seat ' }} ">
                                         <img src="{{ $isBooked ? asset('client/assets/images/movie/seatDaChon.png') : asset('client/assets/images/movie/seatDoi.png') }}"
                                             width="64" alt="seat"
                                             class="{{ $isBooked ? 'not-allowed' : ' thuy seat ' }}" id="thuy-img"
@@ -336,7 +336,7 @@
         // Tạo thời gian mục tiêu (target time) chỉ khi cần
         if (!savedTimeExpired) {
             targetTime = new Date();
-            targetTime.setMinutes(targetTime.getMinutes() + 1);
+            targetTime.setMinutes(targetTime.getMinutes() + 10);
             window.localStorage.setItem('targetTime', targetTime.getTime());
         } else {
             // Nếu đã lưu, khôi phục thời gian từ localStorage
@@ -386,54 +386,106 @@
     </script>
 
 
+
+
     <script>
         window.Echo.channel('laravel_database_seat-selected-channel')
             .listen('.seat-selected', (e) => {
                 console.log(e);
-                // console.log(e.showtime_id);
-                // const userId = {{ auth()->id() }};
-                // console.log("userId: " + userId);
-
                 const selectedSeats = e.selectedSeats;
-
-                // Update seat images and cursor based on the selectedSeats array and user ID
+                const action=e.action;
                 selectedSeats.forEach((seat) => {
                     const seatElement = document.getElementById(`seat-${seat}`);
-
+                    // console.log(seat);
                     if (seatElement) {
-                        const isSeatSelected = seatElement.classList.contains('seat-selected');
-                        const showTimeId = document.getElementById("showtime-link").getAttribute(
-                            "data-showtime-id");
-
-                        const check = e.userId === {{ auth()->id() }} && e.showtime_id === showTimeId;
-
+                        const showTimeId = document.getElementById("showtime-link").getAttribute("data-showtime-id");
                         if (e.showtime_id === showTimeId) {
-                            // Kiểm tra trạng thái hiện tại trước khi cập nhật
-                            if (isSeatSelected === check) {
-                                const imageUrl = check ?
-                                    '{{ asset('client/assets/images/movie/seatDangChon.png') }}' :
-                                    '{{ asset('client/assets/images/movie/seatDangGiu.png') }}';
+                            const isSeatSelected = seatElement.classList.contains('seat-selected');
+                            const check = e.userId === {{ auth()->id() }} && e.showtime_id === showTimeId;
 
-                                seatElement.querySelector('img').src = imageUrl;
+                            // Kiểm tra trạng thái hiện tại trước khi cập nhật
+                            // if (isSeatSelected === check) {
+                                let imageUrl = '';
 
                                 if (check) {
                                     seatElement.style.pointerEvents = 'auto';
+                                    // seatElement.classList.add('dang-chon');
                                 } else {
                                     seatElement.style.pointerEvents = 'none';
+                                    seatElement.classList.add('dang-giu-ghe');
                                 }
-                            }
 
+                                if (check && action === 'selected') {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatDangChon.png') }}';
+                                } else if (seatElement.classList.contains('dang-giu-ghe')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatDangGiu.png') }}';
+                                }else{
+                                    if(seatElement.classList.contains('seatThuong')){
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatThuong.png') }}';
+                                    }else if (seatElement.classList.contains('seatVip')){
+                                        imageUrl = '{{ asset('client/assets/images/movie/seatVip.png') }}';
+                                    }else if (seatElement.classList.contains('seatDoi')){
+                                        imageUrl = '{{ asset('client/assets/images/movie/seatDoi.png') }}';
+                                    }
+                                }
+
+                                seatElement.querySelector('img').src = imageUrl;
+                            // }
 
                         }
                     }
                 });
 
             });
+
+
+            window.Echo.channel('laravel_database_seat-cancelled-channel')
+            .listen('.seat-cancelled', (e) => {
+                console.log(e);
+                const cancelledSeats = e.cancelledSeats;
+                const action = e.action;
+
+                // Thực hiện các xử lý khi ghế bị hủy ở đây
+                cancelledSeats.forEach((seat) => {
+                    const seatElement = document.getElementById(`seat-${seat}`);
+                    // console.log(seat);
+                    if (seatElement) {
+                        const showTimeId = document.getElementById("showtime-link").getAttribute("data-showtime-id");
+                        if (e.showtime_id === showTimeId) {
+                            const isSeatSelected = seatElement.classList.contains('seat-selected');
+                            const check = e.userId === {{ auth()->id() }} && e.showtime_id === showTimeId;
+
+                            // Kiểm tra trạng thái hiện tại trước khi cập nhật
+                            // if (isSeatSelected === check) {
+                                let imageUrl = '';
+                                if (check && action === 'cancelled') {
+                                    // seatElement.classList.remove('dang-chon');
+                                    if(seatElement.classList.contains('seatThuong')){
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatThuong.png') }}';
+                                    }else if (seatElement.classList.contains('seatVip')){
+                                        imageUrl = '{{ asset('client/assets/images/movie/seatVip.png') }}';
+                                    }else if (seatElement.classList.contains('seatDoi')){
+                                        imageUrl = '{{ asset('client/assets/images/movie/seatDoi.png') }}';
+                                    }
+                                } else if (seatElement.classList.contains('dang-giu-ghe')) {
+                                    seatElement.classList.remove('dang-giu-ghe');
+                                    if(seatElement.classList.contains('seatThuong')){
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatThuong.png') }}';
+                                    }else if (seatElement.classList.contains('seatVip')){
+                                        imageUrl = '{{ asset('client/assets/images/movie/seatVip.png') }}';
+                                    }else if (seatElement.classList.contains('seatDoi')){
+                                        imageUrl = '{{ asset('client/assets/images/movie/seatDoi.png') }}';
+                                    }
+                                }
+                                seatElement.style.pointerEvents = 'auto';
+                                seatElement.querySelector('img').src = imageUrl;
+                            // }
+
+                        }
+                    }
+                });
+            });
     </script>
-
-
-
-
 
     {{-- kiểm tra ghế  --}}
     <script>
@@ -551,6 +603,8 @@
                 if (chosenSeats.includes(seatNum)) {
                     imgElement.src = newImageSrc;
                     seat.classList.add("seat-selected");
+
+
                 }
 
                 imgElement.addEventListener("click", function(event) {
@@ -561,6 +615,7 @@
                         imgElement.src = newImageSrc;
                         chosenSeats.push(seatNum);
                         seat.classList.add("seat-selected");
+
 
                         // Auto-select the corresponding seat for seats with the "seat" class
                         if (seat.classList.contains("seat")) {
@@ -575,6 +630,8 @@
                                 oppositeImgElement.src = newImageSrc;
                                 chosenSeats.push(oppositeSeatNum);
                                 oppositeSeat.classList.add("seat-selected");
+
+
                             }
                         }
                     } else {
@@ -583,6 +640,7 @@
                             return seat !== seatNum;
                         });
                         seat.classList.remove("seat-selected");
+
 
                         // Deselect the corresponding seat for seats with the "seat" class
                         if (seat.classList.contains("seat")) {
@@ -599,6 +657,9 @@
                                     return seat !== oppositeSeatNum;
                                 });
                                 oppositeSeat.classList.remove("seat-selected");
+
+
+
                             }
                         }
                     }
@@ -631,6 +692,13 @@
 
                             document.querySelector(".total-price").textContent = formatCurrency(
                                 data.totalPrice) + " VNĐ";
+
+                            window.Echo.channel('laravel_database_seat-selected-channel')
+                                .whisper('.seat-selected', {
+                                    userId: {{ auth()->id() }},
+                                    selectedSeats: chosenSeats,
+                                    showtime_id: showTimeId,
+                                });
                         });
 
 
@@ -642,6 +710,7 @@
                     } else {
                         $('#thanh-toan-button').attr('href', '#');
                     }
+
                 });
             });
 

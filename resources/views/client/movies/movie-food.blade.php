@@ -109,7 +109,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            {{ number_format($value->price, 0, ',', '.') }} VNĐ
+                                            {{-- {{ number_format($value->price, 0, ',', '.') }} VNĐ --}}
 
                                         </td>
                                         <td id="price-{{ $value->id }}" data-price="{{ $value->price }}">
@@ -118,7 +118,7 @@
                                                 @if (request()->quantity == 0)
                                                     0 VNĐ
                                                 @else
-                                                    {{ number_format($value->price, 0, ',', '.') }} VNĐ
+                                                    {{-- {{ number_format($value->price, 0, ',', '.') }} VNĐ --}}
                                                 @endif
                                             @else
                                                 {{ $value->price }} VNĐ

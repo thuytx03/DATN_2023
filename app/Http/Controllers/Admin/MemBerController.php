@@ -13,12 +13,12 @@ use App\Http\Controllers\Client\BookingController;
 class MemBerController extends Controller
 {
     public function index(Request $request)
-    
+
 {
-   
+    $bookingstatus = new BookingController();
+    $bookingstatus->checkStatus();
     $query = Member::query();
- $bookingstatus = new BookingController();
- $bookingstatus->checkStatus();
+
  $membernumber = new MemBerController();
     // Search condition
     if ($request->has('search')) {

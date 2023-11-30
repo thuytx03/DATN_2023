@@ -154,7 +154,16 @@
             </div>
                <!-- Đây là nơi để hiển thị các phản hồi -->
                <div class="blog-content col-9">
-                        <p>{{ $reply->message }}</p>
+               @if($reply->parent_id==0)
+               {{$comment->user->name}}-<p>{{ $reply->message }}</p>
+               @else
+               
+               @foreach($reply_id as $child)
+               @if($reply->parent_id==$child->id)
+            {{$child->user->name}}-<p>{{ $reply->message }}</p>
+            @endif
+            @endforeach
+               @endif
                 </div>
                 <div >
                 <button class="btn btn-link reply-button col-3" onclick="showReplyForm2({{ $reply->id }},{{$reply->comment_id}},'{{$reply->user->name}}')">Phản hồi</button>
@@ -429,9 +438,9 @@ function showReplyForm(commentId, user) {
         @csrf
             <input type="hidden" name="commentId" value="${commentId}">
             <div class="d-flex" >
-                <input type="text" name="message" placeholder="Phản hồi" class="col-12" value="${user}">
+                <input type="text" name="message" placeholder="Phản hồi" class="col-12" >
                 <button type="submit" class="form-group col-3"><i class="fa-regular fa-paper-plane"></i></button>
-                <button type="button" onclick="closeCommentReplyForm(${commentId})" class="col-3">x</button>
+             
             </div>
         </form>
     `;
@@ -450,7 +459,7 @@ function showReplyForm2(repId,commentId ,user) {
             <input type="hidden" name="commentId" value="${commentId}">
             <input type="hidden" name="parentId" value="${repId}">
             <div class="d-flex" >
-                <input type="text" name="message" placeholder="Phản hồi bình luận " class="col-6" value="${user}">
+                <input type="text" name="message" placeholder="Phản hồi bình luận ${user}" class="col-6" value="">
                 <button type="submit" class="form-group col-1"><i class="fa-regular fa-paper-plane"></i></button>
                 <button type="button" onclick="closeCommentReplyForm(${repId})" class="col-1">x</button>
             </div>
