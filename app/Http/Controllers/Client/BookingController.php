@@ -331,7 +331,7 @@ class BookingController extends Controller
                 if(isset($booking)) {
                 // Check if the movie time has ended for this booking
                 $show_time = DB::table('show_times')->where('id', $booking->showtime_id)->first();
-                if ($booking->status == 5 && $booking->hasUpdated == 0 ) {
+                if ($booking->status == 5 && $booking->hasUpdated == 0 ||  $booking->status == 5 && $booking->hasUpdated == 1 ) {
                     DB::table('bookings')->where('id', $booking->id)->update(['status' => 3]);
                 }elseif ($booking->status != 3 && $booking->hasUpdated == 0 && $booking->status == 2 && Carbon::now()->gt($show_time->end_date)) {
                     DB::table('bookings')->where('id', $booking->id)->update(['status' => 4]);
@@ -352,28 +352,33 @@ class BookingController extends Controller
 
 
 public function checkStatus2($id) {
-    
+
     $bookings = Booking::where('user_id',$id)->get();
-  
+
 if(isset($bookings)) {
     foreach ($bookings as $booking) {
-     
+
         if(isset($booking)) {
         $show_time = DB::table('show_times')->where('id', $booking->showtime_id)->first();
         // Kiểm tra nếu không có dữ liệu
-           
+
         if (!$show_time) {
             continue;
-        }elseif (strtotime($show_time->end_date) < time()) {
+        }
+        elseif ($booking->status != 3 && $booking->hasUpdated == 0 && $booking->status == 2 && Carbon::now()->gt($show_time->end_date)) {
+            DB::table('bookings')->where('id', $booking->id)->update(['status' => 4]);
+        }
+            elseif (strtotime($show_time->end_date) < time()) {
+
         if ($booking->status == 2 && $booking->hasUpdated == 0 ) {
             DB::table('bookings')->where('id', $booking->id)->update(['status' => 5]);
         }
     }
         // Replace 'your_condition' with the actual condition to check if the movie time has ended
-       
+
     }
     }
-    
+
 }
 }
 
