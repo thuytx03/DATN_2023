@@ -40,14 +40,16 @@ use App\Http\Controllers\Client\PostController;
 use App\Http\Controllers\Client\MovieControllerClient;
 use App\Http\Controllers\Client\ProfileController;
 use App\Http\Controllers\Client\RatingController;
-
+use \Illuminate\Auth\Middleware\Authorize;
 
 Route::get('/', [HomeController::class, 'index'])->name('index');
 
-Route::post('/submit-message-rating',[RatingController::class,'submitRatingAndMessage'])->name('submit-message-rating');
+Route::post('/submit-message-rating', [RatingController::class, 'submitRatingAndMessage'])->name('submit-message-rating');
+
 use App\Http\Controllers\client\QrcodeController;
 use App\Http\Controllers\Admin\QrAdminController;
 use Endroid\QrCode\QrCode;
+
 Route::get('/', [HomeController::class, 'index'])->name('index');
 
 // qrclinet
@@ -71,8 +73,7 @@ Route::prefix('vouchers')->group(function () {
     Route::get('/voucher-list', [VouchersController::class, 'vouchers'])->name('home.voucher.list');
     Route::get('/voucher-detail/{id}', [VouchersController::class, 'detailVouchers'])->name('home.voucher.detail');
     Route::post('/apllyVouchers', [VouchersController::class, 'apllyVouchers'])->name('home.voucher.apllyVouchers');
-    Route::match(['GET','POST'],'/doi-diem', [VouchersController::class, 'exchangePoin'])->name('doi-diem');
-
+    Route::match(['GET', 'POST'], '/doi-diem', [VouchersController::class, 'exchangePoin'])->name('doi-diem');
 });
 
 Route::group(['middleware' => 'guest'], function () {
@@ -151,14 +152,16 @@ Route::get('callback/google', [SocialController::class, 'callbackToGoogle']);
 Route::get('logout', [SocialController::class, 'logout'])->name('logout');
 
 // ket thuc route mang xa hoi
-Route::prefix('admin')->group(function () {
-    //login
-    Route::match(['GET', 'POST'], '/login', [AuthAdminController::class, 'login'])->name('login.admin');
+Route::match(['GET', 'POST'], '/admin/login', [AuthAdminController::class, 'login'])->name('login.admin');
+
+
+Route::group(['prefix' => 'admin', 'middleware' => 'auth.check'], function () {
     //dashboard
-    Route::prefix('dashboard')->group(function () {
+    Route::group(['prefix' => 'dashboard', 'middleware' => 'role:Super-Admin'], function () {
+        // Các route trong nhóm 'dashboard' với middleware 'role:manager'
         Route::match(['GET', 'POST'], '/', [DashboardController::class, 'user'])->name('dashboard.user');
         Route::match(['GET', 'POST'], '/invoice/day', [DashboardController::class, 'day'])->name('dashboard.invoice.day');
-        Route::match(['GET', 'POST'], '/invoice/day/hourly-data', [DashboardController::class, 'getHourlyRevenue']);
+        Route::match(['GET', 'POST'], '/invoice/day/hourly-data', [DashboardController::class   , 'getHourlyRevenue']);
         Route::match(['GET', 'POST'], '/invoice/day/getCountStatusDay', [DashboardController::class, 'getCountStatusDay']);
         Route::match(['GET', 'POST'], '/invoice/day/fetchLastSevenDaysData', [DashboardController::class, 'fetchLastSevenDaysData']);
         Route::match(['GET', 'POST'], '/invoice/day/fetchLastTwentyEightDaysData', [DashboardController::class, 'fetchLastTwentyEightDaysData']);

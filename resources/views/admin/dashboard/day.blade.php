@@ -1,5 +1,7 @@
 @extends('layouts.admin')
-
+@section('title')
+Thống kê theo ngày 
+@endsection
 @section('content')
 <div class="container-fluid">
 
@@ -79,7 +81,7 @@
                             <a class="dropdown-item time-range" href="#">7 ngày qua</a>
                             <a class="dropdown-item time-range-month" href="#">28 ngày qua</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Chọn theo ngày: <input type="date" id="selectedDate"></a>
+                            <a class="dropdown-item" href="#">Chọn theo ngày: <input type="date" id="selected_date"></a>
                         </div>
                     </div>
                 </div>
@@ -380,7 +382,7 @@
 </script>
 <script>
     $(document).ready(function() {
-        $('#selectedDate').change(function() {
+        $('#selected_date').change(function() {
             var selectedDate = $(this).val();
             fetchHourlyData(selectedDate);
         });
