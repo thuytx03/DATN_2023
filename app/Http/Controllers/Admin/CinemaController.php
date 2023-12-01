@@ -13,23 +13,32 @@ use Illuminate\Support\Str;
 
 class CinemaController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:product-list', ['only' => ['index', 'updateStatus']]);
+        $this->middleware('permission:product-add', ['only' => ['create', 'store']]);
+        $this->middleware('permission:product-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:product-delete', ['only' => ['destroy', 'deleteAll']]);
+        $this->middleware('permission:product-trash', ['only' => [
+            'trash', 'permanentlyDelete',
+            'permanentlyDeleteSelected', 'restoreSelected', 'restore', 'cleanupTrash'
+        ]]);
+    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
 
-    
-  
     public function index(Request $request)
     {
         //
 
         $query = Cinema::query();
 
-        if($request->has('search')) {
+        if ($request->has('search')) {
             $search = $request->input('search');
-            $query->where('name', 'like','%' . $search . '%');
+            $query->where('name', 'like', '%' . $search . '%');
         }
 
         if ($request->has('status')) {
@@ -161,9 +170,9 @@ class CinemaController extends Controller
         $ids = $request->ids;
         if ($ids) {
             Cinema::whereIn('id', $ids)->delete();
-            toastr()->success( 'Thành công xoá các rạp phim đã chọn');
+            toastr()->success('Thành công xoá các rạp phim đã chọn');
         } else {
-            toastr()->warning( 'Không tìm thấy các rạp phim đã chọn');
+            toastr()->warning('Không tìm thấy các rạp phim đã chọn');
         }
     }
 
@@ -204,7 +213,6 @@ class CinemaController extends Controller
             $cinema = Cinema::withTrashed()->whereIn('id', $ids);
             $cinema->forceDelete();
             toastr()->success('Thành công', 'Thành công xoá vĩnh viễn rạp phim');
-
         } else {
             toastr()->warning('Thất bại', 'Không tìm thấy các rạp phim đã chọn');
         }
@@ -240,7 +248,8 @@ class CinemaController extends Controller
         Cinema::onlyTrashed()->where('deleted_at', '<', $thirtyDaysAgo)->forceDelete();
         return redirect()->route('index.cinema')->withSuccess('Đã xoá vĩnh viễn rạp phim trong thùng rác');
     }
-    public function updateStatus(Request $request, $id) {
+    public function updateStatus(Request $request, $id)
+    {
         $item = Cinema::find($id);
 
         if (!$item) {

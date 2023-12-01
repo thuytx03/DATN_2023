@@ -17,14 +17,12 @@ Thống kê 7 ngày
     <div class="mb-3">
         <a href="{{route('dashboard.invoice.seven')}}" class="btn btn-primary">7 ngày qua</a>
         <a href="{{route('dashboard.invoice.TwentyEight')}}" class="btn btn-primary">28 ngày qua</a>
-        <a href="">
-            <form method="GET" action="{{ route('dashboard.invoice.calendar') }}" class="mt-2">
-                @csrf
-                <input type="date" name="selected_date" id="selectedDate" class="btn btn-primary">
-                <button type="submit" class="btn btn-info"><i class="fas fa-search m-1"></i></button>
-            </form>
-        </a>
-
+        <form method="GET" action="{{ route('dashboard.invoice.calendar') }}" class="mt-2">
+            @csrf
+            <span><input type="date" name="start_date" id="start_date" class="btn btn-primary"></span>-->
+            <span><input type="date" name="end_date" id="end_date" class="btn btn-primary"></span>
+            <button type="submit" class="btn btn-info"><i class="fas fa-search m-1"></i></button>
+        </form>
     </div>
     <!-- Content Row -->
     <div class="row">

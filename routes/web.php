@@ -110,6 +110,7 @@ Route::middleware(['auth'])->group(function () {
         Route::match(['GET', 'POST'], '/get-food-by-type/{foodTypeId}', [FoodController::class, 'getFoodByType']);
         Route::match(['GET', 'POST'], '/check-voucher', [FoodController::class, 'checkVoucher']);
     });
+    
 });
 //ghế
 Route::get('/lich-chieu/chon-ghe/{room_id}/{slug}/{showtime_id}', [MovieSeatPlanController::class, 'index'])->name('chon-ghe');
@@ -183,7 +184,7 @@ Route::match(['GET', 'POST'], '/admin/login', [AuthAdminController::class, 'logi
 
 Route::group(['prefix' => 'admin', 'middleware' => 'auth.check'], function () {
     //dashboard
-    Route::group(['prefix' => 'dashboard', 'middleware' => 'role:Super-Admin'], function () {
+    Route::group(['prefix' => 'dashboard'], function () {
         // Các route trong nhóm 'dashboard' với middleware 'role:manager'
         Route::match(['GET', 'POST'], '/', [DashboardController::class, 'user'])->name('dashboard.user');
         Route::match(['GET', 'POST'], '/invoice/day', [DashboardController::class, 'day'])->name('dashboard.invoice.day');
@@ -191,7 +192,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth.check'], function () {
         Route::match(['GET', 'POST'], '/invoice/day/getCountStatusDay', [DashboardController::class, 'getCountStatusDay']);
         Route::match(['GET', 'POST'], '/invoice/day/fetchLastSevenDaysData', [DashboardController::class, 'fetchLastSevenDaysData']);
         Route::match(['GET', 'POST'], '/invoice/day/fetchLastTwentyEightDaysData', [DashboardController::class, 'fetchLastTwentyEightDaysData']);
-        Route::match(['GET', 'POST'], '/invoice/day/fetchHourlyData', [DashboardController::class, 'fetchHourlyData']);
+        Route::match(['GET', 'POST'], '/invoice/day/fetchDailyData', [DashboardController::class, 'fetchDailyData']);
         Route::match(['GET', 'POST'], '/invoice/day/7', [DashboardController::class, 'sevenDay'])->name('dashboard.invoice.seven');
         Route::match(['GET', 'POST'], '/invoice/day/28', [DashboardController::class, 'twentyEight'])->name('dashboard.invoice.TwentyEight');
         Route::match(['GET', 'POST'], '/invoice/day/calendar', [DashboardController::class, 'calendar'])->name('dashboard.invoice.calendar');

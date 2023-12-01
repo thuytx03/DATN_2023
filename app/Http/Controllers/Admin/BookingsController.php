@@ -8,7 +8,12 @@ use App\Models\BookingDetail;
 use Illuminate\Http\Request;
 
 class BookingsController extends Controller
-{
+{ 
+    public function __construct()
+    {
+        $this->middleware('permission:booking',['only'=>['index','detail','confirm','unConfirm','cancel']]);
+
+    }
     public function index(Request $request)
     {
         $query = Booking::query();

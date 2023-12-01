@@ -1,13 +1,13 @@
 @extends('layouts.admin')
 @section('title')
-Thống kê theo lịch 
+Thống kê theo lịch
 @endsection
 @section('content')
 <div class="container-fluid">
 
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Thống kê hóa đơn ngày {{$selectedDate}}</h1>
+        <h1 class="h3 mb-0 text-gray-800">Thống kê hóa đơn theo khoảng ngày </h1>
         <div class="">
             <a href="{{route('dashboard.invoice.day')}}" class="btn btn-primary">Doanh thu theo ngày</a>
             <a href="{{route('dashboard.invoice.week')}}" class="btn btn-primary">Doanh thu theo tuần</a>
@@ -19,7 +19,8 @@ Thống kê theo lịch
         <a href="{{route('dashboard.invoice.TwentyEight')}}" class="btn btn-primary">28 ngày qua</a>
         <form method="GET" action="{{ route('dashboard.invoice.calendar') }}" class="mt-2">
             @csrf
-            <input type="date" name="selected_date" id="selectedDate" class="btn btn-primary" value="{{$selectedDate}}">
+            <span><input type="date" name="start_date" id="start_date" class="btn btn-primary" value="{{$startDate}}"></span>-->
+            <span><input type="date" name="end_date" id="end_date" class="btn btn-primary" value="{{$endDate}}"></span>
             <button type="submit" class="btn btn-info"><i class="fas fa-search m-1"></i></button>
         </form>
 
@@ -76,7 +77,7 @@ Thống kê theo lịch
             <div class="card shadow mb-4">
                 <!-- Card Header - Dropdown -->
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Doanh thu theo ngày {{$selectedDate}}</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Doanh thu theo khoảng ngày</h6>
                     <div class="dropdown no-arrow">
                         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
@@ -229,11 +230,15 @@ Thống kê theo lịch
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 <script>
     $(document).ready(function() {
-        var selectedDate = $('#selectedDate').val(); 
+        var startDate = $('#start_date').val();
+        var endDate = $('#end_date').val();
         $.ajax({
             url: '/admin/dashboard/invoice/day/getCountStatusCalendar',
             method: 'GET',
-            data: { selected_date: selectedDate }, 
+            data: {
+                start_date: startDate,
+                end_date: endDate
+            },
             success: function(response) {
                 var status2Count = response.status2 || 0;
                 var status3Count = response.status3 || 0;
@@ -256,45 +261,44 @@ Thống kê theo lịch
     });
 </script>
 <script>
-    $(document).ready(function() {
-        var selectedDate = $('#selectedDate').val(); 
-        $.ajax({
-            url: '/admin/dashboard/invoice/day/fetchHourlyData',
-            type: 'GET',
-            data: { selected_date: selectedDate }, 
-            // Trong hàm success của AJAX
-            // Trong hàm success của AJAX
-            success: function(response) {
-                var hourlyData = response.hourlyData;
+   $(document).ready(function() {
+    var startDate = $('#start_date').val();
+    var endDate = $('#end_date').val();
+    $.ajax({
+        url: '/admin/dashboard/invoice/day/fetchDailyData',
+        type: 'GET',
+        data: {
+            start_date: startDate,
+            end_date: endDate
+        },
+        success: function(response) {
+            var dailyData = response.dailyData;
+            var days = [];
+            var revenues = [];
 
-                // Tạo mảng chứa giờ và tổng doanh thu tương ứng
-                var hours = [];
-                var revenues = [];
-
-                // Lặp qua các giờ từ 0 đến 23 và kiểm tra dữ liệu có trong hourlyData không
-                for (var i = 0; i < 24; i++) {
-                    var hour = i.toString().padStart(2); // Format giờ thành chuỗi 2 chữ số
-                    var hourtime = i.toString().padStart(2) + 'h'; // Format giờ thành chuỗi 2 chữ số
-                    var revenue = hourlyData[hour] || 0; // Nếu không có dữ liệu, gán giá trị 0
-
-                    // Thêm giờ và doanh thu vào mảng tương ứng
-                    hours.push(hourtime);
-                    revenues.push(revenue);
-                }
-
-                // Cập nhật dữ liệu và nhãn cho biểu đồ
-                myLineChart.data.labels = hours;
-                myLineChart.data.datasets[0].data = revenues;
-
-                // Cập nhật biểu đồ
-                myLineChart.update();
-            },
-
-
-            error: function(error) {
-                console.error('Error:', error);
+            // Lặp qua mỗi ngày trong khoảng ngày đã chọn
+            var currentDate = new Date(startDate);
+            var end = new Date(endDate);
+            while (currentDate <= end) {
+                var dateKey = currentDate.toISOString().split('T')[0];
+                var revenue = dailyData[dateKey] || 0; // Kiểm tra nếu có dữ liệu cho ngày này, nếu không có thì gán 0
+                days.push(dateKey);
+                revenues.push(revenue);
+                currentDate.setDate(currentDate.getDate() + 1); // Tăng ngày để duyệt qua ngày tiếp theo
             }
-        });
+
+            // Cập nhật dữ liệu và nhãn cho biểu đồ
+            myLineChart.data.labels = days;
+            myLineChart.data.datasets[0].data = revenues;
+
+            // Cập nhật biểu đồ
+            myLineChart.update();
+        },
+        error: function(error) {
+            console.error('Error:', error);
+        }
     });
+});
+
 </script>
 @endpush
