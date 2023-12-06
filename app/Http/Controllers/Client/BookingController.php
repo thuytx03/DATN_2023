@@ -337,10 +337,8 @@ class BookingController extends Controller
                 if(isset($booking)) {
                 // Check if the movie time has ended for this booking
                 $show_time = DB::table('show_times')->where('id', $booking->showtime_id)->first();
-                if ($booking->status == 5 && $booking->hasUpdated == 0 ||  $booking->status == 5 && $booking->hasUpdated == 1 ) {
-                    DB::table('bookings')->where('id', $booking->id)->update(['status' => 3]);
-                }elseif ($booking->status != 3 && $booking->hasUpdated == 0 && $booking->status == 2 && Carbon::now()->gt($show_time->end_date)) {
-                    DB::table('bookings')->where('id', $booking->id)->update(['status' => 4]);
+                if ($booking->status == 5 && $booking->hasUpdated == 0 ) {
+                    DB::table('bookings')->where('id', $booking->id)->update(['status' => 6]);
                 }
 
                 // Replace 'your_condition' with the actual condition to check if the movie time has ended
@@ -377,6 +375,7 @@ if(isset($bookings)) {
         if ($booking->status == 2 && $booking->hasUpdated == 0 ) {
             DB::table('bookings')->where('id', $booking->id)->update(['status' => 5]);
         }
+
     }
         // Replace 'your_condition' with the actual condition to check if the movie time has ended
 
