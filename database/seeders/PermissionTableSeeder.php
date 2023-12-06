@@ -19,6 +19,9 @@ class PermissionTableSeeder extends Seeder
             //Thống kê
             ['name' => 'dashboard-user', 'display_name' => 'Thống kê tài khoản', 'group' => 'Thống kê'],
             ['name' => 'dashboard-invoice-day', 'display_name' => 'Thống kê doanh thu theo ngày', 'group' => 'Thống kê'],
+            ['name' => 'dashboard-invoice-seven-day', 'display_name' => 'Thống kê doanh thu theo 7 ngày', 'group' => 'Thống kê'],
+            ['name' => 'dashboard-invoice-twentyeight-day', 'display_name' => 'Thống kê doanh thu theo 28 ngày', 'group' => 'Thống kê'],
+            ['name' => 'dashboard-invoice-calendar-day', 'display_name' => 'Thống kê doanh thu theo lịch', 'group' => 'Thống kê'],
             ['name' => 'dashboard-invoice-week', 'display_name' => 'Thống kê doanh thu theo tuần', 'group' => 'Thống kê'],
             ['name' => 'dashboard-invoice-month', 'display_name' => 'Thống kê doanh thu theo tháng', 'group' => 'Thống kê'],
 
@@ -178,6 +181,8 @@ class PermissionTableSeeder extends Seeder
 
             //Liên hệ
             ['name'=>'contact','display_name'=>'Liên hệ', 'group'=>'Liên hệ'],
+            
+            //Đặt vé
 
         ];
         foreach ($permissions as $permission) {

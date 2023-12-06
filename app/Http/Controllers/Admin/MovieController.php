@@ -14,6 +14,17 @@ use Illuminate\Support\Str;
 
 class MovieController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:product-list', ['only' => ['index', 'updateStatus']]);
+        $this->middleware('permission:product-add', ['only' => ['create', 'store']]);
+        $this->middleware('permission:product-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:product-delete', ['only' => ['destroy', 'deleteAll']]);
+        $this->middleware('permission:product-trash', ['only' => [
+            'trash', 'permanentlyDelete',
+            'permanentlyDeleteSelected', 'restoreSelected', 'restore', 'cleanupTrash'
+        ]]);
+    }
     /**
      * Display a listing of the resource.
      *

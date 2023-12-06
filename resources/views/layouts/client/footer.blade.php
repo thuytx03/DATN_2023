@@ -36,28 +36,31 @@
                 </ul>
             </div>
             <div class="footer-bottom">
-                <div class="footer-bottom-area">
-                    <div class="left">
-                        <p>Copyright © 2020.All Rights Reserved By <a href="#0">Boleto </a></p>
-                    </div>
-                    <ul class="links">
-                        <li>
-                            <a href="#0">About</a>
-                        </li>
-                        <li>
-                            <a href="#0">Terms Of Use</a>
-                        </li>
-                        <li>
-                            <a href="#0">Privacy Policy</a>
-                        </li>
-                        <li>
-                            <a href="#0">FAQ</a>
-                        </li>
-                        <li>
-                            <a href="#0">Feedback</a>
-                        </li>
-                    </ul>
+            <div class="footer-bottom-area">
+                <div class="left">
+                    <p>Copyright © 2020.All Rights Reserved By <a href="#0">Boleto </a></p>
                 </div>
+                <ul class="links centent">
+                    <li>
+                        <a href="{{route('gioi-thieu')}}">Giới Thiệu</a>
+                    </li>
+                    <li>
+                        <a href="{{route('dieu-khoan-chung')}}">Điều khoản chung</a>
+                    </li>
+                    <li>
+                        <a href="{{route('dieu-khoan-giao-dich')}}">Điều khoản giao dịch</a>
+                    </li>
+                    <li>
+                        <a href="{{route('chinh-sach-thanh-toan')}}">Chính sách thanh toán</a>
+                    </li>
+                    <li>
+                        <a href="{{route('chinh-sach-bao-mat')}}">Chính sách bảo mật</a>
+                    </li>
+                    <li>
+                        <a href="{{route('thanh-vien')}}">Thành Viên</a>
+                    </li>
+                </ul>
             </div>
+        </div>
         </div>
     </footer>

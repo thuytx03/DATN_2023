@@ -33,11 +33,10 @@
         </a>
         <div id="qr" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="">Quét Mã Cho Khách </a>
-               
+                <a class="collapse-item" href="{{ route('qr.scanner') }}">Quét Mã Cho Khách </a>
             </div>
         </div>
-       
+
     </li>
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwosss" aria-expanded="true" aria-controls="collapseTwosss">
@@ -246,7 +245,7 @@
                 <a class="collapse-item" href="{{route('member.list')}}">Quản lý điểm thưởng </a>
             </div>
         </div>
-       
+
     </li>
     <!-- Divider -->
     <hr class="sidebar-divider">

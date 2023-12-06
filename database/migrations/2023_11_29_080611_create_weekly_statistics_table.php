@@ -13,15 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('booking_details', function (Blueprint $table) {
+        Schema::create('weekly_statistics', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('booking_id');
-            $table->unsignedBigInteger('food_id');
-            $table->string('quantity');
-            $table->string('price');
-            $table->softDeletes();
+            $table->year('year');
+            $table->unsignedTinyInteger('week');
+            $table->integer('total_signups')->default(0);
+            $table->integer('google_signups')->default(0);
+            $table->integer('facebook_signups')->default(0);
+            $table->integer('web_signups')->default(0);
             $table->timestamps();
         });
+        
     }
 
     /**
@@ -31,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('booking_details');
+        Schema::dropIfExists('weekly_statistics');
     }
 };

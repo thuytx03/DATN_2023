@@ -12,6 +12,11 @@ use Carbon\Carbon;
 
 class ContactController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:contact',['only'=>['index']]);
+
+    }
     function sendContact(ContactRequest $request){
         if($request->isMethod('POST')){
             

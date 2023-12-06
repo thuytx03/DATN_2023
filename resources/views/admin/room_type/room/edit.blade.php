@@ -38,7 +38,7 @@ Sửa phòng
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="name" class="form-label">Tên phim</label>
+                            <label for="name" class="form-label">Tên rạp</label>
                             <br>
                             <select class="form-select border border-1 rounded w-100 p-2" name="cinema_id">
                             @foreach($cinema as $cinema)

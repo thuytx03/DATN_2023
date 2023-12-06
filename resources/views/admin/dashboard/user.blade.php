@@ -1,5 +1,7 @@
 @extends('layouts.admin')
-
+@section('title')
+Thống kê người dùng 
+@endsection
 @section('content')
 <div class="container-fluid">
 

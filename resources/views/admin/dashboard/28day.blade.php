@@ -1,5 +1,7 @@
 @extends('layouts.admin')
-
+@section('title')
+Thống kê 28 ngày
+@endsection
 @section('content')
 <div class="container-fluid">
 
@@ -16,8 +18,9 @@
         <a href="{{route('dashboard.invoice.seven')}}" class="btn btn-primary">7 ngày qua</a>
         <a href="{{route('dashboard.invoice.TwentyEight')}}" class="btn btn-primary">28 ngày qua</a>
         <form method="GET" action="{{ route('dashboard.invoice.calendar') }}" class="mt-2">
-        @csrf
-            <input type="date" name="selected_date" id="selectedDate" class="btn btn-primary">
+            @csrf
+            <span><input type="date" name="start_date" id="start_date" class="btn btn-primary" ></span>-->
+            <span><input type="date" name="end_date" id="end_date" class="btn btn-primary"></span>
             <button type="submit" class="btn btn-info"><i class="fas fa-search m-1"></i></button>
         </form>
 

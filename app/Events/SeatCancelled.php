@@ -10,19 +10,19 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class SeatSelected implements ShouldBroadcast
+class SeatCancelled implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $userId;
-    public $selectedSeats;
+    public $cancelledSeats;
     public $showtime_id;
-    public $action;
+    public $action; 
 
-    public function __construct($userId, $selectedSeats, $showtime_id, $action)
+    public function __construct($userId, $cancelledSeats, $showtime_id, $action)
     {
         $this->userId = $userId;
-        $this->selectedSeats = $selectedSeats;
+        $this->cancelledSeats = $cancelledSeats;
         $this->showtime_id = $showtime_id;
         $this->action = $action; // Set the action property
 
@@ -30,21 +30,21 @@ class SeatSelected implements ShouldBroadcast
 
     public function broadcastOn()
     {
-        return new Channel('seat-selected-channel');
+        return new Channel('seat-cancelled-channel');
     }
 
     public function broadcastAs()
     {
-        return 'seat-selected';
+        return 'seat-cancelled';
     }
 
     public function broadcastWith()
     {
         return [
             'userId' => $this->userId,
-            'selectedSeats' => $this->selectedSeats,
+            'cancelledSeats' => $this->cancelledSeats,
             'showtime_id' => $this->showtime_id,
-            'action' => $this->action, // Include the action in the broadcast data
+            'action' => $this->action,
         ];
     }
 }

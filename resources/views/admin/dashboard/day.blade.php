@@ -1,5 +1,7 @@
 @extends('layouts.admin')
-
+@section('title')
+Thống kê theo ngày
+@endsection
 @section('content')
 <div class="container-fluid">
 
@@ -16,7 +18,8 @@
         <a href="{{route('dashboard.invoice.TwentyEight')}}" class="btn btn-primary">28 ngày qua</a>
         <form method="GET" action="{{ route('dashboard.invoice.calendar') }}" class="mt-2">
             @csrf
-            <input type="date" name="selected_date" id="selectedDate" class="btn btn-primary" value="{{$currentDate}}">
+            <span><input type="date" name="start_date" class="btn btn-primary"></span>-->
+            <span><input type="date" name="end_date" class="btn btn-primary"></span>
             <button type="submit" class="btn btn-info"><i class="fas fa-search m-1"></i></button>
         </form>
 
@@ -79,7 +82,7 @@
                             <a class="dropdown-item time-range" href="#">7 ngày qua</a>
                             <a class="dropdown-item time-range-month" href="#">28 ngày qua</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Chọn theo ngày: <input type="date" id="selectedDate"></a>
+                            <a class="dropdown-item" href="#">Chọn theo ngày: <input type="date" id="selected_date"></a>
                         </div>
                     </div>
                 </div>
@@ -380,7 +383,7 @@
 </script>
 <script>
     $(document).ready(function() {
-        $('#selectedDate').change(function() {
+        $('#selected_date').change(function() {
             var selectedDate = $(this).val();
             fetchHourlyData(selectedDate);
         });

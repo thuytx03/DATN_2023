@@ -1,5 +1,7 @@
 @extends('layouts.admin')
-
+@section('title')
+Thống kê 7 ngày
+@endsection
 @section('content')
 <div class="container-fluid">
 
@@ -17,10 +19,10 @@
         <a href="{{route('dashboard.invoice.TwentyEight')}}" class="btn btn-primary">28 ngày qua</a>
         <form method="GET" action="{{ route('dashboard.invoice.calendar') }}" class="mt-2">
             @csrf
-            <input type="date" name="selected_date" id="selectedDate" class="btn btn-primary">
+            <span><input type="date" name="start_date" id="start_date" class="btn btn-primary"></span>-->
+            <span><input type="date" name="end_date" id="end_date" class="btn btn-primary"></span>
             <button type="submit" class="btn btn-info"><i class="fas fa-search m-1"></i></button>
         </form>
-
     </div>
     <!-- Content Row -->
     <div class="row">
@@ -234,7 +236,7 @@
             success: function(response) {
                 // Nhận dữ liệu từ Controller
                 var revenueData = response.revenueData;
-
+                console.log(revenueData)
                 // Tạo mảng dữ liệu mới với giá trị mặc định là 0 cho các ngày không có dữ liệu
                 var newData = [];
                 var labels = [];

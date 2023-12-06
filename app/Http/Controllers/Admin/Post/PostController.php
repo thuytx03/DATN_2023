@@ -18,6 +18,11 @@ use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:blog-list',['only'=>['index']]);
+
+    }
     /**
      * Display a listing of the resource.
      *

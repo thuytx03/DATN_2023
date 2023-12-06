@@ -39,7 +39,7 @@
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4">Chào mừng quay trở lại</h1>
                                     </div>
-                                    <form class="user" method="POST" action="{{route('login')}}">
+                                    <form class="user" method="POST" action="{{route('login.admin')}}">
                                         @csrf
                                         <div class="form-group">
                                             <input type="email" class="form-control form-control-user" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Nhập email" name="email">
