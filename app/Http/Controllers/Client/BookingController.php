@@ -365,9 +365,7 @@ if(isset($bookings)) {
         if (!$show_time) {
             continue;
         }
-        elseif ($booking->status != 3 && $booking->hasUpdated == 0 && $booking->status == 2 && Carbon::now()->gt($show_time->end_date)) {
-            DB::table('bookings')->where('id', $booking->id)->update(['status' => 4]);
-        }
+
             elseif (strtotime($show_time->end_date) < time()) {
 
         if ($booking->status == 2 && $booking->hasUpdated == 0 ) {
