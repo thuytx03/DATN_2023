@@ -17,17 +17,53 @@ class CreateAdminUserSeeder extends Seeder
      */
     public function run()
     {
-        $user = User::create([
+        User::create([
             'name' => 'Admin',
             'email' => 'admin@gmail.com',
             'password' => bcrypt('123456')
         ]);
 
-        $role = Role::create(['name' => 'Admin','display_name'=>'Quản lý rạp Beta Mỹ Đình','group'=>'Thống kê']);
-        $permissions = Permission::pluck('id', 'id')->all();
+        User::create([
+            'name' => 'Bùi Duy Dũng',
+            'email' => 'manage1@gmail.com',
+            'password' => bcrypt('123456')
+        ]);
+        
+        User::create([
+            'name' => 'Đặng Xuân Dũng',
+            'email' => 'manage2@gmail.com',
+            'password' => bcrypt('123456')
+        ]);
 
-        $role->syncPermissions($permissions);
+        
+        User::create([
+            'name' => 'Bùi Khắc Phong',
+            'email' => 'manage3@gmail.com',
+            'password' => bcrypt('123456')
+        ]);
+        
+        User::create([
+            'name' => 'Phạm Xuân Thanh',
+            'email' => 'staff1@gmail.com',
+            'password' => bcrypt('123456')
+        ]);
+        
+        User::create([
+            'name' => 'Trần Ngọc Lĩnh',
+            'email' => 'staff2@gmail.com',
+            'password' => bcrypt('123456')
+        ]);
+        
+        User::create([
+            'name' => 'Trịnh Công Tín',
+            'email' => 'staff3@gmail.com',
+            'password' => bcrypt('123456')
+        ]);
+        // $role = Role::create(['name' => 'Admin','display_name'=>'Chủ tịch','group'=>'admin']);
+        // $permissions = Permission::pluck('id', 'id')->all();
 
-        $user->assignRole([$role->id]);
+        // $role->syncPermissions($permissions);
+
+        // $user->assignRole([$role->id]);
     }
 }

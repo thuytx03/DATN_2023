@@ -18,7 +18,6 @@
         <div class="card-body">
             <form method="post" action="{{ route('user.update', $user->id) }}" enctype="multipart/form-data">
                 @csrf
-
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -31,17 +30,13 @@
                             <input type="email" class="form-control" name="email" id="email" value="{{ $user->email }}">
                         </div>
                         <div class="form-group">
-                            <label for="role" class="form-label">Vai trò</label>
-                            <select name="role[]" id="role" multiple class="form-select">
-                                @foreach($roles as $role)
-                                <option value="{{ $role->id }}" @if(in_array($role->name, $userRoles->pluck('name')->toArray()))
-                                    checked
-                                    @endif
-                                    >
-                                    {{ $role->name }}
-                                </option>
-                                @endforeach
-                            </select>
+                            <label class="form-label">Vai trò</label><br>
+                            @foreach($roles as $role)
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="role_{{ $role->id }}" name="role[]" value="{{ $role->name }}" @if($userRoles->contains($role->name)) checked @endif>
+                                <label class="form-check-label" for="role_{{ $role->id }}">{{ $role->name }}</label>
+                            </div>
+                            @endforeach
                         </div>
                     </div>
 
@@ -77,7 +72,7 @@
                     </div>
 
                     <div class="col-md-6">
-                    <div class="form-group">
+                        <div class="form-group">
                             <label for="image">Ảnh</label> <br>
                             <input name="avatar" type="file" id="image_url" style="display: none" value="{{ $user->avatar ? Storage::url($user->avatar) : asset('images/image-not-found.jpg') }}">
                             <img src="{{ $user->avatar ? Storage::url($user->avatar) : asset('images/image-not-found.jpg') }}" width="150" height="130" id="image_preview" class="mt-1" alt="">

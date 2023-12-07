@@ -103,7 +103,7 @@ Danh sách phòng
                                 </thead>
 
                                 <tbody>
-                                    @foreach($room as $room)
+                                    @foreach($rooms as $room)
                                     <tr>
                                         <td>
                                             <input type="checkbox" class="child-checkbox" name="ids[]" value="{{ $room->id }}">

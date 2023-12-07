@@ -13,13 +13,12 @@ class DashboardController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:dashboard-user', ['only' => ['user']]);
-        $this->middleware('permission:dashboard-invoice-day', ['only' => ['day']]);
-        $this->middleware('permission:dashboard-invoice-week', ['only' => ['week']]);
-        $this->middleware('permission:dashboard-invoice-month', ['only' => ['month']]);
-        $this->middleware('permission:dashboard-invoice-seven-day', ['only' => ['sevenDay']]);
-        $this->middleware('permission:dashboard-invoice-twentyeight-day', ['only' => ['twentyEight']]);
-        $this->middleware('permission:dashboard-invoice-calendar-day', ['only' => ['calendar']]);
+        $methods = get_class_methods(__CLASS__); // Lấy danh sách các phương thức trong class hiện tại
+
+        // Loại bỏ những phương thức không cần áp dụng middleware (ví dụ: __construct, __destruct, ...)
+        $methods = array_diff($methods, ['__construct', '__destruct', '__clone', '__call', '__callStatic', '__get', '__set', '__isset', '__unset', '__sleep', '__wakeup', '__toString', '__invoke', '__set_state', '__clone', '__debugInfo']);
+
+        $this->middleware('role:Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh', ['only' => $methods]);
     }
     public function user(Request $request)
     {

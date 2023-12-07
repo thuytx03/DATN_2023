@@ -94,7 +94,7 @@ Danh sách người dùng
                                 </thead>
 
                                 <tbody>
-                                    @foreach ($user1 as $user)
+                                    @foreach ($users as $user)
                                     <tr>
                                         <td>
                                             <input type="checkbox" class="child-checkbox" name="ids[]" value="{{ $user->id }}">
@@ -145,15 +145,15 @@ Danh sách người dùng
                         <div class="col-sm-12 col-md-5 mb-3
                             ">
                             <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">
-                                Hiển thị {{ $user1->firstItem() }} đến {{ $user1->lastItem() }}
-                                của {{ $user1->total() }} mục
+                                Hiển thị {{ $users->firstItem() }} đến {{ $users->lastItem() }}
+                                của {{ $users->total() }} mục
                             </div>
                         </div>
 
                         <div class="col-sm-12 col-md-7">
                             <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
                                 <ul class="pagination">
-                                    {{ $user1->links('pagination::bootstrap-4') }}
+                                    {{ $users->links('pagination::bootstrap-4') }}
                                 </ul>
                             </div>
                         </div>

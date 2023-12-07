@@ -7,12 +7,12 @@
     <!-- Page Heading -->
     <a href="{{route('role.list')}}" class="btn btn-success m-3">Danh sách vai trò</a>
     @if ($errors->any())
-                <div class="alert alert-danger">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </div>
-            @endif
+    <div class="alert alert-danger">
+        @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </div>
+    @endif
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-body">
@@ -39,7 +39,7 @@
                             <button type="submit" class="btn btn-primary">Thêm mới</button>
                             <button type="reset" class="btn btn-danger">Nhập lại</button>
                         </div>
-
+                        
                         <div class="col-md-7">
                             <label for="" class="btn btn-success mb-2">Quyền</label>
                             <div class="form-check">
@@ -48,7 +48,17 @@
                                     Chọn tất cả
                                 </label>
                             </div>
-
+                            <hr>
+                            <div class="row">
+                                @foreach($cinemas as $item)
+                                <div class="form-check m-3">
+                                    <input class="form-check-input permission-checkbox" type="checkbox" value="{{$item->id}}" id="{{$item->id}}" name="cinema[]" checked>
+                                    <label class="form-check-label" for="{{$item->id}}">
+                                        {{$item->name}}
+                                    </label>
+                                </div>
+                                @endforeach
+                            </div>
                             <div class="row">
                                 @foreach($permission as $groupName => $per)
                                 <div class="col-md-6">
@@ -74,6 +84,7 @@
                             </div>
 
                         </div>
+                       
                     </div>
                 </div>
 

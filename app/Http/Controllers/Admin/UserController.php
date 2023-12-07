@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use Illuminate\Http\Request;
@@ -10,10 +11,20 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Doctrine\ORM\EntityManager;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        $methods = get_class_methods(__CLASS__); // Lấy danh sách các phương thức trong class hiện tại
+
+        // Loại bỏ những phương thức không cần áp dụng middleware (ví dụ: __construct, __destruct, ...)
+        $methods = array_diff($methods, ['__construct', '__destruct', '__clone', '__call', '__callStatic', '__get', '__set', '__isset', '__unset', '__sleep', '__wakeup', '__toString', '__invoke', '__set_state', '__clone', '__debugInfo']);
+
+        $this->middleware('role:Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh', ['only' => $methods]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -21,13 +32,17 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
+        $user = Auth::user(); // Lấy thông tin người dùng đang đăng nhập
+
         $query = User::query();
 
-        if($request->has('search')) {
+        // Lọc theo tên
+        if ($request->has('search')) {
             $search = $request->input('search');
-            $query->where('name', 'like','%' . $search . '%');
+            $query->where('name', 'like', '%' . $search . '%');
         }
 
+        // Lọc theo trạng thái
         if ($request->has('status')) {
             $status = $request->input('status');
             if ($status != 0) {
@@ -35,9 +50,26 @@ class UserController extends Controller
             }
         }
 
-        $user1 = $query->orderBy('id', 'DESC')->paginate(3);
-        return view('admin.user.index', compact('user1'));
+        // Lọc theo vai trò tương tự với người dùng đang đăng nhập
+        $userRoles = $user->getRoleNames()->toArray();
+
+        // Nếu người dùng có vai trò 'Admin', hiển thị tất cả người dùng
+        if (in_array('Admin', $userRoles)) {
+            // Không áp dụng bất kỳ điều kiện nào
+        } else {
+            // Người dùng không phải 'Admin' chỉ xem các vai trò tương tự với vai trò của họ và người không có vai trò
+            $query->where(function ($query) use ($userRoles) {
+                $query->whereHas('roles', function ($roleQuery) use ($userRoles) {
+                    $roleQuery->whereIn('name', $userRoles);
+                })->orWhereDoesntHave('roles');
+            });
+        }
+
+        $users = $query->orderBy('id', 'DESC')->paginate(10);
+        return view('admin.user.index', compact('users'));
     }
+
+
 
     /**
      * Show the form for creating a new resource.
@@ -46,10 +78,21 @@ class UserController extends Controller
      */
     public function create()
     {
-        $role = Role::all();
+        $user = Auth::user();
+
+        // Kiểm tra nếu người dùng không phải 'Admin'
+        if (!$user->hasRole('Admin')) {
+            $roles = $user->roles; // Lấy các vai trò của người dùng
+        } else {
+            // Nếu là 'Admin', lấy tất cả vai trò ngoại trừ 'Admin'
+            $roles = Role::where('name', '!=', 'Admin')->get();
+        }
+
         $permission = Permission::all();
-        return view('admin.user.add', compact('role'));
+        return view('admin.user.add', compact('roles'));
     }
+
+
 
     /**
      * Store a newly created resource in storage.
@@ -59,29 +102,29 @@ class UserController extends Controller
      */
     public function store(LoginRequest $request)
     {
-
-        // $data = $request->all();
-
         $user = new User();
         $user->password = Hash::make($request->password);
         $user->name = $request->name;
         $user->email = $request->email;
         $user->phone = $request->phone;
         $user->address = $request->address;
-        if($request->gender == 0) {
-            $user->gender = 'Male';
-        } else {
-            $user->gender = 'Female';
-        }
+        $user->gender = $request->gender == 0 ? 'Nam' : 'Nữ';
+
         if ($request->hasFile('avatar')) {
             $user->avatar = uploadFile('user', $request->file('avatar'));
         }
+
         $user->status = $request->status;
         $user->save();
-        $user->assignRole($request->input('role'));
+
+        if ($request->has('role')) {
+            $user->assignRole($request->input('role'));
+        }
+
         toastr()->success('Cảm ơn ' . $request->name . ' thêm thành công!');
         return redirect()->route('user.add');
     }
+
 
     /**
      * Display the specified resource.
@@ -102,12 +145,44 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        //
+        // Tìm người dùng dựa trên ID được cung cấp
         $user = User::find($id);
-        $roles = Role::all();
+        if (empty($user)) {
+            abort(404);
+        }
+        // Lấy thông tin người dùng hiện tại đang đăng nhập
+        $currentUser = Auth::user();
+
+        if (!$currentUser->hasRole('Admin')) {
+            // Nếu không phải Admin, kiểm tra xem người dùng hiện tại có vai trò tương tự với người dùng được chỉnh sửa không
+            $userRoles = $user->getRoleNames()->toArray();
+            $currentUserRoles = $currentUser->getRoleNames()->toArray();
+
+            $matchingRoles = array_intersect($userRoles, $currentUserRoles);
+
+            if (empty($matchingRoles)) {
+                // Nếu không có vai trò nào tương tự, không cho phép chỉnh sửa
+                toastr()->error('Bạn không có quyền chỉnh sửa người dùng này!');
+                return redirect()->route('user.index');
+            }
+        }
+        // Khởi tạo biến roles để lưu trữ vai trò (roles)
+        $roles = [];
+
+        // Kiểm tra xem người dùng hiện tại có phải là Admin không
+        if ($currentUser->hasRole('Admin')) {
+            // Nếu là Admin, lấy tất cả các vai trò (roles) trừ vai trò 'Admin'
+            $roles = Role::where('name', '!=', 'Admin')->get();
+        } else {
+            // Nếu không phải là Admin, chỉ lấy các vai trò của người dùng hiện tại
+            $roles = $currentUser->roles;
+        }
+        // Lấy các vai trò được gán cho người dùng đang chỉnh sửa
         $userRoles = $user->getRolenames();
+        // Trả về view 'admin.user.edit' với dữ liệu người dùng, các vai trò và vai trò của người dùng
         return view('admin.user.edit', compact('user', 'roles', 'userRoles'));
     }
+
 
     /**
      * Update the specified resource in storage.
@@ -118,31 +193,38 @@ class UserController extends Controller
      */
     public function update(LoginRequest $request, $id)
     {
-        //
-
-        $user = new User();
         $user = User::find($id);
-        $roles = Role::all();
 
         $user->name = $request->name;
         $user->phone = $request->phone;
         $user->email = $request->email;
         $user->address = $request->address;
         $user->gender = $request->gender;
+
         if ($request->hasFile('avatar')) {
             $user->avatar = uploadFile('user', $request->file('avatar'));
         }
+
         $user->status = $request->status;
-        if ($request->password == null || $request->password == '') {
-            $user->password = $user->password;
-        } else {
-            $user->password = $request->password;
+
+        if ($request->password != null && $request->password != '') {
+            $user->password = bcrypt($request->password);
         }
+
         $user->save();
-        $user->assignRole($request->input('role'));
+
+        // Xóa tất cả vai trò hiện tại của người dùng
+        $user->roles()->detach();
+
+        // Gán các vai trò mới từ yêu cầu gửi lên
+        if ($request->has('role')) {
+            $user->assignRole($request->input('role'));
+        }
+
         toastr()->success('Cập nhật ' . $request->name . ' thành công!');
         return redirect()->route('user.index');
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -152,26 +234,46 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $user = User::find($id);
+        if (empty($user)) {
+            abort(404);
+        }
+        $currentUser = Auth::user();
 
-        User::find($id)->delete();
-        toastr()->success('Xóa sản phẩm thành công!');
+        if (!$currentUser->hasRole('Admin')) {
+            // Nếu không phải Admin, kiểm tra xem người dùng hiện tại có vai trò tương tự với người dùng được xóa không
+            $userRoles = $user->getRoleNames()->toArray();
+            $currentUserRoles = $currentUser->getRoleNames()->toArray();
+
+            $matchingRoles = array_intersect($userRoles, $currentUserRoles);
+
+            if (empty($matchingRoles)) {
+                // Nếu không có vai trò nào tương tự, không cho phép xóa
+                toastr()->error('Bạn không có quyền xóa người dùng này!');
+                return redirect()->route('user.index');
+            }
+        }
+        // Nếu là Admin hoặc có quyền xóa, thực hiện xóa người dùng
+        $user->delete();
+
+        toastr()->success('Xóa người dùng thành công!');
         return redirect()->route('user.index');
     }
+
     public function deleteAll(Request $request)
     {
         $ids = $request->ids;
         if ($ids) {
             User::whereIn('id', $ids)->delete();
-            toastr()->success( 'Thành công xoá các người dùng đã chọn');
+            toastr()->success('Thành công xoá các người dùng đã chọn');
         } else {
-            toastr()->warning( 'Không tìm thấy người dùng  đã chọn');
+            toastr()->warning('Không tìm thấy người dùng  đã chọn');
         }
     }
     public function trash(Request $request)
     {
         $query = User::onlyTrashed();
-
+        $user = Auth::user();
         // Tìm kiếm theo name trong trash
         if ($request->has('search')) {
             $search = $request->input('search');
@@ -184,7 +286,19 @@ class UserController extends Controller
                 $query->where('status', $status);
             }
         }
-        $users = $query->orderBy('id', 'DESC')->paginate(3);
+        $userRoles = $user->getRoleNames()->toArray();
+
+        if (in_array('Admin', $userRoles)) {
+            // Không áp dụng bất kỳ điều kiện nào
+        } else {
+            // Người dùng không phải 'Admin' chỉ xem các vai trò tương tự với vai trò của họ và người không có vai trò
+            $query->where(function ($query) use ($userRoles) {
+                $query->whereHas('roles', function ($roleQuery) use ($userRoles) {
+                    $roleQuery->whereIn('name', $userRoles);
+                })->orWhereDoesntHave('roles');
+            });
+        }
+        $users = $query->orderBy('id', 'DESC')->paginate(10);
         return view('admin.user.trash', [
             'users' => $users
         ]);
@@ -217,7 +331,7 @@ class UserController extends Controller
             $user->restore();
             toastr()->success('Thành công', 'Thành công khôi phục người dùng');
         } else {
-            toastr()->warning('Thất bại', 'Không tìm thấy cácngười dùng đã chọn');
+            toastr()->warning('Thất bại', 'Không tìm thấy các người dùng đã chọn');
         }
         return redirect()->route('user.trash');
     }
@@ -230,7 +344,8 @@ class UserController extends Controller
     }
     public function forceDelete($id)
     {
-        $user = User::withTrashed()->find($id);
+        $user = User::withTrashed()->find($id); // Xóa bản ghi liên quan từ role_has_permission
+        $user->roles()->detach(); // Xóa bản ghi liên quan từ role_has_model
         $user->forceDelete();
         toastr()->success(' Xóa người dùng  thành công!', 'success');
         return redirect()->route('user.trash');
@@ -238,7 +353,9 @@ class UserController extends Controller
     public function cleanupTrash()
     {
         $thirtyDaysAgo = Carbon::now()->subDays(1);
-        User::onlyTrashed()->where('deleted_at', '<', $thirtyDaysAgo)->forceDelete();
+        $user = User::onlyTrashed()->where('deleted_at', '<', $thirtyDaysAgo);
+        $user->roles()->detach(); // Xóa bản ghi liên quan từ role_has_model
+        $user->forceDelete();
         return redirect()->route('index.user')->withSuccess('Đã xoá vĩnh viễn khu vực trong thùng rác');
     }
     public function updateStatus(Request $request, $id)
