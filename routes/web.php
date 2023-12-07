@@ -110,7 +110,7 @@ Route::middleware(['auth'])->group(function () {
         Route::match(['GET', 'POST'], '/get-food-by-type/{foodTypeId}', [FoodController::class, 'getFoodByType']);
         Route::match(['GET', 'POST'], '/check-voucher', [FoodController::class, 'checkVoucher']);
     });
-    
+
 });
 //ghế
 Route::get('/lich-chieu/chon-ghe/{room_id}/{slug}/{showtime_id}', [MovieSeatPlanController::class, 'index'])->name('chon-ghe');
@@ -325,14 +325,10 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth.check'], function () {
         Route::get('/', [BookingsController::class, 'index'])->name('booking.index');
         Route::match(['GET', 'POST'], '/store', [BookingsController::class, 'store'])->name('booking.store');
         Route::match(['GET', 'POST'], '/update/{id}', [BookingsController::class, 'update'])->name('booking.update');
-        Route::get('/destroy/{id}', [BookingsController::class, 'destroy'])->name('booking.destroy');
         Route::post('/deleteAll', [BookingsController::class, 'deleteAll'])->name('booking.deleteAll');
-        Route::post('/update-status/{id}', [BookingsController::class, 'updateStatus'])->name('booking.updateStatus');
         Route::get('/trash', [BookingsController::class, 'trash'])->name('booking.trash');
-        Route::get('/permanentlyDelete/{id}', [BookingsController::class, 'permanentlyDelete'])->name('booking.permanentlyDelete');
         Route::post('/permanentlyDeleteSelected', [BookingsController::class, 'permanentlyDeleteSelected'])->name('booking.permanentlyDeleteSelected');
         Route::post('/restoreSelected', [BookingsController::class, 'restoreSelected'])->name('booking.restoreSelected');
-        Route::get('/restore/{id}', [BookingsController::class, 'restore'])->name('booking.restore');
         Route::get('/{id}/detail', [BookingsController::class, 'detail'])->name('booking.detail');
         Route::get('/{id}/confirm', [BookingsController::class, 'confirm'])->name('booking.confirm');
         Route::get('/{id}/unconfirm', [BookingsController::class, 'unConfirm'])->name('booking.unConfirm');
@@ -394,19 +390,19 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth.check'], function () {
             Route::get('/trash',  [App\Http\Controllers\Admin\Post\CommentPostController::class, 'trash'])->name('comment.trash');
             Route::post('/permanentlyDeleteSelected', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'permanentlyDeleteSelected'])->name('comment.permanentlyDeleteSelected');
             Route::post('/restoreSelected', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'restoreSelected'])->name('comment.restoreSelected');
-    
+
             Route::get('/restore/{id}',  [App\Http\Controllers\Admin\Post\CommentPostController::class, 'restore'])->name('comment.restore');
             Route::get('/force-delete/{id}', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'forceDelete'])->name('comment.forceDelete');
         });
 
-  
+
 
     //
 
 
 
     // ///// trả lời bình luận
- 
+
         Route::prefix('reply')->group(function () {
             Route::get('/', [App\Http\Controllers\Admin\Post\ReplyController::class, 'index'])->name('reply.index');
             Route::post('/status/{id}', [App\Http\Controllers\Admin\Post\ReplyController::class, 'updateStatus']);
@@ -418,8 +414,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth.check'], function () {
             Route::get('/restore/{id}',  [App\Http\Controllers\Admin\Post\ReplyController::class, 'restore'])->name('reply.restore');
             Route::get('/force-delete/{id}', [App\Http\Controllers\Admin\Post\ReplyController::class, 'forceDelete'])->name('reply.forceDelete');
         });
-    
-     
+
+
 
 
 

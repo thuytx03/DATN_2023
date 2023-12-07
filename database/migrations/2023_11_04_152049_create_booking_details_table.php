@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('food_id');
             $table->string('quantity');
             $table->string('price');
-
+            $table->softDeletes();
             $table->timestamps();
         });
     }

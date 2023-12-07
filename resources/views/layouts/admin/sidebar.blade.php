@@ -34,8 +34,7 @@
         </a>
         <div id="qr" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="{{route('qr.scanner')}}">Quét Mã Cho Khách </a>
-
+                <a class="collapse-item" href="{{ route('qr.scanner') }}">Quét Mã Cho Khách </a>
             </div>
         </div>
     </li>

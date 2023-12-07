@@ -27,15 +27,17 @@ use Endroid\QrCode\Writer\PngWriter;
 use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelHigh;
 use Carbon\Carbon;
 
-
-
-
-
-
 class BookingController extends Controller
 {
     public function index(BookingRequest $request, $room_id, $slug, $showtime_id)
     {
+
+            $listSeat = Session::get('selectedSeats', []);
+            if (empty($listSeat)) {
+                toastr()->error('Không thể vào trang thanh toán khi bạn chưa chọn ghế!');
+                return redirect()->route('index');
+            }
+
         $this->checkStatus();
         $room = Room::where('id', $room_id)->first();
         $showTime = ShowTime::find($showtime_id);
@@ -45,6 +47,7 @@ class BookingController extends Controller
         // Tạo một mảng để lưu giá của từng ghế.
         $prices = [];
         foreach (Session::get('selectedSeats', []) as $seat) {
+
             // Tách hàng và cột từ chuỗi ghế (ví dụ: "J6" -> hàng "J", cột "6").
             $row = substr($seat, 0, 1); // Lấy ký tự đầu tiên
             $column = substr($seat, 1);
@@ -84,12 +87,17 @@ class BookingController extends Controller
             $booking->payment = $request->payment;
             $booking->status = 1;
             $booking->note = $request->note;
+
             if (Session::has('selectedSeats')) {
                 $listSeat = Session::get('selectedSeats', []);
                 // dd($listSeat);
                 $selectedSeatsJson = json_encode($listSeat);
                 // dd($selectedSeatsJson);
                 $booking->list_seat = $selectedSeatsJson;
+            }
+            if (empty($listSeat)) {
+                toastr()->error('Không thể trang thanh toán khi bạn chưa chọn ghế!');
+                return redirect()->back();
             }
             $booking->total = $request->totalPrice;
             $booking->save();
@@ -110,15 +118,13 @@ class BookingController extends Controller
             } elseif ($booking->payment == 2) {
                 return redirect()->route('paypal.payment', ['id' => $booking->id]);
             }
-             // Lấy thông tin mã voucher từ session
-            //  $voucherData = session('voucher');
-            //  if($voucherData){
-            //     $voucher=Voucher::where('code', $voucherData['code'])->first();
-            //     if ($voucher->quantity > 0) {
-            //         $voucher->quantity--;
-            //         $voucher->save();
-            //     }
-            //  }
+            // Lấy thông tin mã voucher từ session
+            $voucherInfo = Session::get('voucher');
+             if($voucherInfo){
+                $voucher=Voucher::where('code', $voucherInfo['code'])->first();
+                    $voucher->quantity--;
+                    $voucher->save();
+             }
             session()->forget('voucher');
             session()->forget('selectedSeats');
             session()->forget('selectedProducts');
@@ -331,10 +337,8 @@ class BookingController extends Controller
                 if(isset($booking)) {
                 // Check if the movie time has ended for this booking
                 $show_time = DB::table('show_times')->where('id', $booking->showtime_id)->first();
-                if ($booking->status == 5 && $booking->hasUpdated == 0 ||  $booking->status == 5 && $booking->hasUpdated == 1 ) {
-                    DB::table('bookings')->where('id', $booking->id)->update(['status' => 3]);
-                }elseif ($booking->status != 3 && $booking->hasUpdated == 0 && $booking->status == 2 && Carbon::now()->gt($show_time->end_date)) {
-                    DB::table('bookings')->where('id', $booking->id)->update(['status' => 4]);
+                if ($booking->status == 5 && $booking->hasUpdated == 0 ) {
+                    DB::table('bookings')->where('id', $booking->id)->update(['status' => 6]);
                 }
 
                 // Replace 'your_condition' with the actual condition to check if the movie time has ended
@@ -365,14 +369,13 @@ if(isset($bookings)) {
         if (!$show_time) {
             continue;
         }
-        elseif ($booking->status != 3 && $booking->hasUpdated == 0 && $booking->status == 2 && Carbon::now()->gt($show_time->end_date)) {
-            DB::table('bookings')->where('id', $booking->id)->update(['status' => 4]);
-        }
+
             elseif (strtotime($show_time->end_date) < time()) {
 
         if ($booking->status == 2 && $booking->hasUpdated == 0 ) {
             DB::table('bookings')->where('id', $booking->id)->update(['status' => 5]);
         }
+
     }
         // Replace 'your_condition' with the actual condition to check if the movie time has ended
 

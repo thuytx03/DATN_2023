@@ -25,7 +25,7 @@ foreach ($bookings as $booking) {
     if ($booking->status == 4 && $booking->hasUpdated == 0) {
         $booking->hasUpdated = '1';
     }
-    if ($booking->status == 2 || $booking->status == 5 || ($booking->status == 3 && $booking->hasUpdated == 0) || ($booking->status == 4 && $booking->hasUpdated == 0)) {
+    if ($booking->status == 2 || $booking->status == 5 && $booking->hasUpdated == 0 || ($booking->status == 3 && $booking->hasUpdated == 0) || ($booking->status == 4 && $booking->hasUpdated == 0)) {
         if (isset($booking->price_ticket) > 0 && isset($booking->price_food) > 0) {
             $benefit_percentage = $MembershipLevel->benefits / 100;
             $benefit_percentage1 = $MembershipLevel->benefits_food / 100;
@@ -84,7 +84,11 @@ foreach ($bookings as $booking) {
             <label for="">Điểm Hiện Tại Của Bạn</label>
             <input type="text" name="name" value="{{ $members->total_bonus_points ?: 'Bạn Chưa Có Giao Dịch ' }}" readonly>
             <label for="">Điểm Bạn Sắp Nhận Được</label>
+            @if (isset($point_will_claim ))
             <input type="text" name="name" value="{{ $point_will_claim  ?: 'Bạn Chưa có giao dịch ' }}" readonly>
+            @else
+            <input type="text" name="name" value=" Bạn Chưa có giao dịch " readonly>
+            @endif
             <label for="">Điểm Hiện Tại</label>
             <input type="text" name="name" value="{{ $members->current_bonus_points ?: 'Bạn Chưa có giao dịch' }}" readonly>
 
