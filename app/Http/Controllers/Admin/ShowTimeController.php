@@ -7,13 +7,25 @@ use App\Http\Requests\ShowTimeRequest;
 use App\Models\Cinema;
 use App\Models\Movie;
 use App\Models\Province;
+use App\Models\RoleHasCinema;
 use App\Models\Room;
 use App\Models\ShowTime;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Role;
 
 class ShowTimeController extends Controller
 {
+    public function __construct()
+    {
+        $methods = get_class_methods(__CLASS__); // Lấy danh sách các phương thức trong class hiện tại
+
+        // Loại bỏ những phương thức không cần áp dụng middleware (ví dụ: __construct, __destruct, ...)
+        $methods = array_diff($methods, ['__construct', '__destruct', '__clone', '__call', '__callStatic', '__get', '__set', '__isset', '__unset', '__sleep', '__wakeup', '__toString', '__invoke', '__set_state', '__clone', '__debugInfo']);
+
+        $this->middleware('role:Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Staff-Showtime-Hanoi|Staff-Showtime-HaiPhong|Staff-Showtime-ThaiBinh', ['only' => $methods]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -21,7 +33,19 @@ class ShowTimeController extends Controller
      */
     public function index(ShowTimeRequest $request)
     {
+        $user = Auth::user();
         $query = ShowTime::query();
+        $roleNames = $user->getRoleNames()->toArray();
+        if (in_array('Admin', $roleNames)) {
+            $query->get();
+        } else {
+            // Tìm vai trò và lấy danh sách cinema_id từ bảng role_has_cinema
+            $roleIds = Role::whereIn('name', $roleNames)->pluck('id')->toArray();
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $roleIds)->pluck('cinema_id')->toArray();
+            // Lấy danh sách room_id từ bảng rooms dựa trên cinema_ids
+            $roomIds = Room::whereIn('cinema_id', $cinemaIds)->pluck('id')->toArray();
+            $query->whereIn('room_id', $roomIds);
+        }
         // Lọc theo status
         if ($request->has('status')) {
             $status = $request->input('status');
@@ -31,12 +55,6 @@ class ShowTimeController extends Controller
                 $query->get();
             }
         }
-//        // Tìm theo ngày chiếu
-//        if ($request->has('start_date') && $request->has('end_date')) {
-//            $start_date = $request->input('start_date');
-//            $end_date = $request->input('end_date');
-//            $query->whereBetween('start_date', [$start_date, $end_date]);
-//        }
         // Tìm kiếm theo tên phim
         if ($request->has('search_movie')) {
             $searchMovie = $request->input('search_movie');
@@ -74,7 +92,7 @@ class ShowTimeController extends Controller
         $rooms = Room::all();
         $movies = Movie::all();
         $provinces = Province::all();
-        return view('admin.show-time.add', compact('rooms', 'movies','provinces'));
+        return view('admin.show-time.add', compact('rooms', 'movies', 'provinces'));
     }
     public function getCinemas($provinceId)
     {
@@ -190,7 +208,7 @@ class ShowTimeController extends Controller
         $movies = Movie::all();
         $showTime = ShowTime::find($id);
         $provinces = Province::all();
-        return view('admin.show-time.edit', compact('rooms', 'movies', 'showTime','provinces'));
+        return view('admin.show-time.edit', compact('rooms', 'movies', 'showTime', 'provinces'));
     }
 
     /**
@@ -295,10 +313,10 @@ class ShowTimeController extends Controller
         $deleteItems = ShowTime::onlyTrashed();
 
         // Tìm kiếm theo name trong trash
-//        if ($request->has('search')) {
-//            $search = $request->input('search');
-//            $deleteItems->where('name', 'like', '%' . $search . '%');
-//        }
+        //        if ($request->has('search')) {
+        //            $search = $request->input('search');
+        //            $deleteItems->where('name', 'like', '%' . $search . '%');
+        //        }
         // Lọc theo status trong trash
         if ($request->has('status')) {
             $status = $request->input('status');
@@ -311,7 +329,6 @@ class ShowTimeController extends Controller
 
         $deleteItems = $deleteItems->orderBy('id', 'DESC')->paginate(5);
         return view('admin.show-time.trash', compact('deleteItems'));
-
     }
 
     public function restore($id)
@@ -378,7 +395,6 @@ class ShowTimeController extends Controller
             $showTime = ShowTime::withTrashed()->whereIn('id', $ids);
             $showTime->forceDelete();
             toastr()->success('Thành công', 'Thành công xoá vĩnh viễn lịch chiếu');
-
         } else {
             toastr()->warning('Thất bại', 'Không tìm thấy các lịch chiếu đã chọn');
         }

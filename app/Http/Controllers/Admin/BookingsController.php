@@ -9,11 +9,6 @@ use Illuminate\Http\Request;
 
 class BookingsController extends Controller
 { 
-    public function __construct()
-    {
-        $this->middleware('permission:booking',['only'=>['index','detail','confirm','unConfirm','cancel']]);
-
-    }
     public function index(Request $request)
     {
         $query = Booking::query();
@@ -77,5 +72,73 @@ class BookingsController extends Controller
         // Thực hiện các hành động khác sau khi huỷ đơn hàng
         toastr()->success('Đơn hàng đã được huỷ thành công!');
         return redirect()->back();
+    }
+    public function deleteAll(Request $request)
+    {
+        $ids = $request->ids;
+        if ($ids) {
+            Booking::whereIn('id', $ids)->delete();
+            BookingDetail::where('booking_id', $ids)->delete();
+            toastr()->success( 'Thành công xoá các hoá đơn đã chọn');
+        } else {
+            toastr()->warning( 'Không tìm thấy các hoá đơn đã chọn');
+        }
+    }
+
+    public function trash(Request $request)
+    {
+        $query = Booking::onlyTrashed();
+
+        // Tìm kiếm theo name
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where(function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('email', 'like', '%' . $search . '%')
+                    ->orWhere('phone', 'like', '%' . $search . '%');
+            });
+        }
+        // Lọc theo status
+        if ($request->has('status')) {
+            $status = $request->input('status');
+            if ($status != 0) {
+                $query->where('status', $status);
+            }
+        }
+        $bookings = $query->orderBy('id', 'DESC')->paginate(5);
+
+        return view('admin.booking.trash', [
+            'bookings' => $bookings
+        ]);
+    }
+    public function permanentlyDeleteSelected(Request $request)
+    {
+        $ids = $request->ids;
+        if ($ids) {
+            $booking = Booking::withTrashed()->whereIn('id', $ids);
+            $booking_detail = BookingDetail::withTrashed()->whereIn('booking_id', $ids);
+            $booking->forceDelete();
+            $booking_detail->forceDelete();
+            toastr()->success('Thành công', 'Thành công xoá vĩnh viễn hoá đơn');
+
+        } else {
+            toastr()->warning('Thất bại', 'Không tìm thấy các hoá đơn đã chọn');
+        }
+        return redirect()->route('booking.trash');
+    }
+
+    public function restoreSelected(Request $request)
+    {
+        $ids = $request->ids;
+        if ($ids) {
+            $booking = Booking::withTrashed()->whereIn('id', $ids);
+            $booking_detail = BookingDetail::withTrashed()->whereIn('booking_id', $ids);
+            $booking->restore();
+            $booking_detail->restore();
+            toastr()->success('Thành công', 'Thành công khôi phục hoá đơn');
+        } else {
+            toastr()->warning('Thất bại', 'Không tìm thấy các hoá đơn đã chọn');
+        }
+        return redirect()->route('booking.trash');
     }
 }

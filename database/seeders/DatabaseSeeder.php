@@ -24,7 +24,8 @@ class DatabaseSeeder extends Seeder
             GenreSeeder::class,
             MovieSeeder::class,
             MemberLevelSeeder::class,
-            CreateAdminUserSeeder::class
+            CreateAdminUserSeeder::class,
+            SeatTypeSeeder::class,
         ]);
     }
 }

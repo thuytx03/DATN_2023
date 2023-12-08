@@ -9,10 +9,10 @@
     @if ($errors->any())
     <div class="alert alert-danger">
         @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
+        <li>{{ $error }}</li>
         @endforeach
     </div>
-@endif
+    @endif
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-body">
@@ -50,7 +50,17 @@
                             </label>
                         </div>
                         <!-- ... -->
-
+                        <hr>
+                        <div class="row">
+                            @foreach($cinemas as $item)
+                            <div class="form-check m-3">
+                                <input class="form-check-input permission-checkbox child-checkbox" type="checkbox" value="{{$item->id}}" id="{{$item->id}}" name="cinema[]" @if($role->cinemas->contains('id', $item->id)) checked @endif>
+                                <label class="form-check-label" for="{{$item->id}}">
+                                    {{$item->name}}
+                                </label>
+                            </div>
+                            @endforeach
+                        </div>
                         <div class="row">
                             @foreach($permission as $groupName => $per)
                             <div class="col-md-6">

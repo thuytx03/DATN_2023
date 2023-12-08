@@ -275,31 +275,7 @@ Danh sách hoá đơn
     }
     selectAllCheckbox();
 
-    function updateStatus() {
 
-        $(document).ready(function() {
-            $('.switch-status').change(function() {
-                const itemId = $(this).data('item-id');
-                const status = this.checked ? 1 : 2;
-
-                $.ajax({
-                    method: 'POST',
-                    url: '/admin/booking/update-status/' + itemId,
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        status: status
-                    },
-                    success: function(data) {
-                        // Xử lý phản hồi thành công (nếu cần)
-                    },
-                    error: function(error) {
-                        // Xử lý lỗi (nếu có)
-                    }
-                });
-            });
-        });
-    }
-    updateStatus();
 
     function deleteSelected() {
         $(document).ready(function() {

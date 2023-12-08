@@ -13,17 +13,7 @@ use Illuminate\Support\Str;
 
 class CinemaController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('permission:product-list', ['only' => ['index', 'updateStatus']]);
-        $this->middleware('permission:product-add', ['only' => ['create', 'store']]);
-        $this->middleware('permission:product-edit', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:product-delete', ['only' => ['destroy', 'deleteAll']]);
-        $this->middleware('permission:product-trash', ['only' => [
-            'trash', 'permanentlyDelete',
-            'permanentlyDeleteSelected', 'restoreSelected', 'restore', 'cleanupTrash'
-        ]]);
-    }
+   
     /**
      * Display a listing of the resource.
      *
@@ -161,7 +151,7 @@ class CinemaController extends Controller
     {
         //
         Cinema::find($id)->delete();
-        toastr()->success('Xóa rập chiếu thành công!');
+        toastr()->success('Xóa rạp chiếu thành công!');
         return redirect()->route('cinema.index');
     }
 

@@ -37,7 +37,9 @@ Danh sách vai trò
                             Hành động
                         </button>
                         <div class="dropdown-menu">
+                            @role('Admin')
                             <a class="dropdown-item" href="{{route('bin.list-role')}}">Thùng rác</a>
+                            @endrole
                             <a href="#" id="delete-selected" class="dropdown-item">Xoá đã chọn</a>
                         </div>
                     </div>

@@ -14,6 +14,15 @@ use Illuminate\Support\Facades\DB;
 
 class GenreController extends Controller
 {
+    public function __construct()
+    {
+        $methods = get_class_methods(__CLASS__); // Lấy danh sách các phương thức trong class hiện tại
+
+        // Loại bỏ những phương thức không cần áp dụng middleware (ví dụ: __construct, __destruct, ...)
+        $methods = array_diff($methods, ['__construct', '__destruct', '__clone', '__call', '__callStatic', '__get', '__set', '__isset', '__unset', '__sleep', '__wakeup', '__toString', '__invoke', '__set_state', '__clone', '__debugInfo']);
+
+        $this->middleware('role:Admin', ['only' => $methods]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -33,7 +42,7 @@ class GenreController extends Controller
             $status = $request->input('status');
             if ($status == 1 || $status == 0) {
                 $query->where('status', $status);
-            } else if($status == 'all') {
+            } else if ($status == 'all') {
                 $query->get();
             }
         }
@@ -49,7 +58,7 @@ class GenreController extends Controller
     public function create()
     {
         $genres = Genre::all();
-        return view('admin.genre.add',compact('genres'));
+        return view('admin.genre.add', compact('genres'));
     }
 
     /**
@@ -214,7 +223,7 @@ class GenreController extends Controller
             $status = $request->input('status');
             if ($status == 0 || $status == 1) {
                 $deleteItems->where('status', $status);
-            } else if($status == 'all') {
+            } else if ($status == 'all') {
                 $deleteItems->get();
             }
         }
@@ -242,7 +251,8 @@ class GenreController extends Controller
             return redirect()->route('genre.trash');
         }
     }
-    public function updateStatus(Request $request,$id) {
+    public function updateStatus(Request $request, $id)
+    {
         $item = Genre::find($id);
 
         if (!$item) {
@@ -262,9 +272,9 @@ class GenreController extends Controller
         } else {
             toastr()->warning('Không tìm thấy các thể loại đã chọn');
         }
-
     }
-    public function restoreSelected(Request $request) {
+    public function restoreSelected(Request $request)
+    {
         $ids = $request->ids;
         if ($ids) {
             $genre = Genre::withTrashed()->whereIn('id', $ids);
@@ -275,13 +285,13 @@ class GenreController extends Controller
         }
         return redirect()->route('genre.trash');
     }
-    public function permanentlyDeleteSelected(Request $request) {
+    public function permanentlyDeleteSelected(Request $request)
+    {
         $ids = $request->ids;
         if ($ids) {
             $genre = Genre::withTrashed()->whereIn('id', $ids);
             $genre->forceDelete();
             toastr()->success('Thành công', 'Thành công xoá vĩnh viễn thể loại');
-
         } else {
             toastr()->warning('Thất bại', 'Không tìm thấy các thể loại đã chọn');
         }

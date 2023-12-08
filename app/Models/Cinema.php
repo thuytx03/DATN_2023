@@ -15,7 +15,15 @@ class Cinema extends Model
     public $table = 'cinemas';
     public $fillable = ['name', 'slug', 'address', 'phone', 'open_hours', 'close_hours', 'description', 'status', 'province_id'];
 
-    public function province(){
+    public function province()
+    {
         return $this->belongsTo(Province::class);
+    }
+     public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'role_has_cinemas', 'cinema_id', 'role_id');
+    }
+    public function rooms() {
+        return $this->hasMany(Room::class);
     }
 }

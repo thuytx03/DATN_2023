@@ -308,128 +308,131 @@
             </div>
         </div>
     </div>
-    {{-- @if (count($selectedSeats) > 0)
+    {{-- @if (count($selectedSeats1) > 0)
         <ul>
-            @foreach ($selectedSeats as $seat)
+            @foreach ($selectedSeats1 as $seat)
                 <li>{{ $seat }}</li>
             @endforeach
         </ul>
     @else
         <p>No seats selected.</p>
     @endif --}}
+
+
     <!-- ==========Movie-Section========== -->
 
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/js/app.js"></script>
 
-
-    <!-- Trong view A -->
     <script>
-        const baseUrl = 'http://127.0.0.1:8000';
-        window.csrfToken = "{{ csrf_token() }}";
+        $(document).ready(function() {
+            // Get showtime_id from the data attribute of an HTML element
+            var showtime_id = $("#showtime-link").data("showtime-id");
 
-        // Kiểm tra xem đã lưu trạng thái thời gian vào localStorage chưa
-        const savedTimeExpired = window.localStorage.getItem('timeExpired');
-        let targetTime;
-
-        // Tạo thời gian mục tiêu (target time) chỉ khi cần
-        if (!savedTimeExpired) {
-            targetTime = new Date();
-            targetTime.setMinutes(targetTime.getMinutes() + 10);
-            window.localStorage.setItem('targetTime', targetTime.getTime());
-        } else {
-            // Nếu đã lưu, khôi phục thời gian từ localStorage
-            const savedTargetTime = window.localStorage.getItem('targetTime');
-            targetTime = new Date(parseInt(savedTargetTime));
-        }
-
-        function updateCountdown() {
-            const currentTime = new Date();
-            const timeDifference = targetTime - currentTime;
-
-            const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
-
-            const countdownElement = document.getElementById("countdown");
-            countdownElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-
-            if (timeDifference <= 0) {
-                countdownElement.textContent = "00:00";
-                clearSeatsCache(); // Gọi hàm khi đếm ngược đạt 0
-            } else {
-                requestAnimationFrame(updateCountdown);
-            }
-        }
-
-        function clearSeatsCache() {
-            axios.post(`${baseUrl}/clear-seats-cache`, {}, {
-                    headers: {
-                        'X-CSRF-TOKEN': window.csrfToken
+            // Function to clear cache asynchronously
+            function clearCacheAsync(showtime_id) {
+                $.ajax({
+                    url: '/clear-seats-cache',
+                    type: 'POST',
+                    data: {
+                        showtime_id: showtime_id,
+                        _token: '{{ csrf_token() }}',
+                    },
+                    success: function(response) {
+                        // console.log(response.message);
+                        alert('Bạn đã hết thời gian chọn ghế!');
+                        location.reload();
+                    },
+                    error: function(error) {
+                        console.error('Error clearing cache: ', error.responseJSON.error);
                     }
-                })
-                .then(response => {
-                    // Hiển thị thông báo thành công
-                    window.alert('Bạn đã hết thời gian chọn ghế!!!');
-                    window.location.href = 'path-to-view-a';
-                    window.location.reload();
-                    // Bạn cũng có thể tùy chỉnh thông báo hoặc sử dụng thư viện thông báo ở đây
-
-                    console.log(response.data.message);
-                })
-                .catch(error => {
-                    console.error('Lỗi khi xóa cache và phiên:', error);
                 });
-        }
+            }
 
-        requestAnimationFrame(updateCountdown);
+            // Kiểm tra xem đã lưu trạng thái thời gian vào localStorage chưa
+            const savedTimeExpired = window.localStorage.getItem('timeExpired');
+            let targetTime;
+
+            // Tạo thời gian mục tiêu (target time) chỉ khi cần
+            if (!savedTimeExpired) {
+                targetTime = new Date();
+                targetTime.setMinutes(targetTime.getMinutes() + 10);
+                window.localStorage.setItem('targetTime', targetTime.getTime());
+            } else {
+                // Nếu đã lưu, khôi phục thời gian từ localStorage
+                const savedTargetTime = window.localStorage.getItem('targetTime');
+                targetTime = new Date(parseInt(savedTargetTime));
+            }
+
+            function updateCountdown() {
+                const currentTime = new Date();
+                const timeDifference = targetTime - currentTime;
+
+                const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+                const countdownElement = document.getElementById("countdown");
+                countdownElement.textContent =
+                    `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                // Clear cache asynchronously when the countdown reaches 0
+                if (timeDifference < 0) {
+                    countdownElement.textContent = "00:00";
+                    clearCacheAsync(showtime_id);
+                } else {
+                    requestAnimationFrame(updateCountdown);
+                }
+            }
+
+            requestAnimationFrame(updateCountdown);
+        });
     </script>
 
+    {{-- th1: use A chọn và tải lại trang thì lưu storage cả A và B trog 1p
+    th2: user A chọn ghế thì user Bvaof sau sẽ hiển thị ảnh seatDangGiu --}}
 
-
-
-    <script>
+    {{-- <script>
         window.Echo.channel('laravel_database_seat-selected-channel')
             .listen('.seat-selected', (e) => {
                 console.log(e);
                 const selectedSeats = e.selectedSeats;
-                const action=e.action;
+                const action = e.action;
                 selectedSeats.forEach((seat) => {
                     const seatElement = document.getElementById(`seat-${seat}`);
                     // console.log(seat);
                     if (seatElement) {
-                        const showTimeId = document.getElementById("showtime-link").getAttribute("data-showtime-id");
+                        const showTimeId = document.getElementById("showtime-link").getAttribute(
+                            "data-showtime-id");
                         if (e.showtime_id === showTimeId) {
                             const isSeatSelected = seatElement.classList.contains('seat-selected');
                             const check = e.userId === {{ auth()->id() }} && e.showtime_id === showTimeId;
 
                             // Kiểm tra trạng thái hiện tại trước khi cập nhật
                             // if (isSeatSelected === check) {
-                                let imageUrl = '';
+                            let imageUrl = '';
 
-                                if (check) {
-                                    seatElement.style.pointerEvents = 'auto';
-                                    // seatElement.classList.add('dang-chon');
-                                } else {
-                                    seatElement.style.pointerEvents = 'none';
-                                    seatElement.classList.add('dang-giu-ghe');
-                                }
+                            if (check) {
+                                seatElement.style.pointerEvents = 'auto';
+                                // seatElement.classList.add('dang-chon');
+                            } else {
+                                seatElement.style.pointerEvents = 'none';
+                                seatElement.classList.add('dang-giu-ghe');
+                            }
 
-                                if (check && action === 'selected') {
-                                    imageUrl = '{{ asset('client/assets/images/movie/seatDangChon.png') }}';
-                                } else if (seatElement.classList.contains('dang-giu-ghe')) {
-                                    imageUrl = '{{ asset('client/assets/images/movie/seatDangGiu.png') }}';
-                                }else{
-                                    if(seatElement.classList.contains('seatThuong')){
+                            if (check && action === 'selected') {
+                                imageUrl = '{{ asset('client/assets/images/movie/seatDangChon.png') }}';
+                            } else if (seatElement.classList.contains('dang-giu-ghe')) {
+                                imageUrl = '{{ asset('client/assets/images/movie/seatDangGiu.png') }}';
+                            } else {
+                                if (seatElement.classList.contains('seatThuong')) {
                                     imageUrl = '{{ asset('client/assets/images/movie/seatThuong.png') }}';
-                                    }else if (seatElement.classList.contains('seatVip')){
-                                        imageUrl = '{{ asset('client/assets/images/movie/seatVip.png') }}';
-                                    }else if (seatElement.classList.contains('seatDoi')){
-                                        imageUrl = '{{ asset('client/assets/images/movie/seatDoi.png') }}';
-                                    }
+                                } else if (seatElement.classList.contains('seatVip')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatVip.png') }}';
+                                } else if (seatElement.classList.contains('seatDoi')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatDoi.png') }}';
                                 }
+                            }
 
-                                seatElement.querySelector('img').src = imageUrl;
+                            seatElement.querySelector('img').src = imageUrl;
                             // }
 
                         }
@@ -439,7 +442,7 @@
             });
 
 
-            window.Echo.channel('laravel_database_seat-cancelled-channel')
+        window.Echo.channel('laravel_database_seat-cancelled-channel')
             .listen('.seat-cancelled', (e) => {
                 console.log(e);
                 const cancelledSeats = e.cancelledSeats;
@@ -450,35 +453,133 @@
                     const seatElement = document.getElementById(`seat-${seat}`);
                     // console.log(seat);
                     if (seatElement) {
-                        const showTimeId = document.getElementById("showtime-link").getAttribute("data-showtime-id");
+                        const showTimeId = document.getElementById("showtime-link").getAttribute(
+                            "data-showtime-id");
                         if (e.showtime_id === showTimeId) {
                             const isSeatSelected = seatElement.classList.contains('seat-selected');
                             const check = e.userId === {{ auth()->id() }} && e.showtime_id === showTimeId;
 
                             // Kiểm tra trạng thái hiện tại trước khi cập nhật
                             // if (isSeatSelected === check) {
-                                let imageUrl = '';
-                                if (check && action === 'cancelled') {
-                                    // seatElement.classList.remove('dang-chon');
-                                    if(seatElement.classList.contains('seatThuong')){
+                            let imageUrl = '';
+                            if (check && action === 'cancelled') {
+                                // seatElement.classList.remove('dang-chon');
+                                if (seatElement.classList.contains('seatThuong')) {
                                     imageUrl = '{{ asset('client/assets/images/movie/seatThuong.png') }}';
-                                    }else if (seatElement.classList.contains('seatVip')){
-                                        imageUrl = '{{ asset('client/assets/images/movie/seatVip.png') }}';
-                                    }else if (seatElement.classList.contains('seatDoi')){
-                                        imageUrl = '{{ asset('client/assets/images/movie/seatDoi.png') }}';
-                                    }
-                                } else if (seatElement.classList.contains('dang-giu-ghe')) {
-                                    seatElement.classList.remove('dang-giu-ghe');
-                                    if(seatElement.classList.contains('seatThuong')){
-                                    imageUrl = '{{ asset('client/assets/images/movie/seatThuong.png') }}';
-                                    }else if (seatElement.classList.contains('seatVip')){
-                                        imageUrl = '{{ asset('client/assets/images/movie/seatVip.png') }}';
-                                    }else if (seatElement.classList.contains('seatDoi')){
-                                        imageUrl = '{{ asset('client/assets/images/movie/seatDoi.png') }}';
-                                    }
+                                } else if (seatElement.classList.contains('seatVip')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatVip.png') }}';
+                                } else if (seatElement.classList.contains('seatDoi')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatDoi.png') }}';
                                 }
+                            } else if (seatElement.classList.contains('dang-giu-ghe')) {
+                                seatElement.classList.remove('dang-giu-ghe');
+                                if (seatElement.classList.contains('seatThuong')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatThuong.png') }}';
+                                } else if (seatElement.classList.contains('seatVip')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatVip.png') }}';
+                                } else if (seatElement.classList.contains('seatDoi')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatDoi.png') }}';
+                                }
+                            }
+                            seatElement.style.pointerEvents = 'auto';
+                            seatElement.querySelector('img').src = imageUrl;
+                            // }
+
+                        }
+                    }
+                });
+            });
+    </script> --}}
+
+    <script>
+
+        window.Echo.channel('laravel_database_seat-selected-channel')
+            .listen('.seat-selected', (e) => {
+                console.log(e);
+                const selectedSeats = e.selectedSeats;
+                const action = e.action;
+                selectedSeats.forEach((seat) => {
+                    const seatElement = document.getElementById(`seat-${seat}`);
+                    // console.log(seat);
+                    if (seatElement) {
+                        const showTimeId = document.getElementById("showtime-link").getAttribute(
+                            "data-showtime-id");
+                        if (e.showtime_id === showTimeId) {
+                            const isSeatSelected = seatElement.classList.contains('seat-selected');
+                            const check = e.userId === {{ auth()->id() }} && e.showtime_id === showTimeId;
+                            let imageUrl = '';
+
+                            if (check) {
                                 seatElement.style.pointerEvents = 'auto';
-                                seatElement.querySelector('img').src = imageUrl;
+                                // seatElement.classList.add('dang-chon');
+                            } else {
+                                seatElement.style.pointerEvents = 'none';
+                                seatElement.classList.add('dang-giu-ghe');
+                            }
+
+                            if (check && action === 'selected') {
+                                imageUrl = '{{ asset('client/assets/images/movie/seatDangChon.png') }}';
+                            } else if (seatElement.classList.contains('dang-giu-ghe')) {
+                                imageUrl = '{{ asset('client/assets/images/movie/seatDangGiu.png') }}';
+                            } else {
+                                if (seatElement.classList.contains('seatThuong')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatThuong.png') }}';
+                                } else if (seatElement.classList.contains('seatVip')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatVip.png') }}';
+                                } else if (seatElement.classList.contains('seatDoi')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatDoi.png') }}';
+                                }
+                            }
+
+                            seatElement.querySelector('img').src = imageUrl;
+
+
+                        }
+                    }
+                });
+            });
+
+        window.Echo.channel('laravel_database_seat-cancelled-channel')
+            .listen('.seat-cancelled', (e) => {
+                console.log(e);
+                const cancelledSeats = e.cancelledSeats;
+                const action = e.action;
+
+                // Thực hiện các xử lý khi ghế bị hủy ở đây
+                cancelledSeats.forEach((seat) => {
+                    const seatElement = document.getElementById(`seat-${seat}`);
+                    // console.log(seat);
+                    if (seatElement) {
+                        const showTimeId = document.getElementById("showtime-link").getAttribute(
+                            "data-showtime-id");
+                        if (e.showtime_id === showTimeId) {
+                            const isSeatSelected = seatElement.classList.contains('seat-selected');
+                            const check = e.userId === {{ auth()->id() }} && e.showtime_id === showTimeId;
+
+                            // Kiểm tra trạng thái hiện tại trước khi cập nhật
+                            // if (isSeatSelected === check) {
+                            let imageUrl = '';
+                            if (check && action === 'cancelled') {
+                                // seatElement.classList.remove('dang-chon');
+                                if (seatElement.classList.contains('seatThuong')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatThuong.png') }}';
+                                } else if (seatElement.classList.contains('seatVip')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatVip.png') }}';
+                                } else if (seatElement.classList.contains('seatDoi')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatDoi.png') }}';
+                                }
+                            } else if (seatElement.classList.contains('dang-giu-ghe')) {
+                                seatElement.classList.remove('dang-giu-ghe');
+                                if (seatElement.classList.contains('seatThuong')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatThuong.png') }}';
+                                } else if (seatElement.classList.contains('seatVip')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatVip.png') }}';
+                                } else if (seatElement.classList.contains('seatDoi')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatDoi.png') }}';
+                                }
+                            }
+                            seatElement.style.pointerEvents = 'auto';
+                            seatElement.querySelector('img').src = imageUrl;
                             // }
 
                         }
@@ -486,6 +587,7 @@
                 });
             });
     </script>
+
 
     {{-- kiểm tra ghế  --}}
     <script>
@@ -693,12 +795,7 @@
                             document.querySelector(".total-price").textContent = formatCurrency(
                                 data.totalPrice) + " VNĐ";
 
-                            window.Echo.channel('laravel_database_seat-selected-channel')
-                                .whisper('.seat-selected', {
-                                    userId: {{ auth()->id() }},
-                                    selectedSeats: chosenSeats,
-                                    showtime_id: showTimeId,
-                                });
+
                         });
 
 
