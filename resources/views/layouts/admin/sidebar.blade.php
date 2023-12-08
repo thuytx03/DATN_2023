@@ -34,10 +34,10 @@
         <div id="qr" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="">Quét Mã Cho Khách </a>
-               
+
             </div>
         </div>
-       
+
     </li>
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwosss" aria-expanded="true" aria-controls="collapseTwosss">
@@ -114,6 +114,7 @@
                 <a class="collapse-item" href="{{ route('genre.index') }}">Thể loại Phim</a>
                 <!-- link -->
                 <a class="collapse-item" href="{{ route('movie.index') }}">Danh sách Phim</a>
+                <a class="collapse-item" href="{{ route('feed-back.index') }}">Đánh giá phim</a>
             </div>
         </div>
     </li>
@@ -246,7 +247,7 @@
                 <a class="collapse-item" href="{{route('member.list')}}">Quản lý điểm thưởng </a>
             </div>
         </div>
-       
+
     </li>
     <!-- Divider -->
     <hr class="sidebar-divider">

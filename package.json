@@ -16,6 +16,7 @@
         "postcss": "^8.1.14"
     },
     "dependencies": {
+        "ckeditor4": "^4.23.0",
         "laravel-echo": "^1.15.3",
         "socket.io-client": "^2.3.0"
     }

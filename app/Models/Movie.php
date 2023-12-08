@@ -36,4 +36,8 @@ class Movie extends Model
         $rating = Feedback::where(['user_id' => $user_id, 'movie_id' => $this->id])->latest()->value('rating');
         return $rating ?? 0;
     }
+    public function views()
+    {
+        return $this->hasMany(MovieView::class);
+    }
 }

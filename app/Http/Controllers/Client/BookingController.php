@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 
 use App\Http\Controllers\Controller;
+use App\Models\Movie;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use App\Http\Requests\BookingRequest;
 use App\Models\Booking;
@@ -93,7 +94,19 @@ class BookingController extends Controller
             }
             $booking->total = $request->totalPrice;
             $booking->save();
+            if ($showTime->movie) {
+                $movie = $showTime->movie;
+                $movie->view += 1;
+                $movie->save();
+                // Lấy ngày đặt vé
+                $bookingDate = now()->format('Y-m-d');
 
+                // Tăng số lượng lượt xem cho ngày đó hoặc tạo mới nếu chưa có
+                $movie->views()->updateOrCreate(
+                    ['date' => $bookingDate],
+                    ['count' => DB::raw('count + 1')]
+                );
+            }
             if (session()->has('selectedProducts')) {
                 foreach (session('selectedProducts') as $food) {
                     $bookingDetail = new BookingDetail();
@@ -124,6 +137,7 @@ class BookingController extends Controller
             session()->forget('selectedProducts');
             session()->forget('totalPriceFood');
             toastr()->success('Đặt vé thành công');
+
         }
 
         return view('client.movies.movie-checkout', compact('showTime', 'room', 'totalPriceTicket'));
