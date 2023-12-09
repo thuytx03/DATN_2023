@@ -19,7 +19,6 @@ class SeatTypeSeeder extends Seeder
            ['name' => 'Thường','slug' => 'thuong','price' => 50000, 'status'=>1],
            ['name' => 'Vip','slug' => 'vip','price' => 50000, 'status'=>1],
            ['name' => 'Đôi','slug' => 'doi','price' => 50000, 'status'=>1],
-
         ]);
     }
 }

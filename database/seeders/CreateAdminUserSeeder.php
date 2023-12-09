@@ -17,11 +17,6 @@ class CreateAdminUserSeeder extends Seeder
      */
     public function run()
     {
-        User::create([
-            'name' => 'Admin',
-            'email' => 'admin@gmail.com',
-            'password' => bcrypt('123456')
-        ]);
 
         User::create([
             'name' => 'Bùi Duy Dũng',
@@ -44,26 +39,93 @@ class CreateAdminUserSeeder extends Seeder
         
         User::create([
             'name' => 'Phạm Xuân Thanh',
-            'email' => 'staff1@gmail.com',
+            'email' => 'staff11@gmail.com',
+            'password' => bcrypt('123456')
+        ]);
+
+        User::create([
+            'name' => 'Phạm Xuân Thanh',
+            'email' => 'staff12@gmail.com',
+            'password' => bcrypt('123456')
+        ]);
+
+        User::create([
+            'name' => 'Phạm Xuân Thanh',
+            'email' => 'staff13@gmail.com',
+            'password' => bcrypt('123456')
+        ]);
+
+        User::create([
+            'name' => 'Phạm Xuân Thanh',
+            'email' => 'staff14@gmail.com',
             'password' => bcrypt('123456')
         ]);
         
         User::create([
+            'name' => 'Phạm Xuân Thanh',
+            'email' => 'staff15@gmail.com',
+            'password' => bcrypt('123456')
+        ]);
+
+        User::create([
             'name' => 'Trần Ngọc Lĩnh',
-            'email' => 'staff2@gmail.com',
+            'email' => 'staff21@gmail.com',
+            'password' => bcrypt('123456')
+        ]);
+
+        User::create([
+            'name' => 'Trần Ngọc Lĩnh',
+            'email' => 'staff22@gmail.com',
+            'password' => bcrypt('123456')
+        ]);
+
+        User::create([
+            'name' => 'Trần Ngọc Lĩnh',
+            'email' => 'staff23@gmail.com',
+            'password' => bcrypt('123456')
+        ]);
+
+        User::create([
+            'name' => 'Trần Ngọc Lĩnh',
+            'email' => 'staff24@gmail.com',
+            'password' => bcrypt('123456')
+        ]);
+
+        User::create([
+            'name' => 'Trần Ngọc Lĩnh',
+            'email' => 'staff25@gmail.com',
             'password' => bcrypt('123456')
         ]);
         
         User::create([
             'name' => 'Trịnh Công Tín',
-            'email' => 'staff3@gmail.com',
+            'email' => 'staff31@gmail.com',
             'password' => bcrypt('123456')
         ]);
-        // $role = Role::create(['name' => 'Admin','display_name'=>'Chủ tịch','group'=>'admin']);
-        // $permissions = Permission::pluck('id', 'id')->all();
 
-        // $role->syncPermissions($permissions);
+        User::create([
+            'name' => 'Trịnh Công Tín',
+            'email' => 'staff32@gmail.com',
+            'password' => bcrypt('123456')
+        ]);
 
-        // $user->assignRole([$role->id]);
+        User::create([
+            'name' => 'Trịnh Công Tín',
+            'email' => 'staff33@gmail.com',
+            'password' => bcrypt('123456')
+        ]);
+
+        User::create([
+            'name' => 'Trịnh Công Tín',
+            'email' => 'staff34@gmail.com',
+            'password' => bcrypt('123456')
+        ]);
+
+        User::create([
+            'name' => 'Trịnh Công Tín',
+            'email' => 'staff35@gmail.com',
+            'password' => bcrypt('123456')
+        ]);
+
     }
 }

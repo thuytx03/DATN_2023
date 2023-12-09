@@ -77,20 +77,22 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-        // Kiểm tra nếu người dùng không phải 'Admin'
-        if (!$user->hasRole('Admin')) {
-            $roles = $user->roles; // Lấy các vai trò của người dùng
-        } else {
-            // Nếu là 'Admin', lấy tất cả vai trò ngoại trừ 'Admin'
-            $roles = Role::where('name', '!=', 'Admin')->get();
-        }
-
-        $permission = Permission::all();
-        return view('admin.user.add', compact('roles'));
+    if ($user->hasRole('Admin')) {
+        // Nếu là 'Admin', lấy tất cả các vai trò
+        $roles = Role::all();
+    } else {
+        // Nếu không phải 'Admin', lấy các vai trò của người dùng
+        $roles = $user->roles;
     }
+
+    $permissions = Permission::all(); // Lấy tất cả các quyền
+
+    return view('admin.user.add', compact('roles', 'permissions'));
+}
+
 
 
 
@@ -152,12 +154,12 @@ class UserController extends Controller
         }
         // Lấy thông tin người dùng hiện tại đang đăng nhập
         $currentUser = Auth::user();
-
-        if (!$currentUser->hasRole('Admin')) {
+        $isAdmin = $currentUser->hasRole('Admin');
+        if (!$isAdmin) {
             // Nếu không phải Admin, kiểm tra xem người dùng hiện tại có vai trò tương tự với người dùng được chỉnh sửa không
             $userRoles = $user->getRoleNames()->toArray();
             $currentUserRoles = $currentUser->getRoleNames()->toArray();
-
+            
             $matchingRoles = array_intersect($userRoles, $currentUserRoles);
 
             if (empty($matchingRoles)) {
@@ -170,9 +172,9 @@ class UserController extends Controller
         $roles = [];
 
         // Kiểm tra xem người dùng hiện tại có phải là Admin không
-        if ($currentUser->hasRole('Admin')) {
+        if ($isAdmin) {
             // Nếu là Admin, lấy tất cả các vai trò (roles) trừ vai trò 'Admin'
-            $roles = Role::where('name', '!=', 'Admin')->get();
+            $roles = Role::all();
         } else {
             // Nếu không phải là Admin, chỉ lấy các vai trò của người dùng hiện tại
             $roles = $currentUser->roles;

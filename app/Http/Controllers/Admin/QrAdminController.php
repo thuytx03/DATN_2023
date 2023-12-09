@@ -20,83 +20,95 @@ use pdf;
 use Dompdf\Options;
 use Dompdf\Dompdf;
 use App\Models\SeatType;
+
 class QrAdminController extends Controller
 {
-    public function index() {
+    public function __construct()
+    {
+        $methods = get_class_methods(__CLASS__); // Lấy danh sách các phương thức trong class hiện tại
+
+        // Loại bỏ những phương thức không cần áp dụng middleware (ví dụ: __construct, __destruct, ...)
+        $methods = array_diff($methods, ['__construct', '__destruct', '__clone', '__call', '__callStatic', '__get', '__set', '__isset', '__unset', '__sleep', '__wakeup', '__toString', '__invoke', '__set_state', '__clone', '__debugInfo']);
+
+        $this->middleware('role:Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Staff-Qr-Hanoi|Staff-Qr-HaiPhong|Staff-Qr-ThaiBinh', ['only' => $methods]);
+    }
+    public function index()
+    {
         $bookings = Booking::orderBy('updated_at', 'desc')->get();
         $showTime = ShowTime::all();
         $movie = Movie::all();
         $rooms = Room::all();
-        return view('admin.qr.index',compact('bookings','showTime','movie','rooms'));
+        return view('admin.qr.index', compact('bookings', 'showTime', 'movie', 'rooms'));
     }
-    public function store(Request $request){
+    public function store(Request $request)
+    {
 
         $bookings = Booking::orderBy('updated_at', 'desc')->get();
         $dataFromQR = $request->input('param');
-$parts = explode('/', $dataFromQR);
-$numberAfterSlash = end($parts);
+        $parts = explode('/', $dataFromQR);
+        $numberAfterSlash = end($parts);
 
-// Remove curly braces
-$numberAfterSlash = str_replace(['{', '}'], '', $numberAfterSlash);
+        // Remove curly braces
+        $numberAfterSlash = str_replace(['{', '}'], '', $numberAfterSlash);
 
-// Output the result
+        // Output the result
 
 
-        $booking1 = Booking::where('id',$numberAfterSlash)->first();
-if(isset($booking1)) {
-        if($booking1->status == 2 && $booking1->status != 3 && $booking1->status != 4 || $booking1->status == 5 ) {
-            if($booking1) {
-                $showTime1 = ShowTime::where('id',$booking1->showtime_id)->first();
-                $movieName = Movie::where('id',$showTime1->movie_id)->first();
-                $room = Room::where('id',$showTime1->room_id)->first();
-                $status = 3;
-                $booking1->status = $status;
-                $booking1->save();
-                $thongbao = 'Thành Công';
-                return view('admin.qr.qrscanner',compact('booking1','thongbao','showTime1','room','movieName'));
+        $booking1 = Booking::where('id', $numberAfterSlash)->first();
+        if (isset($booking1)) {
+            if ($booking1->status == 2 && $booking1->status != 3 && $booking1->status != 4 || $booking1->status == 5) {
+                if ($booking1) {
+                    $showTime1 = ShowTime::where('id', $booking1->showtime_id)->first();
+                    $movieName = Movie::where('id', $showTime1->movie_id)->first();
+                    $room = Room::where('id', $showTime1->room_id)->first();
+                    $status = 3;
+                    $booking1->status = $status;
+                    $booking1->save();
+                    $thongbao = 'Thành Công';
+                    return view('admin.qr.qrscanner', compact('booking1', 'thongbao', 'showTime1', 'room', 'movieName'));
+                }
+            } elseif ($booking1->status == 3) {
+                $showTime1 = ShowTime::where('id', $booking1->showtime_id)->first();
+                if ($showTime1) {
+
+                    $movieName = Movie::where('id', $showTime1->movie_id)->first();
+                    $room = Room::where('id', $showTime1->room_id)->first();
+                    $thongbao = 'Vé này Đã được quét';
+                    return view('admin.qr.qrscanner', compact('booking1', 'thongbao', 'showTime1', 'room', 'movieName'));
+                } else {
+                    $bookings = Booking::orderBy('updated_at', 'desc')->get();
+                    $showTime = ShowTime::all();
+                    $movie = Movie::all();
+                    $rooms = Room::all();
+                    $thongbao = 'Vé này Đã được quét';
+                    return view('admin.qr.qrscanner', compact('bookings', 'showTime', 'movie', 'rooms', 'thongbao'));
+                }
+                // $thongbao = 'Vé này Đã được quét';
+                // return view('admin.qr.qrscanner',compact('booking1','thongbao','showTime1'));
+
+            } elseif ($booking1->status == 4) {
+                $bookings = Booking::orderBy('updated_at', 'desc')->get();
+                $showTime = ShowTime::all();
+                $movie = Movie::all();
+                $rooms = Room::all();
+                $thongbao = 'Vé này Đã bị hủy';
+                return view('admin.qr.index', compact('bookings', 'showTime', 'movie', 'rooms', 'thongbao'));
             }
-        }elseif($booking1->status == 3) {
-            $showTime1 = ShowTime::where('id',$booking1->showtime_id)->first();
-          if($showTime1) {
-
-            $movieName = Movie::where('id',$showTime1->movie_id)->first();
-            $room = Room::where('id',$showTime1->room_id)->first();
-            $thongbao = 'Vé này Đã được quét';
-            return view('admin.qr.qrscanner',compact('booking1','thongbao','showTime1','room','movieName'));
-
-          }else {
+        } else {
             $bookings = Booking::orderBy('updated_at', 'desc')->get();
             $showTime = ShowTime::all();
-            $movie = Movie::all();
-            $rooms = Room::all();
-            $thongbao = 'Vé này Đã được quét';
-            return view('admin.qr.qrscanner',compact('bookings','showTime','movie','rooms','thongbao'));
-          }
-            // $thongbao = 'Vé này Đã được quét';
-            // return view('admin.qr.qrscanner',compact('booking1','thongbao','showTime1'));
-
-        }elseif($booking1->status == 4) {
-            $bookings = Booking::orderBy('updated_at', 'desc')->get();
-            $showTime = ShowTime::all();
-            $movie = Movie::all();
-            $rooms = Room::all();
-            $thongbao = 'Vé này Đã bị hủy';
-            return view('admin.qr.index',compact('bookings','showTime','movie','rooms','thongbao'));
+            $thongbao = 'Thất Bại, không tìm thấy vé đặt';
+            return view('admin.qr.qrscanner', compact('bookings', 'thongbao', 'showTime'));
         }
-    }else {
-        $bookings = Booking::orderBy('updated_at', 'desc')->get();
-        $showTime = ShowTime::all();
-        $thongbao = 'Thất Bại, không tìm thấy vé đặt';
-        return view('admin.qr.qrscanner',compact('bookings','thongbao','showTime'));
-    }
 
 
 
         return redirect()->route('qr.scanner');
     }
-    public function checkQr($id){
+    public function checkQr($id)
+    {
         $booking = Booking::find($id)->first();
-        Redirect()->route('qr.scanner',compact('booking'));
+        Redirect()->route('qr.scanner', compact('booking'));
     }
 
 
@@ -188,12 +200,12 @@ if(isset($booking1)) {
                 $startDate = date('d/m/Y', strtotime($individual_data['start_date']));
                 $screeningTime = date('H:i', strtotime($individual_data['start_date']));
 
-                $pdf->loadHTML(view('admin.qr.bills', compact('seat_type','individual_data', 'startDate', 'screeningTime', 'list_seat','seat1'))->render());
+                $pdf->loadHTML(view('admin.qr.bills', compact('seat_type', 'individual_data', 'startDate', 'screeningTime', 'list_seat', 'seat1'))->render());
 
                 // Xuất hóa đơn cho từng ghế
                 return   $pdf->stream('bill_seat_' . $individual_data['list_seat'] . '.pdf');
             }
-        }else {
+        } else {
             // Nếu chỉ có một ghế, thì xử lý như bình thường
             $startDate = date('d/m/Y', strtotime($data['start_date']));
             $screeningTime = date('H:i', strtotime($data['start_date']));
@@ -205,8 +217,4 @@ if(isset($booking1)) {
             return $pdf->stream();
         }
     }
-
-
-
-
 }

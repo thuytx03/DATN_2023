@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cinema;
 use App\Models\Foodstypes;
 use App\Models\MovieFoodsTypes;
 use App\Models\MovieFood;
@@ -33,8 +34,8 @@ class FoodController extends Controller
 
         $foodType = Foodstypes::orderBy('id', 'DESC')->where('status', 1)->get();
         $food = $query->orderBy('id', 'DESC')->paginate(6);
-
-        return view('client.foods.food', compact('foodType', 'food'));
+        $cinema = Cinema::all();
+        return view('client.foods.food', compact('foodType', 'food','cinema'));
     }
 
     public function getFoodByType($foodTypeId)

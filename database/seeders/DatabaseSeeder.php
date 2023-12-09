@@ -27,6 +27,11 @@ class DatabaseSeeder extends Seeder
             MemberLevelSeeder::class,
             CreateAdminUserSeeder::class,
             SeatTypeSeeder::class,
+            FoodSeeder::class,
+            CreateAdminSeeder::class,
+            CreateAdminUserSeeder::class,
+            RolesTableSeeder::class,
+            PermissionTableSeeder::class,
         ]);
     }
 }

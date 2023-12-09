@@ -22,6 +22,12 @@ class FoodTypesController extends Controller
     public function __construct()
     {
         $this->htmlSelect = '';
+        $methods = get_class_methods(__CLASS__); // Lấy danh sách các phương thức trong class hiện tại
+
+        // Loại bỏ những phương thức không cần áp dụng middleware (ví dụ: __construct, __destruct, ...)
+        $methods = array_diff($methods, ['__construct', '__destruct', '__clone', '__call', '__callStatic', '__get', '__set', '__isset', '__unset', '__sleep', '__wakeup', '__toString', '__invoke', '__set_state', '__clone', '__debugInfo']);
+
+        $this->middleware('role:Admin', ['only' => $methods]);
     }
 
     /**
@@ -36,7 +42,7 @@ class FoodTypesController extends Controller
 
         if ($request->has('keyword')) {
             $keyword = $request->input('keyword');
-            $listTypes->where('name', 'LIKE','%'.$keyword.'%');
+            $listTypes->where('name', 'LIKE', '%' . $keyword . '%');
         }
         if ($request->has('status') && in_array($request->input('status'), ['active', 'unactive'])) {
             $status = $request->status;
@@ -47,21 +53,9 @@ class FoodTypesController extends Controller
             }
             $listTypes->where('status', $status);
         }
-
-
         $foodTypes = $listTypes->paginate(5);
-
-
-
-
-
-
-
-
         return view('admin.Foods.foodtypes.index', compact('foodTypes'));
     }
-
-
     public function permanentlyDeleteSelected(Request $request)
     {
         $ids = $request->ids;
@@ -74,11 +68,6 @@ class FoodTypesController extends Controller
         }
         return redirect()->route('food_types.indexsd');
     }
-
-
-
-
-
     public function deleteAll(Request $request)
     {
 
@@ -92,9 +81,6 @@ class FoodTypesController extends Controller
 
         return back();
     }
-
-
-
     public function changeStatus(Request $request, $id)
     {
         $foodType = Foodstypes::find($id);
@@ -123,11 +109,6 @@ class FoodTypesController extends Controller
             // Nếu không tìm thấy $foodType, có thể xử lý lỗi hoặc thông báo tùy theo logic của bạn.
         }
     }
-
-
-
-
-
     public function indexsd(Request $request)
     {
 
@@ -136,7 +117,7 @@ class FoodTypesController extends Controller
 
         if ($request->has('keyword')) {
             $keyword = $request->input('keyword');
-            $listTypes->where('name', 'LIKE','%'.$keyword.'%');;
+            $listTypes->where('name', 'LIKE', '%' . $keyword . '%');;
         }
 
         if ($request->has('status') && in_array($request->input('status'), ['active', 'unactive'])) {
@@ -147,7 +128,6 @@ class FoodTypesController extends Controller
                 $status = 0;
             }
             $listTypes->where('status', $status);
-
         }
 
 

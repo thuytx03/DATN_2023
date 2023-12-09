@@ -4,13 +4,17 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\RoleHasCinema;
+use App\Models\Room;
 use App\Models\Movie;
 use App\Models\MovieView;
 use App\Models\ShowTime;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
 
 class DashboardController extends Controller
 {
@@ -72,207 +76,636 @@ class DashboardController extends Controller
 
     public function day(Request $request)
     {
-        $currentDate = Carbon::now()->toDateString();
+        $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
+        $roleNames = $user->getRoleNames()->toArray();
+        if (in_array('Admin', $roleNames)) {
+            $currentDate = Carbon::now()->toDateString();
 
-        $totalBookingsByDate = Booking::whereDate('created_at', $currentDate)->count();
+            $totalBookingsByDate = Booking::whereDate('created_at', $currentDate)->count();
 
-        $totalConfirmedAmountByDate = Booking::where('status', 3)
-            ->whereDate('created_at', Carbon::today())
-            ->sum('total');
+            $totalConfirmedAmountByDate = Booking::where('status', 3)
+                ->whereDate('created_at', Carbon::today())
 
-        $totalBookings = Booking::whereDate('created_at', Carbon::today())->count();
+                ->sum('total');
 
-        $statusCounts = Booking::whereDate('created_at', Carbon::today())
-            ->selectRaw('status, COUNT(*) as count')
-            ->groupBy('status')
-            ->pluck('count', 'status')
-            ->toArray();
+            $totalBookings = Booking::whereDate('created_at', Carbon::today())->count();
 
-        $statusPercentages = [];
-        foreach ($statusCounts as $status => $count) {
-            $percentage = ($count / $totalBookings) * 100;
-            $statusPercentages[$status] = round($percentage, 2);
+            $statusCounts = Booking::whereDate('created_at', Carbon::today())
+
+                ->selectRaw('status, COUNT(*) as count')
+                ->groupBy('status')
+                ->pluck('count', 'status')
+                ->toArray();
+
+            $statusPercentages = [];
+            foreach ($statusCounts as $status => $count) {
+                $percentage = ($count / $totalBookings) * 100;
+                $statusPercentages[$status] = round($percentage, 2);
+            }
+            $paymentMethodCounts = Booking::whereDate('created_at', Carbon::today())
+
+                ->selectRaw('payment, COUNT(*) as count')
+                ->groupBy('payment')
+                ->pluck('count', 'payment')
+                ->toArray();
+
+            $paymentMethodPercentages = [];
+            foreach ($paymentMethodCounts as $paymentMethod => $count) {
+                $percentage = ($count / $totalBookings) * 100;
+                $paymentMethodPercentages[$paymentMethod] = round($percentage, 2);
+            }
+            return view('admin.dashboard.day', [
+                'totalBookingsByDate' => $totalBookingsByDate,
+                'totalConfirmedAmountByDate' => $totalConfirmedAmountByDate,
+                'statusPercentages' => $statusPercentages,
+                'paymentMethodPercentages' => $paymentMethodPercentages,
+                'currentDate' => $currentDate
+            ]);
+        } else {
+            // Lấy role_id từ bảng role_has_cinema
+            $roleIds = Role::whereIn('name', $roleNames)->pluck('id')->toArray();
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $roleIds)->pluck('cinema_id')->toArray();
+            // Lấy danh sách room_id từ bảng rooms dựa trên cinema_ids
+            $roomIds = Room::whereIn('cinema_id', $cinemaIds)->pluck('id')->toArray();
+            $showtimeIds = ShowTime::whereIn('room_id', $roomIds)->pluck('id')->toArray(); // Lấy danh sách các showtimeIds
+            $currentDate = Carbon::now()->toDateString();
+
+            $totalBookingsByDate = Booking::whereDate('created_at', $currentDate)->whereIn('showtime_id', $showtimeIds)->count();
+
+            $totalConfirmedAmountByDate = Booking::where('status', 3)
+                ->whereDate('created_at', Carbon::today())
+                ->whereIn('showtime_id', $showtimeIds)
+                ->sum('total');
+
+            $totalBookings = Booking::whereDate('created_at', Carbon::today())->whereIn('showtime_id', $showtimeIds)->count();
+
+            $statusCounts = Booking::whereDate('created_at', Carbon::today())
+                ->whereIn('showtime_id', $showtimeIds)
+                ->selectRaw('status, COUNT(*) as count')
+                ->groupBy('status')
+                ->pluck('count', 'status')
+                ->toArray();
+
+            $statusPercentages = [];
+            foreach ($statusCounts as $status => $count) {
+                $percentage = ($count / $totalBookings) * 100;
+                $statusPercentages[$status] = round($percentage, 2);
+            }
+            $paymentMethodCounts = Booking::whereDate('created_at', Carbon::today())
+                ->whereIn('showtime_id', $showtimeIds)
+                ->selectRaw('payment, COUNT(*) as count')
+                ->groupBy('payment')
+                ->pluck('count', 'payment')
+                ->toArray();
+
+            $paymentMethodPercentages = [];
+            foreach ($paymentMethodCounts as $paymentMethod => $count) {
+                $percentage = ($count / $totalBookings) * 100;
+                $paymentMethodPercentages[$paymentMethod] = round($percentage, 2);
+            }
+            return view('admin.dashboard.day', [
+                'totalBookingsByDate' => $totalBookingsByDate,
+                'totalConfirmedAmountByDate' => $totalConfirmedAmountByDate,
+                'statusPercentages' => $statusPercentages,
+                'paymentMethodPercentages' => $paymentMethodPercentages,
+                'currentDate' => $currentDate
+            ]);
         }
-        $paymentMethodCounts = Booking::whereDate('created_at', Carbon::today())
-            ->selectRaw('payment, COUNT(*) as count')
-            ->groupBy('payment')
-            ->pluck('count', 'payment')
-            ->toArray();
-
-        $paymentMethodPercentages = [];
-        foreach ($paymentMethodCounts as $paymentMethod => $count) {
-            $percentage = ($count / $totalBookings) * 100;
-            $paymentMethodPercentages[$paymentMethod] = round($percentage, 2);
-        }
-        return view('admin.dashboard.day', [
-            'totalBookingsByDate' => $totalBookingsByDate,
-            'totalConfirmedAmountByDate' => $totalConfirmedAmountByDate,
-            'statusPercentages' => $statusPercentages,
-            'paymentMethodPercentages' => $paymentMethodPercentages,
-            'currentDate' => $currentDate
-        ]);
     }
 
     public function getHourlyRevenue()
     {
-        try {
-            $hourlyRevenueData = Booking::selectRaw('HOUR(created_at) as hour, SUM(total) as total_amount')
-                ->groupByRaw('HOUR(created_at)')
-                ->orderByRaw('HOUR(created_at)')
-                ->where('status', 3)
-                ->whereDate('created_at', Carbon::today())
-                ->get();
-            return response()->json($hourlyRevenueData);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Lỗi khi lấy dữ liệu số tiền theo từng giờ.'], 500);
+        $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
+        $roleNames = $user->getRoleNames()->toArray();
+        if (in_array('Admin', $roleNames)) {
+            try {
+                $hourlyRevenueData = Booking::selectRaw('HOUR(created_at) as hour, SUM(total) as total_amount')
+                    ->groupByRaw('HOUR(created_at)')
+                    ->orderByRaw('HOUR(created_at)')
+                    ->where('status', 3)
+                    ->whereDate('created_at', Carbon::today())
+                    ->get();
+                return response()->json($hourlyRevenueData);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Lỗi khi lấy dữ liệu số tiền theo từng giờ.'], 500);
+            }
+        } else {
+            // Lấy role_id từ bảng role_has_cinema
+            $roleIds = Role::whereIn('name', $roleNames)->pluck('id')->toArray();
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $roleIds)->pluck('cinema_id')->toArray();
+            // Lấy danh sách room_id từ bảng rooms dựa trên cinema_ids
+            $roomIds = Room::whereIn('cinema_id', $cinemaIds)->pluck('id')->toArray();
+            $showtimeIds = ShowTime::whereIn('room_id', $roomIds)->pluck('id')->toArray(); // Lấy danh sách các showtimeIds
+
+            try {
+                $hourlyRevenueData = Booking::selectRaw('HOUR(created_at) as hour, SUM(total) as total_amount')
+                    ->groupByRaw('HOUR(created_at)')
+                    ->orderByRaw('HOUR(created_at)')
+                    ->where('status', 3)
+                    ->whereDate('created_at', Carbon::today())
+                    ->whereIn('showtime_id', $showtimeIds)
+                    ->get();
+                return response()->json($hourlyRevenueData);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Lỗi khi lấy dữ liệu số tiền theo từng giờ.'], 500);
+            }
         }
     }
 
     public function getCountStatusDay()
     {
-        try {
-            $status2Count = Booking::where('status', 2)->whereDate('created_at', Carbon::today())->count();
-            $status3Count = Booking::where('status', 3)->whereDate('created_at', Carbon::today())->count();
-            $status4Count = Booking::where('status', 4)->whereDate('created_at', Carbon::today())->count();
+        $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
+        $roleNames = $user->getRoleNames()->toArray();
+        if (in_array('Admin', $roleNames)) {
+            try {
+                $status2Count = Booking::where('status', 2)->whereDate('created_at', Carbon::today())->count();
+                $status3Count = Booking::where('status', 3)->whereDate('created_at', Carbon::today())->count();
+                $status4Count = Booking::where('status', 4)->whereDate('created_at', Carbon::today())->count();
 
-            return response()->json([
-                'status2' => $status2Count,
-                'status3' => $status3Count,
-                'status4' => $status4Count,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Lỗi khi lấy thông tin booking theo trạng thái.'], 500);
+                return response()->json([
+                    'status2' => $status2Count,
+                    'status3' => $status3Count,
+                    'status4' => $status4Count,
+                ]);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Lỗi khi lấy thông tin booking theo trạng thái.'], 500);
+            }
+        } else {
+            // Lấy role_id từ bảng role_has_cinema
+            $roleIds = Role::whereIn('name', $roleNames)->pluck('id')->toArray();
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $roleIds)->pluck('cinema_id')->toArray();
+            // Lấy danh sách room_id từ bảng rooms dựa trên cinema_ids
+            $roomIds = Room::whereIn('cinema_id', $cinemaIds)->pluck('id')->toArray();
+            $showtimeIds = ShowTime::whereIn('room_id', $roomIds)->pluck('id')->toArray(); // Lấy danh sách các showtimeIds
+
+            try {
+                $status2Count = Booking::where('status', 2)->whereDate('created_at', Carbon::today())->whereIn('showtime_id', $showtimeIds)->count();
+                $status3Count = Booking::where('status', 3)->whereDate('created_at', Carbon::today())->whereIn('showtime_id', $showtimeIds)->count();
+                $status4Count = Booking::where('status', 4)->whereDate('created_at', Carbon::today())->whereIn('showtime_id', $showtimeIds)->count();
+
+                return response()->json([
+                    'status2' => $status2Count,
+                    'status3' => $status3Count,
+                    'status4' => $status4Count,
+                ]);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Lỗi khi lấy thông tin booking theo trạng thái.'], 500);
+            }
         }
     }
 
     public function sevenDay(Request $request)
     {
-        $endDate = Carbon::now()->endOfDay();
-        $startDate = Carbon::now()->subDays(6)->startOfDay();
+        $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
+        $roleNames = $user->getRoleNames()->toArray();
+        if (in_array('Admin', $roleNames)) {
+            $endDate = Carbon::now()->endOfDay();
+            $startDate = Carbon::now()->subDays(6)->startOfDay();
 
-        $totalBookingsThisSevenDays = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
+            $totalBookingsThisSevenDays = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
 
-        $totalConfirmedAmountThisSevenDays = Booking::where('status', 3)
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->sum('total');
+            $totalConfirmedAmountThisSevenDays = Booking::where('status', 3)
 
-        $totalBookings = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->sum('total');
 
-        $statusCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
-            ->selectRaw('status, COUNT(*) as count')
-            ->groupBy('status')
-            ->pluck('count', 'status')
-            ->toArray();
+            $totalBookings = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
 
-        $statusPercentages = [];
-        foreach ($statusCounts as $status => $count) {
-            $percentage = ($count / $totalBookings) * 100;
-            $statusPercentages[$status] = round($percentage, 2);
+            $statusCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
+
+                ->selectRaw('status, COUNT(*) as count')
+                ->groupBy('status')
+                ->pluck('count', 'status')
+                ->toArray();
+
+            $statusPercentages = [];
+            foreach ($statusCounts as $status => $count) {
+                $percentage = ($count / $totalBookings) * 100;
+                $statusPercentages[$status] = round($percentage, 2);
+            }
+
+            $paymentMethodCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
+
+                ->selectRaw('payment, COUNT(*) as count')
+                ->groupBy('payment')
+                ->pluck('count', 'payment')
+                ->toArray();
+
+            $paymentMethodPercentages = [];
+            foreach ($paymentMethodCounts as $paymentMethod => $count) {
+                $percentage = ($count / $totalBookings) * 100;
+                $paymentMethodPercentages[$paymentMethod] = round($percentage, 2);
+            }
+
+
+            return view('admin.dashboard.7day', [
+                'totalBookingsThisSevenDay' => $totalBookingsThisSevenDays,
+                'totalConfirmedAmountSevenDay' => $totalConfirmedAmountThisSevenDays,
+                'statusPercentages' => $statusPercentages,
+                'paymentMethodPercentages' => $paymentMethodPercentages
+            ]);
+        } else {
+            // Lấy role_id từ bảng role_has_cinema
+            $roleIds = Role::whereIn('name', $roleNames)->pluck('id')->toArray();
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $roleIds)->pluck('cinema_id')->toArray();
+            // Lấy danh sách room_id từ bảng rooms dựa trên cinema_ids
+            $roomIds = Room::whereIn('cinema_id', $cinemaIds)->pluck('id')->toArray();
+            $showtimeIds = ShowTime::whereIn('room_id', $roomIds)->pluck('id')->toArray(); // Lấy danh sách các showtimeIds
+
+            $endDate = Carbon::now()->endOfDay();
+            $startDate = Carbon::now()->subDays(6)->startOfDay();
+
+            $totalBookingsThisSevenDays = Booking::whereBetween('created_at', [$startDate, $endDate])->whereIn('showtime_id', $showtimeIds)->count();
+
+            $totalConfirmedAmountThisSevenDays = Booking::where('status', 3)
+                ->whereIn('showtime_id', $showtimeIds)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->sum('total');
+
+            $totalBookings = Booking::whereBetween('created_at', [$startDate, $endDate])->whereIn('showtime_id', $showtimeIds)->count();
+
+            $statusCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
+                ->whereIn('showtime_id', $showtimeIds)
+                ->selectRaw('status, COUNT(*) as count')
+                ->groupBy('status')
+                ->pluck('count', 'status')
+                ->toArray();
+
+            $statusPercentages = [];
+            foreach ($statusCounts as $status => $count) {
+                $percentage = ($count / $totalBookings) * 100;
+                $statusPercentages[$status] = round($percentage, 2);
+            }
+
+            $paymentMethodCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
+                ->whereIn('showtime_id', $showtimeIds)
+                ->selectRaw('payment, COUNT(*) as count')
+                ->groupBy('payment')
+                ->pluck('count', 'payment')
+                ->toArray();
+
+            $paymentMethodPercentages = [];
+            foreach ($paymentMethodCounts as $paymentMethod => $count) {
+                $percentage = ($count / $totalBookings) * 100;
+                $paymentMethodPercentages[$paymentMethod] = round($percentage, 2);
+            }
+
+
+            return view('admin.dashboard.7day', [
+                'totalBookingsThisSevenDay' => $totalBookingsThisSevenDays,
+                'totalConfirmedAmountSevenDay' => $totalConfirmedAmountThisSevenDays,
+                'statusPercentages' => $statusPercentages,
+                'paymentMethodPercentages' => $paymentMethodPercentages
+            ]);
         }
-
-        $paymentMethodCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
-            ->selectRaw('payment, COUNT(*) as count')
-            ->groupBy('payment')
-            ->pluck('count', 'payment')
-            ->toArray();
-
-        $paymentMethodPercentages = [];
-        foreach ($paymentMethodCounts as $paymentMethod => $count) {
-            $percentage = ($count / $totalBookings) * 100;
-            $paymentMethodPercentages[$paymentMethod] = round($percentage, 2);
-        }
-
-
-        return view('admin.dashboard.7day', [
-            'totalBookingsThisSevenDay' => $totalBookingsThisSevenDays,
-            'totalConfirmedAmountSevenDay' => $totalConfirmedAmountThisSevenDays,
-            'statusPercentages' => $statusPercentages,
-            'paymentMethodPercentages' => $paymentMethodPercentages
-        ]);
     }
 
     public function calendar(Request $request)
     {
-        $startDate = $request->input('start_date');
-        $endDate = $request->input('end_date');
-        if ($startDate > $endDate) {
-            toastr()->error('Ngày bắt đầu không được lớn hơn ngày kết thúc');
-            return redirect()->route('dashboard.invoice.day');
-        }
-        if ($startDate && $endDate) {
-            try {
-                $startDate = Carbon::parse($startDate)->startOfDay();
-                $endDate = Carbon::parse($endDate)->endOfDay();
+        $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
+        $roleNames = $user->getRoleNames()->toArray();
+        if (in_array('Admin', $roleNames)) {
+            $startDate = $request->input('start_date');
+            $endDate = $request->input('end_date');
+            if ($startDate > $endDate) {
+                toastr()->error('Ngày bắt đầu không được lớn hơn ngày kết thúc');
+                return redirect()->route('dashboard.invoice.day');
+            }
+            if ($startDate && $endDate) {
+                try {
+                    $startDate = Carbon::parse($startDate)->startOfDay();
+                    $endDate = Carbon::parse($endDate)->endOfDay();
 
-                $totalBookingsThisCalendar = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
+                    $totalBookingsThisCalendar = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
 
-                $totalConfirmedAmountThisCalendar = Booking::where('status', 3)
-                    ->whereBetween('created_at', [$startDate, $endDate])
-                    ->sum('total');
+                    $totalConfirmedAmountThisCalendar = Booking::where('status', 3)
 
-                $totalBookings = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
+                        ->whereBetween('created_at', [$startDate, $endDate])
+                        ->sum('total');
 
-                $statusCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
-                    ->selectRaw('status, COUNT(*) as count')
-                    ->groupBy('status')
-                    ->pluck('count', 'status')
-                    ->toArray();
+                    $totalBookings = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
 
-                $statusPercentages = [];
-                foreach ($statusCounts as $status => $count) {
-                    $percentage = ($count / $totalBookings) * 100;
-                    $statusPercentages[$status] = round($percentage, 2);
+                    $statusCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
+
+                        ->selectRaw('status, COUNT(*) as count')
+                        ->groupBy('status')
+                        ->pluck('count', 'status')
+                        ->toArray();
+
+                    $statusPercentages = [];
+                    foreach ($statusCounts as $status => $count) {
+                        $percentage = ($count / $totalBookings) * 100;
+                        $statusPercentages[$status] = round($percentage, 2);
+                    }
+
+                    $paymentMethodCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
+
+                        ->selectRaw('payment, COUNT(*) as count')
+                        ->groupBy('payment')
+                        ->pluck('count', 'payment')
+                        ->toArray();
+
+                    $paymentMethodPercentages = [];
+                    foreach ($paymentMethodCounts as $paymentMethod => $count) {
+                        $percentage = ($count / $totalBookings) * 100;
+                        $paymentMethodPercentages[$paymentMethod] = round($percentage, 2);
+                    }
+
+                    return view('admin.dashboard.calendar', [
+                        'totalBookingsThisCalendar' => $totalBookingsThisCalendar,
+                        'totalConfirmedAmountThisCalendar' => $totalConfirmedAmountThisCalendar,
+                        'statusPercentages' => $statusPercentages,
+                        'paymentMethodPercentages' => $paymentMethodPercentages,
+                        'startDate' => $startDate->toDateString(), // Truyền ngày bắt đầu khoảng thời gian
+                        'endDate' => $endDate->toDateString() // Truyền ngày kết thúc khoảng thời gian
+                    ]);
+                } catch (\Exception $e) {
+                    toastr()->error('Ngày không hợp lệ');
+                    return redirect()->route('dashboard.invoice.day');
                 }
-
-                $paymentMethodCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
-                    ->selectRaw('payment, COUNT(*) as count')
-                    ->groupBy('payment')
-                    ->pluck('count', 'payment')
-                    ->toArray();
-
-                $paymentMethodPercentages = [];
-                foreach ($paymentMethodCounts as $paymentMethod => $count) {
-                    $percentage = ($count / $totalBookings) * 100;
-                    $paymentMethodPercentages[$paymentMethod] = round($percentage, 2);
-                }
-
-                return view('admin.dashboard.calendar', [
-                    'totalBookingsThisCalendar' => $totalBookingsThisCalendar,
-                    'totalConfirmedAmountThisCalendar' => $totalConfirmedAmountThisCalendar,
-                    'statusPercentages' => $statusPercentages,
-                    'paymentMethodPercentages' => $paymentMethodPercentages,
-                    'startDate' => $startDate->toDateString(), // Truyền ngày bắt đầu khoảng thời gian
-                    'endDate' => $endDate->toDateString() // Truyền ngày kết thúc khoảng thời gian
-                ]);
-            } catch (\Exception $e) {
-                toastr()->error('Ngày không hợp lệ');
+            } else {
+                toastr()->error('Vui lòng chọn đầy đủ ngày');
                 return redirect()->route('dashboard.invoice.day');
             }
         } else {
-            toastr()->error('Vui lòng chọn đầy đủ ngày');
-            return redirect()->route('dashboard.invoice.day');
-        }
-    }
+            // Lấy role_id từ bảng role_has_cinema
+            $roleIds = Role::whereIn('name', $roleNames)->pluck('id')->toArray();
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $roleIds)->pluck('cinema_id')->toArray();
+            // Lấy danh sách room_id từ bảng rooms dựa trên cinema_ids
+            $roomIds = Room::whereIn('cinema_id', $cinemaIds)->pluck('id')->toArray();
+            $showtimeIds = ShowTime::whereIn('room_id', $roomIds)->pluck('id')->toArray(); // Lấy danh sách các showtimeIds
 
-    public function getCountStatusCalendar(Request $request)
-    {
-        try {
             $startDate = $request->input('start_date');
             $endDate = $request->input('end_date');
-
+            if ($startDate > $endDate) {
+                toastr()->error('Ngày bắt đầu không được lớn hơn ngày kết thúc');
+                return redirect()->route('dashboard.invoice.day');
+            }
             if ($startDate && $endDate) {
-                $endDate = Carbon::parse($endDate)->endOfDay();
-                $startDate = Carbon::parse($startDate)->startOfDay();
+                try {
+                    $startDate = Carbon::parse($startDate)->startOfDay();
+                    $endDate = Carbon::parse($endDate)->endOfDay();
+
+                    $totalBookingsThisCalendar = Booking::whereBetween('created_at', [$startDate, $endDate])->whereIn('showtime_id', $showtimeIds)->count();
+
+                    $totalConfirmedAmountThisCalendar = Booking::where('status', 3)
+                        ->whereIn('showtime_id', $showtimeIds)
+                        ->whereBetween('created_at', [$startDate, $endDate])
+                        ->sum('total');
+
+                    $totalBookings = Booking::whereBetween('created_at', [$startDate, $endDate])->whereIn('showtime_id', $showtimeIds)->count();
+
+                    $statusCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
+                        ->whereIn('showtime_id', $showtimeIds)
+                        ->selectRaw('status, COUNT(*) as count')
+                        ->groupBy('status')
+                        ->pluck('count', 'status')
+                        ->toArray();
+
+                    $statusPercentages = [];
+                    foreach ($statusCounts as $status => $count) {
+                        $percentage = ($count / $totalBookings) * 100;
+                        $statusPercentages[$status] = round($percentage, 2);
+                    }
+
+                    $paymentMethodCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
+                        ->whereIn('showtime_id', $showtimeIds)
+                        ->selectRaw('payment, COUNT(*) as count')
+                        ->groupBy('payment')
+                        ->pluck('count', 'payment')
+                        ->toArray();
+
+                    $paymentMethodPercentages = [];
+                    foreach ($paymentMethodCounts as $paymentMethod => $count) {
+                        $percentage = ($count / $totalBookings) * 100;
+                        $paymentMethodPercentages[$paymentMethod] = round($percentage, 2);
+                    }
+
+                    return view('admin.dashboard.calendar', [
+                        'totalBookingsThisCalendar' => $totalBookingsThisCalendar,
+                        'totalConfirmedAmountThisCalendar' => $totalConfirmedAmountThisCalendar,
+                        'statusPercentages' => $statusPercentages,
+                        'paymentMethodPercentages' => $paymentMethodPercentages,
+                        'startDate' => $startDate->toDateString(), // Truyền ngày bắt đầu khoảng thời gian
+                        'endDate' => $endDate->toDateString() // Truyền ngày kết thúc khoảng thời gian
+                    ]);
+                } catch (\Exception $e) {
+                    toastr()->error('Ngày không hợp lệ');
+                    return redirect()->route('dashboard.invoice.day');
+                }
+            } else {
+                toastr()->error('Vui lòng chọn đầy đủ ngày');
+                return redirect()->route('dashboard.invoice.day');
+            }
+        }
+    }
+    public function getCountStatusCalendar(Request $request)
+    {
+        $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
+        $roleNames = $user->getRoleNames()->toArray();
+        if (in_array('Admin', $roleNames)) {
+            try {
+                $startDate = $request->input('start_date');
+                $endDate = $request->input('end_date');
+
+                if ($startDate && $endDate) {
+                    $endDate = Carbon::parse($endDate)->endOfDay();
+                    $startDate = Carbon::parse($startDate)->startOfDay();
+
+                    $status2Count = Booking::where('status', 2)
+                        ->whereBetween('created_at', [$startDate, $endDate])
+
+                        ->count();
+
+                    $status3Count = Booking::where('status', 3)
+                        ->whereBetween('created_at', [$startDate, $endDate])
+
+                        ->count();
+
+                    $status4Count = Booking::where('status', 4)
+                        ->whereBetween('created_at', [$startDate, $endDate])
+
+                        ->count();
+
+                    return response()->json([
+                        'status2' => $status2Count,
+                        'status3' => $status3Count,
+                        'status4' => $status4Count,
+                    ]);
+                } else {
+                    return response()->json(['error' => 'Vui lòng chọn đầy đủ ngày.'], 400);
+                }
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Lỗi khi lấy thông tin booking theo trạng thái.'], 500);
+            }
+        } else {
+            // Lấy role_id từ bảng role_has_cinema
+            $roleIds = Role::whereIn('name', $roleNames)->pluck('id')->toArray();
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $roleIds)->pluck('cinema_id')->toArray();
+            // Lấy danh sách room_id từ bảng rooms dựa trên cinema_ids
+            $roomIds = Room::whereIn('cinema_id', $cinemaIds)->pluck('id')->toArray();
+            $showtimeIds = ShowTime::whereIn('room_id', $roomIds)->pluck('id')->toArray(); // Lấy danh sách các showtimeIds
+
+            try {
+                $startDate = $request->input('start_date');
+                $endDate = $request->input('end_date');
+
+                if ($startDate && $endDate) {
+                    $endDate = Carbon::parse($endDate)->endOfDay();
+                    $startDate = Carbon::parse($startDate)->startOfDay();
+
+                    $status2Count = Booking::where('status', 2)
+                        ->whereBetween('created_at', [$startDate, $endDate])
+                        ->whereIn('showtime_id', $showtimeIds)
+                        ->count();
+
+                    $status3Count = Booking::where('status', 3)
+                        ->whereBetween('created_at', [$startDate, $endDate])
+                        ->whereIn('showtime_id', $showtimeIds)
+                        ->count();
+
+                    $status4Count = Booking::where('status', 4)
+                        ->whereBetween('created_at', [$startDate, $endDate])
+                        ->whereIn('showtime_id', $showtimeIds)
+                        ->count();
+
+                    return response()->json([
+                        'status2' => $status2Count,
+                        'status3' => $status3Count,
+                        'status4' => $status4Count,
+                    ]);
+                } else {
+                    return response()->json(['error' => 'Vui lòng chọn đầy đủ ngày.'], 400);
+                }
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Lỗi khi lấy thông tin booking theo trạng thái.'], 500);
+            }
+        }
+    }
+    public function twentyEight(Request $request)
+    {
+        $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
+        $roleNames = $user->getRoleNames()->toArray();
+        if (in_array('Admin', $roleNames)) {
+            $endDate = Carbon::now()->endOfDay();
+            $startDate = Carbon::now()->subDays(27)->startOfDay(); // 28 days ago
+
+            $totalBookingsThisTwentyEight = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
+
+            $totalConfirmedAmountThisTwentyEight = Booking::where('status', 3)
+
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->sum('total');
+
+            $totalBookings = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
+
+            $statusCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
+
+                ->selectRaw('status, COUNT(*) as count')
+                ->groupBy('status')
+                ->pluck('count', 'status')
+                ->toArray();
+
+            $statusPercentages = [];
+            foreach ($statusCounts as $status => $count) {
+                $percentage = ($count / $totalBookings) * 100;
+                $statusPercentages[$status] = round($percentage, 2);
+            }
+
+            $paymentMethodCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
+
+                ->selectRaw('payment, COUNT(*) as count')
+                ->groupBy('payment')
+                ->pluck('count', 'payment')
+                ->toArray();
+
+            $paymentMethodPercentages = [];
+            foreach ($paymentMethodCounts as $paymentMethod => $count) {
+                $percentage = ($count / $totalBookings) * 100;
+                $paymentMethodPercentages[$paymentMethod] = round($percentage, 2);
+            }
+
+            return view('admin.dashboard.28day', [
+                'totalBookingsThisTwentyEight' => $totalBookingsThisTwentyEight,
+                'totalConfirmedAmountThisTwentyEight' => $totalConfirmedAmountThisTwentyEight,
+                'statusPercentages' => $statusPercentages,
+                'paymentMethodPercentages' => $paymentMethodPercentages
+            ]);
+        } else {
+            // Lấy role_id từ bảng role_has_cinema
+            $roleIds = Role::whereIn('name', $roleNames)->pluck('id')->toArray();
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $roleIds)->pluck('cinema_id')->toArray();
+            // Lấy danh sách room_id từ bảng rooms dựa trên cinema_ids
+            $roomIds = Room::whereIn('cinema_id', $cinemaIds)->pluck('id')->toArray();
+            $showtimeIds = ShowTime::whereIn('room_id', $roomIds)->pluck('id')->toArray(); // Lấy danh sách các showtimeIds
+
+            $endDate = Carbon::now()->endOfDay();
+            $startDate = Carbon::now()->subDays(27)->startOfDay(); // 28 days ago
+
+            $totalBookingsThisTwentyEight = Booking::whereBetween('created_at', [$startDate, $endDate])->whereIn('showtime_id', $showtimeIds)->count();
+
+            $totalConfirmedAmountThisTwentyEight = Booking::where('status', 3)
+                ->whereIn('showtime_id', $showtimeIds)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->sum('total');
+
+            $totalBookings = Booking::whereBetween('created_at', [$startDate, $endDate])->whereIn('showtime_id', $showtimeIds)->count();
+
+            $statusCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
+                ->whereIn('showtime_id', $showtimeIds)
+                ->selectRaw('status, COUNT(*) as count')
+                ->groupBy('status')
+                ->pluck('count', 'status')
+                ->toArray();
+
+            $statusPercentages = [];
+            foreach ($statusCounts as $status => $count) {
+                $percentage = ($count / $totalBookings) * 100;
+                $statusPercentages[$status] = round($percentage, 2);
+            }
+
+            $paymentMethodCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
+                ->whereIn('showtime_id', $showtimeIds)
+                ->selectRaw('payment, COUNT(*) as count')
+                ->groupBy('payment')
+                ->pluck('count', 'payment')
+                ->toArray();
+
+            $paymentMethodPercentages = [];
+            foreach ($paymentMethodCounts as $paymentMethod => $count) {
+                $percentage = ($count / $totalBookings) * 100;
+                $paymentMethodPercentages[$paymentMethod] = round($percentage, 2);
+            }
+
+            return view('admin.dashboard.28day', [
+                'totalBookingsThisTwentyEight' => $totalBookingsThisTwentyEight,
+                'totalConfirmedAmountThisTwentyEight' => $totalConfirmedAmountThisTwentyEight,
+                'statusPercentages' => $statusPercentages,
+                'paymentMethodPercentages' => $paymentMethodPercentages
+            ]);
+        }
+    }
+    public function getCountStatusSeven()
+    {
+        $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
+        $roleNames = $user->getRoleNames()->toArray();
+        if (in_array('Admin', $roleNames)) {
+            try {
+                $endDate = Carbon::now()->endOfDay();
+                $startDate = Carbon::now()->subDays(6)->startOfDay(); // Ngày 7 ngày trước
 
                 $status2Count = Booking::where('status', 2)
+
                     ->whereBetween('created_at', [$startDate, $endDate])
                     ->count();
 
                 $status3Count = Booking::where('status', 3)
                     ->whereBetween('created_at', [$startDate, $endDate])
+
                     ->count();
 
                 $status4Count = Booking::where('status', 4)
+
                     ->whereBetween('created_at', [$startDate, $endDate])
                     ->count();
 
@@ -281,357 +714,691 @@ class DashboardController extends Controller
                     'status3' => $status3Count,
                     'status4' => $status4Count,
                 ]);
-            } else {
-                return response()->json(['error' => 'Vui lòng chọn đầy đủ ngày.'], 400);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Lỗi khi lấy thông tin booking theo trạng thái.'], 500);
             }
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Lỗi khi lấy thông tin booking theo trạng thái.'], 500);
+        } else {
+            // Lấy role_id từ bảng role_has_cinema
+            $roleIds = Role::whereIn('name', $roleNames)->pluck('id')->toArray();
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $roleIds)->pluck('cinema_id')->toArray();
+            // Lấy danh sách room_id từ bảng rooms dựa trên cinema_ids
+            $roomIds = Room::whereIn('cinema_id', $cinemaIds)->pluck('id')->toArray();
+            $showtimeIds = ShowTime::whereIn('room_id', $roomIds)->pluck('id')->toArray(); // Lấy danh sách các showtimeIds
+
+            try {
+                $endDate = Carbon::now()->endOfDay();
+                $startDate = Carbon::now()->subDays(6)->startOfDay(); // Ngày 7 ngày trước
+
+                $status2Count = Booking::where('status', 2)
+                    ->whereIn('showtime_id', $showtimeIds)
+                    ->whereBetween('created_at', [$startDate, $endDate])
+                    ->count();
+
+                $status3Count = Booking::where('status', 3)
+                    ->whereBetween('created_at', [$startDate, $endDate])
+                    ->whereIn('showtime_id', $showtimeIds)
+                    ->count();
+
+                $status4Count = Booking::where('status', 4)
+                    ->whereIn('showtime_id', $showtimeIds)
+                    ->whereBetween('created_at', [$startDate, $endDate])
+                    ->count();
+
+                return response()->json([
+                    'status2' => $status2Count,
+                    'status3' => $status3Count,
+                    'status4' => $status4Count,
+                ]);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Lỗi khi lấy thông tin booking theo trạng thái.'], 500);
+            }
         }
     }
-
-
-    public function twentyEight(Request $request)
-    {
-        $endDate = Carbon::now()->endOfDay();
-        $startDate = Carbon::now()->subDays(27)->startOfDay(); // 28 days ago
-
-        $totalBookingsThisTwentyEight = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
-
-        $totalConfirmedAmountThisTwentyEight = Booking::where('status', 3)
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->sum('total');
-
-        $totalBookings = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
-
-        $statusCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
-            ->selectRaw('status, COUNT(*) as count')
-            ->groupBy('status')
-            ->pluck('count', 'status')
-            ->toArray();
-
-        $statusPercentages = [];
-        foreach ($statusCounts as $status => $count) {
-            $percentage = ($count / $totalBookings) * 100;
-            $statusPercentages[$status] = round($percentage, 2);
-        }
-
-        $paymentMethodCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
-            ->selectRaw('payment, COUNT(*) as count')
-            ->groupBy('payment')
-            ->pluck('count', 'payment')
-            ->toArray();
-
-        $paymentMethodPercentages = [];
-        foreach ($paymentMethodCounts as $paymentMethod => $count) {
-            $percentage = ($count / $totalBookings) * 100;
-            $paymentMethodPercentages[$paymentMethod] = round($percentage, 2);
-        }
-
-        return view('admin.dashboard.28day', [
-            'totalBookingsThisTwentyEight' => $totalBookingsThisTwentyEight,
-            'totalConfirmedAmountThisTwentyEight' => $totalConfirmedAmountThisTwentyEight,
-            'statusPercentages' => $statusPercentages,
-            'paymentMethodPercentages' => $paymentMethodPercentages
-        ]);
-    }
-
-    public function getCountStatusSeven()
-    {
-        try {
-            $endDate = Carbon::now()->endOfDay();
-            $startDate = Carbon::now()->subDays(6)->startOfDay(); // Ngày 7 ngày trước
-
-            $status2Count = Booking::where('status', 2)
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->count();
-
-            $status3Count = Booking::where('status', 3)
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->count();
-
-            $status4Count = Booking::where('status', 4)
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->count();
-
-            return response()->json([
-                'status2' => $status2Count,
-                'status3' => $status3Count,
-                'status4' => $status4Count,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Lỗi khi lấy thông tin booking theo trạng thái.'], 500);
-        }
-    }
-
     public function getCountStatusTwentyEight()
     {
-        try {
-            $endDate = Carbon::now()->endOfDay();
-            $startDate = Carbon::now()->subDays(27)->startOfDay(); // Ngày 28 ngày trước
+        $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
+        $roleNames = $user->getRoleNames()->toArray();
+        if (in_array('Admin', $roleNames)) {
+            try {
+                $endDate = Carbon::now()->endOfDay();
+                $startDate = Carbon::now()->subDays(27)->startOfDay(); // Ngày 28 ngày trước
 
-            $status2Count = Booking::where('status', 2)
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->count();
+                $status2Count = Booking::where('status', 2)
 
-            $status3Count = Booking::where('status', 3)
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->count();
+                    ->whereBetween('created_at', [$startDate, $endDate])
+                    ->count();
 
-            $status4Count = Booking::where('status', 4)
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->count();
+                $status3Count = Booking::where('status', 3)
 
-            return response()->json([
-                'status2' => $status2Count,
-                'status3' => $status3Count,
-                'status4' => $status4Count,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Lỗi khi lấy thông tin booking theo trạng thái.'], 500);
+                    ->whereBetween('created_at', [$startDate, $endDate])
+                    ->count();
+
+                $status4Count = Booking::where('status', 4)
+
+                    ->whereBetween('created_at', [$startDate, $endDate])
+                    ->count();
+
+                return response()->json([
+                    'status2' => $status2Count,
+                    'status3' => $status3Count,
+                    'status4' => $status4Count,
+                ]);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Lỗi khi lấy thông tin booking theo trạng thái.'], 500);
+            }
+        } else {
+            // Lấy role_id từ bảng role_has_cinema
+            $roleIds = Role::whereIn('name', $roleNames)->pluck('id')->toArray();
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $roleIds)->pluck('cinema_id')->toArray();
+            // Lấy danh sách room_id từ bảng rooms dựa trên cinema_ids
+            $roomIds = Room::whereIn('cinema_id', $cinemaIds)->pluck('id')->toArray();
+            $showtimeIds = ShowTime::whereIn('room_id', $roomIds)->pluck('id')->toArray(); // Lấy danh sách các showtimeIds
+
+            try {
+                $endDate = Carbon::now()->endOfDay();
+                $startDate = Carbon::now()->subDays(27)->startOfDay(); // Ngày 28 ngày trước
+
+                $status2Count = Booking::where('status', 2)
+                    ->whereIn('showtime_id', $showtimeIds)
+                    ->whereBetween('created_at', [$startDate, $endDate])
+                    ->count();
+
+                $status3Count = Booking::where('status', 3)
+                    ->whereIn('showtime_id', $showtimeIds)
+                    ->whereBetween('created_at', [$startDate, $endDate])
+                    ->count();
+
+                $status4Count = Booking::where('status', 4)
+                    ->whereIn('showtime_id', $showtimeIds)
+                    ->whereBetween('created_at', [$startDate, $endDate])
+                    ->count();
+
+                return response()->json([
+                    'status2' => $status2Count,
+                    'status3' => $status3Count,
+                    'status4' => $status4Count,
+                ]);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Lỗi khi lấy thông tin booking theo trạng thái.'], 500);
+            }
         }
     }
 
     public function fetchLastSevenDaysData(Request $request)
     {
-        // Lấy ngày hiện tại
-        $endDate = Carbon::now()->endOfDay();
+        $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
+        $roleNames = $user->getRoleNames()->toArray();
+        if (in_array('Admin', $roleNames)) {
 
-        // Lấy ngày 7 ngày trước
-        $startDate = Carbon::now()->subDays(6)->startOfDay();
+            // Lấy ngày hiện tại
+            $endDate = Carbon::now()->endOfDay();
 
-        // Truy vấn cơ sở dữ liệu để lấy doanh thu từ bảng bookings trong khoảng thời gian này
-        $revenueData = Booking::where('status', 3)
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total) as total_amount'))
-            ->groupBy(DB::raw('DATE(created_at)'))
-            ->orderBy(DB::raw('DATE(created_at)'))
-            ->pluck('total_amount', 'date');
+            // Lấy ngày 7 ngày trước
+            $startDate = Carbon::now()->subDays(6)->startOfDay();
 
-        return response()->json(['revenueData' => $revenueData]);
+            // Truy vấn cơ sở dữ liệu để lấy doanh thu từ bảng bookings trong khoảng thời gian này
+            $revenueData = Booking::where('status', 3)
+
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total) as total_amount'))
+                ->groupBy(DB::raw('DATE(created_at)'))
+                ->orderBy(DB::raw('DATE(created_at)'))
+                ->pluck('total_amount', 'date');
+
+            return response()->json(['revenueData' => $revenueData]);
+        } else {
+            // Lấy role_id từ bảng role_has_cinema
+            $roleIds = Role::whereIn('name', $roleNames)->pluck('id')->toArray();
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $roleIds)->pluck('cinema_id')->toArray();
+            // Lấy danh sách room_id từ bảng rooms dựa trên cinema_ids
+            $roomIds = Room::whereIn('cinema_id', $cinemaIds)->pluck('id')->toArray();
+            $showtimeIds = ShowTime::whereIn('room_id', $roomIds)->pluck('id')->toArray(); // Lấy danh sách các showtimeIds
+
+            // Lấy ngày hiện tại
+            $endDate = Carbon::now()->endOfDay();
+
+            // Lấy ngày 7 ngày trước
+            $startDate = Carbon::now()->subDays(6)->startOfDay();
+
+            // Truy vấn cơ sở dữ liệu để lấy doanh thu từ bảng bookings trong khoảng thời gian này
+            $revenueData = Booking::where('status', 3)
+                ->whereIn('showtime_id', $showtimeIds)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total) as total_amount'))
+                ->groupBy(DB::raw('DATE(created_at)'))
+                ->orderBy(DB::raw('DATE(created_at)'))
+                ->pluck('total_amount', 'date');
+
+            return response()->json(['revenueData' => $revenueData]);
+        }
     }
 
     public function fetchLastTwentyEightDaysData(Request $request)
     {
-        // Lấy ngày hiện tại
-        $endDate = Carbon::now()->endOfDay();
+        $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
+        $roleNames = $user->getRoleNames()->toArray();
+        if (in_array('Admin', $roleNames)) {
+            // Lấy ngày hiện tại
+            $endDate = Carbon::now()->endOfDay();
 
-        // Lấy ngày 28 ngày trước
-        $startDate = Carbon::now()->subDays(27)->startOfDay();
+            // Lấy ngày 28 ngày trước
+            $startDate = Carbon::now()->subDays(27)->startOfDay();
 
-        // Truy vấn cơ sở dữ liệu để lấy doanh thu từ bảng bookings trong khoảng thời gian này
-        $revenueData = Booking::where('status', 3)
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total) as total_amount'))
-            ->groupBy(DB::raw('DATE(created_at)'))
-            ->orderBy(DB::raw('DATE(created_at)'))
-            ->pluck('total_amount', 'date');
+            // Truy vấn cơ sở dữ liệu để lấy doanh thu từ bảng bookings trong khoảng thời gian này
+            $revenueData = Booking::where('status', 3)
 
-        return response()->json(['revenueData' => $revenueData]);
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total) as total_amount'))
+                ->groupBy(DB::raw('DATE(created_at)'))
+                ->orderBy(DB::raw('DATE(created_at)'))
+                ->pluck('total_amount', 'date');
+
+            return response()->json(['revenueData' => $revenueData]);
+        } else {
+            // Lấy role_id từ bảng role_has_cinema
+            $roleIds = Role::whereIn('name', $roleNames)->pluck('id')->toArray();
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $roleIds)->pluck('cinema_id')->toArray();
+            // Lấy danh sách room_id từ bảng rooms dựa trên cinema_ids
+            $roomIds = Room::whereIn('cinema_id', $cinemaIds)->pluck('id')->toArray();
+            $showtimeIds = ShowTime::whereIn('room_id', $roomIds)->pluck('id')->toArray(); // Lấy danh sách các showtimeIds
+
+            // Lấy ngày hiện tại
+            $endDate = Carbon::now()->endOfDay();
+
+            // Lấy ngày 28 ngày trước
+            $startDate = Carbon::now()->subDays(27)->startOfDay();
+
+            // Truy vấn cơ sở dữ liệu để lấy doanh thu từ bảng bookings trong khoảng thời gian này
+            $revenueData = Booking::where('status', 3)
+                ->whereIn('showtime_id', $showtimeIds)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total) as total_amount'))
+                ->groupBy(DB::raw('DATE(created_at)'))
+                ->orderBy(DB::raw('DATE(created_at)'))
+                ->pluck('total_amount', 'date');
+
+            return response()->json(['revenueData' => $revenueData]);
+        }
     }
 
     public function fetchDailyData(Request $request)
     {
-        $startDate = $request->input('start_date');
-        $endDate = $request->input('end_date');
+        $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
+        $roleNames = $user->getRoleNames()->toArray();
+        if (in_array('Admin', $roleNames)) {
+            $startDate = $request->input('start_date');
+            $endDate = $request->input('end_date');
 
-        // Truy vấn cơ sở dữ liệu để lấy thống kê theo ngày trong khoảng ngày được chọn
-        $dailyData = Booking::where('status', 3)
-            ->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
-            ->selectRaw('DATE(created_at) as date, SUM(total) as total_amount')
-            ->groupBy(DB::raw('DATE(created_at)'))
-            ->orderBy(DB::raw('DATE(created_at)'))
-            ->pluck('total_amount', 'date');
+            // Truy vấn cơ sở dữ liệu để lấy thống kê theo ngày trong khoảng ngày được chọn
+            $dailyData = Booking::where('status', 3)
 
-        return response()->json(['dailyData' => $dailyData]);
+                ->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
+                ->selectRaw('DATE(created_at) as date, SUM(total) as total_amount')
+                ->groupBy(DB::raw('DATE(created_at)'))
+                ->orderBy(DB::raw('DATE(created_at)'))
+                ->pluck('total_amount', 'date');
+
+            return response()->json(['dailyData' => $dailyData]);
+        } else {
+            // Lấy role_id từ bảng role_has_cinema
+            $roleIds = Role::whereIn('name', $roleNames)->pluck('id')->toArray();
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $roleIds)->pluck('cinema_id')->toArray();
+            // Lấy danh sách room_id từ bảng rooms dựa trên cinema_ids
+            $roomIds = Room::whereIn('cinema_id', $cinemaIds)->pluck('id')->toArray();
+            $showtimeIds = ShowTime::whereIn('room_id', $roomIds)->pluck('id')->toArray(); // Lấy danh sách các showtimeIds
+
+            $startDate = $request->input('start_date');
+            $endDate = $request->input('end_date');
+
+            // Truy vấn cơ sở dữ liệu để lấy thống kê theo ngày trong khoảng ngày được chọn
+            $dailyData = Booking::where('status', 3)
+                ->whereIn('showtime_id', $showtimeIds)
+                ->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
+                ->selectRaw('DATE(created_at) as date, SUM(total) as total_amount')
+                ->groupBy(DB::raw('DATE(created_at)'))
+                ->orderBy(DB::raw('DATE(created_at)'))
+                ->pluck('total_amount', 'date');
+
+            return response()->json(['dailyData' => $dailyData]);
+        }
     }
-
-
     public function week(Request $request)
     {
-        $currentWeek = Carbon::now()->startOfWeek();
-        $endOfWeek = Carbon::now()->endOfWeek();
+        $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
+        $roleNames = $user->getRoleNames()->toArray();
+        if (in_array('Admin', $roleNames)) {
+            $currentWeek = Carbon::now()->startOfWeek();
+            $endOfWeek = Carbon::now()->endOfWeek();
 
-        $totalBookingsThisWeek = Booking::whereBetween('created_at', [$currentWeek, $endOfWeek])
-            ->count();
+            $totalBookingsThisWeek = Booking::whereBetween('created_at', [$currentWeek, $endOfWeek])
+                ->count();
 
-        $totalConfirmedAmountThisWeek = Booking::where('status', 3)
-            ->whereBetween('created_at', [$currentWeek, $endOfWeek])
-            ->sum('total');
+            $totalConfirmedAmountThisWeek = Booking::where('status', 3)
 
-        $totalBookings = Booking::whereBetween('created_at', [$currentWeek, $endOfWeek])->count();
+                ->whereBetween('created_at', [$currentWeek, $endOfWeek])
+                ->sum('total');
 
-        $statusCounts = Booking::whereBetween('created_at', [$currentWeek, $endOfWeek])
-            ->selectRaw('status, COUNT(*) as count')
-            ->groupBy('status')
-            ->pluck('count', 'status')
-            ->toArray();
+            $totalBookings = Booking::whereBetween('created_at', [$currentWeek, $endOfWeek])->count();
 
-        $statusPercentages = [];
-        foreach ($statusCounts as $status => $count) {
-            $percentage = ($count / $totalBookings) * 100;
-            $statusPercentages[$status] = round($percentage, 2);
+            $statusCounts = Booking::whereBetween('created_at', [$currentWeek, $endOfWeek])
+
+                ->selectRaw('status, COUNT(*) as count')
+                ->groupBy('status')
+                ->pluck('count', 'status')
+                ->toArray();
+
+            $statusPercentages = [];
+            foreach ($statusCounts as $status => $count) {
+                $percentage = ($count / $totalBookings) * 100;
+                $statusPercentages[$status] = round($percentage, 2);
+            }
+            $paymentMethodCounts = Booking::whereBetween('created_at', [$currentWeek, $endOfWeek])
+
+                ->selectRaw('payment, COUNT(*) as count')
+                ->groupBy('payment')
+                ->pluck('count', 'payment')
+                ->toArray();
+
+            $paymentMethodPercentages = [];
+            foreach ($paymentMethodCounts as $paymentMethod => $count) {
+                $percentage = ($count / $totalBookings) * 100;
+                $paymentMethodPercentages[$paymentMethod] = round($percentage, 2);
+            }
+            return view('admin.dashboard.week', [
+                'totalBookingsThisWeek' => $totalBookingsThisWeek,
+                'totalConfirmedAmountThisWeek' => $totalConfirmedAmountThisWeek,
+                'statusPercentages' => $statusPercentages,
+                'paymentMethodPercentages' => $paymentMethodPercentages
+            ]);
+        } else {
+            // Lấy role_id từ bảng role_has_cinema
+            $roleIds = Role::whereIn('name', $roleNames)->pluck('id')->toArray();
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $roleIds)->pluck('cinema_id')->toArray();
+            // Lấy danh sách room_id từ bảng rooms dựa trên cinema_ids
+            $roomIds = Room::whereIn('cinema_id', $cinemaIds)->pluck('id')->toArray();
+            $showtimeIds = ShowTime::whereIn('room_id', $roomIds)->pluck('id')->toArray(); // Lấy danh sách các showtimeIds
+
+            $currentWeek = Carbon::now()->startOfWeek();
+            $endOfWeek = Carbon::now()->endOfWeek();
+
+            $totalBookingsThisWeek = Booking::whereBetween('created_at', [$currentWeek, $endOfWeek])->whereIn('showtime_id', $showtimeIds)
+                ->count();
+
+            $totalConfirmedAmountThisWeek = Booking::where('status', 3)
+                ->whereIn('showtime_id', $showtimeIds)
+                ->whereBetween('created_at', [$currentWeek, $endOfWeek])
+                ->sum('total');
+
+            $totalBookings = Booking::whereBetween('created_at', [$currentWeek, $endOfWeek])->whereIn('showtime_id', $showtimeIds)->count();
+
+            $statusCounts = Booking::whereBetween('created_at', [$currentWeek, $endOfWeek])
+                ->whereIn('showtime_id', $showtimeIds)
+                ->selectRaw('status, COUNT(*) as count')
+                ->groupBy('status')
+                ->pluck('count', 'status')
+                ->toArray();
+
+            $statusPercentages = [];
+            foreach ($statusCounts as $status => $count) {
+                $percentage = ($count / $totalBookings) * 100;
+                $statusPercentages[$status] = round($percentage, 2);
+            }
+            $paymentMethodCounts = Booking::whereBetween('created_at', [$currentWeek, $endOfWeek])
+                ->whereIn('showtime_id', $showtimeIds)
+                ->selectRaw('payment, COUNT(*) as count')
+                ->groupBy('payment')
+                ->pluck('count', 'payment')
+                ->toArray();
+
+            $paymentMethodPercentages = [];
+            foreach ($paymentMethodCounts as $paymentMethod => $count) {
+                $percentage = ($count / $totalBookings) * 100;
+                $paymentMethodPercentages[$paymentMethod] = round($percentage, 2);
+            }
+            return view('admin.dashboard.week', [
+                'totalBookingsThisWeek' => $totalBookingsThisWeek,
+                'totalConfirmedAmountThisWeek' => $totalConfirmedAmountThisWeek,
+                'statusPercentages' => $statusPercentages,
+                'paymentMethodPercentages' => $paymentMethodPercentages
+            ]);
         }
-        $paymentMethodCounts = Booking::whereBetween('created_at', [$currentWeek, $endOfWeek])
-            ->selectRaw('payment, COUNT(*) as count')
-            ->groupBy('payment')
-            ->pluck('count', 'payment')
-            ->toArray();
-
-        $paymentMethodPercentages = [];
-        foreach ($paymentMethodCounts as $paymentMethod => $count) {
-            $percentage = ($count / $totalBookings) * 100;
-            $paymentMethodPercentages[$paymentMethod] = round($percentage, 2);
-        }
-        return view('admin.dashboard.week', [
-            'totalBookingsThisWeek' => $totalBookingsThisWeek,
-            'totalConfirmedAmountThisWeek' => $totalConfirmedAmountThisWeek,
-            'statusPercentages' => $statusPercentages,
-            'paymentMethodPercentages' => $paymentMethodPercentages
-        ]);
     }
 
     public function getWeeklyRevenue()
     {
-        try {
-            $currentWeekStart = Carbon::now()->startOfWeek();
-            $currentWeekEnd = Carbon::now()->endOfWeek();
+        $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
+        $roleNames = $user->getRoleNames()->toArray();
+        if (in_array('Admin', $roleNames)) {
+            try {
+                $currentWeekStart = Carbon::now()->startOfWeek();
+                $currentWeekEnd = Carbon::now()->endOfWeek();
 
-            // Lấy dữ liệu theo từng ngày trong tuần và tổng doanh thu tương ứng
-            $weeklyRevenueData = Booking::selectRaw('DATE(created_at) as week, SUM(total) as total_amount')
-                ->groupByRaw('DATE(created_at)')
-                ->orderByRaw('DATE(created_at)')
-                ->where('status', 3)
-                ->whereBetween('created_at', [$currentWeekStart, $currentWeekEnd])
-                ->get();
+                // Lấy dữ liệu theo từng ngày trong tuần và tổng doanh thu tương ứng
+                $weeklyRevenueData = Booking::selectRaw('DATE(created_at) as week, SUM(total) as total_amount')
 
-            // Mảng để lưu trữ dữ liệu cho từng ngày trong tuần
-            $data = [];
+                    ->groupByRaw('DATE(created_at)')
+                    ->orderByRaw('DATE(created_at)')
+                    ->where('status', 3)
+                    ->whereBetween('created_at', [$currentWeekStart, $currentWeekEnd])
+                    ->get();
 
-            // Mảng chứa các nhãn thứ 'T2', 'T3',..., 'T8'
-            $daysOfWeek = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8'];
+                // Mảng để lưu trữ dữ liệu cho từng ngày trong tuần
+                $data = [];
 
-            // Lặp qua dữ liệu và lưu vào mảng
-            foreach ($weeklyRevenueData as $revenue) {
-                // Tìm vị trí của ngày trong tuần
-                $dayOfWeek = date('N', strtotime($revenue->week));
+                // Mảng chứa các nhãn thứ 'T2', 'T3',..., 'T8'
+                $daysOfWeek = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8'];
 
-                // Lấy nhãn thứ tương ứng
-                $label = $daysOfWeek[$dayOfWeek - 1]; // -1 vì PHP bắt đầu từ 1, thứ hai là ngày thứ 2
+                // Lặp qua dữ liệu và lưu vào mảng
+                foreach ($weeklyRevenueData as $revenue) {
+                    // Tìm vị trí của ngày trong tuần
+                    $dayOfWeek = date('N', strtotime($revenue->week));
 
-                $data[] = [
-                    'label' => $label,
-                    'value' => $revenue->total_amount
-                ];
+                    // Lấy nhãn thứ tương ứng
+                    $label = $daysOfWeek[$dayOfWeek - 1]; // -1 vì PHP bắt đầu từ 1, thứ hai là ngày thứ 2
+
+                    $data[] = [
+                        'label' => $label,
+                        'value' => $revenue->total_amount
+                    ];
+                }
+
+                return response()->json($data);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Lỗi khi lấy dữ liệu số tiền theo từng ngày trong tuần.'], 500);
             }
+        } else {
+            // Lấy role_id từ bảng role_has_cinema
+            $roleIds = Role::whereIn('name', $roleNames)->pluck('id')->toArray();
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $roleIds)->pluck('cinema_id')->toArray();
+            // Lấy danh sách room_id từ bảng rooms dựa trên cinema_ids
+            $roomIds = Room::whereIn('cinema_id', $cinemaIds)->pluck('id')->toArray();
+            $showtimeIds = ShowTime::whereIn('room_id', $roomIds)->pluck('id')->toArray(); // Lấy danh sách các showtimeIds
 
-            return response()->json($data);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Lỗi khi lấy dữ liệu số tiền theo từng ngày trong tuần.'], 500);
+            try {
+                $currentWeekStart = Carbon::now()->startOfWeek();
+                $currentWeekEnd = Carbon::now()->endOfWeek();
+
+                // Lấy dữ liệu theo từng ngày trong tuần và tổng doanh thu tương ứng
+                $weeklyRevenueData = Booking::selectRaw('DATE(created_at) as week, SUM(total) as total_amount')
+                    ->whereIn('showtime_id', $showtimeIds)
+                    ->groupByRaw('DATE(created_at)')
+                    ->orderByRaw('DATE(created_at)')
+                    ->where('status', 3)
+                    ->whereBetween('created_at', [$currentWeekStart, $currentWeekEnd])
+                    ->get();
+
+                // Mảng để lưu trữ dữ liệu cho từng ngày trong tuần
+                $data = [];
+
+                // Mảng chứa các nhãn thứ 'T2', 'T3',..., 'T8'
+                $daysOfWeek = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8'];
+
+                // Lặp qua dữ liệu và lưu vào mảng
+                foreach ($weeklyRevenueData as $revenue) {
+                    // Tìm vị trí của ngày trong tuần
+                    $dayOfWeek = date('N', strtotime($revenue->week));
+
+                    // Lấy nhãn thứ tương ứng
+                    $label = $daysOfWeek[$dayOfWeek - 1]; // -1 vì PHP bắt đầu từ 1, thứ hai là ngày thứ 2
+
+                    $data[] = [
+                        'label' => $label,
+                        'value' => $revenue->total_amount
+                    ];
+                }
+
+                return response()->json($data);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Lỗi khi lấy dữ liệu số tiền theo từng ngày trong tuần.'], 500);
+            }
         }
     }
 
     public function getCountStatusWeek()
     {
-        try {
-            $currentWeekStart = Carbon::now()->startOfWeek();
-            $currentWeekEnd = Carbon::now()->endOfWeek();
+        $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
+        $roleNames = $user->getRoleNames()->toArray();
+        if (in_array('Admin', $roleNames)) {
+            try {
+                $currentWeekStart = Carbon::now()->startOfWeek();
+                $currentWeekEnd = Carbon::now()->endOfWeek();
 
-            $status2Count = Booking::where('status', 2)->whereBetween('created_at', [$currentWeekStart, $currentWeekEnd])->count();
-            $status3Count = Booking::where('status', 3)->whereBetween('created_at', [$currentWeekStart, $currentWeekEnd])->count();
-            $status4Count = Booking::where('status', 4)->whereBetween('created_at', [$currentWeekStart, $currentWeekEnd])->count();
+                $status2Count = Booking::where('status', 2)->whereBetween('created_at', [$currentWeekStart, $currentWeekEnd])->count();
+                $status3Count = Booking::where('status', 3)->whereBetween('created_at', [$currentWeekStart, $currentWeekEnd])->count();
+                $status4Count = Booking::where('status', 4)->whereBetween('created_at', [$currentWeekStart, $currentWeekEnd])->count();
 
-            return response()->json([
-                'status2' => $status2Count,
-                'status3' => $status3Count,
-                'status4' => $status4Count,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Lỗi khi lấy thông tin booking theo trạng thái.'], 500);
+                return response()->json([
+                    'status2' => $status2Count,
+                    'status3' => $status3Count,
+                    'status4' => $status4Count,
+                ]);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Lỗi khi lấy thông tin booking theo trạng thái.'], 500);
+            }
+        } else {
+            // Lấy role_id từ bảng role_has_cinema
+            $roleIds = Role::whereIn('name', $roleNames)->pluck('id')->toArray();
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $roleIds)->pluck('cinema_id')->toArray();
+            // Lấy danh sách room_id từ bảng rooms dựa trên cinema_ids
+            $roomIds = Room::whereIn('cinema_id', $cinemaIds)->pluck('id')->toArray();
+            $showtimeIds = ShowTime::whereIn('room_id', $roomIds)->pluck('id')->toArray(); // Lấy danh sách các showtimeIds
+
+            try {
+                $currentWeekStart = Carbon::now()->startOfWeek();
+                $currentWeekEnd = Carbon::now()->endOfWeek();
+
+                $status2Count = Booking::where('status', 2)->whereBetween('created_at', [$currentWeekStart, $currentWeekEnd])->whereIn('showtime_id', $showtimeIds)->count();
+                $status3Count = Booking::where('status', 3)->whereBetween('created_at', [$currentWeekStart, $currentWeekEnd])->whereIn('showtime_id', $showtimeIds)->count();
+                $status4Count = Booking::where('status', 4)->whereBetween('created_at', [$currentWeekStart, $currentWeekEnd])->whereIn('showtime_id', $showtimeIds)->count();
+
+                return response()->json([
+                    'status2' => $status2Count,
+                    'status3' => $status3Count,
+                    'status4' => $status4Count,
+                ]);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Lỗi khi lấy thông tin booking theo trạng thái.'], 500);
+            }
         }
     }
-
     public function month(Request $request)
     {
-        $totalBookingsThisMonth = Booking::whereYear('created_at', '=', Carbon::now()->year)
-            ->count();
+        $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
+        $roleNames = $user->getRoleNames()->toArray();
+        if (in_array('Admin', $roleNames)) {
+            $totalBookingsThisMonth = Booking::whereYear('created_at', '=', Carbon::now()->year)
+                ->count();
 
-        $totalConfirmedAmountThisMonth = Booking::where('status', 3)
-            ->whereYear('created_at', '=', Carbon::now()->year)
-            ->sum('total');
+            $totalConfirmedAmountThisMonth = Booking::where('status', 3)
 
-        $totalBookings = Booking::whereYear('created_at', '=', Carbon::now()->year)->count();
+                ->whereYear('created_at', '=', Carbon::now()->year)
+                ->sum('total');
 
-        $statusCounts = Booking::whereYear('created_at', '=', Carbon::now()->year)
-            ->selectRaw('status, COUNT(*) as count')
-            ->groupBy('status')
-            ->pluck('count', 'status')
-            ->toArray();
+            $totalBookings = Booking::whereYear('created_at', '=', Carbon::now()->year)->count();
 
-        $statusPercentages = [];
-        foreach ($statusCounts as $status => $count) {
-            $percentage = ($count / $totalBookings) * 100;
-            $statusPercentages[$status] = round($percentage, 2);
+            $statusCounts = Booking::whereYear('created_at', '=', Carbon::now()->year)
+
+                ->selectRaw('status, COUNT(*) as count')
+                ->groupBy('status')
+                ->pluck('count', 'status')
+                ->toArray();
+
+            $statusPercentages = [];
+            foreach ($statusCounts as $status => $count) {
+                $percentage = ($count / $totalBookings) * 100;
+                $statusPercentages[$status] = round($percentage, 2);
+            }
+            $paymentMethodCounts = Booking::whereYear('created_at', '=', Carbon::now()->year)
+
+                ->selectRaw('payment, COUNT(*) as count')
+                ->groupBy('payment')
+                ->pluck('count', 'payment')
+                ->toArray();
+
+            $paymentMethodPercentages = [];
+            foreach ($paymentMethodCounts as $paymentMethod => $count) {
+                $percentage = ($count / $totalBookings) * 100;
+                $paymentMethodPercentages[$paymentMethod] = round($percentage, 2);
+            }
+            return view('admin.dashboard.month', [
+                'totalBookingsThisMonth' => $totalBookingsThisMonth,
+                'totalConfirmedAmountThisMonth' => $totalConfirmedAmountThisMonth,
+                'statusPercentages' => $statusPercentages,
+                'paymentMethodPercentages' => $paymentMethodPercentages
+            ]);
+        } else {
+            // Lấy role_id từ bảng role_has_cinema
+            $roleIds = Role::whereIn('name', $roleNames)->pluck('id')->toArray();
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $roleIds)->pluck('cinema_id')->toArray();
+            // Lấy danh sách room_id từ bảng rooms dựa trên cinema_ids
+            $roomIds = Room::whereIn('cinema_id', $cinemaIds)->pluck('id')->toArray();
+            $showtimeIds = ShowTime::whereIn('room_id', $roomIds)->pluck('id')->toArray(); // Lấy danh sách các showtimeIds
+
+            $totalBookingsThisMonth = Booking::whereYear('created_at', '=', Carbon::now()->year)->whereIn('showtime_id', $showtimeIds)
+                ->count();
+
+            $totalConfirmedAmountThisMonth = Booking::where('status', 3)
+                ->whereIn('showtime_id', $showtimeIds)
+                ->whereYear('created_at', '=', Carbon::now()->year)
+                ->sum('total');
+
+            $totalBookings = Booking::whereYear('created_at', '=', Carbon::now()->year)->whereIn('showtime_id', $showtimeIds)->count();
+
+            $statusCounts = Booking::whereYear('created_at', '=', Carbon::now()->year)
+                ->whereIn('showtime_id', $showtimeIds)
+                ->selectRaw('status, COUNT(*) as count')
+                ->groupBy('status')
+                ->pluck('count', 'status')
+                ->toArray();
+
+            $statusPercentages = [];
+            foreach ($statusCounts as $status => $count) {
+                $percentage = ($count / $totalBookings) * 100;
+                $statusPercentages[$status] = round($percentage, 2);
+            }
+            $paymentMethodCounts = Booking::whereYear('created_at', '=', Carbon::now()->year)
+                ->whereIn('showtime_id', $showtimeIds)
+                ->selectRaw('payment, COUNT(*) as count')
+                ->groupBy('payment')
+                ->pluck('count', 'payment')
+                ->toArray();
+
+            $paymentMethodPercentages = [];
+            foreach ($paymentMethodCounts as $paymentMethod => $count) {
+                $percentage = ($count / $totalBookings) * 100;
+                $paymentMethodPercentages[$paymentMethod] = round($percentage, 2);
+            }
+            return view('admin.dashboard.month', [
+                'totalBookingsThisMonth' => $totalBookingsThisMonth,
+                'totalConfirmedAmountThisMonth' => $totalConfirmedAmountThisMonth,
+                'statusPercentages' => $statusPercentages,
+                'paymentMethodPercentages' => $paymentMethodPercentages
+            ]);
         }
-        $paymentMethodCounts = Booking::whereYear('created_at', '=', Carbon::now()->year)
-            ->selectRaw('payment, COUNT(*) as count')
-            ->groupBy('payment')
-            ->pluck('count', 'payment')
-            ->toArray();
-
-        $paymentMethodPercentages = [];
-        foreach ($paymentMethodCounts as $paymentMethod => $count) {
-            $percentage = ($count / $totalBookings) * 100;
-            $paymentMethodPercentages[$paymentMethod] = round($percentage, 2);
-        }
-        return view('admin.dashboard.month', [
-            'totalBookingsThisMonth' => $totalBookingsThisMonth,
-            'totalConfirmedAmountThisMonth' => $totalConfirmedAmountThisMonth,
-            'statusPercentages' => $statusPercentages,
-            'paymentMethodPercentages' => $paymentMethodPercentages
-        ]);
     }
 
     public function getCountStatusMonth()
     {
-        try {
-            $status2Count = Booking::where('status', 2)->whereYear('created_at', '=', Carbon::now()->year)->count();
-            $status3Count = Booking::where('status', 3)->whereYear('created_at', '=', Carbon::now()->year)->count();
-            $status4Count = Booking::where('status', 4)->whereYear('created_at', '=', Carbon::now()->year)->count();
+        $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
+        $roleNames = $user->getRoleNames()->toArray();
+        if (in_array('Admin', $roleNames)) {
+            try {
+                $status2Count = Booking::where('status', 2)->whereYear('created_at', '=', Carbon::now()->year)->count();
+                $status3Count = Booking::where('status', 3)->whereYear('created_at', '=', Carbon::now()->year)->count();
+                $status4Count = Booking::where('status', 4)->whereYear('created_at', '=', Carbon::now()->year)->count();
 
-            return response()->json([
-                'status2' => $status2Count,
-                'status3' => $status3Count,
-                'status4' => $status4Count,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Lỗi khi lấy thông tin booking theo trạng thái.'], 500);
+                return response()->json([
+                    'status2' => $status2Count,
+                    'status3' => $status3Count,
+                    'status4' => $status4Count,
+                ]);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Lỗi khi lấy thông tin booking theo trạng thái.'], 500);
+            }
+        } else {
+            // Lấy role_id từ bảng role_has_cinema
+            $roleIds = Role::whereIn('name', $roleNames)->pluck('id')->toArray();
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $roleIds)->pluck('cinema_id')->toArray();
+            // Lấy danh sách room_id từ bảng rooms dựa trên cinema_ids
+            $roomIds = Room::whereIn('cinema_id', $cinemaIds)->pluck('id')->toArray();
+            $showtimeIds = ShowTime::whereIn('room_id', $roomIds)->pluck('id')->toArray(); // Lấy danh sách các showtimeIds
+
+            try {
+                $status2Count = Booking::where('status', 2)->whereYear('created_at', '=', Carbon::now()->year)->whereIn('showtime_id', $showtimeIds)->count();
+                $status3Count = Booking::where('status', 3)->whereYear('created_at', '=', Carbon::now()->year)->whereIn('showtime_id', $showtimeIds)->count();
+                $status4Count = Booking::where('status', 4)->whereYear('created_at', '=', Carbon::now()->year)->whereIn('showtime_id', $showtimeIds)->count();
+
+                return response()->json([
+                    'status2' => $status2Count,
+                    'status3' => $status3Count,
+                    'status4' => $status4Count,
+                ]);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Lỗi khi lấy thông tin booking theo trạng thái.'], 500);
+            }
         }
     }
 
     public function getMonthlyRevenue()
     {
-        try {
-            // Lấy dữ liệu theo từng tháng và tổng doanh thu tương ứng
-            $monthlyRevenueData = Booking::selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, SUM(total) as total_amount')
-                ->where('status', 3)
-                ->whereYear('created_at', '=', Carbon::now()->year)
-                ->groupByRaw('YEAR(created_at), MONTH(created_at)')
-                ->get();
+        $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
+        $roleNames = $user->getRoleNames()->toArray();
+        if (in_array('Admin', $roleNames)) {
+            try {
+                // Lấy dữ liệu theo từng tháng và tổng doanh thu tương ứng
+                $monthlyRevenueData = Booking::selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, SUM(total) as total_amount')
+                    ->where('status', 3)
+                    ->whereYear('created_at', '=', Carbon::now()->year)
+                    ->groupByRaw('YEAR(created_at), MONTH(created_at)')
+                    ->get();
 
-            // Mảng để lưu trữ dữ liệu cho từng tháng
-            $data = [];
+                // Mảng để lưu trữ dữ liệu cho từng tháng
+                $data = [];
 
-            // Lặp qua dữ liệu và lưu vào mảng
-            foreach ($monthlyRevenueData as $revenue) {
-                $data[] = [
-                    'month' => $revenue->month, // Tháng
-                    'total_amount' => $revenue->total_amount // Doanh thu tương ứng với tháng đó
-                ];
+                // Lặp qua dữ liệu và lưu vào mảng
+                foreach ($monthlyRevenueData as $revenue) {
+                    $data[] = [
+                        'month' => $revenue->month, // Tháng
+                        'total_amount' => $revenue->total_amount // Doanh thu tương ứng với tháng đó
+                    ];
+                }
+
+                return response()->json($data);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Lỗi khi lấy dữ liệu số tiền theo từng tháng.'], 500);
             }
+        } else {
+            // Lấy role_id từ bảng role_has_cinema
+            $roleIds = Role::whereIn('name', $roleNames)->pluck('id')->toArray();
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $roleIds)->pluck('cinema_id')->toArray();
+            // Lấy danh sách room_id từ bảng rooms dựa trên cinema_ids
+            $roomIds = Room::whereIn('cinema_id', $cinemaIds)->pluck('id')->toArray();
+            $showtimeIds = ShowTime::whereIn('room_id', $roomIds)->pluck('id')->toArray(); // Lấy danh sách các showtimeIds
 
-            return response()->json($data);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Lỗi khi lấy dữ liệu số tiền theo từng tháng.'], 500);
+            try {
+                // Lấy dữ liệu theo từng tháng và tổng doanh thu tương ứng
+                $monthlyRevenueData = Booking::selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, SUM(total) as total_amount')
+                    ->whereIn('showtime_id', $showtimeIds)
+                    ->where('status', 3)
+                    ->whereYear('created_at', '=', Carbon::now()->year)
+                    ->groupByRaw('YEAR(created_at), MONTH(created_at)')
+                    ->get();
+
+                // Mảng để lưu trữ dữ liệu cho từng tháng
+                $data = [];
+
+                // Lặp qua dữ liệu và lưu vào mảng
+                foreach ($monthlyRevenueData as $revenue) {
+                    $data[] = [
+                        'month' => $revenue->month, // Tháng
+                        'total_amount' => $revenue->total_amount // Doanh thu tương ứng với tháng đó
+                    ];
+                }
+
+                return response()->json($data);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Lỗi khi lấy dữ liệu số tiền theo từng tháng.'], 500);
+            }
         }
     }
 

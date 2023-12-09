@@ -140,7 +140,6 @@ Danh sách đơn đặt đồ ăn
                                             </div>
                                             @endif
                                         </td>
-
                                         <td>
                                             <div class="dropdown">
                                                 <button class="btn" type="button" data-toggle="dropdown" aria-expanded="false">
