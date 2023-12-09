@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\BookingsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\SocialController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Http\Controllers\Admin\FeedbackController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Admin\PostTypeController;
 use App\Http\Controllers\Admin\GenreController;
@@ -132,7 +133,6 @@ Route::get('paypal/payment/cancel', [BookingController::class, 'paymentCancel'])
 // hết paypal
 
 
-
 // thanh toan do an
 
 
@@ -165,7 +165,6 @@ Route::match(['GET', 'POST'], '/points', [ProfileController::class, 'points'])->
 Route::match(['GET', 'POST'], '/member', [ProfileController::class, 'member'])->name('profile.member');
 
 
-
 Route::get('contact', function () {
     return view('client.contacts.contact');
 })->name('contact');
@@ -188,7 +187,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth.check'], function () {
         // Các route trong nhóm 'dashboard' với middleware 'role:manager'
         Route::match(['GET', 'POST'], '/', [DashboardController::class, 'user'])->name('dashboard.user');
         Route::match(['GET', 'POST'], '/invoice/day', [DashboardController::class, 'day'])->name('dashboard.invoice.day');
-        Route::match(['GET', 'POST'], '/invoice/day/hourly-data', [DashboardController::class   , 'getHourlyRevenue']);
+        Route::match(['GET', 'POST'], '/invoice/day/hourly-data', [DashboardController::class, 'getHourlyRevenue']);
         Route::match(['GET', 'POST'], '/invoice/day/getCountStatusDay', [DashboardController::class, 'getCountStatusDay']);
         Route::match(['GET', 'POST'], '/invoice/day/fetchLastSevenDaysData', [DashboardController::class, 'fetchLastSevenDaysData']);
         Route::match(['GET', 'POST'], '/invoice/day/fetchLastTwentyEightDaysData', [DashboardController::class, 'fetchLastTwentyEightDaysData']);
@@ -207,6 +206,11 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth.check'], function () {
         Route::match(['GET', 'POST'], '/invoice/month/getCountStatusMonth', [DashboardController::class, 'getCountStatusMonth']);
         Route::match(['GET', 'POST'], '/getMonthlyStats', [DashboardController::class, 'getMonthlyStats']);
         Route::match(['GET', 'POST'], '/getUserCounts', [DashboardController::class, 'getUserCounts']);
+    });
+    Route::prefix('view')->group(function () {
+        Route::match(['GET', 'POST'], '/', [DashboardController::class, 'getViewMovie'])->name('dashboard.view');
+        Route::match(['GET', 'POST'], '/fetchLastSevenDaysData', [DashboardController::class, 'getViewMovieSevenDays'])->name('dashboard.view.seven');
+        Route::match(['GET', 'POST'], '/fetchLastTwentyEightDaysData', [DashboardController::class, 'getViewMovieTwentyEightDays'])->name('dashboard.view.twenty');
     });
     //role
     Route::prefix('role')->group(function () {
@@ -373,9 +377,6 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth.check'], function () {
         Route::get('/force-delete/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'forceDelete'])->name('post.forceDelete');
     });
     ///
-
-    //// Bình luận bài viết
-
         Route::prefix('comment')->group(function () {
             Route::get('/', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'index'])->name('comment.index');
             // Route::get('/create', [App\Http\Controllers\Admin\Post\PostController::class, 'create'])->name('post.add');
@@ -394,29 +395,18 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth.check'], function () {
             Route::get('/restore/{id}',  [App\Http\Controllers\Admin\Post\CommentPostController::class, 'restore'])->name('comment.restore');
             Route::get('/force-delete/{id}', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'forceDelete'])->name('comment.forceDelete');
         });
-
-
-
-    //
-
-
-
     // ///// trả lời bình luận
-
-        Route::prefix('reply')->group(function () {
-            Route::get('/', [App\Http\Controllers\Admin\Post\ReplyController::class, 'index'])->name('reply.index');
-            Route::post('/status/{id}', [App\Http\Controllers\Admin\Post\ReplyController::class, 'updateStatus']);
-            Route::post('/deleteAll', [App\Http\Controllers\Admin\Post\ReplyController::class, 'deleteAll'])->name('reply.deleteAll');
-            Route::get('/destroy/{id}', [App\Http\Controllers\Admin\Post\ReplyController::class, 'destroy'])->name('reply.destroy');
-            Route::get('/trash',  [App\Http\Controllers\Admin\Post\ReplyController::class, 'trash'])->name('reply.trash');
-            Route::post('/permanentlyDeleteSelected', [App\Http\Controllers\Admin\Post\ReplyController::class, 'permanentlyDeleteSelected'])->name('reply.permanentlyDeleteSelected');
-            Route::post('/restoreSelected', [App\Http\Controllers\Admin\Post\ReplyController::class, 'restoreSelected'])->name('reply.restoreSelected');
-            Route::get('/restore/{id}',  [App\Http\Controllers\Admin\Post\ReplyController::class, 'restore'])->name('reply.restore');
-            Route::get('/force-delete/{id}', [App\Http\Controllers\Admin\Post\ReplyController::class, 'forceDelete'])->name('reply.forceDelete');
-        });
-
-
-
+    Route::prefix('reply')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\Post\ReplyController::class, 'index'])->name('reply.index');
+        Route::post('/status/{id}', [App\Http\Controllers\Admin\Post\ReplyController::class, 'updateStatus']);
+        Route::post('/deleteAll', [App\Http\Controllers\Admin\Post\ReplyController::class, 'deleteAll'])->name('reply.deleteAll');
+        Route::get('/destroy/{id}', [App\Http\Controllers\Admin\Post\ReplyController::class, 'destroy'])->name('reply.destroy');
+        Route::get('/trash', [App\Http\Controllers\Admin\Post\ReplyController::class, 'trash'])->name('reply.trash');
+        Route::post('/permanentlyDeleteSelected', [App\Http\Controllers\Admin\Post\ReplyController::class, 'permanentlyDeleteSelected'])->name('reply.permanentlyDeleteSelected');
+        Route::post('/restoreSelected', [App\Http\Controllers\Admin\Post\ReplyController::class, 'restoreSelected'])->name('reply.restoreSelected');
+        Route::get('/restore/{id}', [App\Http\Controllers\Admin\Post\ReplyController::class, 'restore'])->name('reply.restore');
+        Route::get('/force-delete/{id}', [App\Http\Controllers\Admin\Post\ReplyController::class, 'forceDelete'])->name('reply.forceDelete');
+    });
 
 
     // ///////////
@@ -457,6 +447,16 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth.check'], function () {
         Route::post('/permanentlyDeleteSelected', [MovieController::class, 'permanentlyDeleteSelected'])->name('movie.permanentlyDeleteSelected');
         Route::post('/restoreSelected', [MovieController::class, 'restoreSelected'])->name('movie.restoreSelected');
     });
+    Route::prefix('/feed-back')->group(function () {
+       Route::get('/',[FeedbackController::class,'index'])->name('feed-back.index');
+       Route::get('/destroy/{id}',[FeedbackController::class,'destroy'])->name('feed-back.destroy');
+       Route::get('/trash',[FeedbackController::class,'trash'])->name('feed-back.trash');
+       Route::post('/deleteAll',[FeedbackController::class,'deleteAll'])->name('feed-back.deleteAll');
+       Route::get('/delete/{id}',[FeedbackController::class,'delete'])->name('feed-back.delete');
+       Route::get('/restore/{id}',[FeedbackController::class,'restore'])->name('feed-back.restore');
+        Route::post('/permanentlyDeleteSelected', [FeedbackController::class, 'permanentlyDeleteSelected'])->name('feed-back.permanentlyDeleteSelected');
+        Route::post('/restoreSelected', [FeedbackController::class, 'restoreSelected'])->name('feed-back.restoreSelected');
+    });
 
     // đồ ăn
     Route::prefix('movie-food')->group(function () {
@@ -494,8 +494,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth.check'], function () {
         Route::match(['GET', 'POST'], '/update/{room_id}', [SeatController::class, 'update'])->name('seat.update');
         Route::get('/destroy/{id}', [SeatController::class, 'destroy'])->name('seat.destroy');
         Route::post('/deleteAll', [SeatController::class, 'deleteAll'])->name('seat.deleteAll');
-        Route::get('/get-cinemas/{provinceId}',  [SeatController::class, 'getCinemas']);
-        Route::get('/get-rooms/{cinemaId}',  [SeatController::class, 'getRooms']);
+        Route::get('/get-cinemas/{provinceId}', [SeatController::class, 'getCinemas']);
+        Route::get('/get-rooms/{cinemaId}', [SeatController::class, 'getRooms']);
     });
 
     /*

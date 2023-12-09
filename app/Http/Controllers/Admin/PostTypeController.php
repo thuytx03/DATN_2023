@@ -70,6 +70,9 @@ class PostTypeController extends Controller
     public function store(PostTypeRequest $request)
     {
         try {
+            $request->validate([
+                'name' => 'required|unique:post_types,name,',
+            ]);
             if ($request->hasFile('image') && $request->file('image')->isValid()) {
                 $request->image = uploadFile('postTypes', $request->file('image'));
             } else {
@@ -132,6 +135,9 @@ class PostTypeController extends Controller
     public function update(PostTypeRequest $request, $id)
     {
         try {
+            $request->validate([
+                'name' => 'required|unique:post_types,name,',
+            ]);
             $postType = PostType::find($id);
             $params = $request->except('_token', 'image');
             if ($request->hasFile('image') && $request->file('image')->isValid()) {

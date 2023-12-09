@@ -26,8 +26,8 @@
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Hành động
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <a class="dropdown-item" href="#" id="restore-selected">Khôi phục mục đã chọn</a>
-                                    <a href="#" id="delete-selected" class="dropdown-item">Xoá vĩnh viễn các mục đã chọn</a>
+                                <a class="dropdown-item" href="#" id="restore-selected">Khôi phục mục đã chọn</a>
+                                <a href="#" id="delete-selected" class="dropdown-item">Xoá vĩnh viễn các mục đã chọn</a>
                             </div>
                         </div>
                     </div>
@@ -141,17 +141,19 @@
                                             </td>
                                             <td class="text-center">
                                                 <div class="dropdown">
-                                                    <!-- Icon here (e.g., three dots icon) -->
-                                                    <i class="fas fa-ellipsis-v p-2 " data-toggle="dropdown"
-                                                       aria-haspopup="true" aria-expanded="false"></i>
+                                                    <button class="btn " type="button" data-toggle="dropdown"
+                                                            aria-expanded="false">
+                                                        <i class="fa-solid fa-ellipsis-vertical"></i>
                                                     </button>
-                                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                    <div class="dropdown-menu">
                                                         <a class="dropdown-item"
-                                                           href="{{ route('genre.restore',['id' => $value->id]) }}">Khôi
+                                                           href="{{ route('genre.restore', ['id' => $value->id]) }}">Khôi
                                                             phục</a>
-                                                        <a class="dropdown-item show_confirm"
-                                                           href="{{ route('genre.delete',['id' => $value->id]) }}">Xóa
-                                                            vĩnh viễn</a>
+                                                        <a class="dropdown-item"
+                                                           href="{{route('genre.delete',['id' => $value->id] )}}">Xoá
+                                                            vĩnh viễn
+                                                        </a>
+
                                                     </div>
                                                 </div>
                                             </td>
@@ -240,6 +242,7 @@
         }
 
         selectAllCheckbox();
+
         function restoreSelected() {
             $(document).ready(function () {
                 $('#restore-selected').click(function (e) {
@@ -287,9 +290,10 @@
         }
 
         restoreSelected();
+
         function deleteSelected() {
-            $(document).ready(function() {
-                $('#delete-selected').click(function(e) {
+            $(document).ready(function () {
+                $('#delete-selected').click(function (e) {
                     e.preventDefault();
 
                     var selectedCheckboxes = $('.child-checkbox:checked');
@@ -305,7 +309,7 @@
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 var selectedIds = [];
-                                selectedCheckboxes.each(function() {
+                                selectedCheckboxes.each(function () {
                                     selectedIds.push($(this).val());
                                 });
 
@@ -316,11 +320,11 @@
                                         ids: selectedIds,
                                         _token: '{{ csrf_token() }}',
                                     },
-                                    success: function(response) {
+                                    success: function (response) {
                                         // Xử lý phản hồi từ máy chủ nếu cần
                                         location.reload();
                                     },
-                                    error: function() {
+                                    error: function () {
                                         location.reload();
                                     }
                                 });
@@ -332,6 +336,7 @@
 
 
         }
+
         deleteSelected();
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

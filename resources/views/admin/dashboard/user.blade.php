@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 @section('title')
-Thống kê người dùng 
+Thống kê người dùng
 @endsection
 @section('content')
 <div class="container-fluid">
@@ -8,7 +8,10 @@ Thống kê người dùng
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Thống kê người dùng</h1>
-        <a href="{{route('dashboard.invoice.day')}}" class="btn btn-info">Thống kê doanh thu</a>
+        <div>
+            <a href="{{route('dashboard.invoice.day')}}" class="btn btn-info">Thống kê doanh thu</a>
+            <a href="{{route('dashboard.view')}}" class="btn btn-secondary">Thống kê lượt xem</a>
+        </div>
     </div>
 
     <!-- Content Row -->

@@ -118,6 +118,7 @@
                 <a class="collapse-item" href="{{ route('genre.index') }}">Thể loại Phim</a>
                 <!-- link -->
                 <a class="collapse-item" href="{{ route('movie.index') }}">Danh sách Phim</a>
+                <a class="collapse-item" href="{{ route('feed-back.index') }}">Đánh giá phim</a>
             </div>
         </div>
     </li>
@@ -230,7 +231,7 @@
             </div>
         </div>
     </li>
-    @endrole    
+    @endrole
     <!-- end logo -->
     @role('Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Admin')
     <li class="nav-item">

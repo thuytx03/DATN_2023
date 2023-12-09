@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\RoleHasCinema;
 use App\Models\Room;
+use App\Models\Movie;
+use App\Models\MovieView;
 use App\Models\ShowTime;
 use App\Models\User;
 use Carbon\Carbon;
@@ -46,6 +48,7 @@ class DashboardController extends Controller
             'monthUsersCount' => $monthUsersCount,
         ]);
     }
+
     public function getMonthlyStats()
     {
         $monthlyStats = User::selectRaw('COUNT(*) as user_count, MONTH(created_at) as month')
@@ -55,6 +58,7 @@ class DashboardController extends Controller
 
         return response()->json($monthlyStats);
     }
+
     public function getUserCounts()
     {
         $googleUsers = User::where('gauth_id', 2)->count();
@@ -69,6 +73,7 @@ class DashboardController extends Controller
 
         return response()->json($userCounts);
     }
+
     public function day(Request $request)
     {
         $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
@@ -167,6 +172,7 @@ class DashboardController extends Controller
             ]);
         }
     }
+
     public function getHourlyRevenue()
     {
         $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
@@ -205,6 +211,7 @@ class DashboardController extends Controller
             }
         }
     }
+
     public function getCountStatusDay()
     {
         $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
@@ -246,6 +253,7 @@ class DashboardController extends Controller
             }
         }
     }
+
     public function sevenDay(Request $request)
     {
         $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
@@ -351,6 +359,7 @@ class DashboardController extends Controller
             ]);
         }
     }
+
     public function calendar(Request $request)
     {
         $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
@@ -814,6 +823,7 @@ class DashboardController extends Controller
             }
         }
     }
+
     public function fetchLastSevenDaysData(Request $request)
     {
         $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
@@ -862,6 +872,7 @@ class DashboardController extends Controller
             return response()->json(['revenueData' => $revenueData]);
         }
     }
+
     public function fetchLastTwentyEightDaysData(Request $request)
     {
         $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
@@ -909,6 +920,7 @@ class DashboardController extends Controller
             return response()->json(['revenueData' => $revenueData]);
         }
     }
+
     public function fetchDailyData(Request $request)
     {
         $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
@@ -1051,6 +1063,7 @@ class DashboardController extends Controller
             ]);
         }
     }
+
     public function getWeeklyRevenue()
     {
         $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
@@ -1140,6 +1153,7 @@ class DashboardController extends Controller
             }
         }
     }
+
     public function getCountStatusWeek()
     {
         $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
@@ -1282,6 +1296,7 @@ class DashboardController extends Controller
             ]);
         }
     }
+
     public function getCountStatusMonth()
     {
         $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
@@ -1323,6 +1338,7 @@ class DashboardController extends Controller
             }
         }
     }
+
     public function getMonthlyRevenue()
     {
         $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
@@ -1384,5 +1400,100 @@ class DashboardController extends Controller
                 return response()->json(['error' => 'Lỗi khi lấy dữ liệu số tiền theo từng tháng.'], 500);
             }
         }
+    }
+
+    public function getViewMovie(Request $request)
+    {
+        $query = Movie::query();
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $start_date = Carbon::parse($request->input('start_date'))->startOfDay();
+            $end_date = Carbon::parse($request->input('end_date'))->endOfDay();
+            // Thêm điều kiện whereBetween cho ngày bắt đầu và kết thúc
+            $query->whereBetween('start_date', [$start_date, $end_date]);
+        }
+        $query->where('start_date', '<=', now()) // Chỉ lấy những bộ phim đã và đang công chiếu
+        ->select('name', DB::raw('DATE(start_date) as date'), DB::raw('SUM(view) as total_views'))
+            ->groupBy('name', 'date')
+            ->paginate(7); // Số lượng phim trên mỗi trang
+        $movieView = $query->orderBy('id', 'DESC')->paginate(5);
+        return view('admin.dashboard.view-day', compact('movieView'));
+    }
+
+    public function getViewMovieSevenDays(Request $request)
+    {
+        $query = MovieView::query();
+        $startDate = Carbon::now()->subDays(7);
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $start_date = Carbon::parse($request->input('start_date'))->startOfDay();
+            $end_date = Carbon::parse($request->input('end_date'))->endOfDay();
+            // Thêm điều kiện whereBetween cho ngày bắt đầu và kết thúc
+            $query->whereBetween('date', [$start_date, $end_date])
+                ->join('movies', 'movie_views.movie_id', '=', 'movies.id')
+                ->select(
+                    'movie_views.movie_id',
+                    'movies.name as movie_name',
+                    'movies.start_date as date',
+                    DB::raw('SUM(movie_views.count) as total_views'),
+                )
+                ->groupBy('movie_views.movie_id', 'movies.name', 'movies.start_date');
+        } else {
+            $query->where('date', '>=', $startDate)
+                ->where('date', '<=', Carbon::now())
+                ->join('movies', 'movie_views.movie_id', '=', 'movies.id')
+                ->select(
+                    'movie_views.movie_id',
+                    'movies.name as movie_name',
+                    'movies.start_date as date',
+                    DB::raw('SUM(movie_views.count) as total_views'),
+                )
+                ->groupBy('movie_views.movie_id', 'movies.name', 'movies.start_date');
+        }
+        $movieView = $query->paginate(5);
+        return view('admin.dashboard.view-day-7', compact('movieView'));
+    }
+
+    public function getViewMovieTwentyEightDays(Request $request)
+    {
+        $query = MovieView::query();
+        $startDate = Carbon::now()->subDays(28);
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $start_date = Carbon::parse($request->input('start_date'))->startOfDay();
+            $end_date = Carbon::parse($request->input('end_date'))->endOfDay();
+            // Thêm điều kiện whereBetween cho ngày bắt đầu và kết thúc
+            $query->whereBetween('date', [$start_date, $end_date])
+                ->join('movies', 'movie_views.movie_id', '=', 'movies.id')
+                ->select(
+                    'movie_views.movie_id',
+                    'movies.name as movie_name',
+                    'movies.start_date as date',
+                    DB::raw('SUM(movie_views.count) as total_views'),
+                )
+                ->groupBy('movie_views.movie_id', 'movies.name', 'movies.start_date');
+        } else {
+            $query->where('date', '>=', $startDate)
+                ->where('date', '<=', Carbon::now())
+                ->join('movies', 'movie_views.movie_id', '=', 'movies.id')
+                ->select(
+                    'movie_views.movie_id',
+                    'movies.name as movie_name',
+                    'movies.start_date as date',
+                    DB::raw('SUM(movie_views.count) as total_views'),
+                )
+                ->groupBy('movie_views.movie_id', 'movies.name', 'movies.start_date');
+        }
+        $movieView = $query->paginate(5);
+        return view('admin.dashboard.view-day-28', compact('movieView'));
     }
 }

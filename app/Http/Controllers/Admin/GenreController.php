@@ -91,6 +91,9 @@ class GenreController extends Controller
                 $node = Genre::find($request->parent_id);
                 $node->appendNode($genre);
             }
+            $request->validate([
+                'name' => 'required|unique:genres,name,',
+            ]);
             if ($genre->save()) {
                 toastr()->success('Thêm mới thể loại thành công!', 'success');
                 return redirect()->route('genre.index');
@@ -136,6 +139,9 @@ class GenreController extends Controller
     public function update(GenreRequest $request, $id)
     {
         try {
+            $request->validate([
+                'name' => 'required|unique:genres,name,',
+            ]);
             $genre = Genre::find($id);
             $params = $request->except('_token', 'image');
             if ($request->hasFile('image') && $request->file('image')->isValid()) {

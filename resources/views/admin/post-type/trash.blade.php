@@ -149,7 +149,7 @@
                                                         <a class="dropdown-item"
                                                            href="{{ route('post-type.restore',['id' => $value->id]) }}">Khôi
                                                             phục</a>
-                                                        <a class="dropdown-item show_confirm"
+                                                        <a class="dropdown-item"
                                                            href="{{ route('post-type.delete',['id' => $value->id]) }}">Xóa
                                                             vĩnh viễn</a>
                                                     </div>

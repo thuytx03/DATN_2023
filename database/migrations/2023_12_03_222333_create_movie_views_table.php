@@ -13,14 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('feed_backs', function (Blueprint $table) {
+        Schema::create('movie_views', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('movie_id');
-            $table->integer('rating')->nullable();
-            $table->text('message')->nullable();
-            $table->softDeletes();
+            $table->dateTime('date');
+            $table->integer('count');
             $table->timestamps();
+            $table->foreign('movie_id')->references('id')->on('movies')->onDelete('cascade');
         });
     }
 
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('feed_backs');
+        Schema::dropIfExists('movie_views');
     }
 };
