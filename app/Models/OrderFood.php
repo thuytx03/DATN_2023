@@ -12,6 +12,7 @@ class OrderFood extends Model
     public $table = 'order_foods';
     protected $fillable = [
         'user_id',
+        'cinema_id',
         'email',
         'order_date',
         'order_end',

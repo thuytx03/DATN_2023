@@ -24,6 +24,11 @@ class DatabaseSeeder extends Seeder
             GenreSeeder::class,
             MovieSeeder::class,
             SeatTypeSeeder::class,
+            FoodSeeder::class,
+            CreateAdminSeeder::class,
+            CreateAdminUserSeeder::class,
+            RolesTableSeeder::class,
+            PermissionTableSeeder::class,
         ]);
     }
 }

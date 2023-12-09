@@ -79,7 +79,7 @@ class MovieSeeder extends Seeder
                 'start_date' => now(),
                 'view' => 0,
                 'description' => 'Mô tả phim 3',
-                'country_id' => 2, // ID của quốc gia khác
+                'country_id' => 3, // ID của quốc gia khác
                 'status' => 1,
             ],
             [
@@ -95,7 +95,7 @@ class MovieSeeder extends Seeder
                 'start_date' => now(),
                 'view' => 0,
                 'description' => 'Mô tả phim 4',
-                'country_id' => 2, // ID của quốc gia khác
+                'country_id' => 3, // ID của quốc gia khác
                 'status' => 1,
             ],
             [
@@ -111,7 +111,7 @@ class MovieSeeder extends Seeder
                 'start_date' => now(),
                 'view' => 0,
                 'description' => 'Mô tả phim 5',
-                'country_id' => 1, // ID của quốc gia khác
+                'country_id' => 3, // ID của quốc gia khác
                 'status' => 1,
             ],
             [
@@ -127,7 +127,7 @@ class MovieSeeder extends Seeder
                 'start_date' => now(),
                 'view' => 0,
                 'description' => 'Mô tả phim 6',
-                'country_id' => 3, // ID của quốc gia khác
+                'country_id' => 1, // ID của quốc gia khác
                 'status' => 1,
             ],
             [
@@ -143,7 +143,7 @@ class MovieSeeder extends Seeder
                 'start_date' => now(),
                 'view' => 0,
                 'description' => 'Mô tả phim 7',
-                'country_id' => 4, // ID của quốc gia khác
+                'country_id' => 2, // ID của quốc gia khác
                 'status' => 1,
             ],
             [
@@ -159,7 +159,7 @@ class MovieSeeder extends Seeder
                 'start_date' => now(),
                 'view' => 0,
                 'description' => 'Mô tả phim 8',
-                'country_id' => 1, // ID của quốc gia khác
+                'country_id' => 3, // ID của quốc gia khác
                 'status' => 1,
             ],
             [

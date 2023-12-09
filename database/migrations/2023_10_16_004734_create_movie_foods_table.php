@@ -19,9 +19,9 @@ return new class extends Migration
             $table->string('slug');
             $table->string('price');
             $table->string('quantity');
-            $table->string('status')->default(1);
             $table->string('image')->nullable();
             $table->string('description')->nullable();
+            $table->string('status')->default(1);
             $table->softDeletes();
             $table->timestamps();
         });
