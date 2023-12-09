@@ -62,7 +62,10 @@ class MovieSeatPlanController extends Controller
         $bookings = Booking::where('showtime_id', $showtime_id)->get();
         $bookedSeats = [];
         foreach ($bookings as $booking) {
+
+            if($booking->status <> 4){
             $bookedSeats = array_merge($bookedSeats, json_decode($booking->list_seat));
+            }
         }
         // Loại bỏ các giá trị trùng lặp
         $bookedSeats = array_unique($bookedSeats);
@@ -78,7 +81,8 @@ class MovieSeatPlanController extends Controller
 
 
 
-        return view('client.movies.movie-seat-plan', compact('seatsVip', 'seatsThuong', 'seatsDoi', 'room', 'showTime', 'bookedSeats', 'province', 'food','selectedSeats1'));
+
+        return view('client.movies.movie-seat-plan', compact('seatsVip', 'seatsThuong', 'seatsDoi', 'room', 'showTime', 'bookedSeats', 'province', 'food','selectedSeats1','bookings'));
     }
 
     public function seatPrice()

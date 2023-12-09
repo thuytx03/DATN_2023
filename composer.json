@@ -18,7 +18,7 @@
         "kalnoy/nestedset": "^6.0",
         "laravel/framework": "^9.0",
         "laravel/sanctum": "^2.14",
-        "laravel/socialite": "^5.10",
+        "laravel/socialite": "^5.11",
         "laravel/tinker": "^2.7",
         "milon/barcode": "^10.0",
         "nesbot/carbon": "^2.71",
