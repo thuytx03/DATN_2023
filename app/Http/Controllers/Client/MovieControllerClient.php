@@ -26,13 +26,66 @@ class MovieControllerClient extends Controller
         $genres = Genre::all();
         $cinemas = Cinema::all();
         $provinces = Province::all();
-
+        $countries = Country::all();
         $currentDate = Carbon::now()->format('d/m/Y'); // Lấy ngày hiện tại
         $sevenDaysLater = Carbon::now()->addDays(7)->format('d/m/Y'); // Lấy ngày 7 ngày sau
 
-        return view('client.movies.movie-list', compact('movies', 'genres', 'cinemas', 'currentDate', 'sevenDaysLater', 'provinces'));
+        return view('client.movies.movie-list', compact('movies', 'genres', 'cinemas', 'currentDate', 'sevenDaysLater', 'provinces', 'countries'));
     }
 
+    // Trong controller của bạn
+    public function nowShowingMovies(Request $request)
+    {
+        $sortBy = $request->input('sortBy', 'default');
+        $currentTime = Carbon::now();
+
+        // Nếu $sortBy là 'now-showing', lấy danh sách các bộ phim đang chiếu
+        if ($sortBy === 'now-showing') {
+            $movies = Movie::whereHas('showTimes', function ($query) use ($currentTime) {
+                $query->where('start_date', '<=', $currentTime)
+                    ->where('end_date', '>=', $currentTime);
+            })->get();
+        } else {
+            // Nếu $sortBy là 'coming-soon', lấy danh sách các bộ phim sắp chiếu trong khoảng từ ngày hiện tại đến 7 ngày kể từ ngày hiện tại
+            $movies = Movie::where('start_date', '>=', $currentTime)
+                ->where('start_date', '<=', $currentTime->copy()->addDays(7))
+                ->get();
+        }
+        // Trả về HTML thay vì view
+        return view('client.movies.movie', compact('movies'));
+    }
+
+
+
+    public function searchByName(Request $request)
+    {
+        try {
+            $query = Movie::query();
+
+            if ($request->filled('start_date')) {
+                $startDate = $request->input('start_date');
+                $startDate = Carbon::createFromFormat('d/m/Y', $startDate)->format('Y-m-d');
+                $query->whereDate('start_date', $startDate);
+            }
+
+            if ($request->filled('search_query')) {
+                $searchQuery = $request->input('search_query');
+                $query->where('name', 'like', "%$searchQuery%");
+            }
+
+            // Kiểm tra nếu country_id được chọn
+            if ($request->filled('country_id')) {
+                $countryId = $request->input('country_id');
+                $query->where('country_id', $countryId);
+            }
+
+            $movies = $query->get();
+            return view('client.movies.movie', compact('movies'));
+        } catch (\Exception $e) {
+            Log::error('Error during search: ' . $e->getMessage());
+            // Xử lý exception ở đây nếu cần
+        }
+    }
 
 
     public function detail($slug, $id)
@@ -45,7 +98,7 @@ class MovieControllerClient extends Controller
             ->select('feed_backs.created_at as feed_back_created_at', 'users.name as user_name', 'users.avatar as avatar', 'feed_backs.message', 'feed_backs.rating')
             ->where('feed_backs.movie_id', $id)
             ->get();
-//        dd($reviews);
+        //        dd($reviews);
         // Làm tròn điểm trung bình nếu cần
         $averageRating = round($averageRating, 1);
 
@@ -56,15 +109,15 @@ class MovieControllerClient extends Controller
             $genresName = $genres->pluck('name')->toArray();
             $nameGenres = implode(',', $genresName);
             $images = $movie->images;
-            $canUserReviewMovie = $this->canUserReviewMovie($userID,$id);
-            return view('client.movies.movie-detail', compact('user', 'movie', 'images', 'nameGenres','averageRating','canUserReviewMovie','reviews'));
+            $canUserReviewMovie = $this->canUserReviewMovie($userID, $id);
+            return view('client.movies.movie-detail', compact('user', 'movie', 'images', 'nameGenres', 'averageRating', 'canUserReviewMovie', 'reviews'));
         }
         if ($movie) {
             $genres = $movie->genres;
             $genresName = $genres->pluck('name')->toArray();
             $nameGenres = implode(',', $genresName);
             $images = $movie->images;
-            return view('client.movies.movie-detail', compact('movie', 'nameGenres', 'images','averageRating','reviews'));
+            return view('client.movies.movie-detail', compact('movie', 'nameGenres', 'images', 'averageRating', 'reviews'));
         }
     }
 
