@@ -645,14 +645,14 @@ class DashboardController extends Controller
         if ($request->has('start_date') && $request->has('end_date')) {
             $start_date = Carbon::parse($request->input('start_date'))->startOfDay();
             $end_date = Carbon::parse($request->input('end_date'))->endOfDay();
-            // Thêm điều kiện whereBetween cho ngày bắt đầu và kết thúc
             $query->whereBetween('start_date', [$start_date, $end_date]);
         }
-        $query->where('start_date', '<=', now()) // Chỉ lấy những bộ phim đã và đang công chiếu
-        ->select('name', DB::raw('DATE(start_date) as date'), DB::raw('SUM(view) as total_views'))
-            ->groupBy('name', 'date')
-            ->paginate(7); // Số lượng phim trên mỗi trang
-        $movieView = $query->orderBy('id', 'DESC')->paginate(5);
+        $query->where('start_date', '<=', now())
+            ->select('name', DB::raw('DATE(start_date) as date'), DB::raw('SUM(view) as total_views'))
+            ->groupBy('name', 'date');
+//            ->paginate(5);
+        $movieView = $query->orderBy('date','DESC')->paginate(10);
+
         return view('admin.dashboard.view-day', compact('movieView'));
     }
 

@@ -24,6 +24,8 @@ class DatabaseSeeder extends Seeder
             GenreSeeder::class,
             MovieSeeder::class,
             MemberLevelSeeder::class,
+            PermissionTableSeeder::class,
+            RolesTableSeeder::class,
             CreateAdminUserSeeder::class,
             SeatTypeSeeder::class,
         ]);

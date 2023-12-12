@@ -15,8 +15,7 @@ class RolesTableSeeder extends Seeder
      */
     public function run()
     {
-        Role::create(['name' => 'Admin','display_name'=>'Chủ tịch','group'=>'admin']);
-
+//        Role::create(['name' => 'Admin','display_name'=>'Chủ tịch','group'=>'admin']);
         Role::create(['name' => 'Mange-Hanoi','display_name'=>'Quản lý rạp Hà Nội','group'=>'manage']);
         Role::create(['name' => 'Staff-Movie-Hanoi','display_name'=>'Nhân viên quản lý phim Hà Nội','group'=>'staff']);
         Role::create(['name' => 'Staff-Booking-Hanoi','display_name'=>'Nhân viên quản lý đơn đặt vé Hà Nội','group'=>'staff']);
@@ -40,6 +39,6 @@ class RolesTableSeeder extends Seeder
         Role::create(['name' => 'Staff-Room-ThaiBinh','display_name'=>'Nhân viên quản lý phòng Thái Bình','group'=>'staff']);
         Role::create(['name' => 'Staff-Showtime-ThaiBinh','display_name'=>'Nhân viên quản lý lịch chiếu Thái Bình','group'=>'staff']);
         Role::create(['name' => 'Staff-Seat-ThaiBinh','display_name'=>'Nhân viên quản lý ghế Thái Bình','group'=>'staff']);
-        
+
     }
 }
