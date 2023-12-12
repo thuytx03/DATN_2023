@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('membership_levels', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->float('min_limit')->nullable();
-            $table->float('max_limit')->nullable();
+            $table->string('min_limit')->nullable();
+            $table->string('max_limit')->nullable();
             $table->integer('benefits')->nullable();
             $table->tinyInteger('status')->default(1);
             $table->string('Description')->nullable();

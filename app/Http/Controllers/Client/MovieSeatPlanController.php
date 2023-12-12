@@ -13,6 +13,7 @@ use App\Models\Province;
 use App\Models\Room;
 use App\Models\Seat;
 use App\Models\SeatType;
+use App\Models\SelectedSeat;
 use App\Models\ShowTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -24,10 +25,21 @@ class MovieSeatPlanController extends Controller
 
     public function index(Request $request, $room_id, $slug, $showtime_id)
     {
-        $cacheKey = 'selected_seats_' . auth()->id() . '_showtime_' . $showtime_id;
-        $selectedSeatsJson = Redis::get($cacheKey);
-        $selectedSeats = json_decode($selectedSeatsJson);
-        broadcast(new SeatSelected(auth()->id(), $selectedSeats, $showtime_id,'selected'))->toOthers();
+        $numberOfUsers = 30;
+
+        for ($i = 1; $i <= $numberOfUsers; $i++) {
+            $cacheKey = 'selected_seats_' . $i . '_showtime_' . $showtime_id;
+            $selectedSeatsJson = Redis::get($cacheKey);
+
+            if ($selectedSeatsJson !== null) {
+                $selectedSeats = json_decode($selectedSeatsJson, true);
+                // dd($selectedSeats);
+                // event(new SeatSelected($i, $selectedSeats, $showtime_id, 'selected'));
+                broadcast(new SeatSelected($i, $selectedSeats, $showtime_id, 'selected'))->toOthers();
+            }
+        }
+
+        // dd($selectedSeats);
 
         session()->forget('selectedSeats');
         session()->forget('selectedProducts');
@@ -73,12 +85,9 @@ class MovieSeatPlanController extends Controller
 
         // session()->forget('selectedProducts');
         // session()->forget('totalPriceFood');
-        $selectedSeats1=$this->getSelectedSeats($showTime->id);
+        $selectedSeats1 = $this->getSelectedSeats($showTime->id);
 
-
-
-
-        return view('client.movies.movie-seat-plan', compact('seatsVip', 'seatsThuong', 'seatsDoi', 'room', 'showTime', 'bookedSeats', 'province', 'food','selectedSeats1'));
+        return view('client.movies.movie-seat-plan', compact('seatsVip', 'seatsThuong', 'seatsDoi', 'room', 'showTime', 'bookedSeats', 'province', 'food', 'selectedSeats1'));
     }
 
     public function seatPrice()
@@ -112,6 +121,17 @@ class MovieSeatPlanController extends Controller
         return $totalPriceTicket;
     }
 
+    // public function testRedis(){
+    //     Redis::set('user:1:first_name',"trinh");
+    //     Redis::set('user:2:first_name',"xuan");
+    //     Redis::set('user:3:first_name',"thuy");
+    //     for($i=1; $i<3; $i++){
+    //         echo Redis::get('user:'. $i .':first_name');
+    //     }
+    //     Redis::set('name',"thuycoi2003");
+    //     echo Redis::get('name');
+    // }
+
     public function saveSelectedSeats(Request $request)
     {
         $showtime_id = $request->input('showtime_id');
@@ -124,18 +144,16 @@ class MovieSeatPlanController extends Controller
             // Lưu danh sách ghế mới
             $cacheKey = 'selected_seats_' . auth()->id() . '_showtime_' . $showtime_id;
             $redisResult = Redis::set($cacheKey, json_encode($selectedSeats));
-
-            // Xác định danh sách ghế bị huỷ
-            // $cancelledSeats = array_diff($previousSelectedSeats, $selectedSeats);
-            $cancelledSeats = array_values(array_diff($previousSelectedSeats, $selectedSeats));
+            Redis::set('name', "thuycoi2003");
 
 
             // Broadcast sự kiện SeatSelected
-            broadcast(new SeatSelected(auth()->id(), $selectedSeats, $showtime_id,'selected'))->toOthers();
-
+            broadcast(new SeatSelected(auth()->id(), $selectedSeats, $showtime_id, 'selected'))->toOthers();
+            // Xác định danh sách ghế bị huỷ
+            $cancelledSeats = array_values(array_diff($previousSelectedSeats, $selectedSeats));
             // Broadcast sự kiện SeatCancelled nếu có ghế bị huỷ
             if (!empty($cancelledSeats)) {
-                broadcast(new SeatCancelled(auth()->id(), $cancelledSeats, $showtime_id,'cancelled'))->toOthers();
+                broadcast(new SeatCancelled(auth()->id(), $cancelledSeats, $showtime_id, 'cancelled'))->toOthers();
             }
 
             Session::put('selectedSeats', $selectedSeats);
@@ -149,6 +167,7 @@ class MovieSeatPlanController extends Controller
 
 
 
+
     public function getSelectedSeats($showtime_id)
     {
         $cacheKey = 'selected_seats_' . auth()->id() . '_showtime_' . $showtime_id;
@@ -156,9 +175,8 @@ class MovieSeatPlanController extends Controller
 
         if ($selectedSeatsJson) {
             $selectedSeats = json_decode($selectedSeatsJson);
-            broadcast(new SeatSelected(auth()->id(), $selectedSeats, $showtime_id,'selected'))->toOthers();
-        }
-        else {
+            // broadcast(new SeatSelected(auth()->id(), $selectedSeats, $showtime_id,'selected'))->toOthers();
+        } else {
             $selectedSeats = session()->get('selectedSeats', []); // Lấy từ session trên client side
         }
         return $selectedSeats;
@@ -175,7 +193,7 @@ class MovieSeatPlanController extends Controller
 
             if ($previousSelectedSeats) {
                 Redis::del($cacheKey);
-                broadcast(new SeatCancelled(auth()->id(), $cancelledSeats, $showtime_id,'cancelled'))->toOthers();
+                broadcast(new SeatCancelled(auth()->id(), $cancelledSeats, $showtime_id, 'cancelled'))->toOthers();
             }
             session()->forget('selectedSeats');
         } catch (\Exception $e) {

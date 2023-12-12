@@ -13,6 +13,15 @@ use Illuminate\Http\Request;
 
 class OrderFoodController extends Controller
 {
+    public function __construct()
+    {
+        $methods = get_class_methods(__CLASS__); // Lấy danh sách các phương thức trong class hiện tại
+
+        // Loại bỏ những phương thức không cần áp dụng middleware (ví dụ: __construct, __destruct, ...)
+        $methods = array_diff($methods, ['__construct', '__destruct', '__clone', '__call', '__callStatic', '__get', '__set', '__isset', '__unset', '__sleep', '__wakeup', '__toString', '__invoke', '__set_state', '__clone', '__debugInfo']);
+
+        $this->middleware('role:Admin', ['only' => $methods]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -62,6 +71,7 @@ class OrderFoodController extends Controller
         $email = $request->input('email');
         $order_end = $request->input('order_end');
         $note = $request->input('note');
+        $cinema = $request->input('cinema');
         $userVoucher = $request->input('voucher');
         $food_items = json_decode($request->input('food_items'), true);
 
@@ -75,7 +85,6 @@ class OrderFoodController extends Controller
         foreach ($food_items as $item) {
             $food = MovieFood::find($item['food_id']);
             $food_quantity = $food->quantity;
-
             if ($item['quantity'] > $food_quantity) {
                 toastr()->error('Số lượng món ăn vượt quá số lượng có sẵn!');
                 $can_place_order = false;
@@ -93,6 +102,7 @@ class OrderFoodController extends Controller
             }
             $order = OrderFood::create([
                 'user_id' => auth()->user()->id,
+                'cinema_id' => $cinema,
                 'email' => $email,
                 'order_date' => $order_date,
                 'order_end' => $order_end,
@@ -108,7 +118,6 @@ class OrderFoodController extends Controller
                 $food_quantity = $food->quantity;
                 $food->quantity = $food_quantity - $item['quantity'];
                 $food->save();
-
                 OrderDetailFood::create([
                     'order_id' => $order->id,
                     'food_id' => $item['food_id'],
@@ -226,14 +235,19 @@ class OrderFoodController extends Controller
             toastr()->error('Không thể thay đổi trạng thái đã hoàn thành hoặc đã hủy bỏ!');
             return response()->json(['success' => false, 'message' => 'Không thể thay đổi trạng thái đã hoàn thành hoặc đã hủy bỏ']);
         }
+
+        $newReason = $request->input('reason');
+
         if (empty($newReason)) {
             $item->reason = null;
         }
         $item->status = $newStatus;
         $item->save();
+
         toastr()->success('Cập nhật trạng thái thành công!');
         return response()->json(['message' => 'Cập nhật trạng thái thành công'], 200);
     }
+
     public function deleteAll(Request $request)
     {
         $ids = $request->ids;

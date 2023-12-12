@@ -176,6 +176,21 @@
                     </ul>
                     <ul>
                         <li>
+                            <h6 class="subtitle"><span>Nhận món ăn tại rạp</span></h6>
+                            <hr>
+                            <span>
+                                <div class=" mt-2">
+                                    <select class="form-select text-dark " id="cinema">
+                                        @foreach($cinema as $cinema)
+                                        <option value="{{$cinema->id}}" class="form-group">{{$cinema->name}}</option>
+                                       @endforeach
+                                    </select>
+                                </div>
+                            </span>
+                        </li>
+                    </ul>
+                    <ul>
+                        <li>
                             <h6 class="subtitle"><span>Phương thức thanh toán</span></h6>
                             <hr>
                             <span>
@@ -201,6 +216,7 @@
                         <input type="hidden" name="order_end">
                         <input type="hidden" name="note">
                         <input type="hidden" name="voucher">
+                        <input type="hidden" name="cinema">
                         <button class="custom-button back-button" id="payButton">Thanh toán</button>
                     </form>
                 </div>
@@ -312,8 +328,6 @@
             }
             resetVoucher();
         });
-
-
         // Thêm sự kiện click cho nút tăng
         newItem.querySelector('#increase').addEventListener('click', function() {
             var quantityElement = newItem.querySelector('#newQuantity');
@@ -337,6 +351,7 @@
 <script>
     document.getElementById('payButton').addEventListener('click', function() {
         var paymentMethod = document.getElementById('paymentMethod').value;
+        var cinema = document.getElementById('cinema').value;
         var email = document.getElementById('email').value;
         var order_end = document.getElementById('order_end').value;
         var note = document.getElementById('note').value;
@@ -362,6 +377,7 @@
         document.querySelector('input[name="total_amount"]').value = parseInt(total);
         document.querySelector('input[name="total_price"]').value = parseInt(totalPrice);
         document.querySelector('input[name="payment_method"]').value = parseInt(paymentMethod);
+        document.querySelector('input[name="cinema"]').value = parseInt(cinema);
         document.querySelector('input[name="email"]').value = email;
         document.querySelector('input[name="order_end"]').value = order_end;
         document.querySelector('input[name="note"]').value = note;

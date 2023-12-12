@@ -1,0 +1,39 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\Cinema;
+use App\Models\RoleHasCinema;
+use App\Models\User;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+
+class CreateAdminSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        $user = User::create([
+            'name' => 'Admin',
+            'email' => 'admin@gmail.com',
+            'password' => bcrypt('123456')
+        ]);
+        $role = Role::create(['name' => 'Admin', 'display_name' => 'Chủ tịch', 'group' => 'admin']);
+        $cinema = Cinema::all();
+        $permissions = Permission::pluck('id','id')->all();
+        $role->syncPermissions($permissions);
+        $user->assignRole($role);
+        foreach ($cinema as $cinemaId) {
+            RoleHasCinema::create([
+                'role_id' => $role->id,
+                'cinema_id' => $cinemaId->id
+            ]);
+        }
+    }
+}

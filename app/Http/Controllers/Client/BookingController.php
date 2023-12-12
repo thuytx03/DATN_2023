@@ -33,11 +33,11 @@ class BookingController extends Controller
     public function index(BookingRequest $request, $room_id, $slug, $showtime_id)
     {
 
-            $listSeat = Session::get('selectedSeats', []);
-            if (empty($listSeat)) {
-                toastr()->error('Không thể vào trang thanh toán khi bạn chưa chọn ghế!');
-                return redirect()->route('index');
-            }
+        $listSeat = Session::get('selectedSeats', []);
+        if (empty($listSeat)) {
+            toastr()->error('Không thể vào trang thanh toán khi bạn chưa chọn ghế!');
+            return redirect()->route('index');
+        }
 
         $this->checkStatus();
         $room = Room::where('id', $room_id)->first();
@@ -94,6 +94,13 @@ class BookingController extends Controller
                 // dd($listSeat);
                 $selectedSeatsJson = json_encode($listSeat);
                 // dd($selectedSeatsJson);
+                $existingSeats = Booking::where('showtime_id', $showtime_id)
+                    ->where('list_seat', $selectedSeatsJson)
+                    ->exists();
+                if ($existingSeats) {
+                    toastr()->error('Ghế đã được đặt bởi người khác!');
+                    return redirect()->back();
+                }
                 $booking->list_seat = $selectedSeatsJson;
             }
             if (empty($listSeat)) {
@@ -133,17 +140,16 @@ class BookingController extends Controller
             }
             // Lấy thông tin mã voucher từ session
             $voucherInfo = Session::get('voucher');
-             if($voucherInfo){
-                $voucher=Voucher::where('code', $voucherInfo['code'])->first();
-                    $voucher->quantity--;
-                    $voucher->save();
-             }
+            if ($voucherInfo) {
+                $voucher = Voucher::where('code', $voucherInfo['code'])->first();
+                $voucher->quantity--;
+                $voucher->save();
+            }
             session()->forget('voucher');
             session()->forget('selectedSeats');
             session()->forget('selectedProducts');
             session()->forget('totalPriceFood');
             toastr()->success('Đặt vé thành công');
-
         }
 
         return view('client.movies.movie-checkout', compact('showTime', 'room', 'totalPriceTicket'));
@@ -270,49 +276,48 @@ class BookingController extends Controller
 
             // Update the booking status
             $booking1 = Booking::find($payment->booking_id);
-            $booking = Payment_Vnpay::where('booking_id',$payment->vnp_TxnRef)->first();
+            $booking = Payment_Vnpay::where('booking_id', $payment->vnp_TxnRef)->first();
 
 
             if ($booking) {
                 if ($booking->vnp_ResponseCode == '00') {
-                       // Tạo mã QR
-                $qrCode = QrCode::create("/qrtiketinfo/$booking1->id")
-                ->setSize(200);
+                    // Tạo mã QR
+                    $qrCode = QrCode::create("/qrtiketinfo/$booking1->id")
+                        ->setSize(200);
 
-            // Kiểm tra và tạo thư mục nếu nó không tồn tại
-            if (!file_exists(public_path('qrcodes'))) {
-                mkdir(public_path('qrcodes'), 0777, true);
-            }
+                    // Kiểm tra và tạo thư mục nếu nó không tồn tại
+                    if (!file_exists(public_path('qrcodes'))) {
+                        mkdir(public_path('qrcodes'), 0777, true);
+                    }
 
-            // Tạo và lưu mã QR như một tệp hình ảnh
-            $writer = new PngWriter();
-            $result = $writer->write($qrCode);
-            $qrcodePath = 'qrcodes/' . $booking1->id . '.png';
-            $result->saveToFile(public_path($qrcodePath));
+                    // Tạo và lưu mã QR như một tệp hình ảnh
+                    $writer = new PngWriter();
+                    $result = $writer->write($qrCode);
+                    $qrcodePath = 'qrcodes/' . $booking1->id . '.png';
+                    $result->saveToFile(public_path($qrcodePath));
 
-            // Đọc tệp hình ảnh và mã hóa nó thành base64
-            $qrcodeBase64 = base64_encode(file_get_contents(public_path($qrcodePath)));
+                    // Đọc tệp hình ảnh và mã hóa nó thành base64
+                    $qrcodeBase64 = base64_encode(file_get_contents(public_path($qrcodePath)));
 
-            // Nội dung email
-            $name = 'Thông tin đơn hàng ' . $request->input('name') . ' đến với boleto';
+                    // Nội dung email
+                    $name = 'Thông tin đơn hàng ' . $request->input('name') . ' đến với boleto';
 
-            // Gửi email
-            Mail::send('admin.qr.mail', compact('name', 'booking1', 'qrcodeBase64'), function ($message) use ($booking1, $qrcodePath) {
-                $message->from('anhandepgiai22@gmail.com', 'BoleTo');
-                $message->to($booking1->email, $booking1->name);
-                $message->subject('Thông Tin Đơn Hàng');
+                    // Gửi email
+                    Mail::send('admin.qr.mail', compact('name', 'booking1', 'qrcodeBase64'), function ($message) use ($booking1, $qrcodePath) {
+                        $message->from('anhandepgiai22@gmail.com', 'BoleTo');
+                        $message->to($booking1->email, $booking1->name);
+                        $message->subject('Thông Tin Đơn Hàng');
 
-                // Gắn thêm ảnh QR Code vào file đi kèm
-                $message->attach(public_path($qrcodePath));
-            });
+                        // Gắn thêm ảnh QR Code vào file đi kèm
+                        $message->attach(public_path($qrcodePath));
+                    });
 
-            // Xóa tệp hình ảnh tạm thời
-            unlink(public_path($qrcodePath));
-        // Đánh dấu đơn hàng là Thành Công
-             $booking1->status = 2;
-                     $booking1->save();
+                    // Xóa tệp hình ảnh tạm thời
+                    unlink(public_path($qrcodePath));
+                    // Đánh dấu đơn hàng là Thành Công
+                    $booking1->status = 2;
+                    $booking1->save();
                     $thongbao = 'Cảm ơn bạn đã thanh toán!';
-
                 } else {
                     // Payment failed, set status to an appropriate code for failed payments
                     $booking->status = 4; // Thất Bại
@@ -322,8 +327,7 @@ class BookingController extends Controller
                     }
                 }
             }
-        }
-        else {
+        } else {
 
 
             $thongbao = 'Cảm ơn bạn đã thanh toán!';
@@ -345,20 +349,20 @@ class BookingController extends Controller
 
             // Get all bookings
             $bookings = DB::table('bookings')->get();
-        if(isset($bookings)) {
-            // Loop through each booking
-            foreach ($bookings as $booking) {
-                if(isset($booking)) {
-                // Check if the movie time has ended for this booking
-                $show_time = DB::table('show_times')->where('id', $booking->showtime_id)->first();
-                if ($booking->status == 5 && $booking->hasUpdated == 0 ) {
-                    DB::table('bookings')->where('id', $booking->id)->update(['status' => 6]);
-                }
+            if (isset($bookings)) {
+                // Loop through each booking
+                foreach ($bookings as $booking) {
+                    if (isset($booking)) {
+                        // Check if the movie time has ended for this booking
+                        $show_time = DB::table('show_times')->where('id', $booking->showtime_id)->first();
+                        if ($booking->status == 5 && $booking->hasUpdated == 0) {
+                            DB::table('bookings')->where('id', $booking->id)->update(['status' => 6]);
+                        }
 
-                // Replace 'your_condition' with the actual condition to check if the movie time has ended
+                        // Replace 'your_condition' with the actual condition to check if the movie time has ended
+                    }
+                }
             }
-            }
-        }
 
             return "Records updated successfully";
         } catch (\Exception $e) {
@@ -369,35 +373,32 @@ class BookingController extends Controller
 
 
 
-public function checkStatus2($id) {
+    public function checkStatus2($id)
+    {
 
-    $bookings = Booking::where('user_id',$id)->get();
+        $bookings = Booking::where('user_id', $id)->get();
 
-if(isset($bookings)) {
-    foreach ($bookings as $booking) {
+        if (isset($bookings)) {
+            foreach ($bookings as $booking) {
 
-        if(isset($booking)) {
-        $show_time = DB::table('show_times')->where('id', $booking->showtime_id)->first();
-        // Kiểm tra nếu không có dữ liệu
+                if (isset($booking)) {
+                    $show_time = DB::table('show_times')->where('id', $booking->showtime_id)->first();
+                    // Kiểm tra nếu không có dữ liệu
 
-        if (!$show_time) {
-            continue;
+                    if (!$show_time) {
+                        continue;
+                    } elseif (strtotime($show_time->end_date) < time()) {
+
+                        if ($booking->status == 2 && $booking->hasUpdated == 0) {
+                            DB::table('bookings')->where('id', $booking->id)->update(['status' => 5]);
+                        }
+                    }
+                    // Replace 'your_condition' with the actual condition to check if the movie time has ended
+
+                }
+            }
         }
-
-            elseif (strtotime($show_time->end_date) < time()) {
-
-        if ($booking->status == 2 && $booking->hasUpdated == 0 ) {
-            DB::table('bookings')->where('id', $booking->id)->update(['status' => 5]);
-        }
-
     }
-        // Replace 'your_condition' with the actual condition to check if the movie time has ended
-
-    }
-    }
-
-}
-}
 
 
 
@@ -469,7 +470,7 @@ if(isset($bookings)) {
      *
      * @return response()
      */
-    public function paymentSuccess(Request $request,$id)
+    public function paymentSuccess(Request $request, $id)
     {
 
         $provider = new PayPalClient;
@@ -522,11 +523,9 @@ if(isset($bookings)) {
 
                 // Xóa tệp hình ảnh tạm thời
                 unlink(public_path($qrcodePath));
-            // Đánh dấu đơn hàng là Thành Công
-            $booking1->status = 2;
-            $booking1->save();
-
-
+                // Đánh dấu đơn hàng là Thành Công
+                $booking1->status = 2;
+                $booking1->save();
             } else {
                 // Payment failed, set status to an appropriate code for failed payments
                 $booking1->status = 3; // Thất Bại
@@ -553,6 +552,4 @@ if(isset($bookings)) {
 
         return view('client.movies.movie-ticket-food', compact('food'));
     }
-
-
 }

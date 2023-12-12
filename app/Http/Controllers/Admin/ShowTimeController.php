@@ -89,20 +89,26 @@ class ShowTimeController extends Controller
      */
     public function create()
     {
-        $rooms = Room::all();
+        $user = Auth::user();
+        $rooms = [];
+
+        if ($user->hasRole('Admin')) {
+            // Nếu người dùng có vai trò "Admin", hiển thị tất cả các phòng
+            $rooms = Room::all();
+        } else {
+            // Nếu không phải "Admin", lấy thông tin liên quan đến vai trò của người dùng
+            $roles = $user->getRoleNames()->toArray();
+            $roleIds = Role::whereIn('name', $roles)->pluck('id')->toArray();
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $roleIds)->pluck('cinema_id')->toArray();
+
+            // Lấy các phòng dựa trên cinema_ids của vai trò của người dùng
+            $rooms = Room::whereIn('cinema_id', $cinemaIds)->get();
+        }
+
         $movies = Movie::all();
         $provinces = Province::all();
+
         return view('admin.show-time.add', compact('rooms', 'movies', 'provinces'));
-    }
-    public function getCinemas($provinceId)
-    {
-        $cinemas = Cinema::where('province_id', $provinceId)->get();
-        return response()->json($cinemas);
-    }
-    public function getRooms($cinemaId)
-    {
-        $room = Room::where('cinema_id', $cinemaId)->get();
-        return response()->json($room);
     }
 
     /**
@@ -204,12 +210,37 @@ class ShowTimeController extends Controller
      */
     public function edit($id)
     {
-        $rooms = Room::all();
+        $user = Auth::user();
+        $rooms = [];
+
+        if ($user->hasRole('Admin')) {
+            // Nếu người dùng có vai trò "Admin", hiển thị tất cả các phòng
+            $rooms = Room::all();
+        } else {
+            // Nếu không phải "Admin", lấy thông tin liên quan đến vai trò của người dùng
+            $roles = $user->getRoleNames()->toArray();
+            $roleIds = Role::whereIn('name', $roles)->pluck('id')->toArray();
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $roleIds)->pluck('cinema_id')->toArray();
+
+            // Lấy các phòng dựa trên cinema_ids của vai trò của người dùng
+            $rooms = Room::whereIn('cinema_id', $cinemaIds)->get();
+
+            // Kiểm tra xem phòng cần sửa có thuộc cinema_id của vai trò của người dùng không
+            $roomToEdit = Room::find($id);
+            if (!$rooms->contains($roomToEdit)) {
+                // Nếu không có quyền sửa, thông báo lỗi và chuyển hướng về trang danh sách
+                toastr()->error('Bạn không có quyền chỉnh sửa phòng này!');
+                return redirect()->route('show-time.index');
+            }
+        }
+
         $movies = Movie::all();
         $showTime = ShowTime::find($id);
         $provinces = Province::all();
+
         return view('admin.show-time.edit', compact('rooms', 'movies', 'showTime', 'provinces'));
     }
+
 
     /**
      * Update the specified resource in storage.
@@ -298,8 +329,32 @@ class ShowTimeController extends Controller
     public function destroy($id)
     {
         if ($id) {
-            $deleted = ShowTime::where('id', $id)->delete();
+            $user = Auth::user();
+            $rooms = [];
+
+            if ($user->hasRole('Admin')) {
+                // Nếu người dùng có vai trò "Admin", hiển thị tất cả các phòng
+                $rooms = Room::all();
+            } else {
+                // Nếu không phải "Admin", lấy thông tin liên quan đến vai trò của người dùng
+                $roles = $user->getRoleNames()->toArray();
+                $roleIds = Role::whereIn('name', $roles)->pluck('id')->toArray();
+                $cinemaIds = RoleHasCinema::whereIn('role_id', $roleIds)->pluck('cinema_id')->toArray();
+
+                // Lấy các phòng dựa trên cinema_ids của vai trò của người dùng
+                $rooms = Room::whereIn('cinema_id', $cinemaIds)->get();
+
+                // Kiểm tra xem phòng cần sửa có thuộc cinema_id của vai trò của người dùng không
+                $roomToEdit = Room::find($id);
+                if (!$rooms->contains($roomToEdit)) {
+                    // Nếu không có quyền sửa, thông báo lỗi và chuyển hướng về trang danh sách
+                    toastr()->error('Bạn không có quyền xóa phòng này!');
+                    return redirect()->route('show-time.index');
+                }
+            }
+            $deleted = ShowTime::where('id', $id);
             if ($deleted) {
+                $deleted->delete();
                 toastr()->success('Xóa lịch chiếu thành công!', 'success');
             } else {
                 toastr()->error('Có lỗi xảy ra', 'error');
@@ -310,24 +365,29 @@ class ShowTimeController extends Controller
 
     public function trash(Request $request)
     {
-        $deleteItems = ShowTime::onlyTrashed();
-
-        // Tìm kiếm theo name trong trash
-        //        if ($request->has('search')) {
-        //            $search = $request->input('search');
-        //            $deleteItems->where('name', 'like', '%' . $search . '%');
-        //        }
-        // Lọc theo status trong trash
+        $user = Auth::user();
+        $query = ShowTime::onlyTrashed();
+        $roleNames = $user->getRoleNames()->toArray();
+        if (in_array('Admin', $roleNames)) {
+            $query->get();
+        } else {
+            // Tìm vai trò và lấy danh sách cinema_id từ bảng role_has_cinema
+            $roleIds = Role::whereIn('name', $roleNames)->pluck('id')->toArray();
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $roleIds)->pluck('cinema_id')->toArray();
+            // Lấy danh sách room_id từ bảng rooms dựa trên cinema_ids
+            $roomIds = Room::whereIn('cinema_id', $cinemaIds)->pluck('id')->toArray();
+            $query->whereIn('room_id', $roomIds);
+        }
         if ($request->has('status')) {
             $status = $request->input('status');
             if ($status == 0 || $status == 1) {
-                $deleteItems->where('status', $status);
+                $query->where('status', $status);
             } else if ($status == 'all') {
-                $deleteItems->get();
+                $query->get();
             }
         }
 
-        $deleteItems = $deleteItems->orderBy('id', 'DESC')->paginate(5);
+        $deleteItems = $query->orderBy('id', 'DESC')->paginate(5);
         return view('admin.show-time.trash', compact('deleteItems'));
     }
 

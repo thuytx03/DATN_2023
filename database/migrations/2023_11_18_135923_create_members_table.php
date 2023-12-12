@@ -16,11 +16,11 @@ return new class extends Migration
         Schema::create('members', function (Blueprint $table) {
             $table->id();
             $table->string('card_number')->nullable();
-            $table->float('total_bonus_points')->nullable();
-            $table->float('bonus_points_will_be_received')->nullable();
-            $table->float('current_bonus_points')->nullable();
-            $table->float('points_received_in_batches')->nullable();
-            $table->float('total_spending')->nullable();
+            $table->string('total_bonus_points')->nullable();
+            $table->string('bonus_points_will_be_received')->nullable();
+            $table->string('current_bonus_points')->nullable();
+            $table->string('points_received_in_batches')->nullable();
+            $table->string('total_spending')->nullable();
             $table->tinyInteger('status')->default(1);
             $table->unsignedBigInteger('level_id'); // Mức độ thành viên của năm nay
             $table->unsignedBigInteger('level_id_old')->nullable(); // Mức độ thành viên của năm trước (nullable)

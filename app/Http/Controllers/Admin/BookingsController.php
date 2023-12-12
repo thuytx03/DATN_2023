@@ -5,14 +5,43 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\BookingDetail;
+use App\Models\RoleHasCinema;
+use App\Models\Room;
+use App\Models\ShowTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Role;
+use App\Models\Member;
 
 class BookingsController extends Controller
-{ 
+{
+    public function __construct()
+    {
+        $methods = get_class_methods(__CLASS__); // Lấy danh sách các phương thức trong class hiện tại
+
+        // Loại bỏ những phương thức không cần áp dụng middleware (ví dụ: __construct, __destruct, ...)
+        $methods = array_diff($methods, ['__construct', '__destruct', '__clone', '__call', '__callStatic', '__get', '__set', '__isset', '__unset', '__sleep', '__wakeup', '__toString', '__invoke', '__set_state', '__clone', '__debugInfo']);
+
+        $this->middleware('role:Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Staff-Showtime-Hanoi|Staff-Showtime-HaiPhong|Staff-Showtime-ThaiBinh', ['only' => $methods]);
+    }
     public function index(Request $request)
     {
         $query = Booking::query();
-
+        $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
+        $roleNames = $user->getRoleNames()->toArray();
+        if (in_array('Admin', $roleNames)) {
+            $query->get();
+        } else {
+            // Lấy role_id từ bảng role_has_cinema
+            $roleIds = Role::whereIn('name', $roleNames)->pluck('id')->toArray();
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $roleIds)->pluck('cinema_id')->toArray();
+            // Lấy danh sách room_id từ bảng rooms dựa trên cinema_ids
+            $roomIds = Room::whereIn('cinema_id', $cinemaIds)->pluck('id')->toArray();
+            $showtimeIds = Showtime::whereIn('room_id', $roomIds)->pluck('id')->toArray(); // Lấy danh sách các showtimeIds
+            if ($showtimeIds) {
+                $query->whereIn('showtime_id', $showtimeIds);
+            }
+        }
         // Tìm kiếm theo name
         if ($request->has('search')) {
             $search = $request->input('search');
@@ -68,6 +97,28 @@ class BookingsController extends Controller
         $booking->cancel_reason = $cancelReason;
         $booking->status = 4;
         $booking->save();
+        $members = Member::all();
+
+        $member = $members->where('user_id', $booking->user_id)->first();
+
+        if ($member) {
+            // Nếu thành viên tồn tại, cập nhật giá trị total_bonus_points
+            $member->total_bonus_points += $booking->total;
+            $member->current_bonus_points += $booking->total;
+
+            // Lưu các thay đổi vào cơ sở dữ liệu nếu cần
+            $member->save();
+
+            // In ra giá trị mới của total_bonus_points để kiểm tra
+
+        } else {
+            // Xử lý trường hợp không tìm thấy thành viên
+            dd('Thành viên không tồn tại');
+        }
+
+
+
+
 
         // Thực hiện các hành động khác sau khi huỷ đơn hàng
         toastr()->success('Đơn hàng đã được huỷ thành công!');
@@ -79,9 +130,9 @@ class BookingsController extends Controller
         if ($ids) {
             Booking::whereIn('id', $ids)->delete();
             BookingDetail::where('booking_id', $ids)->delete();
-            toastr()->success( 'Thành công xoá các hoá đơn đã chọn');
+            toastr()->success('Thành công xoá các hoá đơn đã chọn');
         } else {
-            toastr()->warning( 'Không tìm thấy các hoá đơn đã chọn');
+            toastr()->warning('Không tìm thấy các hoá đơn đã chọn');
         }
     }
 
@@ -120,7 +171,6 @@ class BookingsController extends Controller
             $booking->forceDelete();
             $booking_detail->forceDelete();
             toastr()->success('Thành công', 'Thành công xoá vĩnh viễn hoá đơn');
-
         } else {
             toastr()->warning('Thất bại', 'Không tìm thấy các hoá đơn đã chọn');
         }
