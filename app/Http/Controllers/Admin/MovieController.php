@@ -23,7 +23,7 @@ class MovieController extends Controller
 
         $this->middleware('role:Admin', ['only' => $methods]);
     }
-    
+
     /**
      * Display a listing of the resource.
      *

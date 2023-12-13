@@ -82,17 +82,14 @@ class MovieTicketPlanController extends Controller
                         });
 
                         if ($roomShowtimes->count() > 0) {
-
                             // Khởi tạo một mảng để lưu trữ số lượng ghế trống cho mỗi lịch chiếu
                             $availableSeatCounts = [];
 
                             foreach ($roomShowtimes as $showtime) {
-
                                 // Lấy danh sách ghế đã đặt cho lịch chiếu này
                                 $bookings = Booking::where('showtime_id', $showtime->id)->get();
                                 $bookedSeats = [];
                                 foreach ($bookings as $booking) {
-                                    if($booking->status <> 4) {
                                     $bookedSeats = array_merge($bookedSeats, json_decode($booking->list_seat));
                                 }
                                 // Loại bỏ các giá trị trùng lặp
@@ -103,7 +100,6 @@ class MovieTicketPlanController extends Controller
 
                                 // Thêm số lượng ghế trống vào mảng
                                 $availableSeatCounts[$showtime->id] = $availableSeats;
-
                             }
 
                             // Thêm thông tin về phòng, lịch chiếu và số ghế trống vào lịch chiếu của rạp
@@ -111,7 +107,6 @@ class MovieTicketPlanController extends Controller
                                 'roomShowtimes' => $roomShowtimes,
                                 'availableSeatCounts' => $availableSeatCounts,
                             ];
-                        }
                         }
                     }
                 }

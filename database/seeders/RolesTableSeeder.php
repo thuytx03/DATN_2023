@@ -36,6 +36,6 @@ class RolesTableSeeder extends Seeder
         Role::create(['name' => 'Staff-Room-ThaiBinh','display_name'=>'Nhân viên quản lý phòng Thái Bình','group'=>'staff']);
         Role::create(['name' => 'Staff-Showtime-ThaiBinh','display_name'=>'Nhân viên quản lý lịch chiếu Thái Bình','group'=>'staff']);
         Role::create(['name' => 'Staff-Seat-ThaiBinh','display_name'=>'Nhân viên quản lý ghế Thái Bình','group'=>'staff']);
-        
+
     }
 }

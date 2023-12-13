@@ -7,6 +7,7 @@ use App\Models\RoleHasCinema;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class CreateAdminSeeder extends Seeder
@@ -25,6 +26,8 @@ class CreateAdminSeeder extends Seeder
         ]);
         $role = Role::create(['name' => 'Admin', 'display_name' => 'Chủ tịch', 'group' => 'admin']);
         $cinema = Cinema::all();
+        $permissions = Permission::pluck('id','id')->all();
+        $role->syncPermissions($permissions);
         $user->assignRole($role);
         foreach ($cinema as $cinemaId) {
             RoleHasCinema::create([
