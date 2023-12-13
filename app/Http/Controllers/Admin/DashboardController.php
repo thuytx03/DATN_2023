@@ -823,7 +823,6 @@ class DashboardController extends Controller
             }
         }
     }
-
     public function fetchLastSevenDaysData(Request $request)
     {
         $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn

@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
+            CreateAdminSeeder::class,
             CountrySeeder::class,
             RoomTypeSeeder::class,
             ProvincesSeeder::class,
@@ -23,11 +24,8 @@ class DatabaseSeeder extends Seeder
             RoomSeeder::class,
             GenreSeeder::class,
             MovieSeeder::class,
-            MemberLevelSeeder::class,
-            CreateAdminUserSeeder::class,
             SeatTypeSeeder::class,
             FoodSeeder::class,
-            CreateAdminSeeder::class,
             CreateAdminUserSeeder::class,
             RolesTableSeeder::class,
             PermissionTableSeeder::class,
