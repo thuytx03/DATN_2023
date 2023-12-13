@@ -336,7 +336,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth.check'], function () {
         Route::get('/{id}/detail', [BookingsController::class, 'detail'])->name('booking.detail');
         Route::get('/{id}/confirm', [BookingsController::class, 'confirm'])->name('booking.confirm');
         Route::get('/{id}/unconfirm', [BookingsController::class, 'unConfirm'])->name('booking.unConfirm');
-        Route::post('/{id}/cancel', [BookingsController::class, 'cancel'])->name('booking.cancel');
+        Route::POST('/{id}/cancel', [BookingsController::class, 'cancel'])->name('booking.cancel');
     });
     /*
      * Category Blog

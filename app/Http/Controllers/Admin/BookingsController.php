@@ -93,29 +93,11 @@ class BookingsController extends Controller
     public function cancel(Request $request, $id)
     {
         $booking = Booking::find($id);
+
         $cancelReason = $request->input('cancel_reason');
         $booking->cancel_reason = $cancelReason;
         $booking->status = 4;
         $booking->save();
-        $members = Member::all();
-
-        $member = $members->where('user_id', $booking->user_id)->first();
-
-        if ($member) {
-            // Nếu thành viên tồn tại, cập nhật giá trị total_bonus_points
-            $member->total_bonus_points += $booking->total;
-            $member->current_bonus_points += $booking->total;
-
-            // Lưu các thay đổi vào cơ sở dữ liệu nếu cần
-            $member->save();
-
-            // In ra giá trị mới của total_bonus_points để kiểm tra
-
-        } else {
-            // Xử lý trường hợp không tìm thấy thành viên
-            dd('Thành viên không tồn tại');
-        }
-
 
 
 
