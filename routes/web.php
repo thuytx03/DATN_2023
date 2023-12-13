@@ -62,6 +62,9 @@ Route::prefix('phim')->group(function () {
     Route::get('/{slug}/{id}', [MovieControllerClient::class, 'detail'])->name('movie.detail');
     Route::post('/filter', [MovieControllerClient::class, 'filter'])->name('movie.filter')->middleware('web');
     Route::post('/search', [MovieControllerClient::class, 'search'])->name('movie.search');
+    Route::get('/sap-xep', [MovieControllerClient::class, 'sort'])->name('movie.sort');
+    Route::post('/search-by-name', [MovieControllerClient::class, 'searchByName'])->name('movie.searchByName');
+    Route::post('/now-showing', [MovieControllerClient::class, 'nowShowingMovies'])->name('movie.showing');
 });
 
 //lịch chiếu
@@ -336,7 +339,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth.check'], function () {
         Route::get('/{id}/detail', [BookingsController::class, 'detail'])->name('booking.detail');
         Route::get('/{id}/confirm', [BookingsController::class, 'confirm'])->name('booking.confirm');
         Route::get('/{id}/unconfirm', [BookingsController::class, 'unConfirm'])->name('booking.unConfirm');
-        Route::post('/{id}/cancel', [BookingsController::class, 'cancel'])->name('booking.cancel');
+        Route::POST('/{id}/cancel', [BookingsController::class, 'cancel'])->name('booking.cancel');
     });
     /*
      * Category Blog

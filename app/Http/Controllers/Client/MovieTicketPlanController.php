@@ -15,7 +15,7 @@ use App\Events\TestEvent;
 
 class MovieTicketPlanController extends Controller
 {
-    
+
     public function index(Request $request, $id, $slug)
     {
         // xoá session khi chuyển sang lịch chiếu khác

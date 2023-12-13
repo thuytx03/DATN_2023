@@ -11,6 +11,7 @@ use App\Models\ShowTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
+use App\Models\Member;
 
 class BookingsController extends Controller
 {
@@ -92,10 +93,14 @@ class BookingsController extends Controller
     public function cancel(Request $request, $id)
     {
         $booking = Booking::find($id);
+
         $cancelReason = $request->input('cancel_reason');
         $booking->cancel_reason = $cancelReason;
         $booking->status = 4;
         $booking->save();
+
+
+
 
         // Thực hiện các hành động khác sau khi huỷ đơn hàng
         toastr()->success('Đơn hàng đã được huỷ thành công!');
