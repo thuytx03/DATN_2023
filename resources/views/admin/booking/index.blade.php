@@ -149,9 +149,7 @@ Danh sách hoá đơn
                                                 <a class="dropdown-item" href="{{ route('booking.unConfirm', ['id' => $value->id]) }}">Chờ
                                                     xác nhận
                                                 </a>
-                                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#cancelOrderModal">Huỷ
-                                                    đơn
-                                                </a>
+                                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#cancelOrderModal{{ $value->id }}">Huỷ đơn</a>
                                                 @elseif($value->status == 4)
                                                 <a class="dropdown-item" href="{{ route('booking.confirm', ['id' => $value->id]) }}">Xác
                                                     nhận
@@ -162,7 +160,7 @@ Danh sách hoá đơn
                                         </div>
                                     </td>
                                 </tr>
-                                <div class="modal fade" id="cancelOrderModal" tabindex="-1" role="dialog" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+                                <div class="modal fade" id="cancelOrderModal{{ $value->id }}" tabindex="-1" role="dialog" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
