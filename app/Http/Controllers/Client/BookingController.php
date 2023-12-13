@@ -96,6 +96,7 @@ class BookingController extends Controller
                 // dd($selectedSeatsJson);
                 $existingSeats = Booking::where('showtime_id', $showtime_id)
                     ->where('list_seat', $selectedSeatsJson)
+                    ->where('status','!=',4)
                     ->exists();
                 if ($existingSeats) {
                     toastr()->error('Ghế đã được đặt bởi người khác!');
