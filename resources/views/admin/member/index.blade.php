@@ -101,7 +101,9 @@
                                             <th scope="col">Hành động</th>
                                         </tr>
                                     </thead>
+                                    @if(isset($bookings))
                                     <tbody>
+                                        @if(isset($bookings))
                                         @foreach ($listLevel as $value)
                                         <tr>
                                             <td>
@@ -383,6 +385,7 @@
                                                 Chưa có thanh toán
                                                 @else
                                                 @php
+                                                if(isset($booking)){
                                                if($booking->status == 2 || $booking->status == 5 || $booking->status == 3)  {
     $updatedAtYear = date("Y", strtotime($booking->updated_at));
     if ($updatedAtYear < $currentYear) {
@@ -407,6 +410,7 @@
         }
 
         $value->save();
+    }
 @endphp
 
 {{ number_format($value->total_spending, 0, '.', ',') }} VND
@@ -453,9 +457,11 @@
                     </div>
                 </div>
             </div>
+            @endif
         </div>
 
     </div>
+    @endif
 @endsection
 @push('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/switchery/0.8.2/switchery.min.js"></script>

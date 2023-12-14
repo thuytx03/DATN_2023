@@ -104,6 +104,7 @@
                 <th scope="col">Danh sách ghế</th>
                 <th scope="col" >Thời gian đặt</th>
                 <th scope="col">Lịch chiếu</th>
+                <th scope="col">Đồ Ăn</th>
                 <th scope="col">Số tiền</th>
                 <th scope="col">Phương thức thanh toán</th>
                 <th scope="col">Trạng Thái</th>
@@ -131,8 +132,24 @@
                   @endphp
                 </td>
                 <td>
+                    @if ($foods->count() > 0)
+                    <p>
+                        @foreach ($foods as $food)
+                            {{ $food->name }}{{ $loop->last ? '' : ', ' }}
+                        @endforeach
+                    </p>
+
+                @else
+
+
+                        <p>Không có đặt đồ ăn</p>
+
+                @endif
+                </td>
+                <td>
                   {{ number_format($booking1->total, 0, ',', '.') }} VNĐ
                 </td>
+
                 <td>{{ $booking1->payment == 1 ? 'VNPay' : 'Paypal' }}</td>
              @if($booking1->status == 3)
              <td>Đã Check-in</td>
@@ -149,6 +166,7 @@
 
             <form action="{{route('qr.inPdf')}}" method="post">
                 @csrf
+                <input type="hidden" name="booking_id" value="{{$booking1->id}}">
                     <input type="hidden" name="name" value="{{$booking1->name}}">
                     <input type="hidden" name="moviename" value="{{$movieName->name}}">
                     <input type="hidden" name="email" value="{{$booking1->email}}">
@@ -159,6 +177,7 @@
                     <input type="hidden" name="start_date" value="{{isset($showTime1->start_date) ? $showTime1->start_date : ''}}">
                     <input type="hidden" name="payment" value="{{$booking1->payment}}">
                     <input type="hidden" name="total" value="{{$booking1->total}}">
+
                 @if ($booking1->status == 3)
                 <button class="btn btn-primary" type="submit" >In Hóa Đơn <i class="fa fa-print" aria-hidden="true"></i></button>
               @elseif($booking1->status == 2)
