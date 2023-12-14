@@ -68,4 +68,13 @@ class Kernel extends HttpKernel
         'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
         'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
     ];
+     protected function schedule(Schedule $schedule)
+    {
+        // $schedule->command('inspire')->hourly();
+        $schedule->command('backup:clean')->daily()->at('10:02');
+        $schedule->command('backup:run')->daily()->at('10:05')->withoutOverlapping();
+        $schedule->call(function () {
+            info('Backup task ran successfully.');
+        })->daily()->at('10:10');
+    }
 }
