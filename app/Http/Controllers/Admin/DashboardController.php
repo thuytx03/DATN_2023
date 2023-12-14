@@ -823,7 +823,6 @@ class DashboardController extends Controller
             }
         }
     }
-
     public function fetchLastSevenDaysData(Request $request)
     {
         $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
@@ -1417,9 +1416,8 @@ class DashboardController extends Controller
         }
         $query->where('start_date', '<=', now()) // Chỉ lấy những bộ phim đã và đang công chiếu
         ->select('name', DB::raw('DATE(start_date) as date'), DB::raw('SUM(view) as total_views'))
-            ->groupBy('name', 'date')
-            ->paginate(7); // Số lượng phim trên mỗi trang
-        $movieView = $query->orderBy('id', 'DESC')->paginate(5);
+            ->groupBy('name', 'date');
+        $movieView = $query->paginate(5);
         return view('admin.dashboard.view-day', compact('movieView'));
     }
 

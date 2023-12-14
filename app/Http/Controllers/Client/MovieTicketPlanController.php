@@ -87,7 +87,9 @@ class MovieTicketPlanController extends Controller
 
                             foreach ($roomShowtimes as $showtime) {
                                 // Lấy danh sách ghế đã đặt cho lịch chiếu này
-                                $bookings = Booking::where('showtime_id', $showtime->id)->get();
+                                $bookings = Booking::where('showtime_id', $showtime->id)
+                                ->where('status','!=','4')
+                                ->get();
                                 $bookedSeats = [];
                                 foreach ($bookings as $booking) {
                                     $bookedSeats = array_merge($bookedSeats, json_decode($booking->list_seat));

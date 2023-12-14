@@ -71,7 +71,9 @@ class MovieSeatPlanController extends Controller
         $showTime = ShowTime::find($showtime_id);
 
         //đây là code kiểm tra danh sách ghế đã được đặt dựa trên showtime_id
-        $bookings = Booking::where('showtime_id', $showtime_id)->get();
+        $bookings = Booking::where('showtime_id', $showtime_id)
+        ->where('status','!=',4)
+        ->get();
         $bookedSeats = [];
         foreach ($bookings as $booking) {
             $bookedSeats = array_merge($bookedSeats, json_decode($booking->list_seat));
