@@ -19,6 +19,8 @@ class ProvincesSeeder extends Seeder
            ['name' => 'Hà Nội','slug' => 'ha-noi'],
            ['name' => 'Hải Phòng','slug' => 'hai-phong'],
            ['name' => 'Thái Bình','slug' => 'thai-binh'],
+           ['name' => 'Nam Định','slug' => 'nam-dinh'],
+           ['name' => 'Quảng Ninh','slug' => 'quang-ninh'],
         ]);
     }
 }

@@ -21,15 +21,15 @@ return new class extends Migration
             $table->string('current_bonus_points')->nullable();
             $table->string('points_received_in_batches')->nullable();
             $table->string('total_spending')->nullable();
-            $table->tinyInteger('status')->default(1);
-            $table->unsignedBigInteger('level_id'); // Mức độ thành viên của năm nay
-            $table->unsignedBigInteger('level_id_old')->nullable(); // Mức độ thành viên của năm trước (nullable)
-            $table->unsignedBigInteger('user_id'); // Thêm trường user_id
+            $table->string('status')->default(1);
+            $table->string('level_id'); // Mức độ thành viên của năm nay
+            $table->string('level_id_old')->nullable(); // Mức độ thành viên của năm trước (nullable)
+            $table->string('user_id'); // Thêm trường user_id
             $table->timestamps();
             $table->softDeletes();
-            $table->foreign('level_id_old')->references('id')->on('membership_levels')->onDelete('cascade');
-            $table->foreign('level_id')->references('id')->on('membership_levels')->onDelete('cascade');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            // $table->foreign('level_id_old')->references('id')->on('membership_levels')->onDelete('cascade');
+            // $table->foreign('level_id')->references('id')->on('membership_levels')->onDelete('cascade');
+            // $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

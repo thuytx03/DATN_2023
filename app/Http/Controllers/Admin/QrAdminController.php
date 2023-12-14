@@ -22,6 +22,7 @@ use Dompdf\Dompdf;
 use App\Models\SeatType;
 use App\Models\BookingDetail;
 use App\Models\MovieFood;
+
 class QrAdminController extends Controller
 {
     public function __construct()
@@ -31,7 +32,7 @@ class QrAdminController extends Controller
         // Loại bỏ những phương thức không cần áp dụng middleware (ví dụ: __construct, __destruct, ...)
         $methods = array_diff($methods, ['__construct', '__destruct', '__clone', '__call', '__callStatic', '__get', '__set', '__isset', '__unset', '__sleep', '__wakeup', '__toString', '__invoke', '__set_state', '__clone', '__debugInfo']);
 
-        $this->middleware('role:Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Staff-Qr-Hanoi|Staff-Qr-HaiPhong|Staff-Qr-ThaiBinh', ['only' => $methods]);
+        $this->middleware('role:Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Manage-NamDinh|Manage-NinhBinh|Staff-Qr-Hanoi|Staff-Qr-HaiPhong|Staff-Qr-ThaiBinh|Staff-Qr-NamDinh|Staff-Qr-NinhBinh', ['only' => $methods]);
     }
     public function index()
     {
@@ -70,16 +71,15 @@ class QrAdminController extends Controller
 
 
 
-                    if(isset($bookingdetail)){
+                    if (isset($bookingdetail)) {
 
-                                // Extracting food_ids from booking details
-                                $foodIds = $bookingdetail->pluck('food_id');
+                        // Extracting food_ids from booking details
+                        $foodIds = $bookingdetail->pluck('food_id');
 
-                                // Retrieving food items using the extracted food_ids
-                                $foods = MovieFood::whereIn('id', $foodIds)->get();
-
-                 }
-                    return view('admin.qr.qrscanner', compact('booking1', 'thongbao', 'showTime1', 'room', 'movieName','foods'));
+                        // Retrieving food items using the extracted food_ids
+                        $foods = MovieFood::whereIn('id', $foodIds)->get();
+                    }
+                    return view('admin.qr.qrscanner', compact('booking1', 'thongbao', 'showTime1', 'room', 'movieName', 'foods'));
                 }
             } elseif ($booking1->status == 3) {
                 $showTime1 = ShowTime::where('id', $booking1->showtime_id)->first();
@@ -92,16 +92,15 @@ class QrAdminController extends Controller
 
 
 
-                    if(isset($bookingdetail)){
+                    if (isset($bookingdetail)) {
 
-                                // Extracting food_ids from booking details
-                                $foodIds = $bookingdetail->pluck('food_id');
+                        // Extracting food_ids from booking details
+                        $foodIds = $bookingdetail->pluck('food_id');
 
-                                // Retrieving food items using the extracted food_ids
-                                $foods = MovieFood::whereIn('id', $foodIds)->get();
-
-                 }
-                    return view('admin.qr.qrscanner', compact('booking1', 'thongbao', 'showTime1', 'room', 'movieName','foods'));
+                        // Retrieving food items using the extracted food_ids
+                        $foods = MovieFood::whereIn('id', $foodIds)->get();
+                    }
+                    return view('admin.qr.qrscanner', compact('booking1', 'thongbao', 'showTime1', 'room', 'movieName', 'foods'));
                 } else {
                     $bookings = Booking::orderBy('updated_at', 'desc')->get();
                     $showTime = ShowTime::all();
@@ -112,16 +111,15 @@ class QrAdminController extends Controller
 
 
 
-                    if(isset($bookingdetail)){
+                    if (isset($bookingdetail)) {
 
-                                // Extracting food_ids from booking details
-                                $foodIds = $bookingdetail->pluck('food_id');
+                        // Extracting food_ids from booking details
+                        $foodIds = $bookingdetail->pluck('food_id');
 
-                                // Retrieving food items using the extracted food_ids
-                                $foods = MovieFood::whereIn('id', $foodIds)->get();
-
-                 }
-                    return view('admin.qr.qrscanner', compact('bookings', 'showTime', 'movie', 'rooms', 'thongbao','foods'));
+                        // Retrieving food items using the extracted food_ids
+                        $foods = MovieFood::whereIn('id', $foodIds)->get();
+                    }
+                    return view('admin.qr.qrscanner', compact('bookings', 'showTime', 'movie', 'rooms', 'thongbao', 'foods'));
                 }
                 // $thongbao = 'Vé này Đã được quét';
                 // return view('admin.qr.qrscanner',compact('booking1','thongbao','showTime1'));
@@ -136,16 +134,15 @@ class QrAdminController extends Controller
 
 
 
-                if(isset($bookingdetail)){
+                if (isset($bookingdetail)) {
 
-                            // Extracting food_ids from booking details
-                            $foodIds = $bookingdetail->pluck('food_id');
+                    // Extracting food_ids from booking details
+                    $foodIds = $bookingdetail->pluck('food_id');
 
-                            // Retrieving food items using the extracted food_ids
-                            $foods = MovieFood::whereIn('id', $foodIds)->get();
-
-             }
-                return view('admin.qr.index', compact('bookings', 'showTime', 'movie', 'rooms', 'thongbao','foods'));
+                    // Retrieving food items using the extracted food_ids
+                    $foods = MovieFood::whereIn('id', $foodIds)->get();
+                }
+                return view('admin.qr.index', compact('bookings', 'showTime', 'movie', 'rooms', 'thongbao', 'foods'));
             }
         } else {
             $bookings = Booking::orderBy('updated_at', 'desc')->get();
@@ -237,15 +234,14 @@ class QrAdminController extends Controller
         $bookingdetail = BookingDetail::where('booking_id', $data['booking_id'])->get();
         $booking_id =  $data['booking_id'];
 
-        if(isset($bookingdetail)){
+        if (isset($bookingdetail)) {
 
-                    // Extracting food_ids from booking details
-                    $foodIds = $bookingdetail->pluck('food_id');
+            // Extracting food_ids from booking details
+            $foodIds = $bookingdetail->pluck('food_id');
 
-                    // Retrieving food items using the extracted food_ids
-                    $foods = MovieFood::whereIn('id', $foodIds)->get();
-
-     }
+            // Retrieving food items using the extracted food_ids
+            $foods = MovieFood::whereIn('id', $foodIds)->get();
+        }
 
         $list_seat = explode(",", $data['list_seat']);
         $number_of_seats = count($list_seat);
@@ -265,7 +261,7 @@ class QrAdminController extends Controller
                 $startDate = date('d/m/Y', strtotime($individual_data['start_date']));
                 $screeningTime = date('H:i', strtotime($individual_data['start_date']));
 
-                $pdf->loadHTML(view('admin.qr.bills', compact('seat_type', 'individual_data', 'startDate', 'screeningTime', 'list_seat', 'seat1','foods','booking_id','bookingdetail'))->render());
+                $pdf->loadHTML(view('admin.qr.bills', compact('seat_type', 'individual_data', 'startDate', 'screeningTime', 'list_seat', 'seat1', 'foods', 'booking_id', 'bookingdetail'))->render());
 
                 // Xuất hóa đơn cho từng ghế
                 return   $pdf->stream('bill_seat_' . $individual_data['list_seat'] . '.pdf');
@@ -274,7 +270,7 @@ class QrAdminController extends Controller
             // Nếu chỉ có một ghế, thì xử lý như bình thường
             $startDate = date('d/m/Y', strtotime($data['start_date']));
             $screeningTime = date('H:i', strtotime($data['start_date']));
-            $pdf->loadHTML(view('admin.qr.bill', compact('data', 'startDate', 'screeningTime','foods','booking_id','bookingdetail'))->render());
+            $pdf->loadHTML(view('admin.qr.bill', compact('data', 'startDate', 'screeningTime', 'foods', 'booking_id', 'bookingdetail'))->render());
 
 
             // Xuất hóa đơn

@@ -24,7 +24,7 @@ class ShowTimeController extends Controller
         // Loại bỏ những phương thức không cần áp dụng middleware (ví dụ: __construct, __destruct, ...)
         $methods = array_diff($methods, ['__construct', '__destruct', '__clone', '__call', '__callStatic', '__get', '__set', '__isset', '__unset', '__sleep', '__wakeup', '__toString', '__invoke', '__set_state', '__clone', '__debugInfo']);
 
-        $this->middleware('role:Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Staff-Showtime-Hanoi|Staff-Showtime-HaiPhong|Staff-Showtime-ThaiBinh', ['only' => $methods]);
+        $this->middleware('role:Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Manage-NamDinh|Manage-NinhBinh|Staff-Showtime-Hanoi|Staff-Showtime-HaiPhong|Staff-Showtime-ThaiBinh|Staff-Showtime-NamDinh|Staff-Showtime-NinhBinh', ['only' => $methods]);
     }
     /**
      * Display a listing of the resource.

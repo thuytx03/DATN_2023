@@ -37,5 +37,18 @@ class RolesTableSeeder extends Seeder
         Role::create(['name' => 'Staff-Showtime-ThaiBinh','display_name'=>'Nhân viên quản lý lịch chiếu Thái Bình','group'=>'staff']);
         Role::create(['name' => 'Staff-Seat-ThaiBinh','display_name'=>'Nhân viên quản lý ghế Thái Bình','group'=>'staff']);
 
+        Role::create(['name' => 'Manage-NamDinh','display_name'=>'Quản lý rạp Nam Định ','group'=>'manage']);
+        Role::create(['name' => 'Staff-Booking-NamDinh','display_name'=>'Nhân viên quản lý đơn đặt vé Nam Định','group'=>'staff']);
+        Role::create(['name' => 'Staff-Qr-NamDinh','display_name'=>'Nhân viên quản lý mã qr Nam Định','group'=>'staff']);
+        Role::create(['name' => 'Staff-Room-NamDinh','display_name'=>'Nhân viên quản lý phòng Nam Định','group'=>'staff']);
+        Role::create(['name' => 'Staff-Showtime-NamDinh','display_name'=>'Nhân viên quản lý lịch chiếu Nam Định','group'=>'staff']);
+        Role::create(['name' => 'Staff-Seat-NamDinh','display_name'=>'Nhân viên quản lý ghế Nam Định','group'=>'staff']);
+        
+        Role::create(['name' => 'Manage-NinhBinh','display_name'=>'Quản lý rạp Ninh Bình ','group'=>'manage']);
+        Role::create(['name' => 'Staff-Booking-NinhBinh','display_name'=>'Nhân viên quản lý đơn đặt vé Ninh Bình','group'=>'staff']);
+        Role::create(['name' => 'Staff-Qr-NinhBinh','display_name'=>'Nhân viên quản lý mã qr Ninh Bình','group'=>'staff']);
+        Role::create(['name' => 'Staff-Room-NinhBinh','display_name'=>'Nhân viên quản lý phòng Ninh Bình','group'=>'staff']);
+        Role::create(['name' => 'Staff-Showtime-NinhBinh','display_name'=>'Nhân viên quản lý lịch chiếu Ninh Bình','group'=>'staff']);
+        Role::create(['name' => 'Staff-Seat-NinhBinh','display_name'=>'Nhân viên quản lý ghế Ninh Bình','group'=>'staff']);
     }
 }
