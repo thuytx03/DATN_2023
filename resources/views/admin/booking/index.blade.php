@@ -142,9 +142,8 @@ Danh sách hoá đơn
                                                 <a class="dropdown-item" href="{{ route('booking.confirm', ['id' => $value->id]) }}">Xác
                                                     nhận
                                                 </a>
-                                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#cancelOrderModal">Huỷ
-                                                    đơn
-                                                </a>
+                                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#cancelOrderModal{{ $value->id }}">Huỷ đơn</a>
+
                                                 @elseif($value->status == 3)
                                                 <a class="dropdown-item" href="{{ route('booking.unConfirm', ['id' => $value->id]) }}">Chờ
                                                     xác nhận
