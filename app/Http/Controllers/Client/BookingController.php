@@ -59,13 +59,9 @@ class BookingController extends Controller
                 ->where('column', $column)
                 ->first();
 
-            if ($seatInfo) {
-                // Lấy giá dựa trên 'seat_type_id' từ bảng 'seat_types'.
-                $seatType = SeatType::find($seatInfo->seat_type_id);
-                if ($seatType) {
+                if ($seatInfo) {
                     // Lưu giá của từng ghế vào mảng $prices.
-                    $prices[] = $seatType->price;
-                }
+                    $prices[] = $seatInfo->seatType->seatPrice->first()->price;
             }
         }
 

@@ -28,10 +28,7 @@
                         <label for="slug">Đường dẫn</label>
                         <input name="slug" type="text" id="slug" class="form-control" value="{{ old('slug') }}">
                     </div>
-                    <div class="form-group">
-                        <label for="name">Giá <span class="text-danger">(*)</span></label>
-                        <input type="text" id="price" name="price" class="form-control" value="{{ old('price') }}">
-                    </div>
+              
 
                     <div class="form-group">
                         <label for="status">Trạng thái</label>
@@ -103,7 +100,7 @@
                 reader.readAsDataURL(file);
             }
         });
-      
+
 
     </script>
 @endpush

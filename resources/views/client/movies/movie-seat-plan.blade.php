@@ -130,6 +130,7 @@
                             @php
                                 $seatNumber = $thuong->row . $thuong->column;
                                 $isBooked = in_array($seatNumber, $bookedSeats);
+
                             @endphp
                             @if ($currentRow != $thuong->row)
                                 @if ($currentRow !== null)
@@ -141,7 +142,7 @@
                         <ul class="seat--area">
                             @endif
                             <li class="front-seat">
-                                <input type="hidden" value="{{ $isBooked ? 0 : $thuong->seatType->price }}"
+                                <input type="hidden" value="{{ $isBooked ? 0 : $thuong->seatType->seatPrice->first()->price}}"
                                     name="seatThuong">
 
                                 <ul>
@@ -183,7 +184,7 @@
                         <ul class="seat--area">
                             @endif
                             <li class="front-seat">
-                                <input type="hidden" value="{{ $isBooked ? 0 : $vip->seatType->price }}" name="seatVip">
+                                <input type="hidden" value="{{ $isBooked ? 0 : $vip->seatType->seatPrice->first()->price }}" name="seatVip">
                                 <ul>
 
 
@@ -224,7 +225,7 @@
                             @endif
 
                             <li class="front-seat">
-                                <input type="hidden" value="{{ $isBooked ? 0 : $doi->seatType->price }}" name="seatDoi">
+                                <input type="hidden" value="{{ $isBooked ? 0 : $doi->seatType->seatPrice->first()->price }}" name="seatDoi">
 
                                 <ul class="ul-price">
                                     <li id="seat-{{ $doi->row }}{{ $doi->column }}"

@@ -92,6 +92,8 @@ class MovieSeatPlanController extends Controller
         return view('client.movies.movie-seat-plan', compact('seatsVip', 'seatsThuong', 'seatsDoi', 'room', 'showTime', 'bookedSeats', 'province', 'food', 'selectedSeats1'));
     }
 
+
+
     public function seatPrice()
     {
         // Tạo một mảng để lưu giá của từng ghế.
@@ -107,12 +109,8 @@ class MovieSeatPlanController extends Controller
                 ->first();
 
             if ($seatInfo) {
-                // Lấy giá dựa trên 'seat_type_id' từ bảng 'seat_types'.
-                $seatType = SeatType::find($seatInfo->seat_type_id);
-                if ($seatType) {
                     // Lưu giá của từng ghế vào mảng $prices.
-                    $prices[] = $seatType->price;
-                }
+                    $prices[] = $seatInfo->seatType->seatPrice->first()->price;
             }
         }
 

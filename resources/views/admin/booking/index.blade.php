@@ -106,11 +106,11 @@ Danh sách hoá đơn
                                         - Địa chỉ:{{ $value->address }} <br>
                                     </td>
                                     <td>
-                                        {!! \Illuminate\Support\Str::limit(strip_tags($value->list_seat), 20) !!}
+                                        {!! \Illuminate\Support\Str::limit(implode(', ', json_decode($value->list_seat, true)), 20) !!}
                                     </td>
 
 
-                                    <td>{{ $value->showtime->start_date }}</td>
+                                    <td>{{ $value->showtime->start_date  }}</td>
                                     <td> {{ number_format($value->total, 0, ',', '.') }} VNĐ
                                     </td>
                                     <td>{{ $value->payment == 1 ? 'VNPay' : 'Paypal' }}</td>
