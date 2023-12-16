@@ -94,7 +94,7 @@ class MovieSeatPlanController extends Controller
 
 
 
-    public function seatPrice()
+    public function seatPrice($showtime_id)
     {
         // Tạo một mảng để lưu giá của từng ghế.
         $prices = [];
@@ -107,16 +107,14 @@ class MovieSeatPlanController extends Controller
             $seatInfo = Seat::where('row', $row)
                 ->where('column', $column)
                 ->first();
-
             if ($seatInfo) {
                     // Lưu giá của từng ghế vào mảng $prices.
-                    $prices[] = $seatInfo->seatType->seatPrice->first()->price;
+                    $prices[] = $seatInfo->seatType->seatPrice->where('showtime_id',$showtime_id)->first()->price;
             }
         }
 
         // Tính tổng giá của tất cả các ghế.
         $totalPriceTicket = array_sum($prices);
-
         // Trả về giá của ghế
         return $totalPriceTicket;
     }
@@ -161,7 +159,7 @@ class MovieSeatPlanController extends Controller
             return response()->json(['error' => 'Redis error: ' . $e->getMessage()], 500);
         }
 
-        $totalPrice = $this->seatPrice();
+        $totalPrice = $this->seatPrice($showtime_id);
         return response()->json(['message' => 'Selected seats saved successfully', 'totalPrice' => $totalPrice]);
     }
 

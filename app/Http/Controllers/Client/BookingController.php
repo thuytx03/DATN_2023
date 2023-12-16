@@ -61,7 +61,7 @@ class BookingController extends Controller
 
                 if ($seatInfo) {
                     // Lưu giá của từng ghế vào mảng $prices.
-                    $prices[] = $seatInfo->seatType->seatPrice->first()->price;
+                    $prices[] = $seatInfo->seatType->seatPrice->where('showtime_id',$showtime_id)->first()->price;
             }
         }
 

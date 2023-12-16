@@ -130,7 +130,7 @@
                             @php
                                 $seatNumber = $thuong->row . $thuong->column;
                                 $isBooked = in_array($seatNumber, $bookedSeats);
-
+                                // dd($thuong->seatType->seatPrice->where('seat_type_id',1)->where('showtime_id',$showTime->id)->first()->price);
                             @endphp
                             @if ($currentRow != $thuong->row)
                                 @if ($currentRow !== null)
@@ -142,7 +142,7 @@
                         <ul class="seat--area">
                             @endif
                             <li class="front-seat">
-                                <input type="hidden" value="{{ $isBooked ? 0 : $thuong->seatType->seatPrice->first()->price}}"
+                                <input type="hidden" value="{{ $isBooked ? 0 : $thuong->seatType->seatPrice->where('seat_type_id',1)->where('showtime_id',$showTime->id)->first()->price}}"
                                     name="seatThuong">
 
                                 <ul>
@@ -184,7 +184,7 @@
                         <ul class="seat--area">
                             @endif
                             <li class="front-seat">
-                                <input type="hidden" value="{{ $isBooked ? 0 : $vip->seatType->seatPrice->first()->price }}" name="seatVip">
+                                <input type="hidden" value="{{ $isBooked ? 0 : $vip->seatType->seatPrice->where('seat_type_id',2)->where('showtime_id',$showTime->id)->first()->price }}" name="seatVip">
                                 <ul>
 
 
@@ -213,6 +213,8 @@
                             @php
                                 $seatNumber = $doi->row . $doi->column;
                                 $isBooked = in_array($seatNumber, $bookedSeats);
+                        // dd($doi->seatType->seatPrice->where('seat_type_id',3)->where('showtime_id',$showTime->id)->first()->price );
+
                             @endphp
                             @if ($currentRow != $doi->row)
                                 @if ($currentRow !== null)
@@ -225,7 +227,7 @@
                             @endif
 
                             <li class="front-seat">
-                                <input type="hidden" value="{{ $isBooked ? 0 : $doi->seatType->seatPrice->first()->price }}" name="seatDoi">
+                                <input type="hidden" value="{{ $isBooked ? 0 : $doi->seatType->seatPrice->where('seat_type_id',3)->where('showtime_id',$showTime->id)->first()->price }}" name="seatDoi">
 
                                 <ul class="ul-price">
                                     <li id="seat-{{ $doi->row }}{{ $doi->column }}"
