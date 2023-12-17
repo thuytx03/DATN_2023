@@ -10,6 +10,7 @@ use App\Http\Requests\BookingRequest;
 use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\MovieFood;
+use App\Models\Cinema;
 use App\Models\Room;
 use App\Models\Seat;
 use App\Models\SeatType;
@@ -96,6 +97,7 @@ class BookingController extends Controller
                 // dd($selectedSeatsJson);
                 $existingSeats = Booking::where('showtime_id', $showtime_id)
                     ->where('list_seat', $selectedSeatsJson)
+                    ->where('status','!=',4)
                     ->exists();
                 if ($existingSeats) {
                     toastr()->error('Ghế đã được đặt bởi người khác!');
@@ -136,6 +138,7 @@ class BookingController extends Controller
                 // Thực hiện thanh toán VNPay
                 $result = $this->paymentVNP($booking->id, $booking->total);
             } elseif ($booking->payment == 2) {
+
                 return redirect()->route('paypal.payment', ['id' => $booking->id]);
             }
             // Lấy thông tin mã voucher từ session
@@ -301,9 +304,28 @@ class BookingController extends Controller
 
                     // Nội dung email
                     $name = 'Thông tin đơn hàng ' . $request->input('name') . ' đến với boleto';
+                   $show_time1 = ShowTime::find($booking1->showtime_id);
 
+                   $moviename1 = Movie::find($show_time1->movie_id);
+
+                   $bookingDetail1 = BookingDetail::where('booking_id', $booking1->id)->get();
+
+
+
+                   if (isset($bookingDetail1)) {
+                       // Extracting food_ids from booking details
+                       $foodIds = $bookingDetail1->pluck('food_id');
+
+                       // Retrieving food items using the extracted food_ids
+                       $foods = MovieFood::whereIn('id', $foodIds)->get();
+
+
+                   }
+
+                   $room1 = Room::find($show_time1->room_id);
+                   $cinema1 = Cinema::where('id', $room1->cinema_id)->first();
                     // Gửi email
-                    Mail::send('admin.qr.mail', compact('name', 'booking1', 'qrcodeBase64'), function ($message) use ($booking1, $qrcodePath) {
+                    Mail::send('admin.qr.mail', compact('name', 'booking1', 'qrcodeBase64','moviename1','room1','foods','cinema1','show_time1'), function ($message) use ($booking1, $qrcodePath) {
                         $message->from('anhandepgiai22@gmail.com', 'BoleTo');
                         $message->to($booking1->email, $booking1->name);
                         $message->subject('Thông Tin Đơn Hàng');
@@ -412,11 +434,15 @@ class BookingController extends Controller
     }
     public function payment($id)
     {
+
+
         $provider = new PayPalClient();
         $provider->setApiCredentials(config('paypal'));
         $paypalToken = $provider->getAccessToken();
-        $booking = Booking::find($id)->first();
-        $total = ceil($booking->total / 22000);
+       $booking = Booking::find($id);
+
+        $total = round ($booking->total / 24279, 2);
+
 
         $response = $provider->createOrder([
             "intent" => "CAPTURE",
@@ -510,9 +536,28 @@ class BookingController extends Controller
 
                 // Nội dung email
                 $name = 'Thông tin đơn hàng ' . $request->input('name') . ' đến với boleto';
+                $show_time1 = ShowTime::find($booking1->showtime_id);
 
-                // Gửi email
-                Mail::send('admin.qr.mail', compact('name', 'booking1', 'qrcodeBase64'), function ($message) use ($booking1, $qrcodePath) {
+                $moviename1 = Movie::find($show_time1->movie_id);
+
+                $bookingDetail1 = BookingDetail::where('booking_id', $booking1->id)->get();
+
+
+
+                if (isset($bookingDetail1)) {
+                    // Extracting food_ids from booking details
+                    $foodIds = $bookingDetail1->pluck('food_id');
+
+                    // Retrieving food items using the extracted food_ids
+                    $foods = MovieFood::whereIn('id', $foodIds)->get();
+
+
+                }
+
+                $room1 = Room::find($show_time1->room_id);
+                $cinema1 = Cinema::where('id', $room1->cinema_id)->first();
+                 // Gửi email
+                 Mail::send('admin.qr.mail', compact('name', 'booking1', 'qrcodeBase64','moviename1','room1','foods','cinema1','show_time1'), function ($message) use ($booking1, $qrcodePath) {
                     $message->from('anhandepgiai22@gmail.com', 'BoleTo');
                     $message->to($booking1->email, $booking1->name);
                     $message->subject('Thông Tin Đơn Hàng');

@@ -60,7 +60,7 @@
                                                     <option value="all">Vui lòng chọn</option>
                                                     <option value="1">Hoạt động</option>
                                                     <option value="0">Không hoạt động</option>
-                                                  
+
                                                 </select>
                                             </label>
                                         </div>
@@ -87,13 +87,13 @@
                                                 <input type="checkbox" class="" id="select-all">
                                             </th>
                                             <th scope="col">Tên Cấp Độ</th>
-                                            
+
                                             <th scope="col">Hạn Mức </th>
                                             <th scope="col">Quyền lợi</th>
                                             <th scope="col">Quyền lợi đối với đồ ăn</th>
-                                            <th scope="col">Trạng Thái</th>
+
                                             <th scope="col">Mô Tả</th>
-                                           
+
                                             <th scope="col">Hành động</th>
                                         </tr>
                                     </thead>
@@ -114,18 +114,14 @@
                                                         Từ 0 Đến {{ number_format($value->max_limit, 0, ',', '.') }}
                                                     @endif
                                                 </td>
-                                              
-                                              
+
+
                                                 <td>{{ $value->benefits }}%</td>
                                                 <td>{{ $value->benefits_food }}%</td>
-                                                
-                                               
-                                                
-                                              <td>
-                                                <div class="form-check form-switch">
-                                                    <a href="{{route('MBSL.changeStatus',['id' => $value->id])}}"><input type="checkbox" class="switch1" data-id="{{ $value->id }}" {{ $value->status == 1 ? 'checked' : '' }} /></a>  
-                                                  </div>
-                                              </td>
+
+
+
+
                                                 <td>{{ $value->Description }}</td>
                                                 <td>
 
@@ -149,8 +145,8 @@
 
                                     </tbody>
 
-                                   
-                                             
+
+
 
                                                     <div class="dropdown">
                                                         <button class="btn " type="button" data-toggle="dropdown"
@@ -168,7 +164,7 @@
                                                     </div>
                                                 </td>
                                             </tr>
-                                        
+
                                     </tbody>
                                 </table>
                             </div>

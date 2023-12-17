@@ -41,17 +41,14 @@ use App\Http\Controllers\Client\PostController;
 use App\Http\Controllers\Client\MovieControllerClient;
 use App\Http\Controllers\Client\ProfileController;
 use App\Http\Controllers\Client\RatingController;
-use \Illuminate\Auth\Middleware\Authorize;
-
-Route::get('/', [HomeController::class, 'index'])->name('index');
-
-Route::post('/submit-message-rating', [RatingController::class, 'submitRatingAndMessage'])->name('submit-message-rating');
-
+use Illuminate\Auth\Middleware\Authorize;
 use App\Http\Controllers\client\QrcodeController;
 use App\Http\Controllers\Admin\QrAdminController;
 use Endroid\QrCode\QrCode;
 
 Route::get('/', [HomeController::class, 'index'])->name('index');
+
+Route::post('/submit-message-rating', [RatingController::class, 'submitRatingAndMessage'])->name('submit-message-rating');
 
 // qrclinet
 Route::match(['GET', 'POST'], '/qrtiketinfo/{id}', [QrcodeController::class, 'qrtiketinfo'])->name('qr.qrtiketinfo');
@@ -60,7 +57,9 @@ Route::match(['GET', 'POST'], '/qrtiketinfo/{id}', [QrcodeController::class, 'qr
 Route::prefix('phim')->group(function () {
     Route::get('/danh-sach', [MovieControllerClient::class, 'list'])->name('phim.danh-sach');
     Route::get('/{slug}/{id}', [MovieControllerClient::class, 'detail'])->name('movie.detail');
-    Route::post('/filter', [MovieControllerClient::class, 'filter'])->name('movie.filter')->middleware('web');
+    Route::post('/filter', [MovieControllerClient::class, 'filter'])
+        ->name('movie.filter')
+        ->middleware('web');
     Route::post('/search', [MovieControllerClient::class, 'search'])->name('movie.search');
     Route::get('/sap-xep', [MovieControllerClient::class, 'sort'])->name('movie.sort');
     Route::post('/search-by-name', [MovieControllerClient::class, 'searchByName'])->name('movie.searchByName');
@@ -98,8 +97,6 @@ Route::get('thanh-vien', function () {
 Route::prefix('vouchers')->group(function () {
     Route::get('/voucher-list', [VouchersController::class, 'vouchers'])->name('home.voucher.list');
     Route::get('/voucher-detail/{id}', [VouchersController::class, 'detailVouchers'])->name('home.voucher.detail');
-    Route::post('/apllyVouchers', [VouchersController::class, 'apllyVouchers'])->name('home.voucher.apllyVouchers');
-    Route::match(['GET', 'POST'], '/doi-diem', [VouchersController::class, 'exchangePoin'])->name('doi-diem');
 });
 
 Route::group(['middleware' => 'guest'], function () {
@@ -114,32 +111,7 @@ Route::middleware(['auth'])->group(function () {
         Route::match(['GET', 'POST'], '/get-food-by-type/{foodTypeId}', [FoodController::class, 'getFoodByType']);
         Route::match(['GET', 'POST'], '/check-voucher', [FoodController::class, 'checkVoucher']);
     });
-
 });
-//ghế
-Route::get('/lich-chieu/chon-ghe/{room_id}/{slug}/{showtime_id}', [MovieSeatPlanController::class, 'index'])->name('chon-ghe');
-Route::get('/lich-chieu/chon-do-an/{room_id}/{slug}/{showtime_id}', [MovieSeatPlanController::class, 'foodPlan'])->name('chon-do-an');
-Route::post('/save-selected-seats', [MovieSeatPlanController::class, 'saveSelectedSeats'])->name('save-selected-seats');
-Route::post('/luu-thong-tin-san-pham', [MovieSeatPlanController::class, 'luuThongTinSanPham'])->name('luu-thong-tin-san-pham');
-Route::post('/clear-seats-cache', [MovieSeatPlanController::class, 'clearSeatsCache']);
-
-//thanh toán
-Route::match(['GET', 'POST'], '/thanh-toan/{room_id}/{slug}/{showtime_id}', [BookingController::class, 'index'])->name('thanh-toan');
-Route::match(['GET', 'POST'], '/thanh-toan/do-an', [BookingController::class, 'ticketFood'])->name('thanh-toan.do-an');
-Route::get('/camon', [BookingController::class, 'thanks'])->name('camonthanhtoan');
-
-// paypal
-Route::get('paypal', [BookingController::class, 'paypal'])->name('paypal');
-Route::get('paypal/payment/{id}', [BookingController::class, 'payment'])->name('paypal.payment');
-Route::get('paypal/payment/success/{id}', [BookingController::class, 'paymentSuccess'])->name('paypal.payment.success');
-Route::get('paypal/payment/cancel', [BookingController::class, 'paymentCancel'])->name('paypal.payment/cancel');
-// hết paypal
-
-
-// thanh toan do an
-
-
-// het thanh toan do an
 
 // phim yeu thich
 Route::prefix('favorite')->group(function () {
@@ -151,27 +123,46 @@ Route::prefix('favorite')->group(function () {
 Route::get('bai-viet', [PostController::class, 'index'])->name('blog');
 Route::get('/bai-viet-chi-tiet/{slug}/{id}', [PostController::class, 'show'])->name('blog-detail');
 
-
 Route::middleware(['auth'])->group(function () {
+    Route::prefix('vouchers')->group(function () {
+        Route::post('/apllyVouchers', [VouchersController::class, 'apllyVouchers'])->name('home.voucher.apllyVouchers');
+        Route::match(['GET', 'POST'], '/doi-diem', [VouchersController::class, 'exchangePoin'])->name('doi-diem');
+    });
     Route::post('them-binh-luan-bai-viet', [PostController::class, 'store'])->name('blog-cmt.store');
     Route::post('tra-loi-binh-luan-bai-viet', [PostController::class, 'repStore'])->name('replie.repStore');
+    //ghế
+    Route::get('/lich-chieu/chon-ghe/{room_id}/{slug}/{showtime_id}', [MovieSeatPlanController::class, 'index'])->name('chon-ghe');
+    Route::get('/lich-chieu/chon-do-an/{room_id}/{slug}/{showtime_id}', [MovieSeatPlanController::class, 'foodPlan'])->name('chon-do-an');
+    Route::post('/save-selected-seats', [MovieSeatPlanController::class, 'saveSelectedSeats'])->name('save-selected-seats');
+    Route::post('/luu-thong-tin-san-pham', [MovieSeatPlanController::class, 'luuThongTinSanPham'])->name('luu-thong-tin-san-pham');
+    Route::post('/clear-seats-cache', [MovieSeatPlanController::class, 'clearSeatsCache']);
+
+    //thanh toán
+    Route::match(['GET', 'POST'], '/thanh-toan/{room_id}/{slug}/{showtime_id}', [BookingController::class, 'index'])->name('thanh-toan');
+    Route::match(['GET', 'POST'], '/thanh-toan/do-an', [BookingController::class, 'ticketFood'])->name('thanh-toan.do-an');
+    Route::get('/camon', [BookingController::class, 'thanks'])->name('camonthanhtoan');
+
+    // paypal
+    Route::get('paypal', [BookingController::class, 'paypal'])->name('paypal');
+    Route::get('paypal/payment/{id}', [BookingController::class, 'payment'])->name('paypal.payment');
+    Route::get('paypal/payment/success/{id}', [BookingController::class, 'paymentSuccess'])->name('paypal.payment.success');
+    Route::get('paypal/payment/cancel', [BookingController::class, 'paymentCancel'])->name('paypal.payment/cancel');
+    // hết paypal
+
+    //profile
+    Route::get('/profile', [ProfileController::class, 'profile'])->name('profile');
+    Route::get('/lich-su-giao-dich-ve', [ProfileController::class, 'transaction_history'])->name('profile.history');
+    Route::get('/chi-tiet/lich-su-giao-dich-ve/{id}', [ProfileController::class, 'transaction_history_detail'])->name('transaction.history.detail');
+    Route::match(['GET', 'POST'], '/change-password', [ProfileController::class, 'change_password'])->name('profile.changePassword');
+    Route::match(['GET', 'POST'], '/edit-profile', [ProfileController::class, 'edit_profile'])->name('profile.edit');
+    Route::match(['GET', 'POST'], '/points', [ProfileController::class, 'points'])->name('profile.points');
+    Route::match(['GET', 'POST'], '/member', [ProfileController::class, 'member'])->name('profile.member');
 });
+
 //contact
-
-//profile
-Route::get('/profile', [ProfileController::class, 'profile'])->name('profile');
-Route::get('/lich-su-giao-dich-ve', [ProfileController::class, 'transaction_history'])->name('profile.history');
-Route::get('/chi-tiet/lich-su-giao-dich-ve/{id}', [ProfileController::class, 'transaction_history_detail'])->name('transaction.history.detail');
-Route::match(['GET', 'POST'], '/change-password', [ProfileController::class, 'change_password'])->name('profile.changePassword');
-Route::match(['GET', 'POST'], '/edit-profile', [ProfileController::class, 'edit_profile'])->name('profile.edit');
-Route::match(['GET', 'POST'], '/points', [ProfileController::class, 'points'])->name('profile.points');
-Route::match(['GET', 'POST'], '/member', [ProfileController::class, 'member'])->name('profile.member');
-
-
 Route::get('contact', function () {
     return view('client.contacts.contact');
 })->name('contact');
-
 
 // route cua google
 Route::get('auth/google', [SocialController::class, 'signInwithGoogle'])->name('login_google');
@@ -182,7 +173,6 @@ Route::get('logout', [SocialController::class, 'logout'])->name('logout');
 
 // ket thuc route mang xa hoi
 Route::match(['GET', 'POST'], '/admin/login', [AuthAdminController::class, 'login'])->name('login.admin');
-
 
 Route::group(['prefix' => 'admin', 'middleware' => 'auth.check'], function () {
     //dashboard
@@ -326,7 +316,6 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth.check'], function () {
         Route::match(['GET', 'POST'], '/deleteAll', [OrderFoodController::class, 'deleteAll'])->name('food.delete-all');
     });
 
-
     //booking
     Route::prefix('booking')->group(function () {
         Route::get('/', [BookingsController::class, 'index'])->name('booking.index');
@@ -380,24 +369,24 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth.check'], function () {
         Route::get('/force-delete/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'forceDelete'])->name('post.forceDelete');
     });
     ///
-        Route::prefix('comment')->group(function () {
-            Route::get('/', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'index'])->name('comment.index');
-            // Route::get('/create', [App\Http\Controllers\Admin\Post\PostController::class, 'create'])->name('post.add');
-            // Route::post('/store', [App\Http\Controllers\Admin\Post\PostController::class, 'store'])->name('post.store');
-            Route::post('/status/{id}', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'updateStatus']);
-            Route::post('/deleteAll', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'deleteAll'])->name('comment.deleteAll');
-            // Route::get('/edit/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'edit'])->name('post.edit');
-            // Route::get('/show/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'show'])->name('post.show');
-            // Route::put('/update/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'update'])->name('post.update');
-            // Route::post('/destroy/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'destroy'])->name('post.destroy');
-            Route::get('/destroy/{id}', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'destroy'])->name('comment.destroy');
-            Route::get('/trash',  [App\Http\Controllers\Admin\Post\CommentPostController::class, 'trash'])->name('comment.trash');
-            Route::post('/permanentlyDeleteSelected', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'permanentlyDeleteSelected'])->name('comment.permanentlyDeleteSelected');
-            Route::post('/restoreSelected', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'restoreSelected'])->name('comment.restoreSelected');
+    Route::prefix('comment')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'index'])->name('comment.index');
+        // Route::get('/create', [App\Http\Controllers\Admin\Post\PostController::class, 'create'])->name('post.add');
+        // Route::post('/store', [App\Http\Controllers\Admin\Post\PostController::class, 'store'])->name('post.store');
+        Route::post('/status/{id}', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'updateStatus']);
+        Route::post('/deleteAll', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'deleteAll'])->name('comment.deleteAll');
+        // Route::get('/edit/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'edit'])->name('post.edit');
+        // Route::get('/show/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'show'])->name('post.show');
+        // Route::put('/update/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'update'])->name('post.update');
+        // Route::post('/destroy/{id}', [App\Http\Controllers\Admin\Post\PostController::class, 'destroy'])->name('post.destroy');
+        Route::get('/destroy/{id}', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'destroy'])->name('comment.destroy');
+        Route::get('/trash', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'trash'])->name('comment.trash');
+        Route::post('/permanentlyDeleteSelected', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'permanentlyDeleteSelected'])->name('comment.permanentlyDeleteSelected');
+        Route::post('/restoreSelected', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'restoreSelected'])->name('comment.restoreSelected');
 
-            Route::get('/restore/{id}',  [App\Http\Controllers\Admin\Post\CommentPostController::class, 'restore'])->name('comment.restore');
-            Route::get('/force-delete/{id}', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'forceDelete'])->name('comment.forceDelete');
-        });
+        Route::get('/restore/{id}', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'restore'])->name('comment.restore');
+        Route::get('/force-delete/{id}', [App\Http\Controllers\Admin\Post\CommentPostController::class, 'forceDelete'])->name('comment.forceDelete');
+    });
     // ///// trả lời bình luận
     Route::prefix('reply')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\Post\ReplyController::class, 'index'])->name('reply.index');
@@ -410,7 +399,6 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth.check'], function () {
         Route::get('/restore/{id}', [App\Http\Controllers\Admin\Post\ReplyController::class, 'restore'])->name('reply.restore');
         Route::get('/force-delete/{id}', [App\Http\Controllers\Admin\Post\ReplyController::class, 'forceDelete'])->name('reply.forceDelete');
     });
-
 
     // ///////////
     /*
@@ -451,12 +439,12 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth.check'], function () {
         Route::post('/restoreSelected', [MovieController::class, 'restoreSelected'])->name('movie.restoreSelected');
     });
     Route::prefix('/feed-back')->group(function () {
-       Route::get('/',[FeedbackController::class,'index'])->name('feed-back.index');
-       Route::get('/destroy/{id}',[FeedbackController::class,'destroy'])->name('feed-back.destroy');
-       Route::get('/trash',[FeedbackController::class,'trash'])->name('feed-back.trash');
-       Route::post('/deleteAll',[FeedbackController::class,'deleteAll'])->name('feed-back.deleteAll');
-       Route::get('/delete/{id}',[FeedbackController::class,'delete'])->name('feed-back.delete');
-       Route::get('/restore/{id}',[FeedbackController::class,'restore'])->name('feed-back.restore');
+        Route::get('/', [FeedbackController::class, 'index'])->name('feed-back.index');
+        Route::get('/destroy/{id}', [FeedbackController::class, 'destroy'])->name('feed-back.destroy');
+        Route::get('/trash', [FeedbackController::class, 'trash'])->name('feed-back.trash');
+        Route::post('/deleteAll', [FeedbackController::class, 'deleteAll'])->name('feed-back.deleteAll');
+        Route::get('/delete/{id}', [FeedbackController::class, 'delete'])->name('feed-back.delete');
+        Route::get('/restore/{id}', [FeedbackController::class, 'restore'])->name('feed-back.restore');
         Route::post('/permanentlyDeleteSelected', [FeedbackController::class, 'permanentlyDeleteSelected'])->name('feed-back.permanentlyDeleteSelected');
         Route::post('/restoreSelected', [FeedbackController::class, 'restoreSelected'])->name('feed-back.restoreSelected');
     });
@@ -672,22 +660,3 @@ Route::get('{filename}', function ($filename) {
 })
     ->where('filename', '(.*)')
     ->name('admin.sliders.images.show');
-//Route::get('movie-ticket-plan', function () {
-//    return view('client.movies.movie-ticket-plan');
-//})->name('movie-ticket-plan');
-//
-//Route::get('movie-seat-plan', function () {
-//    return view('client.movies.movie-seat-plan');
-//})->name('movie-seat-plan');
-//
-//Route::get('movie-checkout', function () {
-//    return view('client.movies.movie-checkout');
-//})->name('movie-checkout');
-//
-//Route::get('movie-food', function () {
-//    return view('client.movies.movie-food');
-//})->name('movie-food');
-//
-//Route::get('about-us', function () {
-//    return view('client.pages.about-us');
-//})->name('about-us');

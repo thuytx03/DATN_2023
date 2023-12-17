@@ -32,6 +32,35 @@
     </style>
 </head>
 <body>
+    @if ($foods->count() > 0)
+    <div class="ticket">
+        <h1>BoleTo Ticket Foods</h1>
+        <p><strong>Danh sách món ăn :</strong><br>
+            @foreach ($foods as $food)
+                {{ $food->name }}:
+
+                {{-- Retrieve the bookingdetail for the current food --}}
+                @php
+                    $currentBookingDetail = $bookingdetail->where('food_id', $food->id)->first();
+                @endphp
+
+                {{-- Check if the bookingdetail exists --}}
+                @if ($currentBookingDetail)
+                    {{ $currentBookingDetail->quantity }} phần
+                @else
+                    0 phần {{-- Or any default value --}}
+                @endif
+
+                @unless ($loop->last)
+                    <br>
+                @endunless
+            @endforeach
+        </p>
+    </div>
+@else
+    {{-- Hiển thị thông báo khi không có đồ ăn --}}
+@endif
+</div>
     <div class="ticket">
         <h1>BoleTo Ticket</h1>
         <p><strong>Tên khách hàng:</strong> {{ $data['name'] }}</p>

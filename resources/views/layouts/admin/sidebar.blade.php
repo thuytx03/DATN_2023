@@ -12,7 +12,7 @@
     <hr class="sidebar-divider my-0">
 
     <!-- Nav Item - Dashboard -->
-    @role('Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Admin')
+    @role('Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Manage-NamDinh|Manage-NinhBinh')
     <li class="nav-item">
         <a class="nav-link collapsed" href="{{ route('dashboard.user') }}">
             <i class="fa-solid fa-user"></i>
@@ -27,6 +27,7 @@
     <div class="sidebar-heading">
         Quản lý
     </div>
+    @role('Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Manage-NamDinh|Manage-NinhBinh|Staff-Qr-HaNoi|Staff-Qr-HaiPhong|Staff-Qr-ThaiBinh|Staff-Qr-NamDinh|Staff-Qr-NinhBinh')
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#qr" aria-expanded="true" aria-controls="qr">
             <i class="fa fa-qrcode" aria-hidden="true"></i>
@@ -38,6 +39,7 @@
             </div>
         </div>
     </li>
+    @endrole
     @role('Admin')
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwosss" aria-expanded="true" aria-controls="collapseTwosss">
@@ -54,6 +56,7 @@
     </li>
     @endrole
     <!-- Nav Item - Pages Collapse Menu -->
+    @role('Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Manage-NamDinh|Manage-NinhBinh|Staff-Room-HaNoi|Staff-Room-HaiPhong|Staff-Room-ThaiBinh|Staff-Room-NamDinh|Staff-Room-NinhBinh')
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#room" aria-expanded="true" aria-controls="room">
             <i class="fa-solid fa-archway"></i>
@@ -68,6 +71,7 @@
             </div>
         </div>
     </li>
+    @endrole
     @role('Admin')
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#order" aria-expanded="true" aria-controls="order">
@@ -81,6 +85,7 @@
         </div>
     </li>
     @endrole
+    @role('Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Manage-NamDinh|Manage-NinhBinh|Staff-Booking-HaNoi|Staff-Booking-HaiPhong|Staff-Booking-ThaiBinh|Staff-Booking-NamDinh|Staff-Booking-NinhBinh')
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#orderTicker" aria-expanded="true" aria-controls="orderTicker">
             <i class="fa-solid fa-ticket"></i>
@@ -92,6 +97,8 @@
             </div>
         </div>
     </li>
+    @endrole
+    @role('Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Manage-NamDinh|Manage-NinhBinh|Staff-Showtime-HaNoi|Staff-Showtime-HaiPhong|Staff-Showtime-ThaiBinh|Staff-Showtime-NamDinh|Staff-Showtime-NinhBinh')
     <li class="nav-item">
 
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
@@ -105,12 +112,11 @@
             </div>
         </div>
     </li>
+    @endrole
     @role('Admin')
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#movie" aria-expanded="true" aria-controls="movie">
-
             <i class="fa-solid fa-film"></i>
-
             <span>Quản lý phim</span>
         </a>
         <div id="movie" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
@@ -123,9 +129,8 @@
         </div>
     </li>
     @endrole
+    @role('Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Manage-NamDinh|Manage-NinhBinh|Staff-Seat-HaNoi|Staff-Seat-HaiPhong|Staff-Seat-ThaiBinh|Staff-Seat-NamDinh|Staff-Seat-NinhBinh')
     <li class="nav-item">
-
-
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#seat" aria-expanded="true" aria-controls="seat">
             <i class="fa-solid fa-chair"></i>
 
@@ -133,7 +138,7 @@
         </a>
         <div id="seat" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-            @role('Admin')
+                @role('Admin')
                 <a class="collapse-item" href="{{ route('seat-type.index') }}">Danh sách loại ghế</a>
                 @endrole
                 <!-- link -->
@@ -141,6 +146,7 @@
             </div>
         </div>
     </li>
+    @endrole
     @role('Admin')
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#magiamgia" aria-expanded="false" aria-controls="magiamgia">
@@ -233,7 +239,7 @@
     </li>
     @endrole
     <!-- end logo -->
-    @role('Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Admin')
+    @role('Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Manage-NamDinh|Manage-NinhBinh')
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwoabc" aria-expanded="true" aria-controls="collapseTwoabc">
             <i class="fa-solid fa-user"></i>

@@ -8,6 +8,15 @@ use Illuminate\Http\Request;
 
 class FeedbackController extends Controller
 {
+    public function __construct()
+    {
+        $methods = get_class_methods(__CLASS__); // Lấy danh sách các phương thức trong class hiện tại
+
+        // Loại bỏ những phương thức không cần áp dụng middleware (ví dụ: __construct, __destruct, ...)
+        $methods = array_diff($methods, ['__construct', '__destruct', '__clone', '__call', '__callStatic', '__get', '__set', '__isset', '__unset', '__sleep', '__wakeup', '__toString', '__invoke', '__set_state', '__clone', '__debugInfo']);
+
+        $this->middleware('role:Admin', ['only' => $methods]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -17,13 +26,13 @@ class FeedbackController extends Controller
     {
         $query = FeedBack::query();
 
-// Tìm kiếm theo name
+        // Tìm kiếm theo name
         if ($request->has('search')) {
             $search = $request->input('search');
             $query->where('u.name', 'like', '%' . $search . '%');
         }
 
-// Lọc theo status
+        // Lọc theo status
         if ($request->has('status')) {
             $status = $request->input('status');
             if ($status == 'all') {
@@ -74,7 +83,6 @@ class FeedbackController extends Controller
 
         $feedbacks = $query->orderBy('feed_backs.id', 'DESC')->paginate(5);
         return view('admin.feedbacks.index', compact('feedbacks'));
-
     }
 
     /**
@@ -82,16 +90,17 @@ class FeedbackController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function trash(Request $request) {
+    public function trash(Request $request)
+    {
         $query = FeedBack::onlyTrashed();
 
-// Tìm kiếm theo name
+        // Tìm kiếm theo name
         if ($request->has('search')) {
             $search = $request->input('search');
             $query->where('u.name', 'like', '%' . $search . '%');
         }
 
-// Lọc theo status
+        // Lọc theo status
         if ($request->has('status')) {
             $status = $request->input('status');
             if ($status == 'all') {
@@ -141,7 +150,7 @@ class FeedbackController extends Controller
         }
 
         $feedbacks = $query->orderBy('feed_backs.id', 'DESC')->paginate(5);
-        return  view('admin.feedbacks.trash',compact('feedbacks'));
+        return  view('admin.feedbacks.trash', compact('feedbacks'));
     }
 
     /**
@@ -167,9 +176,9 @@ class FeedbackController extends Controller
         $ids = $request->ids;
         if ($ids) {
             FeedBack::whereIn('id', $ids)->delete();
-            toastr()->success( 'Thành công xoá các đánh giá đã chọn');
+            toastr()->success('Thành công xoá các đánh giá đã chọn');
         } else {
-            toastr()->warning( 'Không tìm thấy các đánh giá đã chọn');
+            toastr()->warning('Không tìm thấy các đánh giá đã chọn');
         }
     }
     public function delete($id)
@@ -190,7 +199,8 @@ class FeedbackController extends Controller
             return redirect()->route('feed-back.trash');
         }
     }
-    public function restoreSelected(Request $request) {
+    public function restoreSelected(Request $request)
+    {
         $ids = $request->ids;
         if ($ids) {
             $feedbacks = FeedBack::withTrashed()->whereIn('id', $ids);
@@ -201,13 +211,13 @@ class FeedbackController extends Controller
         }
         return redirect()->route('feed-back.trash');
     }
-    public function permanentlyDeleteSelected(Request $request) {
+    public function permanentlyDeleteSelected(Request $request)
+    {
         $ids = $request->ids;
         if ($ids) {
             $feedbacks = FeedBack::withTrashed()->whereIn('id', $ids);
             $feedbacks->forceDelete();
             toastr()->success('Thành công', 'Thành công xoá vĩnh viễn đánh giá');
-
         } else {
             toastr()->warning('Thất bại', 'Không tìm thấy các đánh giá đã chọn');
         }
