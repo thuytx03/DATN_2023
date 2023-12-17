@@ -118,23 +118,6 @@
                         </div>
                         <p>Người dùng đánh giá</p>
                     </div>
-                    {{--                    @if(auth()->check() && $hasMovieBooked)--}}
-                    {{--                        <div class="item" id="item-star">--}}
-                    {{--                            <div class="item-header">--}}
-                    {{--                                <div class="rate-it list-inline d-flex" style="cursor: pointer">--}}
-                    {{--                                    @for ($count = 1; $count <= 5; $count++)--}}
-                    {{--                                        <span class="rating-it {{ $count <= $movie->userRating() ? 'highlight' : '' }}"--}}
-                    {{--                                              data-rating="{{ $count }}" data-movie-id="{{ $movie->id }}"--}}
-                    {{--                                              style="font-size: 25px; margin: 0 2px">&#9733;</span>--}}
-                    {{--                                        @if($count == 1)--}}
-                    {{--                                            <span style="display: none" id="movieID">{{ $movie->id }}</span>--}}
-                    {{--                                        @endif--}}
-                    {{--                                    @endfor--}}
-                    {{--                                </div>--}}
-                    {{--                            </div>--}}
-                    {{--                            <p>Đánh giá phim</p>--}}
-                    {{--                        </div>--}}
-                    {{--                    @endif--}}
                 </div>
                 <div class="button-container">
                     <a href="{{ route('lich-chieu',['id'=>$movie->id,'slug'=>$movie->slug]) }}" class="custom-button">Mua

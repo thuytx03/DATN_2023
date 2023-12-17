@@ -16,9 +16,9 @@ class SeatTypeSeeder extends Seeder
     public function run()
     {
         DB::table('seat_types')->insert([
-           ['name' => 'Thường','slug' => 'thuong','price' => 50000, 'status'=>1],
-           ['name' => 'Vip','slug' => 'vip','price' => 50000, 'status'=>1],
-           ['name' => 'Đôi','slug' => 'doi','price' => 50000, 'status'=>1],
+            ['name' => 'Thường', 'slug' => 'thuong', 'status' => 1],
+            ['name' => 'Vip', 'slug' => 'vip', 'status' => 1],
+            ['name' => 'Đôi', 'slug' => 'doi', 'status' => 1],
         ]);
     }
 }

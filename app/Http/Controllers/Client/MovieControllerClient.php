@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\FeedBack;
+use App\Models\ShowTime;
 use Illuminate\Http\Request;
 use App\Models\Movie;
 use App\Models\Genre;
@@ -111,6 +112,8 @@ class MovieControllerClient extends Controller
             $nameGenres = implode(',', $genresName);
             $images = $movie->images;
             $canUserReviewMovie = $this->canUserReviewMovie($userID, $id);
+            $canUserReviewMovieBooking = $this->isBookingScheduleEnded($userID,$id);
+//            dd($canUserReviewMovieBooking);
             return view('client.movies.movie-detail', compact('user', 'movie', 'images', 'nameGenres', 'averageRating', 'canUserReviewMovie', 'reviews'));
         }
         if ($movie) {
@@ -176,4 +179,30 @@ class MovieControllerClient extends Controller
         // Kiểm tra số lần đánh giá đã vượt quá số lần đặt vé
         return $numberOfReviews < $numberOfBookings;
     }
+    function isBookingScheduleEnded($user_id, $movie_id)
+    {
+        // Lấy danh sách tất cả các lịch chiếu của phim
+        $allShowtimes = ShowTime::where('movie_id', $movie_id)->get();
+
+        foreach ($allShowtimes as $showtime) {
+            // Kiểm tra xem lịch chiếu đã kết thúc chưa
+            $endTime = Carbon::parse($showtime->end_time);
+            $now = Carbon::now();
+
+            if ($endTime->gt($now)) {
+                // Nếu có ít nhất một lịch chiếu chưa kết thúc, người dùng không thể đánh giá
+                return false;
+            }
+        }
+
+        // Nếu tất cả các lịch chiếu của phim đã kết thúc, kiểm tra số lần đánh giá đã vượt quá số lần đặt vé
+        $numberOfBookings = Booking::join('show_times', 'bookings.showtime_id', '=', 'show_times.id')
+            ->where(['bookings.user_id' => $user_id, 'show_times.movie_id' => $movie_id])
+            ->count();
+
+        $numberOfReviews = Feedback::where(['user_id' => $user_id, 'movie_id' => $movie_id])->count();
+
+        return $numberOfReviews < $numberOfBookings;
+    }
+
 }

@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 @section('title')
-    Thống kê lượt xem
+    Thống kê lượt xem tính đến hiện tại
 @endsection
 @push('styles')
     <link rel="stylesheet" href="{{ asset('admin/vendor/datatables/dataTables.bootstrap4.min.css') }}">
@@ -9,11 +9,11 @@
     <div class="container-fluid">
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Thống kê lượt xem</h1>
+            <h1 class="h3 mb-0 text-gray-800">Thống kê lượt xem tính đến hiện tại</h1>
             <div>
-{{--                <a href="" class="btn btn-info">Thống kê theo ngày</a>--}}
-{{--                <a href="" class="btn btn-dark">Thống kê theo tuần</a>--}}
-{{--                <a href="" class="btn btn-secondary">Thống kê theo tháng</a>--}}
+                <a href="{{ route('dashboard.view-by-day') }}" class="btn btn-info">Thống kê theo ngày</a>
+                <a href="{{ route('dashboard.view-by-week') }}" class="btn btn-dark">Thống kê theo tuần</a>
+                <a href="{{ route('dashboard.view-by-month') }}" class="btn btn-secondary">Thống kê theo tháng</a>
             </div>
         </div>
         <div class="mb-3">
@@ -30,7 +30,7 @@
             <div class="card-header py-3">
                 <div class="row">
                     <div class="col-md-6">
-                        <h4>Thống kê lượt xem</h4>
+                        <h4>Thống kê lượt xem tính đến hiện tại</h4>
                     </div>
                 </div>
             </div>

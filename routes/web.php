@@ -202,6 +202,12 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth.check'], function () {
     });
     Route::prefix('view')->group(function () {
         Route::match(['GET', 'POST'], '/', [DashboardController::class, 'getViewMovie'])->name('dashboard.view');
+        Route::match(['GET', 'POST'], '/view-day', [DashboardController::class, 'getViewByDay'])->name('dashboard.view-by-day');
+        Route::match(['GET', 'POST'], '/view-week', [DashboardController::class, 'getViewByWeek'])->name('dashboard.view-by-week');
+        Route::match(['GET', 'POST'], '/view-month', [DashboardController::class, 'getViewByMonth'])->name('dashboard.view-by-month');
+        Route::get( '/hourlyData', [DashboardController::class, 'hourlyData'])->name('dashboard.hourlyData');
+        Route::get( '/weeklyData', [DashboardController::class, 'weeklyData'])->name('dashboard.weeklyData');
+        Route::get( '/monthlyData', [DashboardController::class, 'monthlyData'])->name('dashboard.monthlyData');
         Route::match(['GET', 'POST'], '/fetchLastSevenDaysData', [DashboardController::class, 'getViewMovieSevenDays'])->name('dashboard.view.seven');
         Route::match(['GET', 'POST'], '/fetchLastTwentyEightDaysData', [DashboardController::class, 'getViewMovieTwentyEightDays'])->name('dashboard.view.twenty');
     });

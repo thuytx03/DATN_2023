@@ -231,6 +231,7 @@ Thống kê theo ngày
             success: function(response) {
                 var hours = [];
                 var amounts = [];
+                console.log(response)
 
                 // Duyệt qua dữ liệu phản hồi
                 for (var i = 0; i < 24; i++) {

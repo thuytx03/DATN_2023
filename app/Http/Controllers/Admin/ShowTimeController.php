@@ -27,6 +27,7 @@ class ShowTimeController extends Controller
 
         $this->middleware('role:Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Manage-NamDinh|Manage-NinhBinh|Staff-Showtime-Hanoi|Staff-Showtime-HaiPhong|Staff-Showtime-ThaiBinh|Staff-Showtime-NamDinh|Staff-Showtime-NinhBinh', ['only' => $methods]);
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -75,7 +76,7 @@ class ShowTimeController extends Controller
         // Kiểm tra và cập nhật status
         $now = now(); // Lấy ngày hiện tại
         foreach ($showTimes as $showTime) {
-            if ($showTime->start_date < $now) {
+            if ($showTime->end_date < $now) {
                 $showTime->update(['status' => 0]);
             }
         }
@@ -139,16 +140,18 @@ class ShowTimeController extends Controller
         if ($room->status == 2) {
             return redirect()->back()->withErrors(['show-time' => 'Phòng không hoạt động, không thể thêm lịch chiếu.']);
         }
-        // Kiểm tra xem thời gian bắt đầu của lịch chiếu phải lớn hơn thời gian khởi chiếu của phim
-        if ($start_date->lessThanOrEqualTo($movie_start_date)) {
-            return redirect()->back()->withErrors(['show-time' => 'Thời gian bắt đầu lịch chiếu phải lớn hơn thời gian khởi chiếu của phim. Vui lòng kiểm tra ngày khởi chiếu của (' . $movie->name . ') !']);
-        }
-
         // Kiểm tra xem thời gian kết thúc của lịch chiếu phải lớn hơn thời gian bắt đầu
         if ($end_date->lessThanOrEqualTo($start_date)) {
             return redirect()->back()->withErrors(['show-time' => 'Thời gian kết thúc lịch chiếu phải lớn hơn thời gian bắt đầu.']);
         }
-
+        // Kiểm tra xem thời gian bắt đầu của lịch chiếu phải lớn hơn thời gian khởi chiếu của phim
+        if ($start_date->lessThanOrEqualTo($movie_start_date)) {
+            return redirect()->back()->withErrors(['show-time' => 'Thời gian bắt đầu lịch chiếu phải lớn hơn thời gian khởi chiếu của phim. Vui lòng kiểm tra ngày khởi chiếu của (' . $movie->name . ') !']);
+        }
+        // Kiểm tra xem thời gian kết thúc của lịch chiếu phải lớn hơn thời gian khởi chiếu của phim
+        if ($end_date->lessThanOrEqualTo($movie_start_date)) {
+            return redirect()->back()->withErrors(['show-time' => 'Thời gian kết thúc lịch chiếu phải lớn hơn thời gian khởi chiếu của phim. Vui lòng kiểm tra ngày khởi chiếu của (' . $movie->name . ') !']);
+        }
         // Kiểm tra xem ngày bắt đầu và kết thúc phải lớn hơn ngày hiện tại
         if ($start_date->lessThanOrEqualTo($current_date) || $end_date->lessThanOrEqualTo($current_date)) {
             return redirect()->back()->withErrors(['show-time' => 'Ngày bắt đầu và kết thúc phải lớn hơn ngày hiện tại.']);
@@ -217,7 +220,6 @@ class ShowTimeController extends Controller
             $seatPriceDoi->price = $doi;
             $seatPriceDoi->save();
         }
-
 
 
         toastr()->success('Thêm lịch chiếu thành công!', 'success');
@@ -351,58 +353,58 @@ class ShowTimeController extends Controller
         $showtime->save();
 
         $thuong = $request->thuong;
-$vip = $request->vip;
-$doi = $request->doi;
+        $vip = $request->vip;
+        $doi = $request->doi;
 
-$showtime_id = $showtime->id;
+        $showtime_id = $showtime->id;
 
 // Check if SeatPrice records exist for the given showtime_id and seat_type_id, and update them if they do.
 // If not, create new records.
 
-if ($thuong > 0) {
-    $seatPriceTh = SeatPrice::where('showtime_id', $showtime_id)
-        ->where('seat_type_id', 1)
-        ->first();
+        if ($thuong > 0) {
+            $seatPriceTh = SeatPrice::where('showtime_id', $showtime_id)
+                ->where('seat_type_id', 1)
+                ->first();
 
-    if (!$seatPriceTh) {
-        $seatPriceTh = new SeatPrice();
-        $seatPriceTh->showtime_id = $showtime_id;
-        $seatPriceTh->seat_type_id = 1;
-    }
+            if (!$seatPriceTh) {
+                $seatPriceTh = new SeatPrice();
+                $seatPriceTh->showtime_id = $showtime_id;
+                $seatPriceTh->seat_type_id = 1;
+            }
 
-    $seatPriceTh->price = $thuong;
-    $seatPriceTh->save();
-}
+            $seatPriceTh->price = $thuong;
+            $seatPriceTh->save();
+        }
 
-if ($vip > 0) {
-    $seatPriceVip = SeatPrice::where('showtime_id', $showtime_id)
-        ->where('seat_type_id', 2)
-        ->first();
+        if ($vip > 0) {
+            $seatPriceVip = SeatPrice::where('showtime_id', $showtime_id)
+                ->where('seat_type_id', 2)
+                ->first();
 
-    if (!$seatPriceVip) {
-        $seatPriceVip = new SeatPrice();
-        $seatPriceVip->showtime_id = $showtime_id;
-        $seatPriceVip->seat_type_id = 2;
-    }
+            if (!$seatPriceVip) {
+                $seatPriceVip = new SeatPrice();
+                $seatPriceVip->showtime_id = $showtime_id;
+                $seatPriceVip->seat_type_id = 2;
+            }
 
-    $seatPriceVip->price = $vip;
-    $seatPriceVip->save();
-}
+            $seatPriceVip->price = $vip;
+            $seatPriceVip->save();
+        }
 
-if ($doi > 0) {
-    $seatPriceDoi = SeatPrice::where('showtime_id', $showtime_id)
-        ->where('seat_type_id', 3)
-        ->first();
+        if ($doi > 0) {
+            $seatPriceDoi = SeatPrice::where('showtime_id', $showtime_id)
+                ->where('seat_type_id', 3)
+                ->first();
 
-    if (!$seatPriceDoi) {
-        $seatPriceDoi = new SeatPrice();
-        $seatPriceDoi->showtime_id = $showtime_id;
-        $seatPriceDoi->seat_type_id = 3;
-    }
+            if (!$seatPriceDoi) {
+                $seatPriceDoi = new SeatPrice();
+                $seatPriceDoi->showtime_id = $showtime_id;
+                $seatPriceDoi->seat_type_id = 3;
+            }
 
-    $seatPriceDoi->price = $doi;
-    $seatPriceDoi->save();
-}
+            $seatPriceDoi->price = $doi;
+            $seatPriceDoi->save();
+        }
 
 
         toastr()->success('Cập nhật lịch chiếu thành công!', 'success');

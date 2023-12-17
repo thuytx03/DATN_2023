@@ -11,6 +11,6 @@ class MovieView extends Model
 
     public function movie()
     {
-        return $this->belongsTo(Movie::class);
+        return $this->belongsTo(Movie::class,'movie_id');
     }
 }

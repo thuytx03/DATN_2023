@@ -27,6 +27,7 @@ class DashboardController extends Controller
 
         $this->middleware('role:Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Manage-NamDinh|Manage-NinhBinh', ['only' => $methods]);
     }
+
     public function user(Request $request)
     {
         $todayUsersCount = User::whereDate('created_at', Carbon::today())->count();
@@ -85,13 +86,11 @@ class DashboardController extends Controller
 
             $totalConfirmedAmountByDate = Booking::where('status', 3)
                 ->whereDate('created_at', Carbon::today())
-
                 ->sum('total');
 
             $totalBookings = Booking::whereDate('created_at', Carbon::today())->count();
 
             $statusCounts = Booking::whereDate('created_at', Carbon::today())
-
                 ->selectRaw('status, COUNT(*) as count')
                 ->groupBy('status')
                 ->pluck('count', 'status')
@@ -103,7 +102,6 @@ class DashboardController extends Controller
                 $statusPercentages[$status] = round($percentage, 2);
             }
             $paymentMethodCounts = Booking::whereDate('created_at', Carbon::today())
-
                 ->selectRaw('payment, COUNT(*) as count')
                 ->groupBy('payment')
                 ->pluck('count', 'payment')
@@ -265,14 +263,12 @@ class DashboardController extends Controller
             $totalBookingsThisSevenDays = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
 
             $totalConfirmedAmountThisSevenDays = Booking::where('status', 3)
-
                 ->whereBetween('created_at', [$startDate, $endDate])
                 ->sum('total');
 
             $totalBookings = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
 
             $statusCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
-
                 ->selectRaw('status, COUNT(*) as count')
                 ->groupBy('status')
                 ->pluck('count', 'status')
@@ -285,7 +281,6 @@ class DashboardController extends Controller
             }
 
             $paymentMethodCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
-
                 ->selectRaw('payment, COUNT(*) as count')
                 ->groupBy('payment')
                 ->pluck('count', 'payment')
@@ -379,14 +374,12 @@ class DashboardController extends Controller
                     $totalBookingsThisCalendar = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
 
                     $totalConfirmedAmountThisCalendar = Booking::where('status', 3)
-
                         ->whereBetween('created_at', [$startDate, $endDate])
                         ->sum('total');
 
                     $totalBookings = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
 
                     $statusCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
-
                         ->selectRaw('status, COUNT(*) as count')
                         ->groupBy('status')
                         ->pluck('count', 'status')
@@ -399,7 +392,6 @@ class DashboardController extends Controller
                     }
 
                     $paymentMethodCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
-
                         ->selectRaw('payment, COUNT(*) as count')
                         ->groupBy('payment')
                         ->pluck('count', 'payment')
@@ -499,6 +491,7 @@ class DashboardController extends Controller
             }
         }
     }
+
     public function getCountStatusCalendar(Request $request)
     {
         $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
@@ -514,17 +507,14 @@ class DashboardController extends Controller
 
                     $status2Count = Booking::where('status', 2)
                         ->whereBetween('created_at', [$startDate, $endDate])
-
                         ->count();
 
                     $status3Count = Booking::where('status', 3)
                         ->whereBetween('created_at', [$startDate, $endDate])
-
                         ->count();
 
                     $status4Count = Booking::where('status', 4)
                         ->whereBetween('created_at', [$startDate, $endDate])
-
                         ->count();
 
                     return response()->json([
@@ -582,6 +572,7 @@ class DashboardController extends Controller
             }
         }
     }
+
     public function twentyEight(Request $request)
     {
         $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
@@ -593,14 +584,12 @@ class DashboardController extends Controller
             $totalBookingsThisTwentyEight = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
 
             $totalConfirmedAmountThisTwentyEight = Booking::where('status', 3)
-
                 ->whereBetween('created_at', [$startDate, $endDate])
                 ->sum('total');
 
             $totalBookings = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
 
             $statusCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
-
                 ->selectRaw('status, COUNT(*) as count')
                 ->groupBy('status')
                 ->pluck('count', 'status')
@@ -613,7 +602,6 @@ class DashboardController extends Controller
             }
 
             $paymentMethodCounts = Booking::whereBetween('created_at', [$startDate, $endDate])
-
                 ->selectRaw('payment, COUNT(*) as count')
                 ->groupBy('payment')
                 ->pluck('count', 'payment')
@@ -685,6 +673,7 @@ class DashboardController extends Controller
             ]);
         }
     }
+
     public function getCountStatusSeven()
     {
         $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
@@ -695,17 +684,14 @@ class DashboardController extends Controller
                 $startDate = Carbon::now()->subDays(6)->startOfDay(); // Ngày 7 ngày trước
 
                 $status2Count = Booking::where('status', 2)
-
                     ->whereBetween('created_at', [$startDate, $endDate])
                     ->count();
 
                 $status3Count = Booking::where('status', 3)
                     ->whereBetween('created_at', [$startDate, $endDate])
-
                     ->count();
 
                 $status4Count = Booking::where('status', 4)
-
                     ->whereBetween('created_at', [$startDate, $endDate])
                     ->count();
 
@@ -754,6 +740,7 @@ class DashboardController extends Controller
             }
         }
     }
+
     public function getCountStatusTwentyEight()
     {
         $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
@@ -764,17 +751,14 @@ class DashboardController extends Controller
                 $startDate = Carbon::now()->subDays(27)->startOfDay(); // Ngày 28 ngày trước
 
                 $status2Count = Booking::where('status', 2)
-
                     ->whereBetween('created_at', [$startDate, $endDate])
                     ->count();
 
                 $status3Count = Booking::where('status', 3)
-
                     ->whereBetween('created_at', [$startDate, $endDate])
                     ->count();
 
                 $status4Count = Booking::where('status', 4)
-
                     ->whereBetween('created_at', [$startDate, $endDate])
                     ->count();
 
@@ -823,6 +807,7 @@ class DashboardController extends Controller
             }
         }
     }
+
     public function fetchLastSevenDaysData(Request $request)
     {
         $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
@@ -837,7 +822,6 @@ class DashboardController extends Controller
 
             // Truy vấn cơ sở dữ liệu để lấy doanh thu từ bảng bookings trong khoảng thời gian này
             $revenueData = Booking::where('status', 3)
-
                 ->whereBetween('created_at', [$startDate, $endDate])
                 ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total) as total_amount'))
                 ->groupBy(DB::raw('DATE(created_at)'))
@@ -885,7 +869,6 @@ class DashboardController extends Controller
 
             // Truy vấn cơ sở dữ liệu để lấy doanh thu từ bảng bookings trong khoảng thời gian này
             $revenueData = Booking::where('status', 3)
-
                 ->whereBetween('created_at', [$startDate, $endDate])
                 ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total) as total_amount'))
                 ->groupBy(DB::raw('DATE(created_at)'))
@@ -930,7 +913,6 @@ class DashboardController extends Controller
 
             // Truy vấn cơ sở dữ liệu để lấy thống kê theo ngày trong khoảng ngày được chọn
             $dailyData = Booking::where('status', 3)
-
                 ->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
                 ->selectRaw('DATE(created_at) as date, SUM(total) as total_amount')
                 ->groupBy(DB::raw('DATE(created_at)'))
@@ -961,6 +943,7 @@ class DashboardController extends Controller
             return response()->json(['dailyData' => $dailyData]);
         }
     }
+
     public function week(Request $request)
     {
         $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
@@ -973,14 +956,12 @@ class DashboardController extends Controller
                 ->count();
 
             $totalConfirmedAmountThisWeek = Booking::where('status', 3)
-
                 ->whereBetween('created_at', [$currentWeek, $endOfWeek])
                 ->sum('total');
 
             $totalBookings = Booking::whereBetween('created_at', [$currentWeek, $endOfWeek])->count();
 
             $statusCounts = Booking::whereBetween('created_at', [$currentWeek, $endOfWeek])
-
                 ->selectRaw('status, COUNT(*) as count')
                 ->groupBy('status')
                 ->pluck('count', 'status')
@@ -992,7 +973,6 @@ class DashboardController extends Controller
                 $statusPercentages[$status] = round($percentage, 2);
             }
             $paymentMethodCounts = Booking::whereBetween('created_at', [$currentWeek, $endOfWeek])
-
                 ->selectRaw('payment, COUNT(*) as count')
                 ->groupBy('payment')
                 ->pluck('count', 'payment')
@@ -1074,7 +1054,6 @@ class DashboardController extends Controller
 
                 // Lấy dữ liệu theo từng ngày trong tuần và tổng doanh thu tương ứng
                 $weeklyRevenueData = Booking::selectRaw('DATE(created_at) as week, SUM(total) as total_amount')
-
                     ->groupByRaw('DATE(created_at)')
                     ->orderByRaw('DATE(created_at)')
                     ->where('status', 3)
@@ -1200,6 +1179,7 @@ class DashboardController extends Controller
             }
         }
     }
+
     public function month(Request $request)
     {
         $user = Auth::user(); // Hoặc cách lấy thông tin người dùng tương ứng với ứng dụng của bạn
@@ -1209,14 +1189,12 @@ class DashboardController extends Controller
                 ->count();
 
             $totalConfirmedAmountThisMonth = Booking::where('status', 3)
-
                 ->whereYear('created_at', '=', Carbon::now()->year)
                 ->sum('total');
 
             $totalBookings = Booking::whereYear('created_at', '=', Carbon::now()->year)->count();
 
             $statusCounts = Booking::whereYear('created_at', '=', Carbon::now()->year)
-
                 ->selectRaw('status, COUNT(*) as count')
                 ->groupBy('status')
                 ->pluck('count', 'status')
@@ -1228,7 +1206,6 @@ class DashboardController extends Controller
                 $statusPercentages[$status] = round($percentage, 2);
             }
             $paymentMethodCounts = Booking::whereYear('created_at', '=', Carbon::now()->year)
-
                 ->selectRaw('payment, COUNT(*) as count')
                 ->groupBy('payment')
                 ->pluck('count', 'payment')
@@ -1401,23 +1378,32 @@ class DashboardController extends Controller
         }
     }
 
+
     public function getViewMovie(Request $request)
     {
-        $query = Movie::query();
+        $query = MovieView::query()->with('movie');
+
         if ($request->has('search')) {
             $search = $request->input('search');
-            $query->where('name', 'like', '%' . $search . '%');
+            $query->whereHas('movie', function ($subQuery) use ($search) {
+                $subQuery->where('name', 'like', '%' . $search . '%');
+            });
         }
+
         if ($request->has('start_date') && $request->has('end_date')) {
             $start_date = Carbon::parse($request->input('start_date'))->startOfDay();
             $end_date = Carbon::parse($request->input('end_date'))->endOfDay();
-            // Thêm điều kiện whereBetween cho ngày bắt đầu và kết thúc
-            $query->whereBetween('start_date', [$start_date, $end_date]);
+            $query->whereBetween('date', [$start_date, $end_date]);
         }
-        $query->where('start_date', '<=', now()) // Chỉ lấy những bộ phim đã và đang công chiếu
-        ->select('name', DB::raw('DATE(start_date) as date'), DB::raw('SUM(view) as total_views'))
-            ->groupBy('name', 'date');
+
+        $query->join('movies', 'movies.id', '=', 'movie_views.movie_id')
+            ->where('movies.start_date', '<=', now()) // Chỉ lấy những bộ phim đã và đang công chiếu
+            ->select('movie_id', 'movies.name', DB::raw('DATE(date) as date'), DB::raw('SUM(count) as total_views'))
+            ->groupBy('movie_id', 'movies.name', 'date')
+            ->orderBy('total_views', 'desc');
+
         $movieView = $query->paginate(5);
+
         return view('admin.dashboard.view-day', compact('movieView'));
     }
 
@@ -1429,31 +1415,17 @@ class DashboardController extends Controller
             $search = $request->input('search');
             $query->where('name', 'like', '%' . $search . '%');
         }
-        if ($request->has('start_date') && $request->has('end_date')) {
-            $start_date = Carbon::parse($request->input('start_date'))->startOfDay();
-            $end_date = Carbon::parse($request->input('end_date'))->endOfDay();
-            // Thêm điều kiện whereBetween cho ngày bắt đầu và kết thúc
-            $query->whereBetween('date', [$start_date, $end_date])
-                ->join('movies', 'movie_views.movie_id', '=', 'movies.id')
-                ->select(
-                    'movie_views.movie_id',
-                    'movies.name as movie_name',
-                    'movies.start_date as date',
-                    DB::raw('SUM(movie_views.count) as total_views'),
-                )
-                ->groupBy('movie_views.movie_id', 'movies.name', 'movies.start_date');
-        } else {
-            $query->where('date', '>=', $startDate)
-                ->where('date', '<=', Carbon::now())
-                ->join('movies', 'movie_views.movie_id', '=', 'movies.id')
-                ->select(
-                    'movie_views.movie_id',
-                    'movies.name as movie_name',
-                    'movies.start_date as date',
-                    DB::raw('SUM(movie_views.count) as total_views'),
-                )
-                ->groupBy('movie_views.movie_id', 'movies.name', 'movies.start_date');
-        }
+        $query->where('date', '>=', $startDate)
+            ->where('movies.start_date', '<=', Carbon::now())
+            ->join('movies', 'movie_views.movie_id', '=', 'movies.id')
+            ->select(
+                'movie_views.movie_id',
+                'movies.name as movie_name',
+                'movies.start_date as date',
+                DB::raw('SUM(movie_views.count) as total_views'),
+            )
+            ->groupBy('movie_views.movie_id', 'movies.name', 'movies.start_date')
+            ->orderBy('total_views', 'desc');
         $movieView = $query->paginate(5);
         return view('admin.dashboard.view-day-7', compact('movieView'));
     }
@@ -1466,32 +1438,180 @@ class DashboardController extends Controller
             $search = $request->input('search');
             $query->where('name', 'like', '%' . $search . '%');
         }
-        if ($request->has('start_date') && $request->has('end_date')) {
-            $start_date = Carbon::parse($request->input('start_date'))->startOfDay();
-            $end_date = Carbon::parse($request->input('end_date'))->endOfDay();
-            // Thêm điều kiện whereBetween cho ngày bắt đầu và kết thúc
-            $query->whereBetween('date', [$start_date, $end_date])
-                ->join('movies', 'movie_views.movie_id', '=', 'movies.id')
-                ->select(
-                    'movie_views.movie_id',
-                    'movies.name as movie_name',
-                    'movies.start_date as date',
-                    DB::raw('SUM(movie_views.count) as total_views'),
-                )
-                ->groupBy('movie_views.movie_id', 'movies.name', 'movies.start_date');
-        } else {
-            $query->where('date', '>=', $startDate)
-                ->where('date', '<=', Carbon::now())
-                ->join('movies', 'movie_views.movie_id', '=', 'movies.id')
-                ->select(
-                    'movie_views.movie_id',
-                    'movies.name as movie_name',
-                    'movies.start_date as date',
-                    DB::raw('SUM(movie_views.count) as total_views'),
-                )
-                ->groupBy('movie_views.movie_id', 'movies.name', 'movies.start_date');
-        }
+        $query->where('date', '>=', $startDate)
+            ->where('movies.start_date', '<=', Carbon::now())
+            ->join('movies', 'movie_views.movie_id', '=', 'movies.id')
+            ->select(
+                'movie_views.movie_id',
+                'movies.name as movie_name',
+                'movies.start_date as date',
+                DB::raw('SUM(movie_views.count) as total_views'),
+            )
+            ->groupBy('movie_views.movie_id', 'movies.name', 'movies.start_date')
+            ->orderBy('total_views', 'desc');
         $movieView = $query->paginate(5);
         return view('admin.dashboard.view-day-28', compact('movieView'));
     }
+
+    public function getViewByDay()
+    {
+        $totalViewsToday = MovieView::whereDate('date', Carbon::today())
+            ->join('movies', 'movie_views.movie_id', '=', 'movies.id')
+            ->select('movies.name', DB::raw('SUM(movie_views.count) as total_views'))
+            ->groupBy('movies.name')
+            ->orderByDesc('total_views')
+            ->first();
+        $showTimesToday = ShowTime::whereDate('start_date', Carbon::today())->count();
+        $viewsToday = MovieView::whereDate('date', Carbon::today())
+            ->select('date', 'count')
+            ->get();
+        $topMoviesToday = MovieView::whereDate('date', Carbon::today())
+            ->join('movies', 'movie_views.movie_id', '=', 'movies.id')
+            ->select('movies.name', DB::raw('SUM(movie_views.count) as total_views'))
+            ->groupBy('movies.name')
+            ->orderByDesc('total_views')
+            ->take(10)
+            ->get();
+        return view('admin.dashboard.view-by-day', compact('totalViewsToday', 'showTimesToday', 'viewsToday', 'topMoviesToday'));
+    }
+
+    public function getViewByWeek()
+    {
+        // Lấy tổng số lượt xem của phim có lượt xem nhiều nhất trong tuần
+        $mostViewedMovie = MovieView::whereBetween('date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+            ->join('movies', 'movie_views.movie_id', '=', 'movies.id')
+            ->select('movies.name', DB::raw('SUM(movie_views.count) as total_views'))
+            ->groupBy('movies.name')
+            ->orderByDesc('total_views')
+            ->first();
+
+        // Lấy tổng số lịch chiếu trong tuần
+        $showTimesWeek = ShowTime::whereBetween('start_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count();
+
+        // Lấy thông tin chi tiết về lượt xem của từng phim trong tuần
+        $viewsWeek = MovieView::whereBetween('date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+            ->select('date', 'count')
+            ->get();
+
+        // Lấy top 10 phim được xem nhiều nhất trong tuần
+        $topMoviesWeek = MovieView::whereBetween('date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+            ->join('movies', 'movie_views.movie_id', '=', 'movies.id')
+            ->select('movies.name', DB::raw('SUM(movie_views.count) as total_views'))
+            ->groupBy('movies.name')
+            ->orderByDesc('total_views')
+            ->take(10)
+            ->get();
+
+        return view('admin.dashboard.view-by-week', compact('mostViewedMovie', 'showTimesWeek', 'viewsWeek', 'topMoviesWeek'));
+    }
+
+    public function hourlyData()
+    {
+        // Replace 'your_date_here' with the date for which you want hourly data
+        $selectedDate = Carbon::now();
+
+        $hourlyData = MovieView::select(
+            DB::raw('HOUR(date) as hour'),
+            DB::raw('SUM(count) as total_views')
+        )
+            ->whereDate('date', $selectedDate)
+            ->groupBy(DB::raw('HOUR(date)'))
+            ->orderBy(DB::raw('HOUR(date)'))
+            ->get();
+
+        return response()->json($hourlyData);
+    }
+
+    public function weeklyData()
+    {
+        $selectedDate = Carbon::now();
+
+        $weeklyViewsData = MovieView::select(
+            DB::raw('DATE(date) as date'),
+            DB::raw('SUM(count) as total_views')
+        )
+            ->whereBetween('date', [
+                Carbon::now()->startOfWeek(), // Ngày đầu tuần
+                Carbon::now()->endOfWeek()    // Ngày cuối tuần
+            ])
+            ->groupBy(DB::raw('DATE(date)'))
+            ->orderBy(DB::raw('DATE(date)'))
+            ->get();
+
+        $data = [];
+// Mảng chứa các nhãn thứ 'T2', 'T3',..., 'T8'
+        $daysOfWeek = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+
+// Lặp qua dữ liệu và lưu vào mảng
+        foreach ($weeklyViewsData as $views) {
+            // Lấy số thứ tự của ngày trong tuần
+            $dayOfWeekNumber = date('N', strtotime($views->date));
+
+            // Lấy nhãn thứ tương ứng
+            $label = $daysOfWeek[$dayOfWeekNumber - 1]; // -1 vì PHP bắt đầu từ 1, thứ hai là ngày thứ 2
+
+            $data[] = [
+                'label' => $label,
+                'value' => $views->total_views
+            ];
+        }
+
+        return response()->json($data);
+    }
+
+    public function getViewByMonth()
+    {
+// Lấy tổng số lượt xem của phim có lượt xem nhiều nhất trong tháng
+        $mostViewedMovie = MovieView::whereMonth('date', Carbon::now()->month)
+            ->join('movies', 'movie_views.movie_id', '=', 'movies.id')
+            ->select('movies.name', DB::raw('SUM(movie_views.count) as total_views'))
+            ->groupBy('movies.name')
+            ->orderByDesc('total_views')
+            ->first();
+
+// Lấy tổng số lịch chiếu trong tháng
+        $showTimesMonth = ShowTime::whereMonth('start_date', Carbon::now()->month)->count();
+
+// Lấy thông tin chi tiết về lượt xem của từng phim trong tháng
+        $viewsMonth = MovieView::whereMonth('date', Carbon::now()->month)
+            ->select('date', 'count')
+            ->get();
+
+// Lấy top 10 phim được xem nhiều nhất trong tháng
+        $topMoviesMonth = MovieView::whereMonth('date', Carbon::now()->month)
+            ->join('movies', 'movie_views.movie_id', '=', 'movies.id')
+            ->select('movies.name', DB::raw('SUM(movie_views.count) as total_views'))
+            ->groupBy('movies.name')
+            ->orderByDesc('total_views')
+            ->take(10)
+            ->get();
+
+        return view('admin.dashboard.view-by-month', compact('mostViewedMovie', 'showTimesMonth', 'viewsMonth', 'topMoviesMonth'));
+
+    }
+
+    public function monthlyData()
+    {
+        $selectedDate = Carbon::now();
+
+        $monthlyViewsData = MovieView::select(
+            DB::raw('YEAR(date) as year'),
+            DB::raw('MONTH(date) as month'),
+            DB::raw('SUM(count) as total_views')
+        )
+            ->whereYear('date', '=', Carbon::now()->year)
+            ->groupBy(DB::raw('YEAR(date)'), DB::raw('MONTH(date)'))
+            ->get();
+
+        $data = [];
+        foreach ($monthlyViewsData as $views) {
+            $data[] = [
+                'month' => $views->month, // Tháng
+                'total_views' => $views->total_views
+            ];
+        }
+
+        return response()->json($data);
+    }
+
 }

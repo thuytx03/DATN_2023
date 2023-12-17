@@ -11,20 +11,20 @@
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Thống kê lượt xem 28 ngày qua</h1>
             <div>
-                {{--                <a href="" class="btn btn-info">Thống kê theo ngày</a>--}}
-                {{--                <a href="" class="btn btn-dark">Thống kê theo tuần</a>--}}
-                {{--                <a href="" class="btn btn-secondary">Thống kê theo tháng</a>--}}
+                <a href="{{ route('dashboard.view-by-day') }}" class="btn btn-info">Thống kê theo ngày</a>
+                <a href="{{ route('dashboard.view-by-week') }}" class="btn btn-dark">Thống kê theo tuần</a>
+                <a href="{{ route('dashboard.view-by-month') }}" class="btn btn-secondary">Thống kê theo tháng</a>
             </div>
         </div>
         <div class="mb-3">
             <a href="{{ route('dashboard.view') }}" class="btn btn-primary">Tổng lượt xem tính đến hiện tại</a>
             <a href="{{ route('dashboard.view.seven') }}" class="btn btn-primary">7 ngày qua</a>
-            <form method="GET" action="" class="mt-2">
-                @csrf
-                <span><input type="date" name="start_date" class="btn btn-primary"></span>-->
-                <span><input type="date" name="end_date" class="btn btn-primary"></span>
-                <button type="submit" class="btn btn-info"><i class="fas fa-search m-1"></i></button>
-            </form>
+{{--            <form method="GET" action="" class="mt-2">--}}
+{{--                @csrf--}}
+{{--                <span><input type="date" name="start_date" class="btn btn-primary"></span>-->--}}
+{{--                <span><input type="date" name="end_date" class="btn btn-primary"></span>--}}
+{{--                <button type="submit" class="btn btn-info"><i class="fas fa-search m-1"></i></button>--}}
+{{--            </form>--}}
         </div>
         <div class="card shadow mb-4">
             <div class="card-header py-3">
