@@ -72,7 +72,31 @@
         <p><strong>Ngày chiếu:</strong> {{ $startDate }}</p>
         <p><strong>Suất chiếu:</strong> {{ $screeningTime }}</p>
         <p><strong>Ghế:</strong> {{ str_replace(['[', ']', '"'], '', $data['list_seat']) }}</p>
-        <p><strong>Giá Vé:</strong> {{ $data['total'] }}</p>
+        @php
+        $ghe = trim(str_replace(['[', ']', '"'], '',  $data['list_seat']));
+
+// Tách chuỗi thành mảng các ký tự
+$characters = str_split($ghe);
+
+// Lọc các ký tự là chữ cái
+$horizontalValue = implode('', array_filter($characters, 'ctype_alpha'));
+
+// Lọc các ký tự là số
+$verticalValue = implode('', array_filter($characters, 'ctype_digit'));
+
+// In ra kết quả
+$seats = $seat1->where('row', $horizontalValue)
+              ->where('column', $verticalValue)
+              ->first();
+
+$price = $seat_type->where('id',$seats->seat_type_id)
+                    ->first();
+
+
+
+
+    @endphp
+        <p><strong>Giá Vé:</strong> {{ $price->price }}</p>
     </div>
 </body>
 </html>
