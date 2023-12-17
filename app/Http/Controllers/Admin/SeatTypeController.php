@@ -45,7 +45,6 @@ class SeatTypeController extends Controller
             try {
                 $seatType = new SeatType();
                 $seatType->name = $request->name;
-                $seatType->price = $request->price;
                 $seatType->description = $request->description;
                 $seatType->status = $request->status;
                 if ($request->hasFile('image') && $request->file('image')->isValid()) {
@@ -83,7 +82,6 @@ class SeatTypeController extends Controller
         if($request->isMethod('POST')){
             try {
                 $seatType->name = $request->name;
-                $seatType->price = $request->price;
                 $seatType->description = $request->description;
                 $seatType->status = $request->status;
                 if ($request->hasFile('image') && $request->file('image')->isValid()) {

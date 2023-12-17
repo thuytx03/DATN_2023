@@ -9,6 +9,7 @@ use App\Models\Movie;
 use App\Models\Province;
 use App\Models\RoleHasCinema;
 use App\Models\Room;
+use App\Models\SeatPrice;
 use App\Models\ShowTime;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -186,6 +187,39 @@ class ShowTimeController extends Controller
         $showtime->end_date = $request->end_date;
         $showtime->status = $request->status;
         $showtime->save();
+
+        $thuong = $request->thuong;
+        $vip = $request->vip;
+        $doi = $request->doi;
+
+        $showtime_id = $showtime->id;
+
+        if ($thuong > 0) {
+            $seatPriceTh = new SeatPrice();
+            $seatPriceTh->showtime_id = $showtime_id;
+            $seatPriceTh->seat_type_id = 1;
+            $seatPriceTh->price = $thuong;
+            $seatPriceTh->save();
+        }
+
+        if ($vip > 0) {
+            $seatPriceVip = new SeatPrice();
+            $seatPriceVip->showtime_id = $showtime_id;
+            $seatPriceVip->seat_type_id = 2;
+            $seatPriceVip->price = $vip;
+            $seatPriceVip->save();
+        }
+
+        if ($doi > 0) {
+            $seatPriceDoi = new SeatPrice();
+            $seatPriceDoi->showtime_id = $showtime_id;
+            $seatPriceDoi->seat_type_id = 3;
+            $seatPriceDoi->price = $doi;
+            $seatPriceDoi->save();
+        }
+
+
+
         toastr()->success('Thêm lịch chiếu thành công!', 'success');
         return redirect()->back();
     }
@@ -315,6 +349,61 @@ class ShowTimeController extends Controller
         $showtime->end_date = $request->end_date;
         $showtime->status = $request->status;
         $showtime->save();
+
+        $thuong = $request->thuong;
+$vip = $request->vip;
+$doi = $request->doi;
+
+$showtime_id = $showtime->id;
+
+// Check if SeatPrice records exist for the given showtime_id and seat_type_id, and update them if they do.
+// If not, create new records.
+
+if ($thuong > 0) {
+    $seatPriceTh = SeatPrice::where('showtime_id', $showtime_id)
+        ->where('seat_type_id', 1)
+        ->first();
+
+    if (!$seatPriceTh) {
+        $seatPriceTh = new SeatPrice();
+        $seatPriceTh->showtime_id = $showtime_id;
+        $seatPriceTh->seat_type_id = 1;
+    }
+
+    $seatPriceTh->price = $thuong;
+    $seatPriceTh->save();
+}
+
+if ($vip > 0) {
+    $seatPriceVip = SeatPrice::where('showtime_id', $showtime_id)
+        ->where('seat_type_id', 2)
+        ->first();
+
+    if (!$seatPriceVip) {
+        $seatPriceVip = new SeatPrice();
+        $seatPriceVip->showtime_id = $showtime_id;
+        $seatPriceVip->seat_type_id = 2;
+    }
+
+    $seatPriceVip->price = $vip;
+    $seatPriceVip->save();
+}
+
+if ($doi > 0) {
+    $seatPriceDoi = SeatPrice::where('showtime_id', $showtime_id)
+        ->where('seat_type_id', 3)
+        ->first();
+
+    if (!$seatPriceDoi) {
+        $seatPriceDoi = new SeatPrice();
+        $seatPriceDoi->showtime_id = $showtime_id;
+        $seatPriceDoi->seat_type_id = 3;
+    }
+
+    $seatPriceDoi->price = $doi;
+    $seatPriceDoi->save();
+}
+
 
         toastr()->success('Cập nhật lịch chiếu thành công!', 'success');
         return redirect()->route('show-time.index');

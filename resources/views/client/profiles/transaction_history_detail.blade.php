@@ -50,7 +50,8 @@
                         <img src="{{ Storage::url($booking->showtime->movie->poster) }}" width="50" alt="">
                     </td>
                     <td>
-                        {{ $booking->list_seat }}
+                        {!! implode(', ', json_decode($booking->list_seat, true)) !!}
+
                     </td>
                     <td>
                         {{ number_format($booking->price_ticket, 0, ',', '.') }} VNĐ

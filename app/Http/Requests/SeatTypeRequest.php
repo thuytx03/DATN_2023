@@ -32,7 +32,7 @@ class SeatTypeRequest extends FormRequest
                     case 'store':
                         $rules = [
                             'name' => 'required|unique:seat_types',
-                            'price' => 'required|numeric',
+                            // 'price' => 'required|numeric',
                             'slug' => 'unique:seat_types',
                         ];
                         break;
@@ -40,7 +40,7 @@ class SeatTypeRequest extends FormRequest
                         $rules = [
                             'name' => ['required',Rule::unique('seat_types')->ignore($this->id)],
                             'slug' => ['required',Rule::unique('seat_types')->ignore($this->id)],
-                            'price' => 'required|numeric',
+                            // 'price' => 'required|numeric',
                         ];
                         break;
                 }
@@ -55,8 +55,8 @@ class SeatTypeRequest extends FormRequest
         return [
             'name.required' => 'Tên loại ghế không được để trống!',
             'name.unique' => 'Tên loại ghế đã tồn tại!',
-            'price.required' => 'Giá loại ghế không được để trống!',
-            'price.numeric' => 'Giá loại phải là số!',
+            // 'price.required' => 'Giá loại ghế không được để trống!',
+            // 'price.numeric' => 'Giá loại phải là số!',
             'slug.unique' => 'Tên đường dẫn ghế đã tồn tại!',
         ];
     }

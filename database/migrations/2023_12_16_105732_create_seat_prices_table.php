@@ -13,14 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('seat_types', function (Blueprint $table) {
+        Schema::create('seat_prices', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('slug');
-            $table->string('image')->nullable();
-            $table->string('description')->nullable();
-            $table->string('status')->default(1);
-            $table->softDeletes();
+            $table->unsignedBigInteger('seat_type_id');
+            $table->unsignedBigInteger('showtime_id');
+            $table->string('price');
             $table->timestamps();
         });
     }
@@ -32,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('seat_types');
+        Schema::dropIfExists('seat_prices');
     }
 };

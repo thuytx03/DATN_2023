@@ -24,4 +24,8 @@ class ShowTime extends Model
 {
     return $this->hasMany(Booking::class);
 }
+public function seatPrice()
+    {
+        return $this->hasMany(SeatPrice::class, 'showtime_id');
+    }
 }

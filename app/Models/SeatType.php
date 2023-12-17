@@ -9,8 +9,12 @@ class SeatType extends Model
 {
     use HasFactory,SoftDeletes;
     protected $table="seat_types";
-    protected $fillable=['name','price','slug','image','description','status'];
+    protected $fillable=['name','slug','image','description','status'];
     public function seats() {
         return $this->hasMany(Seat::class);
+    }
+    public function seatPrice()
+    {
+        return $this->hasMany(SeatPrice::class,'seat_type_id');
     }
 }

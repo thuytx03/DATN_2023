@@ -36,7 +36,11 @@ class ShowTimeRequest extends FormRequest
                             'movie_id' => 'required',
                             'status' => 'required',
                             'start_date' => 'required',
-                            'end_date' => 'required'
+                            'end_date' => 'required',
+                            'thuong' => 'required|integer|numeric|min:0',
+                            'vip' => 'required|integer|numeric|min:0',
+                            'doi' => 'required|integer|numeric|min:0',
+
                         ];
                         break;
                 }
@@ -53,6 +57,15 @@ class ShowTimeRequest extends FormRequest
             'movie_id.required' => 'Vui lòng chọn phim chiếu',
             'start_date.required' => 'Vui lòng chọn thời gian chiếu',
             'end_date.required' => 'Vui lòng chọn thời gian kết thúc',
+            'thuong.required' => 'Vui lòng giá ghế thường.',
+            'thuong.integer' => 'Giá ghế thường phải là số nguyên.',
+            'thuong.min' => 'Giá ghế thường không được nhỏ hơn 0.',
+            'vip.required' => 'Vui lòng giá ghế vip.',
+            'vip.integer' => 'Giá ghế vip phải là số nguyên.',
+            'vip.min' => 'Giá ghế vip không được nhỏ hơn 0.',
+            'doi.required' => 'Vui lòng giá ghế đôi.',
+            'doi.integer' => 'Giá ghế đôi phải là số nguyên.',
+            'doi.min' => 'Giá ghế đôi không được nhỏ hơn 0.',
         ];
     }
 }
