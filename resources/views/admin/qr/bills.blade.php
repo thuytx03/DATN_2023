@@ -94,6 +94,7 @@ $price = $seat_type->where('id',$seats->seat_type_id)
 
 
 
+
     @endphp
         <!-- Sử dụng str_replace để loại bỏ dấu [] và dấu "" từ giá trị ghế -->
         <p><strong>Ghế:</strong> {{  $ghe }}</p>

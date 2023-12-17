@@ -13,6 +13,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Movie;
 use App\Models\Room;
+use App\Models\SeatPrice;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\IOFactory;
 use App\Models\Seat;
@@ -255,7 +256,7 @@ class QrAdminController extends Controller
             foreach ($list_seat as $seat) {
                 $individual_data = $data; // Tạo một bản sao của dữ liệu để không ảnh hưởng đến các hóa đơn khác nhau
                 $seat1 = Seat::all();
-                $seat_type = SeatType::all();
+                $seat_type = SeatPrice::all();
                 // Remove brackets and keep alphanumeric characters only
                 $individual_data['list_seat'] = trim($seat, '[]');
                 $startDate = date('d/m/Y', strtotime($individual_data['start_date']));
@@ -270,7 +271,9 @@ class QrAdminController extends Controller
             // Nếu chỉ có một ghế, thì xử lý như bình thường
             $startDate = date('d/m/Y', strtotime($data['start_date']));
             $screeningTime = date('H:i', strtotime($data['start_date']));
-            $pdf->loadHTML(view('admin.qr.bill', compact('data', 'startDate', 'screeningTime', 'foods', 'booking_id', 'bookingdetail'))->render());
+            $seat1 = Seat::all();
+            $seat_type = SeatPrice::all();
+            $pdf->loadHTML(view('admin.qr.bill', compact('data', 'startDate', 'screeningTime', 'foods', 'booking_id', 'bookingdetail','seat1','seat_type'))->render());
 
 
             // Xuất hóa đơn
