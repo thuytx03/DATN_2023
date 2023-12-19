@@ -33,9 +33,18 @@
                                 <input type="text" class="form-control" name="display_name">
                             </div>
                             <div class="mb-3">
-                                <label for="name" class="form-label">Nhóm</label>
-                                <input type="text" class="form-control" name="group">
-                            </div>
+                            <label for="name" class="form-label">Nhóm</label>
+                            <br>
+                            <select class="form-select border border-1 rounded w-100 p-2" name="group">
+                                @role('Admin')
+                                <option value="admin">Admin</option>
+                                @endrole
+                                <option value="manage">Quản lý</option>
+                                <option value="qr">Nhân viên quét Qr</option>
+                                <option value="booking">Nhân viên quản lý hóa đơn</option>
+                                <!-- Add more options as needed -->
+                            </select>
+                        </div>
                             <button type="submit" class="btn btn-primary">Thêm mới</button>
                             <button type="reset" class="btn btn-danger">Nhập lại</button>
                         </div>

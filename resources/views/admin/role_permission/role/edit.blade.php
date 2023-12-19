@@ -34,12 +34,21 @@
                         </div>
                         <div class="mb-3">
                             <label for="name" class="form-label">Nhóm</label>
-                            <input type="text" class="form-control" name="group" value="{{$role->group}}">
+                            <br>
+                            <select class="form-select border border-1 rounded w-100 p-2" name="group">
+                                @role('Admin')
+                                <option value="admin" {{$role->group=='admin'?'selected':''}}>Admin</option>
+                                @endrole
+                                <option value="manage" {{$role->group=='manage'?'selected':''}}>Quản lý</option>
+                                <option value="qr" {{$role->group=='qr'?'selected':''}}>Nhân viên quét Qr</option>
+                                <option value="booking" {{$role->group=='booking'?'selected':''}}>Nhân viên quản lý hóa đơn</option>
+                                <!-- Add more options as needed -->
+                            </select>
                         </div>
                         <button type="submit" class="btn btn-primary">Cập nhật</button>
                         <button type="reset" class="btn btn-danger">Nhập lại</button>
                     </div>
-
+                    @role('Admin')
                     <div class="col-md-7">
                         <label for="" class="btn btn-success mb-2">Quyền</label>
                         <hr>
@@ -88,8 +97,8 @@
                             </div>
                             @endforeach
                         </div>
-
                     </div>
+                    @endrole
                 </div>
             </form>
         </div>

@@ -33,7 +33,7 @@
                             <label class="form-label">Vai trò</label><br>
                             @foreach($roles as $role)
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="role_{{ $role->id }}" name="role[]" value="{{ $role->name }}" @if($userRoles->contains($role->name)) checked @endif>
+                                <input class="form-check-input" type="checkbox" id="role_{{ $role->id }}" name="role[]" value="{{ $role->id }}" @if($userRoles->contains($role->name)) checked @endif>
                                 <label class="form-check-label" for="role_{{ $role->id }}">{{ $role->name }}</label>
                             </div>
                             @endforeach

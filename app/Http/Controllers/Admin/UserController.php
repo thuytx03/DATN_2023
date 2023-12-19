@@ -33,7 +33,6 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user(); // Lấy thông tin người dùng đang đăng nhập
-
         $query = User::query();
 
         // Lọc theo tên
@@ -77,21 +76,21 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-{
-    $user = Auth::user();
+    {
+        $user = Auth::user();
 
-    if ($user->hasRole('Admin')) {
-        // Nếu là 'Admin', lấy tất cả các vai trò
-        $roles = Role::all();
-    } else {
-        // Nếu không phải 'Admin', lấy các vai trò của người dùng
-        $roles = $user->roles;
+        if ($user->hasRole('Admin')) {
+            // Nếu là 'Admin', lấy tất cả các vai trò
+            $roles = Role::all();
+        } else {
+            // Nếu không phải 'Admin', lấy các vai trò của người dùng
+            $roles = $user->roles;
+        }
+
+        $permissions = Permission::all(); // Lấy tất cả các quyền
+
+        return view('admin.user.add', compact('roles', 'permissions'));
     }
-
-    $permissions = Permission::all(); // Lấy tất cả các quyền
-
-    return view('admin.user.add', compact('roles', 'permissions'));
-}
 
 
 
@@ -147,42 +146,51 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        // Tìm người dùng dựa trên ID được cung cấp
         $user = User::find($id);
         if (empty($user)) {
             abort(404);
         }
-        // Lấy thông tin người dùng hiện tại đang đăng nhập
+
         $currentUser = Auth::user();
         $isAdmin = $currentUser->hasRole('Admin');
-        if (!$isAdmin) {
-            // Nếu không phải Admin, kiểm tra xem người dùng hiện tại có vai trò tương tự với người dùng được chỉnh sửa không
-            $userRoles = $user->getRoleNames()->toArray();
-            $currentUserRoles = $currentUser->getRoleNames()->toArray();
-            
-            $matchingRoles = array_intersect($userRoles, $currentUserRoles);
 
-            if (empty($matchingRoles)) {
-                // Nếu không có vai trò nào tương tự, không cho phép chỉnh sửa
-                toastr()->error('Bạn không có quyền chỉnh sửa người dùng này!');
-                return redirect()->route('user.index');
-            }
+        if (!$isAdmin && !$this->userCanEdit($user, $currentUser)) {
+            toastr()->error('Bạn không có quyền chỉnh sửa người dùng này!');
+            return redirect()->route('user.index');
         }
-        // Khởi tạo biến roles để lưu trữ vai trò (roles)
-        $roles = [];
 
-        // Kiểm tra xem người dùng hiện tại có phải là Admin không
-        if ($isAdmin) {
-            // Nếu là Admin, lấy tất cả các vai trò (roles) trừ vai trò 'Admin'
-            $roles = Role::orderbY('id','DESC')->get();
-        } else {
-            // Nếu không phải là Admin, chỉ lấy các vai trò của người dùng hiện tại
-            $roles = $currentUser->roles;
-        }
-        // Lấy các vai trò được gán cho người dùng đang chỉnh sửa
-        $userRoles = $user->getRolenames();
-        // Trả về view 'admin.user.edit' với dữ liệu người dùng, các vai trò và vai trò của người dùng
+        $roles = $this->getUserRoles($isAdmin, $currentUser);
+        $userRoles = $user->getRoleNames();
+
         return view('admin.user.edit', compact('user', 'roles', 'userRoles'));
+    }
+    private function userCanEdit($user, $currentUser)
+    {
+        $userRoles = $user->getRoleNames()->toArray();
+        $currentUserRoles = $currentUser->getRoleNames()->toArray();
+        $currentUserRolesWithoutAdmin = array_diff($currentUserRoles, ['Admin']);
+
+        if (empty($userRoles)) {
+            // Nếu tài khoản không có vai trò nào, cho phép sửa đổi
+            return true;
+        }
+
+        // Kiểm tra xem vai trò 'Admin' có trong tài khoản đang xem xét không
+        $isAdmin = in_array('Admin', $userRoles);
+
+        // Loại bỏ vai trò 'Admin' trước khi so sánh
+        $matchingRoles = array_intersect($userRoles, $currentUserRolesWithoutAdmin);
+
+        return !empty($matchingRoles) && !$isAdmin;
+    }
+
+    private function getUserRoles($isAdmin, $currentUser)
+    {
+        if ($isAdmin) {
+            return Role::orderBy('id', 'DESC')->get();
+        } else {
+            return $currentUser->roles;
+        }
     }
 
 
@@ -197,35 +205,41 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        $user->name = $request->name;
-        $user->phone = $request->phone;
-        $user->email = $request->email;
-        $user->address = $request->address;
-        $user->gender = $request->gender;
+        // Cập nhật thông tin người dùng từ dữ liệu gửi lên
+        $user->fill([
+            'name' => $request->name,
+            'phone' => $request->phone,
+            'email' => $request->email,
+            'address' => $request->address,
+            'gender' => $request->gender,
+            'status' => $request->status,
+        ]);
 
+        // Upload avatar nếu có
         if ($request->hasFile('avatar')) {
             $user->avatar = uploadFile('user', $request->file('avatar'));
         }
 
-        $user->status = $request->status;
-
-        if ($request->password != null && $request->password != '') {
+        // Kiểm tra và cập nhật mật khẩu nếu có
+        if ($request->filled('password')) {
             $user->password = bcrypt($request->password);
         }
 
+        // Lưu thông tin người dùng
         $user->save();
 
-        // Xóa tất cả vai trò hiện tại của người dùng
-        $user->roles()->detach();
-
         // Gán các vai trò mới từ yêu cầu gửi lên
-        if ($request->has('role')) {
-            $user->assignRole($request->input('role'));
+        if ($request->filled('role')) {
+            $user->roles()->sync($request->input('role'));
+        } else {
+            // Xóa các vai trò không được chọn
+            $user->roles()->detach();
         }
 
-        toastr()->success('Cập nhật ' . $request->name . ' thành công!');
+        toastr()->success('Cập nhật ' . $user->name . ' thành công!');
         return redirect()->route('user.index');
     }
+
 
 
     /**
@@ -242,26 +256,35 @@ class UserController extends Controller
         }
         $currentUser = Auth::user();
 
-        if (!$currentUser->hasRole('Admin')) {
-            // Nếu không phải Admin, kiểm tra xem người dùng hiện tại có vai trò tương tự với người dùng được xóa không
-            $userRoles = $user->getRoleNames()->toArray();
-            $currentUserRoles = $currentUser->getRoleNames()->toArray();
+        $currentUserRoles = $currentUser->getRoleNames()->toArray();
 
-            $matchingRoles = array_intersect($userRoles, $currentUserRoles);
-
-            if (empty($matchingRoles)) {
-                // Nếu không có vai trò nào tương tự, không cho phép xóa
-                toastr()->error('Bạn không có quyền xóa người dùng này!');
-                return redirect()->route('user.index');
-            }
+        if (in_array('Admin', $currentUserRoles)) {
+            // Nếu là Admin, cho phép xóa người dùng và trả về thông báo thành công
+            $user->delete();
+            toastr()->success('Xóa người dùng thành công!');
+            return redirect()->route('user.index');
         }
-        // Nếu là Admin hoặc có quyền xóa, thực hiện xóa người dùng
-        $user->delete();
 
-        toastr()->success('Xóa người dùng thành công!');
+        // Nếu không phải là Admin, tiếp tục kiểm tra vai trò tương tự và quyền xóa
+        $userRoles = $user->getRoleNames()->toArray();
+
+        $matchingRoles = array_intersect($userRoles, $currentUserRoles);
+
+        if (empty($matchingRoles) && empty($userRoles)) {
+            // Nếu không có vai trò nào và không phải là Admin, cho phép xóa
+            $user->delete();
+            toastr()->success('Xóa người dùng thành công!');
+            return redirect()->route('user.index');
+        } elseif (empty($matchingRoles)) {
+            // Nếu không có vai trò tương tự, không cho phép xóa
+            toastr()->error('Bạn không có quyền xóa người dùng này!');
+            return redirect()->route('user.index');
+        }
+
+        // Nếu có vai trò tương tự, không cho phép xóa
+        toastr()->error('Bạn không có quyền xóa người dùng này!');
         return redirect()->route('user.index');
     }
-
     public function deleteAll(Request $request)
     {
         $ids = $request->ids;

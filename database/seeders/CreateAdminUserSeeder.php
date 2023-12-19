@@ -59,23 +59,6 @@ class CreateAdminUserSeeder extends Seeder
             'email' => 'nhanvienhn2@gmail.com',
             'password' => bcrypt('123456')
         ]);
-
-        User::create([
-            'name' => 'Nhân viên Hà Nội',
-            'email' => 'nhanvienhn3@gmail.com',
-            'password' => bcrypt('123456')
-        ]);
-
-        User::create([
-            'name' => 'Nhân viên Hà Nội',
-            'email' => 'nhanvienhn4@gmail.com',
-            'password' => bcrypt('123456')
-        ]);
-        User::create([
-            'name' => 'Nhân viên Hà Nội',
-            'email' => 'nhanvienhn5@gmail.com',
-            'password' => bcrypt('123456')
-        ]);
         User::create([
             'name' => 'Nhân viên Hải Phòng',
             'email' => 'nhanvienhp1@gmail.com',
@@ -85,24 +68,6 @@ class CreateAdminUserSeeder extends Seeder
         User::create([
             'name' => 'Nhân viên Hải Phòng',
             'email' => 'nhanvienhp2@gmail.com',
-            'password' => bcrypt('123456')
-        ]);
-
-        User::create([
-            'name' => 'Nhân viên Hải Phòng',
-            'email' => 'nhanvienhp3@gmail.com',
-            'password' => bcrypt('123456')
-        ]);
-
-        User::create([
-            'name' => 'Nhân viên Hải Phòng',
-            'email' => 'nhanvienhp4@gmail.com',
-            'password' => bcrypt('123456')
-        ]);
-
-        User::create([
-            'name' => 'Nhân viên Hải Phòng',
-            'email' => 'nhanvienhp5@gmail.com',
             'password' => bcrypt('123456')
         ]);
 
@@ -119,23 +84,6 @@ class CreateAdminUserSeeder extends Seeder
         ]);
 
         User::create([
-            'name' => 'Nhân viên Thái Bình',
-            'email' => 'nhanvientb3@gmail.com',
-            'password' => bcrypt('123456')
-        ]);
-
-        User::create([
-            'name' => 'Nhân viên Thái Bình',
-            'email' => 'nhanvientb4@gmail.com',
-            'password' => bcrypt('123456')
-        ]);
-
-        User::create([
-            'name' => 'Nhân viên Thái Bình',
-            'email' => 'nhanvientb5@gmail.com',
-            'password' => bcrypt('123456')
-        ]);
-        User::create([
             'name' => 'Nhân viên Nam Định',
             'email' => 'nhanviennd1@gmail.com',
             'password' => bcrypt('123456')
@@ -148,23 +96,6 @@ class CreateAdminUserSeeder extends Seeder
         ]);
 
         User::create([
-            'name' => 'Nhân viên Nam Định',
-            'email' => 'nhanviennd3@gmail.com',
-            'password' => bcrypt('123456')
-        ]);
-
-        User::create([
-            'name' => 'Nhân viên Nam Định',
-            'email' => 'nhanviennd4@gmail.com',
-            'password' => bcrypt('123456')
-        ]);
-
-        User::create([
-            'name' => 'Nhân viên Nam Định',
-            'email' => 'nhanviennd5@gmail.com',
-            'password' => bcrypt('123456')
-        ]);
-        User::create([
             'name' => 'Nhân viên Ninh Bình',
             'email' => 'nhanviennb1@gmail.com',
             'password' => bcrypt('123456')
@@ -176,22 +107,5 @@ class CreateAdminUserSeeder extends Seeder
             'password' => bcrypt('123456')
         ]);
 
-        User::create([
-            'name' => 'Nhân viên Ninh Bình',
-            'email' => 'nhanviennb3@gmail.com',
-            'password' => bcrypt('123456')
-        ]);
-
-        User::create([
-            'name' => 'Nhân viên Ninh Bình',
-            'email' => 'nhanviennb4@gmail.com',
-            'password' => bcrypt('123456')
-        ]);
-
-        User::create([
-            'name' => 'Nhân viên Ninh Bình',
-            'email' => 'nhanviennb5@gmail.com',
-            'password' => bcrypt('123456')
-        ]);
     }
 }
