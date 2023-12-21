@@ -689,132 +689,138 @@
     </script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var chosenSeats = @json(Session::get('selectedSeats', []));
-            var seatElements = document.querySelectorAll(".seat-click");
-            var showTimeId = document.getElementById("showtime-link").getAttribute("data-showtime-id");
+      document.addEventListener("DOMContentLoaded", function() {
+    var chosenSeats = @json(Session::get('selectedSeats', []));
+    var seatElements = document.querySelectorAll(".seat-click");
+    var showTimeId = document.getElementById("showtime-link").getAttribute("data-showtime-id");
 
-            function updateChosenSeatsDisplay() {
-                var chosenSeatsText = chosenSeats.join(", ");
-                document.querySelector(".proceed-book .title").textContent = chosenSeatsText;
+    function updateChosenSeatsDisplay() {
+        var chosenSeatsText = chosenSeats.join(", ");
+        document.querySelector(".proceed-book .title").textContent = chosenSeatsText;
+    }
+
+    seatElements.forEach(function(seat, index) {
+        var imgElement = seat.querySelector("img");
+        var originalImageSrc = imgElement.src;
+        var newImageSrc = "{{ asset('client/assets/images/movie/seatDangChon.png') }}";
+        var seatNum = seat.querySelector(".sit-num").textContent;
+
+        if (chosenSeats.includes(seatNum)) {
+            imgElement.src = newImageSrc;
+            seat.classList.add("seat-selected");
+        }
+
+        imgElement.addEventListener("click", function(event) {
+            event.stopPropagation();
+
+            // Toggle the seat selection state
+            if (imgElement.src === originalImageSrc) {
+                imgElement.src = newImageSrc;
+                chosenSeats.push(seatNum);
+                seat.classList.add("seat-selected");
+
+                // Auto-select the corresponding seat for seats with the "seat" class
+                if (seat.classList.contains("seat")) {
+                    // Tính chỉ số ghế đối diện
+                    var totalSeats = seatElements.length;
+                    var oppositeIndex;
+
+                    if (totalSeats % 2 === 0) {
+                        // Tổng số ghế là chẵn
+                        oppositeIndex = (index % 2 === 0) ? index + 1 : index - 1;
+                    } else {
+                        // Tổng số ghế là lẻ
+                        oppositeIndex = (index % 2 === 0) ? index - 1 : index + 1;
+                    }
+
+                    var oppositeSeat = seatElements[oppositeIndex];
+
+                    if (oppositeSeat) {
+                        var oppositeImgElement = oppositeSeat.querySelector("img");
+                        var oppositeSeatNum = oppositeSeat.querySelector(".sit-num").textContent;
+
+                        oppositeImgElement.src = newImageSrc;
+                        chosenSeats.push(oppositeSeatNum);
+                        oppositeSeat.classList.add("seat-selected");
+                    }
+                }
+            } else {
+                imgElement.src = originalImageSrc;
+                chosenSeats = chosenSeats.filter(function(seat) {
+                    return seat !== seatNum;
+                });
+                seat.classList.remove("seat-selected");
+
+                // Deselect the corresponding seat for seats with the "seat" class
+                if (seat.classList.contains("seat")) {
+                   var totalSeats = seatElements.length;
+                    var oppositeIndex;
+
+                    if (totalSeats % 2 === 0) {
+                        // Tổng số ghế là chẵn
+                        oppositeIndex = (index % 2 === 0) ? index + 1 : index - 1;
+                    } else {
+                        // Tổng số ghế là lẻ
+                        oppositeIndex = (index % 2 === 0) ? index - 1 : index + 1;
+                    }
+                    
+                    var oppositeSeat = seatElements[oppositeIndex];
+
+                    if (oppositeSeat) {
+                        var oppositeImgElement = oppositeSeat.querySelector("img");
+                        var oppositeSeatNum = oppositeSeat.querySelector(".sit-num").textContent;
+
+                        oppositeImgElement.src = originalImageSrc;
+                        chosenSeats = chosenSeats.filter(function(seat) {
+                            return seat !== oppositeSeatNum;
+                        });
+                        oppositeSeat.classList.remove("seat-selected");
+                    }
+                }
             }
 
-            seatElements.forEach(function(seat, index) {
-                var imgElement = seat.querySelector("img");
-                var originalImageSrc = imgElement.src;
-                var newImageSrc = "{{ asset('client/assets/images/movie/seatDangChon.png') }}";
-                var seatNum = seat.querySelector(".sit-num").textContent;
+            function formatCurrency(amount) {
+                // Format the amount with the desired currency symbol
+                return amount.toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'VND'
+                }).replace(/^(\D+)/, '');
+            }
 
-                if (chosenSeats.includes(seatNum)) {
-                    imgElement.src = newImageSrc;
-                    seat.classList.add("seat-selected");
+            fetch('/save-selected-seats', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                },
+                body: JSON.stringify({
+                    showtime_id: showTimeId,
+                    selectedSeats: chosenSeats
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.message);
+                updateChosenSeatsDisplay();
 
-
-                }
-
-                imgElement.addEventListener("click", function(event) {
-                    event.stopPropagation();
-
-                    // Toggle the seat selection state
-                    if (imgElement.src === originalImageSrc) {
-                        imgElement.src = newImageSrc;
-                        chosenSeats.push(seatNum);
-                        seat.classList.add("seat-selected");
-
-
-                        // Auto-select the corresponding seat for seats with the "seat" class
-                        if (seat.classList.contains("seat")) {
-                            var oppositeIndex = (index % 2 === 0) ? index + 1 : index - 1;
-                            var oppositeSeat = seatElements[oppositeIndex];
-
-                            if (oppositeSeat) {
-                                var oppositeImgElement = oppositeSeat.querySelector("img");
-                                var oppositeSeatNum = oppositeSeat.querySelector(".sit-num")
-                                    .textContent;
-
-                                oppositeImgElement.src = newImageSrc;
-                                chosenSeats.push(oppositeSeatNum);
-                                oppositeSeat.classList.add("seat-selected");
-
-
-                            }
-                        }
-                    } else {
-                        imgElement.src = originalImageSrc;
-                        chosenSeats = chosenSeats.filter(function(seat) {
-                            return seat !== seatNum;
-                        });
-                        seat.classList.remove("seat-selected");
-
-
-                        // Deselect the corresponding seat for seats with the "seat" class
-                        if (seat.classList.contains("seat")) {
-                            var oppositeIndex = (index % 2 === 0) ? index + 1 : index - 1;
-                            var oppositeSeat = seatElements[oppositeIndex];
-
-                            if (oppositeSeat) {
-                                var oppositeImgElement = oppositeSeat.querySelector("img");
-                                var oppositeSeatNum = oppositeSeat.querySelector(".sit-num")
-                                    .textContent;
-
-                                oppositeImgElement.src = originalImageSrc;
-                                chosenSeats = chosenSeats.filter(function(seat) {
-                                    return seat !== oppositeSeatNum;
-                                });
-                                oppositeSeat.classList.remove("seat-selected");
-
-
-
-                            }
-                        }
-                    }
-
-                    function formatCurrency(amount) {
-                        // Format the amount with the desired currency symbol
-                        return amount.toLocaleString('en-US', {
-                            style: 'currency',
-                            currency: 'VND'
-                        }).replace(/^(\D+)/, '');
-                    }
-
-                    fetch('/save-selected-seats', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            },
-                            body: JSON.stringify({
-                                showtime_id: showTimeId,
-                                selectedSeats: chosenSeats
-                            }),
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log(data.message);
-                            updateChosenSeatsDisplay();
-
-                            // Định dạng giá theo VNĐ và cập nhật trên giao diện người dùng
-
-                            document.querySelector(".total-price").textContent = formatCurrency(
-                                data.totalPrice) + " VNĐ";
-
-
-                        });
-
-
-                    const selectedSeats = $('.seat-click').filter('.seat-selected');
-                    if (selectedSeats.length > 0) {
-                        $('#thanh-toan-button').attr('href',
-                            '{{ route('chon-do-an', ['room_id' => $room->id, 'slug' => $showTime->movie->slug, 'showtime_id' => $showTime->id]) }}'
-                        );
-                    } else {
-                        $('#thanh-toan-button').attr('href', '#');
-                    }
-
-                });
+                // Định dạng giá theo VNĐ và cập nhật trên giao diện người dùng
+                document.querySelector(".total-price").textContent = formatCurrency(
+                    data.totalPrice) + " VNĐ";
             });
 
-            updateChosenSeatsDisplay();
+            const selectedSeats = $('.seat-click').filter('.seat-selected');
+            if (selectedSeats.length > 0) {
+                $('#thanh-toan-button').attr('href',
+                    '{{ route('chon-do-an', ['room_id' => $room->id, 'slug' => $showTime->movie->slug, 'showtime_id' => $showTime->id]) }}'
+                );
+            } else {
+                $('#thanh-toan-button').attr('href', '#');
+            }
         });
+    });
+
+    updateChosenSeatsDisplay();
+});
+
     </script>
 @endsection
