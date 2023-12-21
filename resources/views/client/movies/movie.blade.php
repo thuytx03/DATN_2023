@@ -20,59 +20,59 @@
         <div class="tab-area mb-30-none">
             <div class="tab-item active">
                 @if($movies->isNotEmpty())
-                <div class="owl-carousel owl-theme tab-slider">
-                    @foreach($movies as $movie)
-                    <div class="item">
-                        <div class="movie-grid">
-                            <!-- Hiển thị thông tin của bộ phim -->
-                            <div class="movie-thumb c-thumb">
-                                <a href="#0">
-                                    <img alt="movies" class="img-fluid" width="60" src="{{ $movie->poster ? Storage::url($movie->poster) : asset('images/image-not-found.jpg') }}" alt="Image">
-                                </a>
-                            </div>
-                            <div class="movie-content bg-one">
-                                <h5 class="title m-0">
-                                    <a href="{{ route('movie.detail', ['slug' => Str::slug($movie->name), 'id' => $movie->id]) }}">
-                                        {{ $movie->name }}
-                                    </a>
-                                </h5>
-                                <ul class="movie-rating-percent">
-                                    <li>
-                                        <div class="thumb1">
-                                            @if (auth()->check())
-                                            <form action="{{ route('home.favorite.add', ['id' => $movie->id]) }}">
-                                                <button type="submit" id="favorite-link" style="color: white" class="button5" data-movie-id="{{ $movie->id }}">
-                                                    <i id="heart-icon" class="fas fa-heart {{ $user->favoriteMovies->contains($movie) ? 'text-danger' : '' }}"></i>
-                                                </button>
-                                            </form>
-                                            @else
-                                            <a href="{{ route('home.favorite.add', ['id' => $movie->id]) }}" style="color: white">
-                                                <i id="heart-icon" class="fas fa-heart"></i>
+                    <div class="owl-carousel owl-theme tab-slider">
+                        @foreach($movies as $movie)
+                            <div class="item">
+                                <div class="movie-grid">
+                                    <!-- Hiển thị thông tin của bộ phim -->
+                                    <div class="movie-thumb c-thumb">
+                                        <a href="#0">
+                                            <img alt="movies" class="img-fluid" width="60" src="{{ $movie->poster ? Storage::url($movie->poster) : asset('images/image-not-found.jpg') }}" alt="Image">
+                                        </a>
+                                    </div>
+                                    <div class="movie-content bg-one">
+                                        <h5 class="title m-0">
+                                            <a href="{{ route('movie.detail', ['slug' => Str::slug($movie->name), 'id' => $movie->id]) }}">
+                                                {{ $movie->name }}
                                             </a>
-                                            @endif
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="thumb">
-                                            <img src=" {{ asset('client/assets/images/movie/tomato.png') }}" alt="movie">
-                                        </div>
-                                        <span class="content">88%</span>
-                                    </li>
-                                    <li>
-                                        <div class="thumb">
-                                            <a href="{{ route('lich-chieu',['id'=>$movie->id, 'slug'=>$movie->slug]) }}" class="custom-button buy-ticket-button" style="padding: 8px; height: 45px">Mua vé</a>
-                                        </div>
-                                    </li>
-                                </ul>
+                                        </h5>
+                                        <ul class="movie-rating-percent">
+                                            <li>
+                                                <div class="thumb1">
+                                                    @if (auth()->check())
+                                                        <form action="{{ route('home.favorite.add', ['id' => $movie->id]) }}">
+                                                            <button type="submit" id="favorite-link" style="color: white" class="button5" data-movie-id="{{ $movie->id }}">
+                                                                <i id="heart-icon" class="fas fa-heart {{ $user->favoriteMovies->contains($movie) ? 'text-danger' : '' }}"></i>
+                                                            </button>
+                                                        </form>
+                                                    @else
+                                                        <a href="{{ route('home.favorite.add', ['id' => $movie->id]) }}" style="color: white">
+                                                            <i id="heart-icon" class="fas fa-heart"></i>
+                                                        </a>
+                                                    @endif
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="thumb">
+                                                    <img src=" {{ asset('client/assets/images/movie/tomato.png') }}" alt="movie">
+                                                </div>
+                                                <span class="content">88%</span>
+                                            </li>
+                                            <li>
+                                                <div class="thumb">
+                                                    <a href="{{ route('lich-chieu',['id'=>$movie->id, 'slug'=>$movie->slug]) }}" class="custom-button buy-ticket-button" style="padding: 8px; height: 45px">Mua vé</a>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        @endforeach
                     </div>
-                    @endforeach
-                </div>
                 @else
-                <div class="tab-item active">
-                    <p>Không tìm thấy bộ phim nào.</p>
-                </div>
+                    <div class="tab-item active">
+                        <p>Không tìm thấy bộ phim nào.</p>
+                    </div>
                 @endif
             </div>
         </div>

@@ -58,7 +58,7 @@
                     <div class="social-and-duration">
                         <div class="duration-area">
                             <div class="item">
-                                <i class="fas fa-calendar-alt"></i><span>{{$movie->start_date}}</span>
+                                <i class="fas fa-calendar-alt"></i><span>{{ substr($movie->start_date, 0, 10) }}</span>
                             </div>
                             <div class="item">
                                 <i class="far fa-clock"></i><span>{{$movie->duration}} phút</span>
@@ -211,21 +211,14 @@
                                     Mô tả
                                 </li>
                                 <li class="active">
-                                    Đánh giá phim <span>147</span>
+                                    Đánh giá phim
                                 </li>
                             </ul>
                             <div class="tab-area">
                                 <div class="tab-item">
                                     <div class="item">
                                         <h5 class="sub-title">Mô tả phim</h5>
-                                        <p>Lấy cảm hứng từ tiểu thuyết Hồ Oán Hận, của nhà văn Hồng Thái, Người Vợ Cuối
-                                            Cùng là một bộ phim tâm lý cổ trang, lấy bối cảnh Việt Nam vào triều Nguyễn.
-                                            LINH - Người vợ bất đắc dĩ của một viên quan tri huyện, xuất thân là con của
-                                            một gia đình nông dân nghèo khó, vì không thể hoàn thành nghĩa vụ sinh con
-                                            nối dõi nên đã chịu sự chèn ép của những người vợ lớn trong gia đình. Sự gặp
-                                            gỡ tình cờ của cô và người yêu thời thanh mai trúc mã của mình - NHÂN đã dẫn
-                                            đến nhiều câu chuyện bất ngờ xảy ra khiến cuộc sống cô hoàn toàn thay
-                                            đổi. </p>
+                                        <p>{{ $movie->description }}</p>
                                     </div>
                                 </div>
                                 <div class="tab-item active">

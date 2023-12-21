@@ -16,8 +16,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Province;
 use Carbon\Carbon;
 use App\Models\User;
-
-
+use Illuminate\Support\Facades\Auth;
 
 class MovieControllerClient extends Controller
 {
@@ -40,10 +39,10 @@ class MovieControllerClient extends Controller
     {
         $sortBy = $request->input('sortBy', 'default');
         $currentTime = Carbon::now();
-
+        $user = Auth::user(); // Đảm bảo biến $user được gán giá trị từ Auth::user() hoặc từ nguồn dữ liệu khác
         // Nếu $sortBy là 'now-showing', lấy danh sách các bộ phim đang chiếu
         if ($sortBy === 'now-showing') {
-            $movies = Movie::whereHas('showTimes', function ($query) use ($currentTime) {
+            $movies = Movie::whereHas('showtimes', function ($query) use ($currentTime) {
                 $query->where('start_date', '<=', $currentTime)
                     ->where('end_date', '>=', $currentTime);
             })->get();
@@ -54,7 +53,7 @@ class MovieControllerClient extends Controller
                 ->get();
         }
         // Trả về HTML thay vì view
-        return view('client.movies.movie', compact('movies'));
+        return view('client.movies.movie', compact('movies','user'));
     }
 
 
@@ -63,7 +62,7 @@ class MovieControllerClient extends Controller
     {
         try {
             $query = Movie::query();
-
+            $user = Auth::user(); // Đảm bảo biến $user được gán giá trị từ Auth::user() hoặc từ nguồn dữ liệu khác
             if ($request->filled('start_date')) {
                 $startDate = $request->input('start_date');
                 $startDate = Carbon::createFromFormat('d/m/Y', $startDate)->format('Y-m-d');
@@ -82,7 +81,7 @@ class MovieControllerClient extends Controller
             }
 
             $movies = $query->get();
-            return view('client.movies.movie', compact('movies'));
+            return view('client.movies.movie', compact('movies', 'user'));
         } catch (\Exception $e) {
             Log::error('Error during search: ' . $e->getMessage());
             // Xử lý exception ở đây nếu cần
@@ -112,8 +111,8 @@ class MovieControllerClient extends Controller
             $nameGenres = implode(',', $genresName);
             $images = $movie->images;
             $canUserReviewMovie = $this->canUserReviewMovie($userID, $id);
-            $canUserReviewMovieBooking = $this->isBookingScheduleEnded($userID,$id);
-//            dd($canUserReviewMovieBooking);
+            $canUserReviewMovieBooking = $this->isBookingScheduleEnded($userID, $id);
+            //            dd($canUserReviewMovieBooking);
             return view('client.movies.movie-detail', compact('user', 'movie', 'images', 'nameGenres', 'averageRating', 'canUserReviewMovie', 'reviews'));
         }
         if ($movie) {
@@ -129,7 +128,7 @@ class MovieControllerClient extends Controller
     {
         try {
             $query = Movie::query();
-
+            $user = Auth::user();
             if ($request->filled('start_date')) {
                 $startDate = $request->input('start_date');
                 $startDate = Carbon::createFromFormat('d/m/Y', $startDate)->format('Y-m-d');
@@ -141,9 +140,14 @@ class MovieControllerClient extends Controller
                 $query->where('name', 'like', "%$searchQuery%");
             }
 
+            if ($request->filled('country_id')) {
+                $countryId = $request->input('country_id');
+                $query->where('country_id', $countryId);
+            }
+
             $movies = $query->get();
 
-            return view('client.movies.partial-movies', compact('movies'));
+            return view('client.movies.partial-movies', compact('movies', 'user'));
         } catch (\Exception $e) {
             Log::error('Error during search: ' . $e->getMessage());
             // Xử lý exception ở đây nếu cần
@@ -154,11 +158,25 @@ class MovieControllerClient extends Controller
     public function filter(Request $request)
     {
         try {
+            $selectedCountry = $request->input('country');
             $selectedGenres = $request->input('genres');
 
-            $movies = Movie::whereHas('genres', function ($query) use ($selectedGenres) {
-                $query->whereIn('genre_id', $selectedGenres);
-            })->select('id', 'name', 'poster')->get();
+            $query = Movie::query();
+
+            if (!empty($selectedCountry)) {
+                // Sử dụng whereHas để lọc theo country_id trong bảng movies
+                $query->whereHas('country', function ($query) use ($selectedCountry) {
+                    $query->whereIn('country_id', $selectedCountry);
+                });
+            }
+
+            if (!empty($selectedGenres)) {
+                $query->whereHas('genres', function ($query) use ($selectedGenres) {
+                    $query->whereIn('genre_id', $selectedGenres);
+                });
+            }
+
+            $movies = $query->get();
 
             return view('client.movies.partial-movies', compact('movies'));
         } catch (\Exception $e) {
@@ -204,5 +222,4 @@ class MovieControllerClient extends Controller
 
         return $numberOfReviews < $numberOfBookings;
     }
-
 }
