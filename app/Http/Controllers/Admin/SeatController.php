@@ -60,7 +60,7 @@ class SeatController extends Controller
     }
 
 
-    public function store(SeatRequest $request)
+    public function store(Request $request)
     {
 
         $user = auth()->user();
@@ -147,7 +147,7 @@ class SeatController extends Controller
             $cinemaIds = RoleHasCinema::whereIn('role_id', $user->roles()->pluck('id'))->pluck('cinema_id')->toArray();
             $room = Room::whereIn('cinema_id', $cinemaIds)->find($room_id);
         }
-    
+
         if (!$room) {
             toastr()->error('Bạn không có quyền truy cập vào phòng này!');
             return redirect()->route('seat.index');

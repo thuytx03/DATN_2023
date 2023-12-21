@@ -44,6 +44,8 @@ class MovieSeatPlanController extends Controller
         session()->forget('selectedSeats');
         session()->forget('selectedProducts');
         session()->forget('totalPriceFood');
+        session()->forget('voucher');
+
         $room = Room::where('id', $room_id)->first();
         // Lấy danh sách ghế của phòng chiếu $room, lọc theo loại ghế
         $seatsThuong = $room
@@ -131,37 +133,38 @@ class MovieSeatPlanController extends Controller
     // }
 
     public function saveSelectedSeats(Request $request)
-    {
-        $showtime_id = $request->input('showtime_id');
-        $selectedSeats = $request->input('selectedSeats');
+{
+    $showtime_id = $request->input('showtime_id');
+    $selectedSeats = $request->input('selectedSeats');
 
-        // Lấy danh sách ghế trước khi lưu để so sánh với danh sách mới
-        $previousSelectedSeats = json_decode(Redis::get('selected_seats_' . auth()->id() . '_showtime_' . $showtime_id), true) ?? [];
+    // Lấy danh sách ghế trước khi lưu để so sánh với danh sách mới
+    $previousSelectedSeats = json_decode(Redis::get('selected_seats_' . auth()->id() . '_showtime_' . $showtime_id), true) ?? [];
 
-        try {
-            // Lưu danh sách ghế mới
-            $cacheKey = 'selected_seats_' . auth()->id() . '_showtime_' . $showtime_id;
-            $redisResult = Redis::set($cacheKey, json_encode($selectedSeats));
-            Redis::set('name', "thuycoi2003");
+    try {
+        // Lưu danh sách ghế mới với thời gian sống là 10 phút (600 giây)
+        $cacheKey = 'selected_seats_' . auth()->id() . '_showtime_' . $showtime_id;
+        $redisResult = Redis::setex($cacheKey, 600, json_encode($selectedSeats));
 
+        // Broadcast sự kiện SeatSelected
+        broadcast(new SeatSelected(auth()->id(), $selectedSeats, $showtime_id, 'selected'))->toOthers();
 
-            // Broadcast sự kiện SeatSelected
-            broadcast(new SeatSelected(auth()->id(), $selectedSeats, $showtime_id, 'selected'))->toOthers();
-            // Xác định danh sách ghế bị huỷ
-            $cancelledSeats = array_values(array_diff($previousSelectedSeats, $selectedSeats));
-            // Broadcast sự kiện SeatCancelled nếu có ghế bị huỷ
-            if (!empty($cancelledSeats)) {
-                broadcast(new SeatCancelled(auth()->id(), $cancelledSeats, $showtime_id, 'cancelled'))->toOthers();
-            }
+        // Xác định danh sách ghế bị huỷ
+        $cancelledSeats = array_values(array_diff($previousSelectedSeats, $selectedSeats));
 
-            Session::put('selectedSeats', $selectedSeats);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Redis error: ' . $e->getMessage()], 500);
+        // Broadcast sự kiện SeatCancelled nếu có ghế bị huỷ
+        if (!empty($cancelledSeats)) {
+            broadcast(new SeatCancelled(auth()->id(), $cancelledSeats, $showtime_id, 'cancelled'))->toOthers();
         }
 
-        $totalPrice = $this->seatPrice($showtime_id);
-        return response()->json(['message' => 'Selected seats saved successfully', 'totalPrice' => $totalPrice]);
+        Session::put('selectedSeats', $selectedSeats);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Redis error: ' . $e->getMessage()], 500);
     }
+
+    $totalPrice = $this->seatPrice($showtime_id);
+    return response()->json(['message' => 'Selected seats saved successfully', 'totalPrice' => $totalPrice]);
+}
+
 
 
 

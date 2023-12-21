@@ -56,7 +56,7 @@
     </li>
     @endrole
     <!-- Nav Item - Pages Collapse Menu -->
-    @role('Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Manage-NamDinh|Manage-NinhBinh|Staff-Room-HaNoi|Staff-Room-HaiPhong|Staff-Room-ThaiBinh|Staff-Room-NamDinh|Staff-Room-NinhBinh')
+    @role('Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Manage-NamDinh|Manage-NinhBinh')
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#room" aria-expanded="true" aria-controls="room">
             <i class="fa-solid fa-archway"></i>
@@ -98,7 +98,7 @@
         </div>
     </li>
     @endrole
-    @role('Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Manage-NamDinh|Manage-NinhBinh|Staff-Showtime-HaNoi|Staff-Showtime-HaiPhong|Staff-Showtime-ThaiBinh|Staff-Showtime-NamDinh|Staff-Showtime-NinhBinh')
+    @role('Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Manage-NamDinh|Manage-NinhBinh')
     <li class="nav-item">
 
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
@@ -129,7 +129,7 @@
         </div>
     </li>
     @endrole
-    @role('Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Manage-NamDinh|Manage-NinhBinh|Staff-Seat-HaNoi|Staff-Seat-HaiPhong|Staff-Seat-ThaiBinh|Staff-Seat-NamDinh|Staff-Seat-NinhBinh')
+    @role('Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Manage-NamDinh|Manage-NinhBinh')
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#seat" aria-expanded="true" aria-controls="seat">
             <i class="fa-solid fa-chair"></i>
@@ -249,8 +249,10 @@
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="{{ route('user.index') }}">Danh sách người dùng</a>
                 <a class="collapse-item" href="{{ route('role.list') }}">Quản lý vai trò</a>
+                @role('Admin')
                 <a class="collapse-item" href="{{ route('permission.list') }}">Quản lý quyền</a>
                 <!-- link -->
+                @endrole
             </div>
         </div>
     </li>

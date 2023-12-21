@@ -65,7 +65,7 @@ foreach ($bookings as $booking) {
         @if (isset($point_will_claim) > 0)
        <div class="col-5">
 
-        <label for="">Điểm Hiện Tại Của Bạn</label>
+        <label for="">Tổng điểm trong năm</label>
         <input type="text" name="name" value="{{ $members->total_bonus_points ?: 'Bạn Chưa Có Giao Dịch ' }}" readonly>
         <label for="">Điểm Bạn Sắp Nhận Được</label>
 
@@ -81,7 +81,7 @@ foreach ($bookings as $booking) {
         @else
         <div class="col-5">
 
-            <label for="">Điểm Hiện Tại Của Bạn</label>
+            <label for="">Tổng điểm trong năm</label>
             <input type="text" name="name" value="{{ $members->total_bonus_points ?: 'Bạn Chưa Có Giao Dịch ' }}" readonly>
             <label for="">Điểm Bạn Sắp Nhận Được</label>
             @if (isset($point_will_claim ))
@@ -97,6 +97,6 @@ foreach ($bookings as $booking) {
         @endif
 
     </div>
-    <a  class="btn btn-success" style="margin-left:100px;margin-top:40px; background-image: -webkit-linear-gradient(169deg, #5560ff 17%, #aa52a1 63%, #ff4343 100%);">Đổi Điểm</a>
+
 </form>
 @endsection

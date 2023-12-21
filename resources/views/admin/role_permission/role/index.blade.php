@@ -26,11 +26,13 @@ Danh sách vai trò
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <div class="row align-items-center">
+                @role('Admin')
                 <div class="col">
                     <a href="{{ route('role.form-add') }}" class="btn btn-success">
                         Thêm mới
                     </a>
                 </div>
+                @endrole
                 <div class="col text-right">
                     <div class="dropdown">
                         <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
@@ -39,8 +41,8 @@ Danh sách vai trò
                         <div class="dropdown-menu">
                             @role('Admin')
                             <a class="dropdown-item" href="{{route('bin.list-role')}}">Thùng rác</a>
-                            @endrole
                             <a href="#" id="delete-selected" class="dropdown-item">Xoá đã chọn</a>
+                            @endrole
                         </div>
                     </div>
                 </div>
@@ -108,8 +110,10 @@ Danh sách vai trò
                                                 </button>
                                                 <div class="dropdown-menu">
                                                     <a class="dropdown-item" href="{{route('role.form-update',['id'=>$role->id])}}">Cập nhật</a>
+                                                    @role('Admin')
                                                     <a class="dropdown-item show_confirm" href="{{route('role.delete',['id'=>$role->id])}}">Xoá
                                                     </a>
+                                                    @endrole
                                                 </div>
                                             </div>
                                         </td>

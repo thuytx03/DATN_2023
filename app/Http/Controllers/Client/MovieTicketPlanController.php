@@ -12,6 +12,7 @@ use App\Models\ShowTime;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Events\TestEvent;
+use Illuminate\Support\Facades\Redis;
 
 class MovieTicketPlanController extends Controller
 {
@@ -55,6 +56,7 @@ class MovieTicketPlanController extends Controller
                             $query->where('id', $selectedCinemaId);
                         }
                     });
+
                 if ($selectedDate) {
                     $showTimeQuery->whereDate('start_date', $selectedDate); // Lọc theo ngày bắt đầu
                 }
@@ -88,11 +90,15 @@ class MovieTicketPlanController extends Controller
                             foreach ($roomShowtimes as $showtime) {
                                 // Lấy danh sách ghế đã đặt cho lịch chiếu này
                                 $bookings = Booking::where('showtime_id', $showtime->id)
-                                ->where('status','!=','4')
-                                ->get();
+                                    ->where('status', '!=', '4')
+                                    ->get();
+                                    $cacheKey = 'selected_seats_' . auth()->id() . '_showtime_' . $showtime->id;
+                                    // dd($cacheKey);
+                                    Redis::del($cacheKey);
                                 $bookedSeats = [];
                                 foreach ($bookings as $booking) {
                                     $bookedSeats = array_merge($bookedSeats, json_decode($booking->list_seat));
+
                                 }
                                 // Loại bỏ các giá trị trùng lặp
                                 $bookedSeats = array_unique($bookedSeats);
@@ -125,5 +131,4 @@ class MovieTicketPlanController extends Controller
         $cinemas = Cinema::where('province_id', $provinceId)->pluck('name', 'id');
         return response()->json($cinemas);
     }
-
 }

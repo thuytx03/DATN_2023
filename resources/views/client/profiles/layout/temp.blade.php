@@ -43,7 +43,7 @@
                 <a href="{{route('profile')}}">Thông tin chung</a>
                 <a href="{{route('profile.edit')}}">Chi tiết tài khoản</a>
                 <a href="{{route('profile.changePassword')}}">Đổi mật khẩu</a>
-                <a href="{{route('profile')}}">Phiếu giảm giá</a>
+
                 <a href="{{route('profile.history')}}">Lịch sử giao dịch</a>
                 <a href="{{route('profile.points')}}">Điểm Thưởng</a>
                 <a href="{{route('profile.member')}}">Thẻ Thành Viên</a>

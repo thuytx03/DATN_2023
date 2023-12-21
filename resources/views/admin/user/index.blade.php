@@ -88,7 +88,9 @@ Danh sách người dùng
                                         <th scope="col">Địa chỉ</th>
                                         <th scope="col">Giới tính</th>
                                         <th scope="col">Hình ảnh</th>
+                                        @role('Admin')
                                         <th scope="col">Trạng thái</th>
+                                        @endrole
                                         <th scope="col">Hành động</th>
                                     </tr>
                                 </thead>
@@ -112,6 +114,7 @@ Danh sách người dùng
                                         <td>
                                             <img alt="Avatar" width="60" src="{{ $user->avatar ? Storage::url($user->avatar) : asset('images/image-not-found.jpg') }}" alt="Image">
                                         </td>
+                                        @role('Admin')
                                         <td>
                                             <div class="form-check form-switch">
                                                 @if ($user->status == 3)
@@ -123,6 +126,7 @@ Danh sách người dùng
                                                 @endif
                                             </div>
                                         </td>
+                                        @endrole
                                         <td>
                                             <div class="dropdown">
                                                 <button class="btn " type="button" data-toggle="dropdown" aria-expanded="false">
