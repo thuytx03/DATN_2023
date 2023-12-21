@@ -249,8 +249,8 @@
                             <h6 class="subtitle"><span>Tổng tiền</span><span>
                                     {{ number_format(session('voucher.totalPriceVoucher'), 0, ',', '.') }} VNĐ
                                 </span></h6>
-                            <input type="hidden" name="totalPrice" value="{{ $totalPrice }}">
-                        @else
+                                <input type="hidden" name="totalPrice" value="{{ session('voucher.totalPriceVoucher') }}">
+                                @else
                             <h6 class="subtitle"><span>Tổng tiền</span><span>
                                     {{ number_format($totalPrice, 0, ',', '.') }} VNĐ
                                 </span></h6>
