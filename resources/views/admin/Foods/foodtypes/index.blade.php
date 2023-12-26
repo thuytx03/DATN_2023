@@ -140,6 +140,7 @@
                                                         } else {
                                                             break;
                                                         }
+                                                        break;
                                                     }
                                                 }
                                             @endphp

@@ -146,7 +146,7 @@
                                                     Quyền lợi của VIP 2023:
                                                     <br>
                                                     - 1 thẻ giảm giá giảm giá 10% trên tổng hóa đơn
-                                                    - 1 thẻ giảm giá 200,000VND trên tổng hóa đơn
+                                                    - 1 thẻ giảm giá 20,000VND trên tổng hóa đơn
                                                     <br>
 
                                                     - Tỷ lệ tích điểm hấp dẫn: 7% tại quầy vé & 5% tại quầy bắp nước.
@@ -167,7 +167,7 @@
                                                     Quyền lợi của VVIP 2023:
                                                     <br>
                                                     - 5 thẻ giảm giá 15% trên tổng hóa đơn
-                                                    - 10 thẻ giảm giá 200,000 trên tổng hóa đơn
+                                                    - 10 thẻ giảm giá 20,000 trên tổng hóa đơn
                                                     <br>
 
 

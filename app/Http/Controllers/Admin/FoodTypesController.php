@@ -230,6 +230,7 @@ class FoodTypesController extends Controller
                 } else {
                     $Foodstypes->slug = Str::slug($request->input('name'));
                 }
+                $Foodstypes->image = $request->image;
                 $Foodstypes->description = $request->description;
                 if (!empty($request->status)) {
                     $Foodstypes->status = $request->status;

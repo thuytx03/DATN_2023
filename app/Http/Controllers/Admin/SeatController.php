@@ -134,7 +134,7 @@ class SeatController extends Controller
         return view('admin.seats.seat.add', compact('province'));
     }
 
-    public function update(SeatRequest $request, $room_id)
+    public function update(Request $request, $room_id)
     {
         $user = auth()->user();
 

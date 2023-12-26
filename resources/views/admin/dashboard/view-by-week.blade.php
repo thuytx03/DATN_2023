@@ -26,7 +26,7 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    Phim được xem nhiều nhất trong ngày
+                                    Phim được xem nhiều nhất trong tuần
                                 </div>
                                 @if($mostViewedMovie != null)
                                     <div class="h6 mb-0 font-weight-bold text-gray-800">
@@ -46,7 +46,7 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                    Tổng số phim công chiếu trong ngày
+                                    Tổng số phim công chiếu trong tuần
                                 </div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $showTimesWeek }} - lịch chiếu
                                 </div>

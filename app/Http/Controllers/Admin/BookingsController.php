@@ -38,9 +38,9 @@ class BookingsController extends Controller
             // Lấy danh sách room_id từ bảng rooms dựa trên cinema_ids
             $roomIds = Room::whereIn('cinema_id', $cinemaIds)->pluck('id')->toArray();
             $showtimeIds = Showtime::whereIn('room_id', $roomIds)->pluck('id')->toArray(); // Lấy danh sách các showtimeIds
-            if ($showtimeIds) {
+            // if ($showtimeIds) {
                 $query->whereIn('showtime_id', $showtimeIds);
-            }
+            // }
         }
         // Tìm kiếm theo name
         if ($request->has('search')) {

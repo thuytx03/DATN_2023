@@ -59,14 +59,14 @@
                             <div class="tab-item active">
                                 <div class="movie-area mb-10">
                                     @foreach ($voucher as $value)
-                                        @php
+                                        {{-- @php
                                             $now = now();
                                             $end_date = $value->end_date;
                                             $interval = $now->diff($end_date);
 
                                             $hoursRemaining = $interval->h;
                                             $minutesRemaining = $interval->i;
-                                        @endphp
+                                        @endphp --}}
                                         <div class="movie-list">
                                             <div class="movie-thumb c-thumb">
                                                 <a href="movie-details.html" class="w-100 bg_img h-100"
@@ -85,7 +85,7 @@
                                                     @endif
                                                 </h5>
 
-                                                <div class="duration">
+                                                {{-- <div class="duration">
                                                     @if ($value->status == 3)
                                                         Hết Hạn
                                                     @elseif($value->status == 4)
@@ -100,7 +100,7 @@
                                                         <span class="content">Hạn sử dụng đến
                                                             {{ \Carbon\Carbon::parse($voucher->end_date)->format('d/m/Y') }}</span>
                                                     @endif
-                                                </div>
+                                                </div> --}}
                                                 <div class="release">
                                                     <span>Mã giảm giá cần dùng: <span
                                                             class="duration">{{ $value->poin }}</span> điểm để mở khoá
@@ -136,7 +136,7 @@
                                 </div>
                             </div>
                         </div>
-                       
+
                     </div>
                 </div>
             </div>
