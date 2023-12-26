@@ -22,6 +22,9 @@ return new class extends Migration
             $table->string('email');
             $table->string('phone');
             $table->string('address')->nullable();
+            $table->boolean('hasUpdated')->default(0);
+            $table->string('price_ticket')->nullable();
+            $table->string('price_food')->nullable();
             $table->string('total')->nullable();
             $table->string('payment')->nullable();
             $table->string('status')->nullable();

@@ -38,12 +38,12 @@ Sửa phòng
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="name" class="form-label">Tên phim</label>
+                            <label for="name" class="form-label">Tên rạp</label>
                             <br>
                             <select class="form-select border border-1 rounded w-100 p-2" name="cinema_id">
-                                <option value="1">Option 1</option>
-                                <option value="2">Option 2</option>
-                                <option value="3">Option 3</option>
+                            @foreach($cinema as $cinema)
+                                <option value="{{$cinema->id}}" {{$cinema->id === $room->room_type_id ? 'selected':''}}>{{$cinema->name}}</option>
+                                @endforeach
                                 <!-- Add more options as needed -->
                             </select>
                         </div>

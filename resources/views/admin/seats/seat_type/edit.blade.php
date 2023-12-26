@@ -28,11 +28,7 @@
                         <label for="slug">Đường dẫn</label>
                         <input name="slug" type="text" id="slug" class="form-control" value="{{ $seatType->slug }}">
                     </div>
-                    <div class="form-group">
-                        <label for="name">Giá <span class="text-danger">(*)</span></label>
-                        <input type="text" id="price" name="price" class="form-control" value="{{$seatType->price }}">
-                    </div>
-
+                  
                     <div class="form-group">
                         <label for="status">Trạng thái</label>
                         <select id="status" class="form-control custom-select" name="status">

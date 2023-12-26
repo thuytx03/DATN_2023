@@ -39,14 +39,16 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="email" class="form-label">Vai trò</label>
-                            <select class="form-select" name="role[]" id="role" multiple>
-                                @foreach($role as $role)
-                                <option value="{{$role->id}}">{{$role->name}}</option>
-                                @endforeach
-                            </select>
+                            <label class="form-label">Vai trò</label><br>
+                            @foreach($roles as $role)
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="role_{{ $role->id }}" name="role[]" value="{{ $role->name }}">
+                                <label class="form-check-label" for="role_{{ $role->id }}">{{ $role->name }}</label>
+                            </div>
+                            @endforeach
                         </div>
                     </div>
+
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="name" class="form-label">Số điện thoại</label>

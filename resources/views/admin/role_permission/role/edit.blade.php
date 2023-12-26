@@ -9,10 +9,10 @@
     @if ($errors->any())
     <div class="alert alert-danger">
         @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
+        <li>{{ $error }}</li>
         @endforeach
     </div>
-@endif
+    @endif
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-body">
@@ -34,12 +34,21 @@
                         </div>
                         <div class="mb-3">
                             <label for="name" class="form-label">Nhóm</label>
-                            <input type="text" class="form-control" name="group" value="{{$role->group}}">
+                            <br>
+                            <select class="form-select border border-1 rounded w-100 p-2" name="group">
+                                @role('Admin')
+                                <option value="admin" {{$role->group=='admin'?'selected':''}}>Admin</option>
+                                @endrole
+                                <option value="manage" {{$role->group=='manage'?'selected':''}}>Quản lý</option>
+                                <option value="qr" {{$role->group=='qr'?'selected':''}}>Nhân viên quét Qr</option>
+                                <option value="booking" {{$role->group=='booking'?'selected':''}}>Nhân viên quản lý hóa đơn</option>
+                                <!-- Add more options as needed -->
+                            </select>
                         </div>
                         <button type="submit" class="btn btn-primary">Cập nhật</button>
                         <button type="reset" class="btn btn-danger">Nhập lại</button>
                     </div>
-
+                    @role('Admin')
                     <div class="col-md-7">
                         <label for="" class="btn btn-success mb-2">Quyền</label>
                         <hr>
@@ -50,7 +59,17 @@
                             </label>
                         </div>
                         <!-- ... -->
-
+                        <hr>
+                        <div class="row">
+                            @foreach($cinemas as $item)
+                            <div class="form-check m-3">
+                                <input class="form-check-input permission-checkbox child-checkbox" type="checkbox" value="{{$item->id}}" id="{{$item->id}}" name="cinema[]" @if($role->cinemas->contains('id', $item->id)) checked @endif>
+                                <label class="form-check-label" for="{{$item->id}}">
+                                    {{$item->name}}
+                                </label>
+                            </div>
+                            @endforeach
+                        </div>
                         <div class="row">
                             @foreach($permission as $groupName => $per)
                             <div class="col-md-6">
@@ -69,7 +88,7 @@
                                     checked
                                     @endif
                                     @endforeach
-                                    type="checkbox" value="{{$item->id}}" id="{{$item->id}}" name="permission[]">
+                                    type="checkbox" value="{{$item->name}}" id="{{$item->id}}" name="permission[]">
                                     <label class="form-check-label" for="{{$item->id}}">
                                         {{$item->name}}
                                     </label>
@@ -78,8 +97,8 @@
                             </div>
                             @endforeach
                         </div>
-
                     </div>
+                    @endrole
                 </div>
             </form>
         </div>

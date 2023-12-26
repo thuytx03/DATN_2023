@@ -13,13 +13,13 @@ class AuthAdminController extends Controller
     {
         if (Auth::check()) {
             toastr()->error('Lỗi! Tài khoản đang đăng nhập!');
-            return redirect()->route('dashboard'); // Thay đổi '/dashboard' thành đường dẫn mà bạn muốn điều hướng người dùng đã đăng nhập đến.
+            return redirect()->route('dashboard.user'); // Thay đổi '/dashboard' thành đường dẫn mà bạn muốn điều hướng người dùng đã đăng nhập đến.
         }
         if ($request->isMethod('POST')) {
             //đăng nhập thành công
             if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
                 toastr()->success('Cảm ơn! Đăng nhập thành công!');
-                return redirect()->route('dashboard');
+                return redirect()->route('dashboard.user');
             } else {
                 toastr()->error('Lỗi! Tài khoản hoặc mặt khẩu sai!');
                 return redirect()->route('login.admin');

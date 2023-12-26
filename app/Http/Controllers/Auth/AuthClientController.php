@@ -10,6 +10,9 @@ use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use App\Models\Member;
+use Illuminate\Support\Facades\DB;
+use App\Models\MembershipLevel;
 use Exception;
 
 class AuthClientController extends Controller
@@ -29,9 +32,9 @@ class AuthClientController extends Controller
             ]);
 
             $user = User::where('email', $request->email)->first();
-
+            $remember = $request->has('remember');
             if ($user && $user->status == 1) {
-                if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+                if (Auth::attempt(['email' => $request->email, 'password' => $request->password],$remember)) {
                     toastr()->success('Đăng nhập thành công!');
                     return redirect()->route('index');
                 }else{
@@ -75,6 +78,19 @@ class AuthClientController extends Controller
                 'phone' => $request->input('phone'),
                 'password' => bcrypt($request->input('password')),
             ]);
+            $idmember = DB::table('membership_levels')
+            ->where('name', 'member')
+            ->pluck('id')
+            ->first();
+
+            if($user) {
+                $member = MemBer::create([
+                    'user_id' => $user->id,
+                    'card_number' => 'BLT'.'123'.'1804'.$user->id,
+                    'level_id' => $idmember,
+                    'status' => 1
+                ]);
+            };
             $users = User::where('email', $request->email)->first();
 
             $name = 'Chào Mừng   ' . '  ' . $request->input('name') . '' . 'đến với boleto';

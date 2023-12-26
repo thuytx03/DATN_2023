@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Client;
 
-use Srmklive\PayPal\Services\PayPal as PayPalClient;
+
 use App\Http\Controllers\Controller;
+use App\Models\Movie;
+use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use App\Http\Requests\BookingRequest;
 use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\MovieFood;
+use App\Models\Cinema;
 use App\Models\Room;
 use App\Models\Seat;
 use App\Models\SeatType;
@@ -18,12 +21,29 @@ use Illuminate\Support\Facades\DB;
 use Exception;
 use App\Models\Payment_Vnpay;
 use App\Models\PayMent_PayPal;
-
+use App\Models\UserVoucher;
+use App\Models\Voucher;
+use App\Models\VoucherUnlocked;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
+use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelHigh;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Redis;
 
 class BookingController extends Controller
 {
     public function index(BookingRequest $request, $room_id, $slug, $showtime_id)
     {
+        // session()->forget('voucher');
+
+        $listSeat = Session::get('selectedSeats', []);
+        if (empty($listSeat)) {
+            toastr()->error('Không thể vào trang thanh toán khi bạn chưa chọn ghế!');
+            return redirect()->route('index');
+        }
+
         $this->checkStatus();
         $room = Room::where('id', $room_id)->first();
         $showTime = ShowTime::find($showtime_id);
@@ -33,6 +53,7 @@ class BookingController extends Controller
         // Tạo một mảng để lưu giá của từng ghế.
         $prices = [];
         foreach (Session::get('selectedSeats', []) as $seat) {
+
             // Tách hàng và cột từ chuỗi ghế (ví dụ: "J6" -> hàng "J", cột "6").
             $row = substr($seat, 0, 1); // Lấy ký tự đầu tiên
             $column = substr($seat, 1);
@@ -43,12 +64,8 @@ class BookingController extends Controller
                 ->first();
 
             if ($seatInfo) {
-                // Lấy giá dựa trên 'seat_type_id' từ bảng 'seat_types'.
-                $seatType = SeatType::find($seatInfo->seat_type_id);
-                if ($seatType) {
-                    // Lưu giá của từng ghế vào mảng $prices.
-                    $prices[] = $seatType->price;
-                }
+                // Lưu giá của từng ghế vào mảng $prices.
+                $prices[] = $seatInfo->seatType->seatPrice->where('showtime_id', $showtime_id)->first()->price;
             }
         }
 
@@ -58,6 +75,7 @@ class BookingController extends Controller
         // dd($totalPriceTicket);
 
         if ($request->isMethod('POST')) {
+
             $booking = new Booking();
             $booking->user_id = auth()->user()->id;
             $booking->showtime_id = $showTime->id;
@@ -65,35 +83,82 @@ class BookingController extends Controller
             $booking->email = $request->email;
             $booking->phone = $request->phone;
             $booking->address = $request->address;
-            $booking->total = $request->total;
+            $booking->price_ticket = $totalPriceTicket;
+            $booking->price_food = $request->totalPriceFood;
+            // $booking->total = $request->total;
             $booking->payment = $request->payment;
             $booking->status = 1;
             $booking->note = $request->note;
+
             if (Session::has('selectedSeats')) {
                 $listSeat = Session::get('selectedSeats', []);
                 // dd($listSeat);
                 $selectedSeatsJson = json_encode($listSeat);
                 // dd($selectedSeatsJson);
+                $existingSeats = Booking::where('showtime_id', $showtime_id)
+                    ->where('list_seat', $selectedSeatsJson)
+                    ->where('status', '!=', 4)
+                    ->exists();
+                if ($existingSeats) {
+                    toastr()->error('Ghế đã được đặt bởi người khác!');
+                    return redirect()->back();
+                }
                 $booking->list_seat = $selectedSeatsJson;
+            }
+            if (empty($listSeat)) {
+                toastr()->error('Không thể trang thanh toán khi bạn chưa chọn ghế!');
+                return redirect()->back();
             }
             $booking->total = $request->totalPrice;
             $booking->save();
+            if ($showTime->movie) {
+                $movie = $showTime->movie;
+                $movie->view += 1;
+                $movie->save();
+                // Lấy ngày đặt vé
+                $bookingDate = now()->format('Y-m-d');
 
-            if(session()->has('selectedProducts')){
-                foreach (session('selectedProducts') as $food){
-                    $bookingDetail=new BookingDetail();
-                    $bookingDetail->booking_id=$booking->id;
-                    $bookingDetail->food_id=$food['id'];
-                    $bookingDetail->quantity=$food['quantity'];
-                    $bookingDetail->price=$food['price'];
+                // Tăng số lượng lượt xem cho ngày đó hoặc tạo mới nếu chưa có
+                $movie->views()->updateOrCreate(
+                    ['date' => $bookingDate],
+                    ['count' => DB::raw('count + 1')]
+                );
+            }
+            if (session()->has('selectedProducts')) {
+                foreach (session('selectedProducts') as $food) {
+                    $bookingDetail = new BookingDetail();
+                    $bookingDetail->booking_id = $booking->id;
+                    $bookingDetail->food_id = $food['id'];
+                    $bookingDetail->quantity = $food['quantity'];
+                    $bookingDetail->price = $food['price'];
                     $bookingDetail->save();
                 }
+            }
+            // Lấy thông tin mã voucher từ session
+            $voucherInfo = Session::get('voucher');
+            if ($voucherInfo) {
+                $voucher = Voucher::where('code', $voucherInfo['code'])->first();
+                $voucher->quantity--;
+                $voucher->save();
+
+                $userUnlocked=VoucherUnlocked::where('user_id',auth()->id())->where('voucher_id',$voucher->id)->first();
+                if ($userUnlocked && $userUnlocked->status == 0) {
+                    $userUnlocked->status = 1;
+                    $userUnlocked->unlocked = false;
+                    $userUnlocked->save();
+                }
+
+                UserVoucher::create([
+                    'user_id' => auth()->id(),
+                    'voucher_id' => $voucher->id,
+                ]);
             }
 
             if ($booking->payment == 1) {
                 // Thực hiện thanh toán VNPay
                 $result = $this->paymentVNP($booking->id, $booking->total);
             } elseif ($booking->payment == 2) {
+
                 return redirect()->route('paypal.payment', ['id' => $booking->id]);
             }
 
@@ -101,12 +166,11 @@ class BookingController extends Controller
             session()->forget('selectedSeats');
             session()->forget('selectedProducts');
             session()->forget('totalPriceFood');
-            toastr()->success('Đặt vé thành công');
 
+            toastr()->success('Đặt vé thành công');
         }
 
         return view('client.movies.movie-checkout', compact('showTime', 'room', 'totalPriceTicket'));
-
     }
 
 
@@ -183,12 +247,18 @@ class BookingController extends Controller
         } else {
             echo json_encode($returnData);
         }
-
-
     }
     public function thanks(Request $request)
     {
-        if ($request->has('vnp_Amount')) {
+
+
+        session()->forget('voucher');
+        session()->forget('selectedSeats');
+        session()->forget('selectedProducts');
+        session()->forget('totalPriceFood');
+
+        if ($request->query('vnp_Amount')) {
+
             $vnp_Amount = $request->query('vnp_Amount');
             $vnp_BankCode = $request->query('vnp_BankCode');
             $vnp_BankTranNo = $request->query('vnp_BankTranNo');
@@ -221,25 +291,84 @@ class BookingController extends Controller
             // Add more fields to store, such as vnp_BankCode, vnp_ResponseCode, etc.
             $payment->save();
 
+
             // Update the booking status
-            $booking = Booking::find($vnp_TxnRef);
+            $booking1 = Booking::find($payment->booking_id);
+            $booking = Payment_Vnpay::where('booking_id', $payment->vnp_TxnRef)->first();
+
+
             if ($booking) {
-                if ($vnp_ResponseCode == '00') {
-                    $booking->status = 2; // Thành Công
+                if ($booking->vnp_ResponseCode == '00') {
+                    // Tạo mã QR
+                    $qrCode = QrCode::create("/qrtiketinfo/$booking1->id")
+                        ->setSize(200);
+
+                    // Kiểm tra và tạo thư mục nếu nó không tồn tại
+                    if (!file_exists(public_path('qrcodes'))) {
+                        mkdir(public_path('qrcodes'), 0777, true);
+                    }
+
+                    // Tạo và lưu mã QR như một tệp hình ảnh
+                    $writer = new PngWriter();
+                    $result = $writer->write($qrCode);
+                    $qrcodePath = 'qrcodes/' . $booking1->id . '.png';
+                    $result->saveToFile(public_path($qrcodePath));
+
+                    // Đọc tệp hình ảnh và mã hóa nó thành base64
+                    $qrcodeBase64 = base64_encode(file_get_contents(public_path($qrcodePath)));
+
+                    // Nội dung email
+                    $name = 'Thông tin đơn hàng ' . $request->input('name') . ' đến với boleto';
+                    $show_time1 = ShowTime::find($booking1->showtime_id);
+
+                    $moviename1 = Movie::find($show_time1->movie_id);
+
+                    $bookingDetail1 = BookingDetail::where('booking_id', $booking1->id)->get();
+
+
+
+                    if (isset($bookingDetail1)) {
+                        // Extracting food_ids from booking details
+                        $foodIds = $bookingDetail1->pluck('food_id');
+
+                        // Retrieving food items using the extracted food_ids
+                        $foods = MovieFood::whereIn('id', $foodIds)->get();
+                    }
+
+                    $room1 = Room::find($show_time1->room_id);
+                    $cinema1 = Cinema::where('id', $room1->cinema_id)->first();
+                    // Gửi email
+                    Mail::send('admin.qr.mail', compact('name', 'booking1', 'qrcodeBase64', 'moviename1', 'room1', 'foods', 'cinema1', 'show_time1'), function ($message) use ($booking1, $qrcodePath) {
+                        $message->from('anhandepgiai22@gmail.com', 'BoleTo');
+                        $message->to($booking1->email, $booking1->name);
+                        $message->subject('Thông Tin Đơn Hàng');
+
+                        // Gắn thêm ảnh QR Code vào file đi kèm
+                        $message->attach(public_path($qrcodePath));
+                    });
+
+                    // Xóa tệp hình ảnh tạm thời
+                    unlink(public_path($qrcodePath));
+                    // Đánh dấu đơn hàng là Thành Công
+                    $booking1->status = 2;
+                    $booking1->save();
+
+                    $cacheKey = 'selected_seats_' . auth()->id() . '_showtime_' . $booking1->showtime_id;
+                    Redis::del($cacheKey);
                     $thongbao = 'Cảm ơn bạn đã thanh toán!';
-                    $booking->save();
                 } else {
                     // Payment failed, set status to an appropriate code for failed payments
-                    $booking->status = 3; // Thất Bại
-                    if ($booking->status == 3) {
+                    $booking->status = 4; // Thất Bại
+                    if ($booking->status == 4) {
                         $booking->delete(); // Delete the record
                         $thongbao = 'Thanh Toán Thất Bại';
                     }
                 }
             }
         } else {
-            $thongbao = "Bạn Đã Thanh Toán Thành Công";
+            $thongbao = 'Cảm ơn bạn đã thanh toán!';
         }
+
 
         $thongbao = $thongbao;
         return view('client.movies.thank', compact('thongbao'));
@@ -247,16 +376,71 @@ class BookingController extends Controller
         // Now you have inserted payment data and updated the booking status based on the payment result
         // You can add further logic as needed
     }
+
     public function checkStatus()
     {
         try {
-            // Replace 'your_table_name' with the actual name of the table
+            // Delete bookings with status 1
             DB::table('bookings')->where('status', 1)->delete();
-            return "Records with status 1 deleted successfully";
+
+            // Get all bookings
+            $bookings = DB::table('bookings')->get();
+            if (isset($bookings)) {
+                // Loop through each booking
+                foreach ($bookings as $booking) {
+                    if (isset($booking)) {
+                        // Check if the movie time has ended for this booking
+                        $show_time = DB::table('show_times')->where('id', $booking->showtime_id)->first();
+                        if ($booking->status == 5 && $booking->hasUpdated == 0) {
+                            DB::table('bookings')->where('id', $booking->id)->update(['status' => 6]);
+                        }
+
+                        // Replace 'your_condition' with the actual condition to check if the movie time has ended
+                    }
+                }
+            }
+
+            return "Records updated successfully";
         } catch (\Exception $e) {
             return "Error: " . $e->getMessage();
         }
     }
+
+
+
+
+    public function checkStatus2($id)
+    {
+
+        $bookings = Booking::where('user_id', $id)->get();
+
+        if (isset($bookings)) {
+            foreach ($bookings as $booking) {
+
+                if (isset($booking)) {
+                    $show_time = DB::table('show_times')->where('id', $booking->showtime_id)->first();
+                    // Kiểm tra nếu không có dữ liệu
+
+                    if (!$show_time) {
+                        continue;
+                    } elseif (strtotime($show_time->end_date) < time()) {
+
+                        if ($booking->status == 2 && $booking->hasUpdated == 0) {
+                            DB::table('bookings')->where('id', $booking->id)->update(['status' => 5]);
+                        }
+                    }
+                    // Replace 'your_condition' with the actual condition to check if the movie time has ended
+
+                }
+            }
+        }
+    }
+
+
+
+
+
+
     // code của paypal
     public function paypal()
     {
@@ -264,11 +448,13 @@ class BookingController extends Controller
     }
     public function payment($id)
     {
-        $provider = new PayPalClient;
+        $provider = new PayPalClient();
         $provider->setApiCredentials(config('paypal'));
         $paypalToken = $provider->getAccessToken();
-        $booking = Booking::find($id)->first();
-        $total = ceil($booking->total / 22000);
+        $booking = Booking::find($id);
+
+        $total = round($booking->total / 24279, 2);
+
 
         $response = $provider->createOrder([
             "intent" => "CAPTURE",
@@ -324,6 +510,7 @@ class BookingController extends Controller
      */
     public function paymentSuccess(Request $request, $id)
     {
+
         $provider = new PayPalClient;
         $provider->setApiCredentials(config('paypal'));
         $provider->getAccessToken();
@@ -331,25 +518,81 @@ class BookingController extends Controller
 
         if (isset($response['status']) && $response['status'] == 'COMPLETED') {
 
-            $booking = Booking::find($id); // Tìm đặt phòng dựa trên booking_id
-            $total = ceil($booking->total/22000);
+            $booking1 = Booking::find($id); // Tìm đặt phòng dựa trên booking_id
+
+            $cacheKey = 'selected_seats_' . auth()->id() . '_showtime_' . $booking1->showtime_id;
+            Redis::del($cacheKey);
+            $total = ceil($booking1->total / 22000);
             $add =     payment_paypal::create([
-                'booking_id' => $booking->id, // Liên kết thông tin thanh toán với đặt phòng
+                'booking_id' => $booking1->id, // Liên kết thông tin thanh toán với đặt phòng
                 'total' => $total,
             ]);
             if ($add) {
-                $booking->status = 2; // Thành Công
 
-                $booking->save();
+
+                // Tạo mã QR
+                $qrCode = QrCode::create("/qrtiketinfo/$booking1->id")
+                    ->setSize(200);
+
+                // Kiểm tra và tạo thư mục nếu nó không tồn tại
+                if (!file_exists(public_path('qrcodes'))) {
+                    mkdir(public_path('qrcodes'), 0777, true);
+                }
+
+                // Tạo và lưu mã QR như một tệp hình ảnh
+                $writer = new PngWriter();
+                $result = $writer->write($qrCode);
+                $qrcodePath = 'qrcodes/' . $booking1->id . '.png';
+                $result->saveToFile(public_path($qrcodePath));
+
+                // Đọc tệp hình ảnh và mã hóa nó thành base64
+                $qrcodeBase64 = base64_encode(file_get_contents(public_path($qrcodePath)));
+
+                // Nội dung email
+                $name = 'Thông tin đơn hàng ' . $request->input('name') . ' đến với boleto';
+                $show_time1 = ShowTime::find($booking1->showtime_id);
+
+                $moviename1 = Movie::find($show_time1->movie_id);
+
+                $bookingDetail1 = BookingDetail::where('booking_id', $booking1->id)->get();
+
+
+
+                if (isset($bookingDetail1)) {
+                    // Extracting food_ids from booking details
+                    $foodIds = $bookingDetail1->pluck('food_id');
+
+                    // Retrieving food items using the extracted food_ids
+                    $foods = MovieFood::whereIn('id', $foodIds)->get();
+                }
+
+                $room1 = Room::find($show_time1->room_id);
+                $cinema1 = Cinema::where('id', $room1->cinema_id)->first();
+                // Gửi email
+                Mail::send('admin.qr.mail', compact('name', 'booking1', 'qrcodeBase64', 'moviename1', 'room1', 'foods', 'cinema1', 'show_time1'), function ($message) use ($booking1, $qrcodePath) {
+                    $message->from('anhandepgiai22@gmail.com', 'BoleTo');
+                    $message->to($booking1->email, $booking1->name);
+                    $message->subject('Thông Tin Đơn Hàng');
+
+                    // Gắn thêm ảnh QR Code vào file đi kèm
+                    $message->attach(public_path($qrcodePath));
+                });
+
+                // Xóa tệp hình ảnh tạm thời
+                unlink(public_path($qrcodePath));
+                // Đánh dấu đơn hàng là Thành Công
+                $booking1->status = 2;
+                $booking1->save();
             } else {
                 // Payment failed, set status to an appropriate code for failed payments
-                $booking->status = 3; // Thất Bại
-                if ($booking->status == 3) {
-                    $booking->delete(); // Delete the record
+                $booking1->status = 3; // Thất Bại
+                if ($booking1->status == 3) {
+                    $booking1->delete(); // Delete the record
 
                 }
             }
-// code mac dinh cua paypal
+            // code mac dinh cua paypal
+
             return redirect()
                 ->route('camonthanhtoan')
                 ->with('success', 'Transaction complete.');

@@ -57,8 +57,6 @@ Thùng rác khu vực
                                                 <option value="">Vui lòng chọn</option>
                                                 <option value="1">Hoạt động</option>
                                                 <option value="2">Không hoạt động</option>
-                                                <option value="3">Hết hạn</option>
-                                                <option value="4">Hết số lượng</option>
                                             </select>
                                         </label>
                                     </div>

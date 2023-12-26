@@ -88,13 +88,15 @@ Danh sách người dùng
                                         <th scope="col">Địa chỉ</th>
                                         <th scope="col">Giới tính</th>
                                         <th scope="col">Hình ảnh</th>
+                                        @role('Admin')
                                         <th scope="col">Trạng thái</th>
+                                        @endrole
                                         <th scope="col">Hành động</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
-                                    @foreach ($user1 as $user)
+                                    @foreach ($users as $user)
                                     <tr>
                                         <td>
                                             <input type="checkbox" class="child-checkbox" name="ids[]" value="{{ $user->id }}">
@@ -112,6 +114,7 @@ Danh sách người dùng
                                         <td>
                                             <img alt="Avatar" width="60" src="{{ $user->avatar ? Storage::url($user->avatar) : asset('images/image-not-found.jpg') }}" alt="Image">
                                         </td>
+                                        @role('Admin')
                                         <td>
                                             <div class="form-check form-switch">
                                                 @if ($user->status == 3)
@@ -123,6 +126,7 @@ Danh sách người dùng
                                                 @endif
                                             </div>
                                         </td>
+                                        @endrole
                                         <td>
                                             <div class="dropdown">
                                                 <button class="btn " type="button" data-toggle="dropdown" aria-expanded="false">
@@ -145,15 +149,15 @@ Danh sách người dùng
                         <div class="col-sm-12 col-md-5 mb-3
                             ">
                             <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">
-                                Hiển thị {{ $user1->firstItem() }} đến {{ $user1->lastItem() }}
-                                của {{ $user1->total() }} mục
+                                Hiển thị {{ $users->firstItem() }} đến {{ $users->lastItem() }}
+                                của {{ $users->total() }} mục
                             </div>
                         </div>
 
                         <div class="col-sm-12 col-md-7">
                             <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
                                 <ul class="pagination">
-                                    {{ $user1->links('pagination::bootstrap-4') }}
+                                    {{ $users->links('pagination::bootstrap-4') }}
                                 </ul>
                             </div>
                         </div>

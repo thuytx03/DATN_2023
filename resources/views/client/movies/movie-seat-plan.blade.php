@@ -1,7 +1,8 @@
 @extends('layouts.client')
 @section('content')
     <!-- ==========Banner-Section========== -->
-    <section class="details-banner hero-area bg_img seat-plan-banner" data-background="./assets/images/banner/banner04.jpg">
+    <section class="details-banner hero-area bg_img seat-plan-banner"
+        data-background="{{ asset('client/assets/images/banner/banner04.jpg') }}">
         <div class="container">
             <div class="details-banner-wrapper">
                 <div class="details-banner-content style-two">
@@ -34,12 +35,15 @@
                         <a href="#0" class="text-white">Phòng: {{ $showTime->room->name }}</a> -
                         <a href="#0" class="text-white">Thời gian: {{ date('H:i', strtotime($showTime->start_date)) }}
                             ~ {{ date('H:i', strtotime($showTime->start_end)) }}</a>
+                        <a href="#" style="display:none" id="showtime-link"
+                            data-showtime-id="{{ $showTime->id }}">{{ $showTime->id }}</a>
+
                     </div>
                 </div>
                 <div class="item">
-                    {{-- <h5 class="title">05:00</h5>
-                    <p>Mins Left</p> --}}
+                    <h5 class="title" id="countdown"></h5>
                 </div>
+
             </div>
         </div>
     </section>
@@ -116,7 +120,7 @@
                     <img src="{{ asset('client/assets/images/movie/screen-thumb.png') }}" alt="movie">
                 </div>
 
-                <h5 class="subtitle">Ghế thường</h5>
+
                 <div class="screen-wrapper">
                     <ul class="seat-area">
                         @php
@@ -126,6 +130,7 @@
                             @php
                                 $seatNumber = $thuong->row . $thuong->column;
                                 $isBooked = in_array($seatNumber, $bookedSeats);
+                                // dd($thuong->seatType->seatPrice->where('seat_type_id',1)->where('showtime_id',$showTime->id)->first()->price);
                             @endphp
                             @if ($currentRow != $thuong->row)
                                 @if ($currentRow !== null)
@@ -137,14 +142,18 @@
                         <ul class="seat--area">
                             @endif
                             <li class="front-seat">
-                                <ul>
-                                    <li
-                                        class="single-seat seat-type1 {{ $isBooked ? 'not-allowed' : 'single-seat1 seat-click ' }} ">
-                                        <img src="{{ $isBooked ? asset('client/assets/images/movie/seat01-free.png') : asset('client/assets/images/movie/seat01.png') }}"
-                                            alt="seat">
-                                        <span class="sit-num">{{ $thuong->row }}{{ $thuong->column }}</span>
+                                <input type="hidden" value="{{ $isBooked ? 0 : $thuong->seatType->seatPrice->where('seat_type_id',1)->where('showtime_id',$showTime->id)->first()->price}}"
+                                    name="seatThuong">
 
+                                <ul>
+
+                                    <li class="single-seat seat-type1  seatThuong {{ $isBooked ? 'not-allowed' : 'single-seat1 seat-click ' }} "
+                                        id="seat-{{ $thuong->row }}{{ $thuong->column }}">
+                                        <img src="{{ $isBooked ? asset('client/assets/images/movie/seatDaChon.png') : asset('client/assets/images/movie/seatThuong.png') }}"
+                                            width="64" alt="seat" class="{{ $isBooked ? 'not-allowed' : 'thuy' }}">
+                                        <span class="sit-num">{{ $thuong->row }}{{ $thuong->column }}</span>
                                     </li>
+
                                 </ul>
                             </li>
                             @php
@@ -155,8 +164,6 @@
                     </li>
                     </ul>
                 </div>
-
-                <h5 class="subtitle">Ghế VIP</h5>
                 <div class="screen-wrapper">
                     <ul class="seat-area">
                         @php
@@ -177,13 +184,15 @@
                         <ul class="seat--area">
                             @endif
                             <li class="front-seat">
+                                <input type="hidden" value="{{ $isBooked ? 0 : $vip->seatType->seatPrice->where('seat_type_id',2)->where('showtime_id',$showTime->id)->first()->price }}" name="seatVip">
                                 <ul>
-                                    <li
-                                        class="single-seat seat-type1 {{ $isBooked ? 'not-allowed' : 'single-seat1 seat-click ' }} ">
-                                        <img src="{{ $isBooked ? asset('client/assets/images/movie/seat01-free.png') : asset('client/assets/images/movie/seat01.png') }}"
-                                            alt="seat">
-                                        <span class="sit-num">{{ $vip->row }}{{ $vip->column }}</span>
 
+
+                                    <li class="single-seat seat-type1 seatVip {{ $isBooked ? 'not-allowed' : 'single-seat1 seat-click ' }} "
+                                        id="seat-{{ $vip->row }}{{ $vip->column }}">
+                                        <img src="{{ $isBooked ? asset('client/assets/images/movie/seatDaChon.png') : asset('client/assets/images/movie/seatVip.png') }}"
+                                            width="64" alt="seat" class="{{ $isBooked ? 'not-allowed' : 'thuy' }}">
+                                        <span class="sit-num">{{ $vip->row }}{{ $vip->column }}</span>
                                     </li>
                                 </ul>
                             </li>
@@ -195,8 +204,6 @@
                     </li>
                     </ul>
                 </div>
-
-                <h5 class="subtitle">Ghế đôi</h5>
                 <div class="screen-wrapper">
                     <ul class="seat-area">
                         @php
@@ -206,6 +213,8 @@
                             @php
                                 $seatNumber = $doi->row . $doi->column;
                                 $isBooked = in_array($seatNumber, $bookedSeats);
+                        // dd($doi->seatType->seatPrice->where('seat_type_id',3)->where('showtime_id',$showTime->id)->first()->price );
+
                             @endphp
                             @if ($currentRow != $doi->row)
                                 @if ($currentRow !== null)
@@ -216,15 +225,20 @@
                         <span>{{ $doi->row }}</span>
                         <ul class="seat--area">
                             @endif
-                            <li class="front-seat">
-                                <ul>
-                                    <li
-                                        class="single-seat seat-type1 {{ $isBooked ? 'not-allowed' : 'single-seat1 seat-click ' }} ">
-                                        <img src="{{ $isBooked ? asset('client/assets/images/movie/seat01-free.png') : asset('client/assets/images/movie/seat01.png') }}"
-                                            alt="seat">
-                                        <span class="sit-num">{{ $doi->row }}{{ $doi->column }}</span>
 
+                            <li class="front-seat">
+                                <input type="hidden" value="{{ $isBooked ? 0 : $doi->seatType->seatPrice->where('seat_type_id',3)->where('showtime_id',$showTime->id)->first()->price }}" name="seatDoi">
+
+                                <ul class="ul-price">
+                                    <li id="seat-{{ $doi->row }}{{ $doi->column }}"
+                                        class="single-seat seat-type1  seatDoi {{ $isBooked ? 'not-allowed' : 'single-seat1 seat-click seat ' }} ">
+                                        <img src="{{ $isBooked ? asset('client/assets/images/movie/seatDaChon.png') : asset('client/assets/images/movie/seatDoi.png') }}"
+                                            width="64" alt="seat"
+                                            class="{{ $isBooked ? 'not-allowed' : ' thuy seat ' }}" id="thuy-img"
+                                            data-seat="{{ $doi->row }}{{ $doi->column }}">
+                                        <span class="sit-num">{{ $doi->row }}{{ $doi->column }}</span>
                                     </li>
+
 
                                 </ul>
                             </li>
@@ -234,23 +248,44 @@
                             @endforeach
                         </ul>
                     </li>
+
                     </ul>
                 </div>
+
             </div>
+
+
             <div class="row text-center ">
                 <div class="status mx-auto d-flex">
                     <ul class="m-2">
-                        <li><img src="{{ asset('client/assets/images/movie/seat01-booked.png') }}" alt=""></li>
-                        <li>Đang chọn</li>
-
+                        <li><img src="{{ asset('client/assets/images/movie/seatDangGiu.png') }}" width="64"
+                                alt=""></li>
+                        <li>Đang giữ ghế</li>
                     </ul>
                     <ul class="m-2">
-                        <li><img src="{{ asset('client/assets/images/movie/seat01-free.png') }}" alt=""></li>
+                        <li><img src="{{ asset('client/assets/images/movie/seatDangChon.png') }}" alt=""></li>
+                        <li>Đang chọn</li>
+                    </ul>
+                    <ul class="m-2">
+                        <li><img src="{{ asset('client/assets/images/movie/seatDaChon.png') }}" width="64"
+                                alt=""></li>
                         <li>Đã chọn</li>
                     </ul>
                     <ul class="m-2">
-                        <li><img src="{{ asset('client/assets/images/movie/seat01.png') }}" alt=""></li>
-                        <li>Ghế trống</li>
+                        <li><img src="{{ asset('client/assets/images/movie/seatThuong.png') }}" width="64"
+                                alt=""></li>
+                        <li>Ghế thường</li>
+                    </ul>
+                    <ul class="m-2">
+                        <li><img src="{{ asset('client/assets/images/movie/seatVip.png') }}" width="64"
+                                alt="">
+                        </li>
+                        <li>Ghế Vip</li>
+                    </ul>
+                    <ul class="m-2">
+                        <li><img src="{{ asset('client/assets/images/movie/seatDoi.png') }}" width="64"
+                                alt=""></li>
+                        <li>Ghế Đôi</li>
                     </ul>
                 </div>
             </div>
@@ -263,85 +298,301 @@
                     <span>Số ghế bạn chọn</span>
                     <h3 class="title"></h3>
                 </div>
-                <div class="book-item">
-                    <button type="button" class="custom-button" data-toggle="modal" data-target="#exampleModal">
-                        Đặt đồ ăn
-                    </button>
+
+                <div class="book-item ">
+                    <span>Tổng tiền</span>
+                    <h3 class="total-price"></h3>
                 </div>
 
+
                 <div class="book-item">
-                    <a href="#" class="custom-button " id="thanh-toan-button">Thanh toán</a>
+                    <a href="#" class="custom-button " id="thanh-toan-button">Tiếp tục</a>
                 </div>
             </div>
         </div>
-
     </div>
-    </div>
+    {{-- @if (count($selectedSeats1) > 0)
+        <ul>
+            @foreach ($selectedSeats1 as $seat)
+                <li>{{ $seat }}</li>
+            @endforeach
+        </ul>
+    @else
+        <p>No seats selected.</p>
+    @endif --}}
 
 
     <!-- ==========Movie-Section========== -->
-    <div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title text-black" style="color: black" id="exampleModalLabel">Danh sách đồ ăn</h5>
-                </div>
-                <div class="modal-body">
-                    <table class="table text-center">
-                        <thead class="">
-                            <tr>
-                                <th scope="col">
-                                    <input type="checkbox" class="select-control " style="width:15px;" id="select-all">
-                                </th>
-                                <th>Tên</th>
-                                <th>Ảnh</th>
-                                <th>Số lượng</th>
-                                <th>Giá</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($food as $value)
-                                <tr>
-                                    <td scope="row">
-                                        <input type="checkbox" class="child-checkbox" style="width:15px" name="ids[]"
-                                            value="{{ $value->id }}">
-                                    </td>
-                                    <td scope="row">{{ $value->name }}</td>
-                                    <td><img src="{{ Storage::url($value->image) }}" width="50" alt=""></td>
-                                    <td>
-                                        <div class="quantity-input">
-                                            <button class="decrease" data-productid="{{ $value->id }}">-</button>
-                                            <input type="number" name="quantity" min="1" max="20"
-                                                value="1" id="quantity-input-{{ $value->id }}">
-                                            <button class="increase" data-productid="{{ $value->id }}">+</button>
-                                        </div>
-                                    </td>
 
-                                    <td id="price-{{ $value->id }}" data-price="{{ $value->price }}">
-                                        {{ number_format($value->price, 0, ',', '.') }} VNĐ</td>
+    <script src="/js/app.js"></script>
 
-                                </tr>
-                            @endforeach
+    <script>
+        $(document).ready(function() {
+            // Get showtime_id from the data attribute of an HTML element
+            var showtime_id = $("#showtime-link").data("showtime-id");
 
-                        </tbody>
-                    </table>
+            // Function to clear cache asynchronously
+            function clearCacheAsync(showtime_id) {
+                $.ajax({
+                    url: '/clear-seats-cache',
+                    type: 'POST',
+                    data: {
+                        showtime_id: showtime_id,
+                        _token: '{{ csrf_token() }}',
+                    },
+                    success: function(response) {
+                        // console.log(response.message);
+                        alert('Bạn đã hết thời gian chọn ghế!');
+                        location.reload();
+                    },
+                    error: function(error) {
+                        console.error('Error clearing cache: ', error.responseJSON.error);
+                    }
+                });
+            }
 
-                    <div id="total-price" class="text-danger">Tổng tiền: 0 VNĐ</div>
-                    <div>
-                        <i class="text-dark">Với những sản phẩm được chọn</i>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                    <button type="button" class="btn btn-primary">Thanh toán</button>
-                </div>
-            </div>
-        </div>
-    </div>
+            // Kiểm tra xem đã lưu trạng thái thời gian vào localStorage chưa
+            const savedTimeExpired = window.localStorage.getItem('timeExpired');
+            let targetTime;
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            // Tạo thời gian mục tiêu (target time) chỉ khi cần
+            if (!savedTimeExpired) {
+                targetTime = new Date();
+                targetTime.setMinutes(targetTime.getMinutes() + 10);
+                window.localStorage.setItem('targetTime', targetTime.getTime());
+            } else {
+                // Nếu đã lưu, khôi phục thời gian từ localStorage
+                const savedTargetTime = window.localStorage.getItem('targetTime');
+                targetTime = new Date(parseInt(savedTargetTime));
+            }
 
-    {{-- kiểm tra người dùng đã chon ghế hay chưa  --}}
+            function updateCountdown() {
+                const currentTime = new Date();
+                const timeDifference = targetTime - currentTime;
+
+                const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+                const countdownElement = document.getElementById("countdown");
+                countdownElement.textContent =
+                    `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                // Clear cache asynchronously when the countdown reaches 0
+                if (timeDifference < 0) {
+                    countdownElement.textContent = "00:00";
+                    clearCacheAsync(showtime_id);
+                } else {
+                    requestAnimationFrame(updateCountdown);
+                }
+            }
+
+            requestAnimationFrame(updateCountdown);
+        });
+    </script>
+
+    {{-- th1: use A chọn và tải lại trang thì lưu storage cả A và B trog 1p
+    th2: user A chọn ghế thì user Bvaof sau sẽ hiển thị ảnh seatDangGiu --}}
+
+    {{-- <script>
+        window.Echo.channel('laravel_database_seat-selected-channel')
+            .listen('.seat-selected', (e) => {
+                console.log(e);
+                const selectedSeats = e.selectedSeats;
+                const action = e.action;
+                selectedSeats.forEach((seat) => {
+                    const seatElement = document.getElementById(`seat-${seat}`);
+                    // console.log(seat);
+                    if (seatElement) {
+                        const showTimeId = document.getElementById("showtime-link").getAttribute(
+                            "data-showtime-id");
+                        if (e.showtime_id === showTimeId) {
+                            const isSeatSelected = seatElement.classList.contains('seat-selected');
+                            const check = e.userId === {{ auth()->id() }} && e.showtime_id === showTimeId;
+
+                            // Kiểm tra trạng thái hiện tại trước khi cập nhật
+                            // if (isSeatSelected === check) {
+                            let imageUrl = '';
+
+                            if (check) {
+                                seatElement.style.pointerEvents = 'auto';
+                                // seatElement.classList.add('dang-chon');
+                            } else {
+                                seatElement.style.pointerEvents = 'none';
+                                seatElement.classList.add('dang-giu-ghe');
+                            }
+
+                            if (check && action === 'selected') {
+                                imageUrl = '{{ asset('client/assets/images/movie/seatDangChon.png') }}';
+                            } else if (seatElement.classList.contains('dang-giu-ghe')) {
+                                imageUrl = '{{ asset('client/assets/images/movie/seatDangGiu.png') }}';
+                            } else {
+                                if (seatElement.classList.contains('seatThuong')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatThuong.png') }}';
+                                } else if (seatElement.classList.contains('seatVip')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatVip.png') }}';
+                                } else if (seatElement.classList.contains('seatDoi')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatDoi.png') }}';
+                                }
+                            }
+
+                            seatElement.querySelector('img').src = imageUrl;
+                            // }
+
+                        }
+                    }
+                });
+
+            });
+
+
+        window.Echo.channel('laravel_database_seat-cancelled-channel')
+            .listen('.seat-cancelled', (e) => {
+                console.log(e);
+                const cancelledSeats = e.cancelledSeats;
+                const action = e.action;
+
+                // Thực hiện các xử lý khi ghế bị hủy ở đây
+                cancelledSeats.forEach((seat) => {
+                    const seatElement = document.getElementById(`seat-${seat}`);
+                    // console.log(seat);
+                    if (seatElement) {
+                        const showTimeId = document.getElementById("showtime-link").getAttribute(
+                            "data-showtime-id");
+                        if (e.showtime_id === showTimeId) {
+                            const isSeatSelected = seatElement.classList.contains('seat-selected');
+                            const check = e.userId === {{ auth()->id() }} && e.showtime_id === showTimeId;
+
+                            // Kiểm tra trạng thái hiện tại trước khi cập nhật
+                            // if (isSeatSelected === check) {
+                            let imageUrl = '';
+                            if (check && action === 'cancelled') {
+                                // seatElement.classList.remove('dang-chon');
+                                if (seatElement.classList.contains('seatThuong')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatThuong.png') }}';
+                                } else if (seatElement.classList.contains('seatVip')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatVip.png') }}';
+                                } else if (seatElement.classList.contains('seatDoi')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatDoi.png') }}';
+                                }
+                            } else if (seatElement.classList.contains('dang-giu-ghe')) {
+                                seatElement.classList.remove('dang-giu-ghe');
+                                if (seatElement.classList.contains('seatThuong')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatThuong.png') }}';
+                                } else if (seatElement.classList.contains('seatVip')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatVip.png') }}';
+                                } else if (seatElement.classList.contains('seatDoi')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatDoi.png') }}';
+                                }
+                            }
+                            seatElement.style.pointerEvents = 'auto';
+                            seatElement.querySelector('img').src = imageUrl;
+                            // }
+
+                        }
+                    }
+                });
+            });
+    </script> --}}
+
+    <script>
+
+        window.Echo.channel('laravel_database_seat-selected-channel')
+            .listen('.seat-selected', (e) => {
+                console.log(e);
+                const selectedSeats = e.selectedSeats;
+                const action = e.action;
+                selectedSeats.forEach((seat) => {
+                    const seatElement = document.getElementById(`seat-${seat}`);
+                    // console.log(seat);
+                    if (seatElement) {
+                        const showTimeId = document.getElementById("showtime-link").getAttribute(
+                            "data-showtime-id");
+                        if (e.showtime_id === showTimeId) {
+                            const isSeatSelected = seatElement.classList.contains('seat-selected');
+                            const check = e.userId === {{ auth()->id() }} && e.showtime_id === showTimeId;
+                            let imageUrl = '';
+
+                            if (check) {
+                                seatElement.style.pointerEvents = 'auto';
+                                // seatElement.classList.add('dang-chon');
+                            } else {
+                                seatElement.style.pointerEvents = 'none';
+                                seatElement.classList.add('dang-giu-ghe');
+                            }
+
+                            if (check && action === 'selected') {
+                                imageUrl = '{{ asset('client/assets/images/movie/seatDangChon.png') }}';
+                            } else if (seatElement.classList.contains('dang-giu-ghe')) {
+                                imageUrl = '{{ asset('client/assets/images/movie/seatDangGiu.png') }}';
+                            } else {
+                                if (seatElement.classList.contains('seatThuong')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatThuong.png') }}';
+                                } else if (seatElement.classList.contains('seatVip')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatVip.png') }}';
+                                } else if (seatElement.classList.contains('seatDoi')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatDoi.png') }}';
+                                }
+                            }
+
+                            seatElement.querySelector('img').src = imageUrl;
+
+
+                        }
+                    }
+                });
+            });
+
+        window.Echo.channel('laravel_database_seat-cancelled-channel')
+            .listen('.seat-cancelled', (e) => {
+                console.log(e);
+                const cancelledSeats = e.cancelledSeats;
+                const action = e.action;
+
+                // Thực hiện các xử lý khi ghế bị hủy ở đây
+                cancelledSeats.forEach((seat) => {
+                    const seatElement = document.getElementById(`seat-${seat}`);
+                    // console.log(seat);
+                    if (seatElement) {
+                        const showTimeId = document.getElementById("showtime-link").getAttribute(
+                            "data-showtime-id");
+                        if (e.showtime_id === showTimeId) {
+                            const isSeatSelected = seatElement.classList.contains('seat-selected');
+                            const check = e.userId === {{ auth()->id() }} && e.showtime_id === showTimeId;
+
+                            // Kiểm tra trạng thái hiện tại trước khi cập nhật
+                            // if (isSeatSelected === check) {
+                            let imageUrl = '';
+                            if (check && action === 'cancelled') {
+                                // seatElement.classList.remove('dang-chon');
+                                if (seatElement.classList.contains('seatThuong')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatThuong.png') }}';
+                                } else if (seatElement.classList.contains('seatVip')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatVip.png') }}';
+                                } else if (seatElement.classList.contains('seatDoi')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatDoi.png') }}';
+                                }
+                            } else if (seatElement.classList.contains('dang-giu-ghe')) {
+                                seatElement.classList.remove('dang-giu-ghe');
+                                if (seatElement.classList.contains('seatThuong')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatThuong.png') }}';
+                                } else if (seatElement.classList.contains('seatVip')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatVip.png') }}';
+                                } else if (seatElement.classList.contains('seatDoi')) {
+                                    imageUrl = '{{ asset('client/assets/images/movie/seatDoi.png') }}';
+                                }
+                            }
+                            seatElement.style.pointerEvents = 'auto';
+                            seatElement.querySelector('img').src = imageUrl;
+                            // }
+
+                        }
+                    }
+                });
+            });
+    </script>
+
+
+    {{-- kiểm tra ghế  --}}
     <script>
         // Sử dụng jQuery để chọn tất cả các ghế có class 'seat-click'
         const $seats = $('.seat-click');
@@ -352,24 +603,83 @@
         // Đặt sự kiện click cho nút thanh toán
         $('#thanh-toan-button').on('click', function(event) {
             // Kiểm tra xem có bất kỳ ghế nào đã được chọn
-            const selectedSeats = $seats.filter('.seat-click.selected');
+            const selectedSeats = $seats.filter('.seat-selected');
             if (selectedSeats.length === 0) {
                 // Nếu không có ghế nào được chọn, hiển thị thông báo và ngừng xử lý sự kiện
                 event.preventDefault(); // Ngừng chuyển hướng đến trang thanh toán
                 alert('Vui lòng chọn ghế trước khi thanh toán.');
+                return; // Stop further execution
+            }
+
+            const selectedSeatNumbers = selectedSeats.map(function() {
+                return $(this).find('.sit-num').text();
+            }).get();
+
+            // Tạo một danh sách các hàng A đến Z
+            const rows = [];
+            for (let row = 'A'.charCodeAt(0); row <= 'Z'.charCodeAt(0); row++) {
+                rows.push(String.fromCharCode(row));
+            }
+
+            // Kiểm tra từng hàng A đến Z
+            for (let i = 0; i < rows.length; i++) {
+                const currentRow = rows[i];
+                if (selectedSeatNumbers.includes(currentRow + '2') && !selectedSeatNumbers.includes(currentRow +
+                        '1')) {
+                    event.preventDefault();
+                    alert('Vui lòng không để trống ghế ' + currentRow + '1.');
+                }
+                if (selectedSeatNumbers.includes(currentRow + '9') && !selectedSeatNumbers.includes(currentRow +
+                        '10')) {
+                    event.preventDefault();
+                    alert('Vui lòng không để trống ghế ' + currentRow + '10.');
+                }
+            }
+
+            // Tạo một danh sách tất cả các ghế từ 'A' đến 'Z'
+            const allSeats = [];
+            for (let row = 'A'.charCodeAt(0); row <= 'Z'.charCodeAt(0); row++) {
+                for (let seatNum = 1; seatNum <= 10; seatNum++) {
+                    allSeats.push(String.fromCharCode(row) + seatNum);
+                }
+            }
+
+            // Kiểm tra xem có ghế nào bị bỏ trống giữa các ghế đã chọn
+            let isAnySeatEmpty = false;
+            for (let i = 0; i < allSeats.length; i++) {
+                if (selectedSeatNumbers.includes(allSeats[i])) {
+                    continue;
+                }
+                // Kiểm tra xem có ghế nào bị bỏ trống giữa các ghế đã chọn
+                if (i > 0 && i < allSeats.length - 1) {
+                    const prevSeat = allSeats[i - 1];
+                    const nextSeat = allSeats[i + 1];
+                    if (
+                        selectedSeatNumbers.includes(prevSeat) &&
+                        selectedSeatNumbers.includes(nextSeat)
+                    ) {
+                        isAnySeatEmpty = true;
+                        break;
+                    }
+                }
+            }
+
+            if (isAnySeatEmpty) {
+                event.preventDefault();
+                alert('Vui lòng không chừa 1 ghế trống bên trái hoặc bên phải của các ghế bạn đã chọn.');
             }
         });
 
         // Đặt sự kiện click cho tất cả ghế
         $seats.on('click', function() {
-            $(this).toggleClass('selected'); // Chuyển trạng thái chọn ghế
+            $(this).toggleClass('seat-selected'); // Chuyển trạng thái chọn ghế
 
             // Kiểm tra xem có bất kỳ ghế nào đã được chọn
-            const selectedSeats = $seats.filter('.seat-click.selected');
+            const selectedSeats = $seats.filter('.seat-selected');
             if (selectedSeats.length > 0) {
                 // Nếu có ghế được chọn, cập nhật thuộc tính href của nút thanh toán
                 $('#thanh-toan-button').attr('href',
-                    '{{ route('thanh-toan', ['room_id' => $room->id, 'slug' => $showTime->movie->slug, 'showtime_id' => $showTime->id]) }}'
+                    '{{ route('chon-do-an', ['room_id' => $room->id, 'slug' => $showTime->movie->slug, 'showtime_id' => $showTime->id]) }}'
                 );
             } else {
                 // Nếu không có ghế nào được chọn, đặt lại thuộc tính href về trống hoặc href="#"
@@ -378,235 +688,139 @@
         });
     </script>
 
-    {{-- kiểm tra ghế và lưu danh sách ghế vào session  --}}
     <script>
-        var chosenSeats1 = @json(Session::get('selectedSeats', [])); // Sử dụng một mảng rỗng mặc định nếu session không tồn tại
+      document.addEventListener("DOMContentLoaded", function() {
+    var chosenSeats = @json(Session::get('selectedSeats', []));
+    var seatElements = document.querySelectorAll(".seat-click");
+    var showTimeId = document.getElementById("showtime-link").getAttribute("data-showtime-id");
 
-        document.addEventListener("DOMContentLoaded", function() {
-            var seatElements = document.querySelectorAll(".single-seat1");
-            // if (!Array.isArray(chosenSeats1)) {
-            //     chosenSeats1 = [];
-            // }
+    function updateChosenSeatsDisplay() {
+        var chosenSeatsText = chosenSeats.join(", ");
+        document.querySelector(".proceed-book .title").textContent = chosenSeatsText;
+    }
 
-            // Hàm hiển thị danh sách ghế đã chọn
-            function updateChosenSeatsDisplay() {
-                var chosenSeats1Text = chosenSeats1.join(", ");
-                document.querySelector(".proceed-book .title").textContent = chosenSeats1Text;
-            }
+    seatElements.forEach(function(seat, index) {
+        var imgElement = seat.querySelector("img");
+        var originalImageSrc = imgElement.src;
+        var newImageSrc = "{{ asset('client/assets/images/movie/seatDangChon.png') }}";
+        var seatNum = seat.querySelector(".sit-num").textContent;
 
-            seatElements.forEach(function(seat) {
-                seat.addEventListener("click", function() {
-                    var seatNum = seat.querySelector(".sit-num").textContent;
+        if (chosenSeats.includes(seatNum)) {
+            imgElement.src = newImageSrc;
+            seat.classList.add("seat-selected");
+        }
 
-                    if (!chosenSeats1.includes(seatNum)) {
-                        chosenSeats1.push(seatNum);
-                        seat.classList.add("seat-selected");
+        imgElement.addEventListener("click", function(event) {
+            event.stopPropagation();
+
+            // Toggle the seat selection state
+            if (imgElement.src === originalImageSrc) {
+                imgElement.src = newImageSrc;
+                chosenSeats.push(seatNum);
+                seat.classList.add("seat-selected");
+
+                // Auto-select the corresponding seat for seats with the "seat" class
+                if (seat.classList.contains("seat")) {
+                    // Tính chỉ số ghế đối diện
+                    var totalSeats = seatElements.length;
+                    var oppositeIndex;
+
+                    if (totalSeats % 2 === 0) {
+                        // Tổng số ghế là chẵn
+                        oppositeIndex = (index % 2 === 0) ? index + 1 : index - 1;
                     } else {
-                        chosenSeats1 = chosenSeats1.filter(function(seat) {
-                            return seat !== seatNum;
-                        });
-                        seat.classList.remove("seat-selected");
+                        // Tổng số ghế là lẻ
+                        oppositeIndex = (index % 2 === 0) ? index - 1 : index + 1;
                     }
 
-                    // Lưu danh sách ghế đã chọn vào session
-                    fetch('/save-selected-seats', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            },
-                            body: JSON.stringify({
-                                selectedSeats: chosenSeats1
-                            }),
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log(data.message);
-                            // Sau khi lưu vào session, cập nhật hiển thị danh sách ghế đã chọn
-                            updateChosenSeatsDisplay();
-                        });
-                });
-            });
+                    var oppositeSeat = seatElements[oppositeIndex];
 
-            // Ban đầu, cập nhật hiển thị danh sách ghế đã chọn
-            updateChosenSeatsDisplay();
-        });
-    </script>
+                    if (oppositeSeat) {
+                        var oppositeImgElement = oppositeSeat.querySelector("img");
+                        var oppositeSeatNum = oppositeSeat.querySelector(".sit-num").textContent;
 
-    {{-- thay đổi ảnh khi chọn ghế --}}
-    <script>
-        var chosenSeats = @json(Session::get('selectedSeats'));
-
-        document.addEventListener("DOMContentLoaded", function() {
-            var seatElements = document.querySelectorAll(".seat-click");
-
-            seatElements.forEach(function(seat) {
-                var imgElement = seat.querySelector("img");
-                var originalImageSrc = imgElement.src;
-                var newImageSrc = "{{ asset('client/assets/images/movie/seat01-booked.png') }}";
-                var seatNum = seat.querySelector(".sit-num").textContent;
-
-                // Kiểm tra xem ghế có trong danh sách đã chọn hay không và cập nhật trạng thái của ghế
-                if (chosenSeats.includes(seatNum)) {
-                    imgElement.src = newImageSrc;
-                    seat.classList.add("seat-selected");
-                }
-
-                seat.addEventListener("click", function() {
-                    if (imgElement.src === originalImageSrc) {
-                        imgElement.src = newImageSrc;
-                        chosenSeats.push(seatNum); // Thêm ghế vào danh sách đã chọn
-                        seat.classList.add("seat-selected");
-                    } else {
-                        imgElement.src = originalImageSrc;
-                        chosenSeats = chosenSeats.filter(function(seat) {
-                            return seat !== seatNum;
-                        });
-                        seat.classList.remove("seat-selected");
+                        oppositeImgElement.src = newImageSrc;
+                        chosenSeats.push(oppositeSeatNum);
+                        oppositeSeat.classList.add("seat-selected");
                     }
-                });
-            });
-        });
-    </script>
-
-    {{-- checkAll selectbox --}}
-    <script>
-        function selectAllCheckbox() {
-            document.getElementById('select-all').addEventListener('change', function() {
-                let checkboxes = document.getElementsByClassName('child-checkbox');
-                for (let checkbox of checkboxes) {
-                    checkbox.checked = this.checked;
                 }
-            });
-
-            let childCheckboxes = document.getElementsByClassName('child-checkbox');
-            for (let checkbox of childCheckboxes) {
-                checkbox.addEventListener('change', function() {
-                    document.getElementById('select-all').checked = false;
-                });
-            }
-        }
-        selectAllCheckbox();
-    </script>
-
-    {{-- tăng giảm số lượng cập nhật giá --}}
-    <script>
-        // Hàm cập nhật tổng tiền dựa trên các checkbox đã chọn và giá của từng sản phẩm
-        function updateTotalPrice() {
-            var total = 0;
-            $("input.child-checkbox:checked").each(function() {
-                var productId = $(this).val();
-                var quantity = parseInt($("#quantity-input-" + productId).val());
-                var price = parseFloat($("#price-" + productId).data("price"));
-                var productTotal = quantity * price;
-                total += productTotal;
-                // Cập nhật giá của từng sản phẩm trong bảng
-                $("#price-" + productId).text(productTotal.toLocaleString("vi-VN") + " VNĐ");
-            });
-
-            $("#total-price").text("Tổng tiền: " + total.toLocaleString("vi-VN") + " VNĐ");
-        }
-
-        // Hàm cập nhật giá sản phẩm khi số lượng thay đổi
-        function updateProductPrice(productId) {
-            var quantity = parseInt($("#quantity-input-" + productId).val());
-            var price = parseFloat($("#price-" + productId).data("price"));
-            var productTotal = quantity * price;
-
-            // Cập nhật giá của từng sản phẩm trong bảng
-            $("#price-" + productId).text(productTotal.toLocaleString("vi-VN") + " VNĐ");
-        }
-
-        // Gắn các trình xử lý sự kiện cho các nút tăng/giảm số lượng
-        $(".quantity-input").on("click", ".increase, .decrease", function() {
-            var productId = $(this).data("productid");
-            var quantityInput = $("#quantity-input-" + productId);
-            var quantity = parseInt(quantityInput.val());
-
-            if ($(this).hasClass("increase")) {
-                quantity += 1;
             } else {
-                quantity -= 1;
-                if (quantity < 1) {
-                    quantity = 1;
+                imgElement.src = originalImageSrc;
+                chosenSeats = chosenSeats.filter(function(seat) {
+                    return seat !== seatNum;
+                });
+                seat.classList.remove("seat-selected");
+
+                // Deselect the corresponding seat for seats with the "seat" class
+                if (seat.classList.contains("seat")) {
+                   var totalSeats = seatElements.length;
+                    var oppositeIndex;
+
+                    if (totalSeats % 2 === 0) {
+                        // Tổng số ghế là chẵn
+                        oppositeIndex = (index % 2 === 0) ? index + 1 : index - 1;
+                    } else {
+                        // Tổng số ghế là lẻ
+                        oppositeIndex = (index % 2 === 0) ? index - 1 : index + 1;
+                    }
+                    
+                    var oppositeSeat = seatElements[oppositeIndex];
+
+                    if (oppositeSeat) {
+                        var oppositeImgElement = oppositeSeat.querySelector("img");
+                        var oppositeSeatNum = oppositeSeat.querySelector(".sit-num").textContent;
+
+                        oppositeImgElement.src = originalImageSrc;
+                        chosenSeats = chosenSeats.filter(function(seat) {
+                            return seat !== oppositeSeatNum;
+                        });
+                        oppositeSeat.classList.remove("seat-selected");
+                    }
                 }
             }
 
-            quantityInput.val(quantity);
-            updateProductPrice(productId); // Cập nhật giá sản phẩm
-            updateTotalPrice(); // Cập nhật tổng tiền
-        });
-        // Gắn trình xử lý sự kiện cho các checkbox để cập nhật tổng tiền khi chọn hoặc bỏ chọn
-        $(".child-checkbox").on("change", function() {
-            updateTotalPrice();
-        });
-
-        // Gắn trình xử lý sự kiện cho checkbox "Chọn tất cả"
-        $("#select-all").on("change", function() {
-            $(".child-checkbox").prop("checked", this.checked);
-            updateTotalPrice();
-        });
-
-        // Tính toán ban đầu tổng tiền
-        updateTotalPrice();
-    </script>
-
-    {{-- lưu thông tin đồ ăn  --}}
-    <script type="text/javascript">
-        document.querySelector("button.btn-primary").addEventListener("click", function() {
-            // Thu thập thông tin các sản phẩm được chọn
-            const selectedProducts = [];
-            let totalPriceFood = 0;
-            const checkboxes = document.querySelectorAll("input.child-checkbox:checked");
-
-            if (checkboxes.length === 0) {
-                alert("Vui lòng chọn ít nhất một sản phẩm trước khi thanh toán.");
-                return; // Không thực hiện gửi dữ liệu nếu không có checkbox nào được chọn.
+            function formatCurrency(amount) {
+                // Format the amount with the desired currency symbol
+                return amount.toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'VND'
+                }).replace(/^(\D+)/, '');
             }
 
-            checkboxes.forEach(checkbox => {
-                const productId = checkbox.value;
-                const productName = checkbox.parentElement.nextElementSibling.textContent;
-                const quantity = document.querySelector(`#quantity-input-${productId}`).value;
-                const priceText = document.querySelector(`#price-${productId}`)
-                    .textContent; // Lấy giá từ nội dung văn bản
-                const priceParts = priceText.split(' '); // Tách giá và đơn vị tiền tệ
-                const priceValue = parseFloat(priceParts[0].replace('.', '').replace(',',
-                    '')); // Loại bỏ dấu "." và "," và chuyển thành số
+            fetch('/save-selected-seats', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                },
+                body: JSON.stringify({
+                    showtime_id: showTimeId,
+                    selectedSeats: chosenSeats
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.message);
+                updateChosenSeatsDisplay();
 
-                // Cộng giá tiền của sản phẩm vào tổng giá tiền
-                totalPriceFood += priceValue;
-
-                selectedProducts.push({
-                    id: productId,
-                    name: productName,
-                    quantity,
-                    price: priceValue,
-                });
+                // Định dạng giá theo VNĐ và cập nhật trên giao diện người dùng
+                document.querySelector(".total-price").textContent = formatCurrency(
+                    data.totalPrice) + " VNĐ";
             });
 
-            // Gửi dữ liệu lên server bằng Ajax hoặc fetch API và lưu vào session
-            fetch('/luu-thong-tin-san-pham', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    },
-                    body: JSON.stringify({
-                        selectedProducts,
-                        totalPriceFood
-                    }),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Thông báo hoặc chuyển hướng đến trang thanh toán
-                        // Đóng modal bằng cách sử dụng Bootstrap 4
-                        $('#exampleModal').modal('hide');
-                    } else {
-                        // Xử lý lỗi nếu cần
-                    }
-                });
+            const selectedSeats = $('.seat-click').filter('.seat-selected');
+            if (selectedSeats.length > 0) {
+                $('#thanh-toan-button').attr('href',
+                    '{{ route('chon-do-an', ['room_id' => $room->id, 'slug' => $showTime->movie->slug, 'showtime_id' => $showTime->id]) }}'
+                );
+            } else {
+                $('#thanh-toan-button').attr('href', '#');
+            }
         });
+    });
+
+    updateChosenSeatsDisplay();
+});
+
     </script>
 @endsection

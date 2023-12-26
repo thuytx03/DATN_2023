@@ -6,39 +6,84 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SeatRequest;
 use App\Models\Cinema;
 use App\Models\Province;
+use App\Models\RoleHasCinema;
 use App\Models\Room;
 use App\Models\Seat;
 use Illuminate\Http\Request;
 
 class SeatController extends Controller
 {
+    public function __construct()
+    {
+        $methods = get_class_methods(__CLASS__); // Lấy danh sách các phương thức trong class hiện tại
+
+        // Loại bỏ những phương thức không cần áp dụng middleware (ví dụ: __construct, __destruct, ...)
+        $methods = array_diff($methods, ['__construct', '__destruct', '__clone', '__call', '__callStatic', '__get', '__set', '__isset', '__unset', '__sleep', '__wakeup', '__toString', '__invoke', '__set_state', '__clone', '__debugInfo']);
+
+        $this->middleware('role:Admin|Manage-HaNoi|Manage-HaiPhong|Manage-ThaiBinh|Manage-NamDinh|Manage-NinhBinh|Staff-Seat-Hanoi|Staff-Seat-HaiPhong|Staff-Seat-ThaiBinh|Staff-Seat-NamDinh|Staff-Seat-NinhBinh', ['only' => $methods]);
+    }
     public function index(Request $request)
     {
+        $user = auth()->user();
+        $roles = $user->roles()->pluck('id')->toArray();
+        $isAdmin = in_array('Admin', $user->getRoleNames()->toArray());
+
         $query = Room::query();
+
+        // If the user is not an admin, filter rooms by cinema
+        if (!$isAdmin) {
+            $userCinemas = RoleHasCinema::whereIn('role_id', $roles)->pluck('cinema_id')->toArray();
+            $query->whereIn('cinema_id', $userCinemas);
+        }
+
+        // Apply search and status filters
         if ($request->has('search')) {
             $search = $request->input('search');
             $query->where('name', 'like', '%' . $search . '%');
         }
-        // Lọc theo status
+
         if ($request->has('status')) {
             $status = $request->input('status');
             if ($status != 0) {
                 $query->where('status', $status);
             }
         }
-        $room = $query->orderBy('id', 'DESC')->get();
 
-        foreach ($room as $seatCount) {
-            $seatCount->seat_count = Seat::where('room_id', $seatCount->id)->count();
+        // Get rooms and their seat counts
+        $rooms = $query->withCount('seats')->orderBy('id', 'DESC')->get();
 
+        foreach ($rooms as $room) {
+            $room->seat_count = Seat::where('room_id', $room->id)->count();
         }
-        return view('admin.seats.seat.index', compact('room'));
+
+        return view('admin.seats.seat.index', compact('rooms'));
     }
 
-    public function store(SeatRequest $request)
+
+    public function store(Request $request)
     {
-        $province = Province::all();
-        $rooms = Room::all();
+
+        $user = auth()->user();
+        $isAdmin = $user->hasRole('Admin');
+
+        $province = $rooms = [];
+
+        if ($isAdmin) {
+            // Nếu người dùng là Admin, hiển thị tất cả thông tin
+            $province = Province::all();
+            $rooms = Room::all();
+        } else {
+            // Nếu không phải là Admin, lấy thông tin dựa trên quyền của người dùng
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $user->roles()->pluck('id'))->pluck('cinema_id')->toArray();
+
+            // Lấy thông tin tỉnh dựa trên các cinema_id của người dùng
+            $province = Province::whereIn('id', function ($query) use ($cinemaIds) {
+                $query->select('province_id')->from('cinemas')->whereIn('id', $cinemaIds);
+            })->get();
+
+            // Lấy thông tin phòng dựa trên các cinema_id của người dùng
+            $rooms = Room::whereIn('cinema_id', $cinemaIds)->get();
+        }
 
         if ($request->isMethod('POST')) {
             $vipQuantity = $request->input('vip_quantity');
@@ -89,8 +134,24 @@ class SeatController extends Controller
         return view('admin.seats.seat.add', compact('province'));
     }
 
-    public function update(SeatRequest $request, $room_id)
+    public function update(Request $request, $room_id)
     {
+        $user = auth()->user();
+
+        // Kiểm tra xem người dùng có vai trò là Admin không
+        if ($user->hasRole('Admin')) {
+            // Nếu là Admin, không áp dụng bất kỳ ràng buộc nào với cinema_id
+            $room = Room::find($room_id);
+        } else {
+            // Nếu không phải Admin, kiểm tra xem room_id thuộc các phòng mà người dùng có quyền truy cập hay không
+            $cinemaIds = RoleHasCinema::whereIn('role_id', $user->roles()->pluck('id'))->pluck('cinema_id')->toArray();
+            $room = Room::whereIn('cinema_id', $cinemaIds)->find($room_id);
+        }
+
+        if (!$room) {
+            toastr()->error('Bạn không có quyền truy cập vào phòng này!');
+            return redirect()->route('seat.index');
+        }
         // Lấy thông tin về các ghế của phòng
         $seats = Seat::where('room_id', $room_id)->get();
 
@@ -201,17 +262,37 @@ class SeatController extends Controller
         return view('admin.seats.seat.edit', compact('seats', 'vipSeatsCount', 'standardSeatsCount', 'coupleSeatsCount'));
     }
 
-    function destroy($roomId) {
-        $seat=Seat::where('room_id', $roomId)->delete();
-        if($seat){
-            toastr()->success('Cập nhật ghế thành công!');
+    public function destroy($roomId)
+{
+    $user = auth()->user();
 
-        }else{
-            toastr()->warning('Cập nhật ghế thất bại!');
+    // Kiểm tra vai trò của người dùng
+    if ($user->hasRole('Admin')) {
+        // Nếu là Admin, không áp dụng bất kỳ ràng buộc nào với việc xóa ghế
+        $seatsDeleted = Seat::where('room_id', $roomId)->delete();
+    } else {
+        // Nếu không phải Admin, kiểm tra xem room_id thuộc các phòng mà người dùng có quyền truy cập hay không
+        $cinemaIds = RoleHasCinema::whereIn('role_id', $user->roles()->pluck('id'))->pluck('cinema_id')->toArray();
+        $room = Room::whereIn('cinema_id', $cinemaIds)->find($roomId);
 
+        if (!$room) {
+            toastr()->error('Bạn không có quyền xóa ghế trong phòng này!');
+            return redirect()->route('seat.index');
         }
-        return redirect()->route('seat.index');
+
+        // Xóa các ghế của phòng
+        $seatsDeleted = Seat::where('room_id', $roomId)->delete();
     }
+
+    if ($seatsDeleted) {
+        toastr()->success('Xóa ghế thành công!');
+    } else {
+        toastr()->warning('Không có ghế để xóa hoặc xảy ra lỗi khi xóa ghế!');
+    }
+
+    return redirect()->route('seat.index');
+}
+
 
     public function deleteAll(Request $request)
     {

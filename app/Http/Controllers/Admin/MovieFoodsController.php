@@ -16,6 +16,15 @@ use Illuminate\Validation\Rule;
 
 class MovieFoodsController extends Controller
 {
+    public function __construct()
+    {
+        $methods = get_class_methods(__CLASS__); // Lấy danh sách các phương thức trong class hiện tại
+
+        // Loại bỏ những phương thức không cần áp dụng middleware (ví dụ: __construct, __destruct, ...)
+        $methods = array_diff($methods, ['__construct', '__destruct', '__clone', '__call', '__callStatic', '__get', '__set', '__isset', '__unset', '__sleep', '__wakeup', '__toString', '__invoke', '__set_state', '__clone', '__debugInfo']);
+
+        $this->middleware('role:Admin', ['only' => $methods]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -226,65 +235,67 @@ class MovieFoodsController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        try {
-            if ($request->isMethod('POST')) {
-                $validate = $request->validate([
-                    'name' => 'required|unique:movie_foods,name',
-                    'price' => [
-                        'required',
-                        function ($attribute, $value, $fail) {
-                            if ($value < 0) {
-                                $fail('giá không được phép để âm.');
-                            }
-                        },
-                    ],
-                    'quantity' => 'required'
-                ], [
-                    'name.unique' => 'Vui lòng không nhập trùng tên',
-                    'name.required' => 'Vui lòng nhập Tên',
-                    'price.required' => 'Vui lòng nhập Giá',
-                   
-                    'quantity.required' => 'Vui lòng nhập số lượng'
-                ]);
-                if ($request->hasFile('image') && $request->file('image')->isValid()) {
-                    $request->image = uploadFile('MovieFood', $request->file('image'));
-                } else {
-                    $request->image = null;
-                }
-                $MovieFood = new MovieFood();
-                $MovieFood->name = $request->name;
-
-                if (!empty($request->slug)) {
-                    $MovieFood->slug = $request->slug;
-                } else {
-                    $MovieFood->slug = Str::slug($MovieFood['name']);
-                }
-                $MovieFood->description = $request->description;
-                $MovieFood->price = $request->price;
-                $MovieFood->image = $request->image;
-                $MovieFood->quantity = $request->quantity;
-
-                if ($MovieFood->save()) {
-                    if (!empty($request['foodstypes'])) {
-                        foreach ($request['foodstypes'] as $key => $Foodstypes) {
-                            $MovieFood->food_type_id = $Foodstypes[0];
-                        }
-                        $MovieFood->Foodstypes()->sync($request->input('foodstypes'));
+{
+    try {
+        $validate = $request->validate([
+            'name' => 'required|unique:movie_foods,name',
+            'price' => [
+                'required',
+                'numeric',
+                function ($attribute, $value, $fail) {
+                    if ($value < 0) {
+                        $fail('Giá không được phép để âm.');
                     }
+                },
+            ],
+            'quantity' => 'required'
+        ], [
+            'name.unique' => 'Vui lòng không nhập trùng tên',
+            'name.required' => 'Vui lòng nhập Tên',
+            'price.required' => 'Vui lòng nhập Giá',
+            'price.numeric' => 'Giá phải là số.',
+            'quantity.required' => 'Vui lòng nhập số lượng'
+        ]);
 
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            $request->image = uploadFile('MovieFood', $request->file('image'));
+        } else {
+            $request->image = null;
+        }
 
-                    toastr()->success('Thêm mới danh mục thành công!', 'success');
+        $MovieFood = new MovieFood();
+        $MovieFood->name = $request->name;
+
+        if (!empty($request->slug)) {
+            $MovieFood->slug = $request->slug;
+        } else {
+            $MovieFood->slug = Str::slug($MovieFood->name); // Fixed: Use -> instead of ['name']
+        }
+
+        $MovieFood->description = $request->description;
+        $MovieFood->price = $request->price;
+        $MovieFood->image = $request->image;
+        $MovieFood->quantity = $request->quantity;
+
+        if ($MovieFood->save()) {
+            if (!empty($request['foodstypes'])) {
+                foreach ($request['foodstypes'] as $key => $Foodstypes) {
+                    $MovieFood->food_type_id = $Foodstypes[0];
                 }
+                $MovieFood->Foodstypes()->sync($request->input('foodstypes'));
+            }
 
-                return redirect()->route('movie-foode.index');
-            }
-        } catch (\Illuminate\Database\QueryException $e) {
-            if ($e->errorInfo[1] === 1062) { // Lỗi duplicate entry
-                return redirect()->back()->withErrors(['slug' => 'Slug đã bị trùng lặp.Vui lòng sửa đường dẫn']);
-            }
+            toastr()->success('Thêm mới danh mục thành công!', 'success');
+        }
+
+        return redirect()->route('movie-foode.index');
+    } catch (\Illuminate\Database\QueryException $e) {
+        if ($e->errorInfo[1] === 1062) {
+            return redirect()->back()->withErrors(['slug' => 'Slug đã bị trùng lặp. Vui lòng sửa đường dẫn']);
         }
     }
+}
+
     /**
      * Display the specified resource.
      *
@@ -329,7 +340,7 @@ class MovieFoodsController extends Controller
                     'slug' => [Rule::unique('movie_foods')->ignore($id)],
                     'price' => [
                         'required',
-                        
+                        'numeric',
                         function ($attribute, $value, $fail) {
                             if ($value < 0) {
                                 $fail($attribute.'không được phép để âm.');
@@ -341,7 +352,7 @@ class MovieFoodsController extends Controller
                     'name.unique' => 'Vui lòng không nhập trùng tên',
                     'name.required' => 'Vui Lòng Nhập Tên',
                     'price.required' => 'Vui Lòng Nhập Giá',
-                  
+                    'price.numeric' => 'Giá phải là số.',
                     'quantity.required' => 'Vui Lòng Nhập số lượng',
                     'slug.unique'   => 'Vui Lòng không nhập trùng slug'
                 ]);

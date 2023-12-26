@@ -10,7 +10,10 @@ use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Exception;
-
+use App\Models\Member;
+use Illuminate\Support\Facades\DB;
+use App\Models\MembershipLevel;
+use intval;
 
 class SocialController extends Controller
 {
@@ -48,6 +51,20 @@ class SocialController extends Controller
                     'status' => 1,
                     'password' => bcrypt('admin@123')
                 ]);
+                $newUserId = $newUser->id;
+                $idmember = DB::table('membership_levels')
+                ->where('name', 'member')
+                ->pluck('id')
+                ->first();
+               
+                if($newUser) {
+                    $member = MemBer::create([
+                        'user_id' => $newUserId,
+                        'card_number' => 'BLT'.'123'.'1804'.$newUserId,
+                        'level_id' => $idmember,
+                        'status' => 1
+                    ]);
+                };
                 // email chào mừng
                 $name =  $user->name;
                 Mail::send('admin.auth.mail', compact('name'), function ($message) {
@@ -63,7 +80,8 @@ class SocialController extends Controller
                 toastr()->success('Đăng Nhập Thành Công!', 'Thật Tuyệt!');
                 return redirect(route('index'));
             }
-        } catch (Exception $e) {
+        } 
+        catch (Exception $e) {
             toastr()->error('Đăng Nhập Thất Bại!', 'Xin Lỗi!');
             return redirect(route('login'));
         }

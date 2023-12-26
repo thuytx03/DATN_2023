@@ -178,13 +178,16 @@ return [
          */
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
-        // App\Providers\BroadcastServiceProvider::class,
+        App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
         Laravel\Socialite\SocialiteServiceProvider::class,
         Srmklive\PayPal\Providers\PayPalServiceProvider::class,
+        Barryvdh\DomPDF\ServiceProvider::class,
+        Intervention\Image\ImageServiceProvider::class,
+
     ],
 
     /*
@@ -202,7 +205,11 @@ return [
         'Debugbar' => Barryvdh\Debugbar\Facades\Debugbar::class,
         'socialite' => Laravel\Socialite\Facade\socialite::class,
         'Alert' => RealRashid\SweetAlert\Facades\Alert::class,
-        'PayPal' => Srmklive\PayPal\Facades\PayPal::class
+        'PayPal' => Srmklive\PayPal\Facades\PayPal::class,
+        'PDF' => Barryvdh\DomPDF\Facade::class,
+        'Redis' => Illuminate\Support\Facades\Redis::class,
+
+
 
     ])->toArray(),
 

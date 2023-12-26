@@ -10,6 +10,15 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 class SeatTypeController extends Controller
 {
+    public function __construct()
+    {
+        $methods = get_class_methods(__CLASS__); // Lấy danh sách các phương thức trong class hiện tại
+
+        // Loại bỏ những phương thức không cần áp dụng middleware (ví dụ: __construct, __destruct, ...)
+        $methods = array_diff($methods, ['__construct', '__destruct', '__clone', '__call', '__callStatic', '__get', '__set', '__isset', '__unset', '__sleep', '__wakeup', '__toString', '__invoke', '__set_state', '__clone', '__debugInfo']);
+
+        $this->middleware('role:Admin', ['only' => $methods]);
+    }
      public function index(Request $request)
     {
         $query = SeatType::query();
@@ -36,7 +45,6 @@ class SeatTypeController extends Controller
             try {
                 $seatType = new SeatType();
                 $seatType->name = $request->name;
-                $seatType->price = $request->price;
                 $seatType->description = $request->description;
                 $seatType->status = $request->status;
                 if ($request->hasFile('image') && $request->file('image')->isValid()) {
@@ -74,7 +82,6 @@ class SeatTypeController extends Controller
         if($request->isMethod('POST')){
             try {
                 $seatType->name = $request->name;
-                $seatType->price = $request->price;
                 $seatType->description = $request->description;
                 $seatType->status = $request->status;
                 if ($request->hasFile('image') && $request->file('image')->isValid()) {

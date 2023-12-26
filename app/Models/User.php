@@ -42,7 +42,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'created_at',
         'updated_at',
         'gauth_type',
-        'gauth_token'
+        'gauth_token',
+        'remember_token'
     ];
     public function order()
     {

@@ -99,7 +99,7 @@ Danh sách ghế
                                 </thead>
 
                                 <tbody>
-                                    @foreach($room as $value)
+                                    @foreach($rooms as $value)
                                     <tr>
                                         <td>
                                             <input type="checkbox" class="child-checkbox" name="ids[]" value="{{ $value->id }}">
@@ -114,9 +114,6 @@ Danh sách ghế
                                                     <i class="fa-solid fa-ellipsis-vertical"></i>
                                                 </button>
                                                 <div class="dropdown-menu">
-
-
-
                                                     @if ($value->seat_count>0)
                                                     <a class="dropdown-item" href="{{ route('seat.update', ['room_id' => $value->id]) }}">Cập nhật</a>
                                                     @endif

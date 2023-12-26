@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\SeatCancelled;
+use App\Events\SeatSelected;
+use App\Listeners\SeatCancelledListener;
+use App\Listeners\SeatSelectedListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -18,6 +22,13 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        SeatSelected::class => [
+            SeatSelectedListener::class
+        ],
+        SeatCancelled::class => [
+            SeatCancelledListener::class
+        ],
+
     ];
 
     /**
@@ -27,6 +38,16 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Event::listen(
+            SeatSelected::class,
+            [
+                SeatSelectedListener::class, 'handle'
+            ],
+            SeatCancelled::class,
+            [
+                SeatCancelledListener::class, 'handle'
+            ],
+
+        );
     }
 }

@@ -5,12 +5,22 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Voucher\StoreRequest;
 use App\Http\Requests\VoucherRequest;
+use App\Models\MembershipLevel;
 use App\Models\Voucher;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class VoucherController extends Controller
 {
+    public function __construct()
+    {
+        $methods = get_class_methods(__CLASS__); // Lấy danh sách các phương thức trong class hiện tại
+
+        // Loại bỏ những phương thức không cần áp dụng middleware (ví dụ: __construct, __destruct, ...)
+        $methods = array_diff($methods, ['__construct', '__destruct', '__clone', '__call', '__callStatic', '__get', '__set', '__isset', '__unset', '__sleep', '__wakeup', '__toString', '__invoke', '__set_state', '__clone', '__debugInfo']);
+
+        $this->middleware('role:Admin', ['only' => $methods]);
+    }
     public function index(Request $request)
     {
         $query = Voucher::query();
@@ -40,11 +50,14 @@ class VoucherController extends Controller
 
     public function store(VoucherRequest $request)
     {
+        $level = MembershipLevel::all();
         if ($request->isMethod('POST')) {
             $voucher = new Voucher();
             $voucher->code = $request->code;
             $voucher->type = $request->type;
-            $voucher->value = $request->value ;
+            $voucher->value = $request->value;
+            $voucher->poin = $request->poin;
+            $voucher->level_id = $request->level_id;
             $voucher->quantity = $request->quantity;
             $voucher->min_order_amount = $request->min_order_amount;
             $voucher->max_order_amount = $request->max_order_amount;
@@ -57,7 +70,7 @@ class VoucherController extends Controller
                 return redirect()->back();
             }
         }
-        return view('admin.voucher.add');
+        return view('admin.voucher.add', compact('level'));
     }
 
 
@@ -69,11 +82,15 @@ class VoucherController extends Controller
     public function update(VoucherRequest $request, $id)
     {
         $voucher = Voucher::find($id);
+        $level = MembershipLevel::all();
+
         if ($request->isMethod('POST')) {
             $voucher->code = $request->code;
             $voucher->type = $request->type;
-            $voucher->value = $request->value ;
+            $voucher->value = $request->value;
             $voucher->quantity = $request->quantity;
+            $voucher->poin = $request->poin;
+            $voucher->level_id = $request->level_id;
             $voucher->min_order_amount = $request->min_order_amount;
             $voucher->max_order_amount = $request->max_order_amount;
             $voucher->start_date = $request->start_date;
@@ -83,10 +100,10 @@ class VoucherController extends Controller
             $voucher->checkAndUpdateStatus();
             toastr()->success('Thành công chỉnh sửa mã giảm giá');
             return redirect()->back();
-
         }
         return view('admin.voucher.edit', [
-            'voucher' => $voucher
+            'voucher' => $voucher,
+            'level' => $level,
         ]);
     }
 
@@ -102,9 +119,9 @@ class VoucherController extends Controller
         $ids = $request->ids;
         if ($ids) {
             Voucher::whereIn('id', $ids)->delete();
-            toastr()->success( 'Thành công xoá các mã giảm giá đã chọn');
+            toastr()->success('Thành công xoá các mã giảm giá đã chọn');
         } else {
-            toastr()->warning( 'Không tìm thấy các mã giảm giá đã chọn');
+            toastr()->warning('Không tìm thấy các mã giảm giá đã chọn');
         }
     }
     public function trash(Request $request)
@@ -145,7 +162,6 @@ class VoucherController extends Controller
             $voucher = Voucher::withTrashed()->whereIn('id', $ids);
             $voucher->forceDelete();
             toastr()->success('Thành công', 'Thành công xoá vĩnh viễn mã giảm giá');
-
         } else {
             toastr()->warning('Thất bại', 'Không tìm thấy các mã giảm giắ đã chọn');
         }
@@ -164,7 +180,7 @@ class VoucherController extends Controller
         }
         return redirect()->route('voucher.trash');
     }
-    public function restore( $id)
+    public function restore($id)
     {
         if ($id) {
             $voucher = Voucher::withTrashed()->findOrFail($id);
@@ -182,7 +198,8 @@ class VoucherController extends Controller
         Voucher::onlyTrashed()->where('deleted_at', '<', $thirtyDaysAgo)->forceDelete();
         return redirect()->route('index.voucher')->withSuccess('Đã xoá vĩnh viễn mã giảm giá trong thùng rác');
     }
-    public function updateStatus(Request $request, $id) {
+    public function updateStatus(Request $request, $id)
+    {
         $item = Voucher::find($id);
 
         if (!$item) {

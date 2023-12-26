@@ -11,8 +11,13 @@ use App\Models\moviefavorite;
 use App\Models\User;
 use App\Models\Genre;
 use App\Models\Cinema;
+use App\Models\Country;
 use App\Models\Province;
 use Carbon\Carbon;
+use App\Models\Post;
+
+
+
 
 class HomeController extends Controller
 {
@@ -24,22 +29,23 @@ class HomeController extends Controller
             $movies = Movie::all();
             $cinemas = Cinema::all();
             $provinces = Province::all();
-
+            $post = Post::orderBy('created_at', 'desc')->get();
+            $countries=Country::all();
             $currentDate = Carbon::now()->format('d/m/Y'); // Lấy ngày hiện tại
             $sevenDaysLater = Carbon::now()->addDays(7)->format('d/m/Y'); // Lấy ngày 7 ngày sau
 
 
-            return view('client.index', compact('movies', 'cinemas', 'currentDate', 'sevenDaysLater', 'provinces','user'));
+            return view('client.index', compact('movies', 'cinemas', 'currentDate', 'sevenDaysLater', 'provinces','user','post','countries'));
         }
-
         $movies = Movie::all();
         $cinemas = Cinema::all();
         $provinces = Province::all();
-
+        $post = Post::orderBy('created_at', 'desc')->get();
+        $countries=Country::all();
         $currentDate = Carbon::now()->format('d/m/Y'); // Lấy ngày hiện tại
         $sevenDaysLater = Carbon::now()->addDays(7)->format('d/m/Y'); // Lấy ngày 7 ngày sau
 
 
-        return view('client.index', compact('movies', 'cinemas', 'currentDate', 'sevenDaysLater', 'provinces'));
+        return view('client.index', compact('movies', 'cinemas', 'currentDate', 'sevenDaysLater', 'provinces','post','countries'));
     }
 }

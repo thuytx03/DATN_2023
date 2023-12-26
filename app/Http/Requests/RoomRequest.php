@@ -35,7 +35,6 @@ class RoomRequest extends FormRequest
                     case 'store':
                         $add = [
                             'name' => 'required|unique:rooms',
-                            'description' => 'required',
                             'image' => 'required',
                         ];
                         break;
@@ -54,7 +53,6 @@ class RoomRequest extends FormRequest
     {
         return [
             'name.required' => 'Tên phòng không được để trống!',
-            'description.required' => 'Mô tả không được để trống!',
             'name.unique' => 'Tên phòng đã tồn tại!',
             'image.required' => 'Hình ảnh không được để trống!',
         ];

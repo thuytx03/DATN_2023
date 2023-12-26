@@ -9,12 +9,12 @@ Thêm phòng
     <!-- Page Heading -->
     <a href="{{route('room.list')}}" class="btn btn-success m-3">Danh sách phòng</a>
     @if ($errors->any())
-                <div class="alert alert-danger">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </div>
-            @endif
+    <div class="alert alert-danger">
+        @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </div>
+    @endif
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-body">
@@ -31,23 +31,25 @@ Thêm phòng
                             <label for="name" class="form-label">Loại phòng</label>
                             <br>
                             <select class="form-select border border-1 rounded w-100 p-2" name="room_type_id">
-                            <option value="0">Vui lòng chọn</option>
+                                <option value="0">Vui lòng chọn</option>
                                 @foreach($typeRoom as $typeRoom)
                                 <option value="{{$typeRoom->id}}">{{$typeRoom->name}}</option>
                                 <!-- Add more options as needed -->
                                 @endforeach
                             </select>
                         </div>
+
                         <div class="mb-3">
                             <label for="name" class="form-label">Tên rạp</label>
                             <br>
                             <select class="form-select border border-1 rounded w-100 p-2" name="cinema_id">
-                                <option value="1">Option 1</option>
-                                <option value="2">Option 2</option>
-                                <option value="3">Option 3</option>
+                                @foreach($cinema as $cinema)
+                                <option value="{{$cinema->id}}">{{$cinema->name}}</option>
+                                @endforeach
                                 <!-- Add more options as needed -->
                             </select>
                         </div>
+                        
                         <div class="mb-3">
                             <label for="name" class="form-label">Mô tả</label>
                             <input type="text" class="form-control" name="description">
@@ -72,40 +74,39 @@ Thêm phòng
 
 @push('scripts')
 <script>
-   $(function() {
-    function readURL(input, selector) {
-        if (input.files && input.files[0]) {
-            let reader = new FileReader();
+    $(function() {
+        function readURL(input, selector) {
+            if (input.files && input.files[0]) {
+                let reader = new FileReader();
 
-            reader.onload = function(e) {
-                $(selector).attr('src', e.target.result);
-            };
+                reader.onload = function(e) {
+                    $(selector).attr('src', e.target.result);
+                };
 
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    $("#cmt_truoc").change(function() {
-        readURL(this, '#mat_truoc_preview');
-    });
-
-    $('#cmt_truoc').on('change', function() {
-        var files = $(this)[0].files;
-
-        // Clear previous previews
-        $('#image_preview_container').html('');
-
-        for (var i = 0; i < files.length; i++) {
-            var reader = new FileReader();
-
-            reader.onload = function(e) {
-                $('#image_preview_container').append('<img src="' + e.target.result + '" class="img-fluid" style="max-width: 200px; height:100px; margin-bottom: 10px;">');
+                reader.readAsDataURL(input.files[0]);
             }
-
-            reader.readAsDataURL(files[i]);
         }
-    });
-});
 
+        $("#cmt_truoc").change(function() {
+            readURL(this, '#mat_truoc_preview');
+        });
+
+        $('#cmt_truoc').on('change', function() {
+            var files = $(this)[0].files;
+
+            // Clear previous previews
+            $('#image_preview_container').html('');
+
+            for (var i = 0; i < files.length; i++) {
+                var reader = new FileReader();
+
+                reader.onload = function(e) {
+                    $('#image_preview_container').append('<img src="' + e.target.result + '" class="img-fluid" style="max-width: 200px; height:100px; margin-bottom: 10px;">');
+                }
+
+                reader.readAsDataURL(files[i]);
+            }
+        });
+    });
 </script>
 @endpush

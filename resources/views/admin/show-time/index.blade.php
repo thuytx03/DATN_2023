@@ -25,7 +25,7 @@
                     <div class="col-md-6 text-right">
                         <div class="dropdown">
                             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Hành động
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Hành động
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 <a class="dropdown-item" href="{{ route('show-time.trash') }}">Thùng rác</a>
@@ -42,7 +42,8 @@
                             <div class="col-sm-12 col-md-6">
                                 <div class="dataTables_length" id="dataTable_length">
                                     <label>Hiển thị
-                                        <select name="dataTable_length" aria-controls="dataTable" class="custom-select custom-select-sm form-control form-control-sm">
+                                        <select name="dataTable_length" aria-controls="dataTable"
+                                            class="custom-select custom-select-sm form-control form-control-sm">
                                             <option value="10">10</option>
                                             <option value="25">25</option>
                                             <option value="50">50</option>
@@ -57,7 +58,8 @@
                                         <div class="col-md-3">
                                             <div class="dataTables_length mr-2">
                                                 <label>Lọc
-                                                    <select name="status" aria-controls="dataTable" class="custom-select custom-select-sm form-control ">
+                                                    <select name="status" aria-controls="dataTable"
+                                                        class="custom-select custom-select-sm form-control ">
                                                         <option value="all">Tất cả</option>
                                                         <option value="1">Hoạt động</option>
                                                         <option value="0">Không hoạt động</option>
@@ -68,120 +70,151 @@
                                         <div class="col-md-5">
                                             <div id="dataTable_filter" class="dataTables_filter">
                                                 <label>
-                                                    <input type="search" name="search_movie" class="form-control form-control-sm" placeholder="Tìm theo tên phim" aria-controls="dataTable">
+                                                    <input type="search" name="search_movie"
+                                                        class="form-control form-control-sm" placeholder="Tìm theo tên phim"
+                                                        aria-controls="dataTable">
                                                 </label>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div id="dataTable_filter" class="dataTables_filter">
                                                 <label>
-                                                    <input type="search" name="search_room" class="form-control form-control-sm" placeholder="Tìm theo tên phòng" aria-controls="dataTable">
-                                                    <button class="btn btn-outline-success form-control-sm" type="submit">Tìm kiếm</button>
+                                                    <input type="search" name="search_room"
+                                                        class="form-control form-control-sm"
+                                                        placeholder="Tìm theo tên phòng" aria-controls="dataTable">
+                                                    <button class="btn btn-outline-success form-control-sm"
+                                                        type="submit">Tìm kiếm</button>
                                                 </label>
                                             </div>
                                         </div>
                                     </div>
-                                    {{--                                    <div class="row">--}}
-                                    {{--                                        <div class="col-md-4">--}}
-                                    {{--                                            <label for="start_date">Từ ngày:</label>--}}
-                                    {{--                                            <input type="date" id="start_date" name="start_date" class="form-control">--}}
-                                    {{--                                        </div>--}}
-                                    {{--                                        <div class="col-md-4">--}}
-                                    {{--                                            <label for="end_date">Đến ngày:</label>--}}
-                                    {{--                                            <input type="date" id="end_date" name="end_date" class="form-control">--}}
-                                    {{--                                        </div>--}}
-                                    {{--                                    </div>--}}
+                                    {{--                                    <div class="row"> --}}
+                                    {{--                                        <div class="col-md-4"> --}}
+                                    {{--                                            <label for="start_date">Từ ngày:</label> --}}
+                                    {{--                                            <input type="date" id="start_date" name="start_date" class="form-control"> --}}
+                                    {{--                                        </div> --}}
+                                    {{--                                        <div class="col-md-4"> --}}
+                                    {{--                                            <label for="end_date">Đến ngày:</label> --}}
+                                    {{--                                            <input type="date" id="end_date" name="end_date" class="form-control"> --}}
+                                    {{--                                        </div> --}}
+                                    {{--                                    </div> --}}
                                 </form>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-sm-12">
                                 <table class="table table-bordered dataTable no-footer" id="dataTable" width="100%"
-                                       cellspacing="0" role="grid" aria-describedby="dataTable_info"
-                                       style="width: 100%;">
+                                    cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
                                     <thead>
-                                    <tr role="row">
-                                        <th class="pr-2 text-center" tabindex="0" aria-controls="dataTable"
-                                            rowspan="1" colspan="1" aria-sort="ascending"
-                                            aria-label="id: activate to sort column descending" style="width: 5.2px;">
-                                            <label>
-                                                <input type="checkbox" id="select-all">
-                                            </label>
-                                        </th>
-                                        <th class="sorting text-center" tabindex="0" aria-controls="dataTable"
-                                            rowspan="1"
-                                            colspan="1" aria-label="Name: activate to sort column ascending"
-                                            style="width: 111.2px;">Phòng chiếu
-                                        </th>
-                                        <th class="sorting text-center" tabindex="0" aria-controls="dataTable"
-                                            rowspan="1"
-                                            colspan="1" aria-label="Name: activate to sort column ascending"
-                                            style="width: 111.2px;">Phim chiếu
-                                        </th>
+                                        <tr role="row">
+                                            <th class="pr-2 text-center" tabindex="0" aria-controls="dataTable"
+                                                rowspan="1" colspan="1" aria-sort="ascending"
+                                                aria-label="id: activate to sort column descending" style="width: 5.2px;">
+                                                <label>
+                                                    <input type="checkbox" id="select-all">
+                                                </label>
+                                            </th>
+                                            <th class="sorting text-center" tabindex="0" aria-controls="dataTable"
+                                                rowspan="1" colspan="1"
+                                                aria-label="Name: activate to sort column ascending"
+                                                style="width: 111.2px;">Phòng chiếu
+                                            </th>
+                                            <th class="sorting text-center" tabindex="0" aria-controls="dataTable"
+                                                rowspan="1" colspan="1"
+                                                aria-label="Name: activate to sort column ascending"
+                                                style="width: 111.2px;">Phim chiếu
+                                            </th>
 
-                                        <th class="sorting text-center" tabindex="0" aria-controls="dataTable"
-                                            rowspan="1"
-                                            colspan="1" aria-label="total: activate to sort column ascending"
-                                            style="width: 50.2px;">Ngày chiếu
-                                        </th>
-                                        <th class="sorting text-center" tabindex="0" aria-controls="dataTable"
-                                            rowspan="1"
-                                            colspan="1" aria-label="ảnh: activate to sort column ascending"
-                                            style="width: 50.2px;">Ngày kết thúc
-                                        </th>
-                                        <th class="sorting text-center" tabindex="0" aria-controls="dataTable"
-                                            rowspan="1"
-                                            colspan="1" aria-label="ảnh: activate to sort column ascending"
-                                            style="width: 50.2px;">Trạng thái
-                                        </th>
-                                        <th class="sorting text-center" tabindex="0" aria-controls="dataTable"
-                                            rowspan="1"
-                                            colspan="1" aria-label="action: activate to sort column ascending"
-                                            style="width: 60.2px;">Hoạt động
-                                        </th>
-                                    </tr>
+                                            <th class="sorting text-center" tabindex="0" aria-controls="dataTable"
+                                                rowspan="1" colspan="1"
+                                                aria-label="total: activate to sort column ascending"
+                                                style="width: 50.2px;">Ngày chiếu
+                                            </th>
+                                            <th class="sorting text-center" tabindex="0" aria-controls="dataTable"
+                                                rowspan="1" colspan="1"
+                                                aria-label="ảnh: activate to sort column ascending"
+                                                style="width: 50.2px;">Ngày kết thúc
+                                            </th>
+                                            <th class="sorting text-center" tabindex="0" aria-controls="dataTable"
+                                                rowspan="1" colspan="1"
+                                                aria-label="ảnh: activate to sort column ascending"
+                                                style="width: 50.2px;">Giá vé thường
+                                            </th>
+                                            <th class="sorting text-center" tabindex="0" aria-controls="dataTable"
+                                                rowspan="1" colspan="1"
+                                                aria-label="ảnh: activate to sort column ascending"
+                                                style="width: 50.2px;">Giá vé vip
+                                            </th>
+                                            <th class="sorting text-center" tabindex="0" aria-controls="dataTable"
+                                                rowspan="1" colspan="1"
+                                                aria-label="ảnh: activate to sort column ascending"
+                                                style="width: 50.2px;">Giá vé đôi
+                                            </th>
+                                            <th class="sorting text-center" tabindex="0" aria-controls="dataTable"
+                                                rowspan="1" colspan="1"
+                                                aria-label="ảnh: activate to sort column ascending"
+                                                style="width: 50.2px;">Trạng thái
+                                            </th>
+                                            <th class="sorting text-center" tabindex="0" aria-controls="dataTable"
+                                                rowspan="1" colspan="1"
+                                                aria-label="action: activate to sort column ascending"
+                                                style="width: 60.2px;">Hoạt động
+                                            </th>
+                                        </tr>
                                     </thead>
                                     <tbody>
-                                    @foreach($showTimes as $showTime)
-                                        @if ($showTime->room->status == 1 && $showTime->movie->status == 1)
-                                            <tr class="text-center">
-                                                <td class="sorting_1 text-center">
-                                                    <label>
-                                                        <input type="checkbox" class="child-checkbox" name="selectedIds"
-                                                               value="{{ $showTime->id }}">
-                                                    </label>
-                                                </td>
-                                                <td>{{ $showTime->room->name }}</td>
-                                                <td>{{ $showTime->movie->name }}</td>
-                                                <td>
-                                                    <small>{{ $showTime->start_date }}</small>
-                                                </td>
-                                                <td>
-                                                    <small>{{ $showTime->end_date }}</small>
-                                                </td>
-                                                <td>
-                                                    <input type="checkbox" value="{{ $showTime->status }}"
-                                                           name="status" data-item-id="{{ $showTime->id }}"
-                                                           class="switch1 switch-status switchery-small"
-                                                        {{ $showTime->status == 1 ? 'checked' : '' }}/>
-                                                </td>
-                                                <td class="text-center">
-                                                    <div class="dropdown">
-                                                        <!-- Icon here (e.g., three dots icon) -->
-                                                        <i class="fas fa-ellipsis-v p-2" data-toggle="dropdown"
-                                                           aria-haspopup="true" aria-expanded="false"></i>
-                                                        </button>
-                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                            <a class="dropdown-item"
-                                                               href="{{ route('show-time.edit',['id' => $showTime->id]) }}">Sửa</a>
-                                                            <a class="dropdown-item show_confirm"
-                                                               href="{{ route('show-time.destroy',['id' => $showTime->id]) }}">Xóa</a>
+                                        @foreach ($showTimes as $showTime)
+                                            @if ($showTime->room->status == 1 && $showTime->movie->status == 1)
+                                                <tr class="text-center">
+                                                    <td class="sorting_1 text-center">
+                                                        <label>
+                                                            <input type="checkbox" class="child-checkbox"
+                                                                name="selectedIds" value="{{ $showTime->id }}">
+                                                        </label>
+                                                    </td>
+                                                    <td>{{ $showTime->room->name }}</td>
+                                                    <td>{{ $showTime->movie->name }}</td>
+                                                    <td>
+                                                        <small>{{ $showTime->start_date }}</small>
+                                                    </td>
+                                                    <td>
+                                                        <small>{{ $showTime->end_date }}</small>
+                                                    </td>
+                                                    <td>
+                                                        <small>{{ $showTime->seatPrice->where('seat_type_id', 1)->first()->price }}</small>
+                                                    </td>
+                                                    <td>
+                                                        <small>{{ $showTime->seatPrice->where('seat_type_id', 2)->first()->price }}</small>
+
+                                                    </td>
+                                                    <td>
+                                                        <small>{{ $showTime->seatPrice->where('seat_type_id', 3)->first()->price }}</small>
+
+                                                    </td>
+                                                    <td>
+                                                        <input type="checkbox" value="{{ $showTime->status }}"
+                                                            name="status" data-item-id="{{ $showTime->id }}"
+                                                            class="switch1 switch-status switchery-small"
+                                                            {{ $showTime->status == 1 ? 'checked' : '' }} />
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <div class="dropdown">
+                                                            <!-- Icon here (e.g., three dots icon) -->
+                                                            <i class="fas fa-ellipsis-v p-2" data-toggle="dropdown"
+                                                                aria-haspopup="true" aria-expanded="false"></i>
+                                                            </button>
+                                                            <div class="dropdown-menu"
+                                                                aria-labelledby="dropdownMenuButton">
+                                                                <a class="dropdown-item"
+                                                                    href="{{ route('show-time.edit', ['id' => $showTime->id]) }}">Sửa</a>
+                                                                <a class="dropdown-item show_confirm"
+                                                                    href="{{ route('show-time.destroy', ['id' => $showTime->id]) }}">Xóa</a>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endif
-                                    @endforeach
+                                                    </td>
+                                                </tr>
+                                            @endif
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>
@@ -220,28 +253,28 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/switchery/0.8.2/switchery.min.js"></script>
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             var switches = Array.from(document.querySelectorAll('.switch1'));
-            switches.forEach(function (elem) {
+            switches.forEach(function(elem) {
                 new Switchery(elem);
             });
         });
     </script>
     <script type="text/javascript">
         function alertConfirmation() {
-            $('.show_confirm').click(function (event) {
+            $('.show_confirm').click(function(event) {
                 var href = $(this).attr("href"); // Lấy URL từ thuộc tính href của thẻ <a>
                 var name = $(this).data("name");
                 event.preventDefault();
 
                 Swal.fire({
-                    title: 'Xác nhận xóa',
-                    text: 'Bạn có chắc chắn muốn xóa mục đã chọn?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Xóa',
-                    cancelButtonText: 'Hủy',
-                })
+                        title: 'Xác nhận xóa',
+                        text: 'Bạn có chắc chắn muốn xóa mục đã chọn?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xóa',
+                        cancelButtonText: 'Hủy',
+                    })
                     .then((result) => {
                         if (result.isConfirmed) {
                             // Người dùng đã xác nhận xóa
@@ -258,7 +291,7 @@
         alertConfirmation();
 
         function selectAllCheckbox() {
-            document.getElementById('select-all').addEventListener('change', function () {
+            document.getElementById('select-all').addEventListener('change', function() {
                 let checkboxes = document.getElementsByClassName('child-checkbox');
                 for (let checkbox of checkboxes) {
                     checkbox.checked = this.checked;
@@ -267,7 +300,7 @@
 
             let childCheckboxes = document.getElementsByClassName('child-checkbox');
             for (let checkbox of childCheckboxes) {
-                checkbox.addEventListener('change', function () {
+                checkbox.addEventListener('change', function() {
                     document.getElementById('select-all').checked = false;
                 });
             }
@@ -276,8 +309,8 @@
         selectAllCheckbox();
 
         function updateStatus() {
-            $(document).ready(function () {
-                $('.switch-status').change(function () {
+            $(document).ready(function() {
+                $('.switch-status').change(function() {
                     const itemId = $(this).data('item-id');
                     const status = this.checked ? 1 : 0;
                     $.ajax({
@@ -287,10 +320,10 @@
                             _token: '{{ csrf_token() }}',
                             status: status
                         },
-                        success: function (data) {
+                        success: function(data) {
                             // Xử lý phản hồi thành công (nếu cần)
                         },
-                        error: function (error) {
+                        error: function(error) {
                             // Xử lý lỗi (nếu có)
                         }
                     });
@@ -301,8 +334,8 @@
         updateStatus();
 
         function deleteSelected() {
-            $(document).ready(function () {
-                $('#delete-selected').click(function (e) {
+            $(document).ready(function() {
+                $('#delete-selected').click(function(e) {
                     e.preventDefault();
                     var selectedCheckboxes = $('.child-checkbox:checked');
 
@@ -317,7 +350,7 @@
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 var selectedIds = [];
-                                selectedCheckboxes.each(function () {
+                                selectedCheckboxes.each(function() {
                                     selectedIds.push($(this).val());
                                 });
                                 $.ajax({
@@ -327,11 +360,11 @@
                                         ids: selectedIds,
                                         _token: '{{ csrf_token() }}',
                                     },
-                                    success: function (response) {
+                                    success: function(response) {
                                         // Xử lý phản hồi từ máy chủ nếu cần
                                         location.reload();
                                     },
-                                    error: function () {
+                                    error: function() {
                                         location.reload();
                                     }
                                 });
@@ -345,7 +378,5 @@
         }
 
         deleteSelected();
-
     </script>
-
 @endpush

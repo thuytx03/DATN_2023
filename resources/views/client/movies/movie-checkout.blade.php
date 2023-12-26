@@ -54,11 +54,12 @@
                         <a href="#0" class="text-white">Phòng: {{ $showTime->room->name }}</a> -
                         <a href="#0" class="text-white">Thời gian: {{ date('H:i', strtotime($showTime->start_date)) }}
                             ~ {{ date('H:i', strtotime($showTime->start_end)) }}</a>
+                            <a href="#" style="display:none" id="showtime-link"
+                            data-showtime-id="{{ $showTime->id }}">{{ $showTime->id }}</a>
                     </div>
                 </div>
                 <div class="item">
-                    {{-- <h5 class="title">05:00</h5>
-                    <p>Mins Left</p> --}}
+                    <h5 class="title" id="countdown">05:00</h5>
                 </div>
             </div>
         </div>
@@ -90,6 +91,7 @@
                                 $totalPrice = $totalPriceFood + $totalPriceTicket;
                                 // dd($totalPrice);
                             @endphp
+                            <input type="hidden" name="totalPriceFood" value="{{  $totalPriceFood }}">
                             <input type="hidden" name="totalPrice" value="{{ $totalPrice }}">
 
                         </form>
@@ -243,11 +245,12 @@
                         </ul>
                     </div>
                     <div class="proceed-area  text-center">
+
                         @if (session('voucher'))
                             <h6 class="subtitle"><span>Tổng tiền</span><span>
                                     {{ number_format(session('voucher.totalPriceVoucher'), 0, ',', '.') }} VNĐ
                                 </span></h6>
-                            <input type="hidden" name="totalPrice" value="{{ $totalPrice }}">
+                                <input type="hidden" name="totalPrice" value="{{ session('voucher.totalPriceVoucher') }}">
                         @else
                             <h6 class="subtitle"><span>Tổng tiền</span><span>
                                     {{ number_format($totalPrice, 0, ',', '.') }} VNĐ
@@ -292,6 +295,58 @@
             } else {
                 submitButton.setAttribute("disabled", "disabled");
             }
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            // Get showtime_id from the data attribute of an HTML element
+            var showtime_id = $("#showtime-link").data("showtime-id");
+
+            // Function to clear cache asynchronously
+            function clearCacheAsync(showtime_id) {
+                $.ajax({
+                    url: '/clear-seats-cache',
+                    type: 'POST',
+                    data: {
+                        showtime_id: showtime_id,
+                        _token: '{{ csrf_token() }}',
+                    },
+                    success: function(response) {
+                        // console.log(response.message);
+                        alert('Bạn đã hết thời gian chọn ghế!');
+                        location.href='{{ route('chon-ghe', ['room_id' => $showTime->room_id, 'slug' => $showTime->movie->slug, 'showtime_id' => $showTime->id]) }}';
+
+                    },
+                    error: function(error) {
+                        console.error('Error clearing cache: ', error.responseJSON.error);
+                    }
+                });
+            }
+
+            const savedTargetTime = window.localStorage.getItem('targetTime');
+            const targetTime = new Date(parseInt(savedTargetTime));
+
+            function updateCountdown() {
+                const currentTime = new Date();
+                const timeDifference = targetTime - currentTime;
+
+                const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+                const countdownElement = document.getElementById("countdown");
+                countdownElement.textContent =
+                    `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                if (timeDifference <= 0) {
+                    countdownElement.textContent = "00:00";
+                    clearCacheAsync(showtime_id);
+                } else {
+                    requestAnimationFrame(updateCountdown);
+                }
+            }
+
+            requestAnimationFrame(updateCountdown);
         });
     </script>
 @endsection

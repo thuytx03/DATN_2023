@@ -30,7 +30,7 @@
                             <div class="dropdown-menu">
                                 <a class="dropdown-item" href="{{route('movie-foode.indexsd')}}">Thùng rác</a>
                                 <a href="#" id="delete-selected" class="dropdown-item">Xoá đã chọn</a>
-                                
+
                             </div>
                         </div>
                     </div>
@@ -52,18 +52,18 @@
                                         </select> Mục</label>
                                 </div>
                             </div>
-                           
+
                             <div class="col-sm-12 col-md-6">
                                 <form action="">
                                 <div class="row">
                                     <div class="dataTables_length mr-2 sm-1" id="dataTable_length"><label>Lọc <select
                                                 name="food_type_id" aria-controls="dataTable"
                                                 class="custom-select custom-select-sm form-control " >
-                                                
+
                                                 <option value="">Vui lòng chọn</option>
-                                                
-                                                @foreach ( $types as $types1 ) 
-                                                        <option value="{{$types1->id}}">{{$types1->name}}</option>                                            
+
+                                                @foreach ( $types as $types1 )
+                                                        <option value="{{$types1->id}}">{{$types1->name}}</option>
                                                 @endforeach
                                             </select>
                                         </label>
@@ -74,7 +74,7 @@
                                         <option value="">Lọc Theo Trạng Thái</option>
                                         <option value="hethang">Hết Hàng</option>
                                         <option value="ngungkinhdoanh">Ngừng kinh doanh</option>
-                                      
+
                                     </select>
                                 </label>
                             </div>
@@ -84,11 +84,11 @@
                                                 aria-controls="dataTable"name="keyword" value="{{request()->keyword}}"" ></label>
                                                 <button class="btn btn-primare" type="submit">Tìm Kiếm</button>
                                     </div>
-                                    
+
                                 </div>
                             </form>
                                 </div>
-                            
+
                         </div>
                         <div class="row">
                             <div class="col-sm-12">
@@ -107,7 +107,7 @@
                                                 colspan="1" aria-label="Name: activate to sort column ascending"
                                                 style="width: 111.2px;">Tên
                                             </th>
-    
+
                                             <th class="sorting text-center" tabindex="0" aria-controls="dataTable" rowspan="1"
                                                 colspan="1" aria-label="total: activate to sort column ascending"
                                                 style="width: 96.2px;">giá
@@ -136,7 +136,7 @@
                                     </thead>
 
                                     <tbody>
-                                        
+
                                             @foreach ($listfood1 as $value)
                                                     <tr>
                                                         <td class="sorting_1 text-center">
@@ -144,7 +144,7 @@
                                                                 <input type="checkbox" class="child-checkbox" value="{{$value->id}}" name="ids[]">
                                                             </label>
                                                         </td>
-                                                        
+
                                                         <td>{{ $value->name }}</td>
                                                         <td>{{ $value->price }}</td>
                                                         <td class="text-center">
@@ -152,14 +152,14 @@
                                                         </td>
                                                         <td>{!! $value->description !!}</td>
                                                         <td>
-                                                            @if ($value->status == 0) 
+                                                            @if ($value->status == 0)
                                                             Ngừng kinh doanh
                                                             @elseif($value->status == 2 )
-                                                            Hết sản phẩm 
+                                                            Hết sản phẩm
                                                             @else
                                                             {{ $value->quantity }}
                                                             @endif
-                                                            
+
                                                         {{-- <td>
                                                             @if ($value->status == 1 )
                                                                 Còn kinh doanh
@@ -167,15 +167,15 @@
                                                             Hết Hàng nhưng còn kinh doanh
                                                            @elseif ($value->status ==  0)
                                                             Ngừng kinh doanh
-                                                          
+
                                                            @endif
                                                         </td> --}}  <td class="text-center">
-                                               
+
                                                 <div class="form-check form-switch">
-                                                    <a href="{{route('movie-foode.changeStatus',['id'=>$value->id])}}"><input type="checkbox" class="switch1" data-id="{{ $value->id }}" {{ $value->status == 1 ? 'checked' : '' }} /></a>  
+                                                    <a href="{{route('movie-foode.changeStatus',['id'=>$value->id])}}"><input type="checkbox" class="switch1" data-id="{{ $value->id }}" {{ $value->status == 1 ? 'checked' : '' }} /></a>
                                                   </div>
                                               </td>
-                                                       
+
                                                 <td class="text-center">
 
                                                 <div class="dropdown">
@@ -184,7 +184,7 @@
                                                         <i class="fa-solid fa-ellipsis-vertical"></i>
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        
+
                                                         <a class="dropdown-item"
                                                             href="{{ route('movie-foode.edit', ['id' => $value->id]) }}">Sửa</a>
                                                         <a class="dropdown-item show_confirm"
@@ -194,10 +194,10 @@
                                                 </div>
                                             </td>
                                                     </tr>
-                                                
+
                                             @endforeach
-                                    
-                                       
+
+
                                     </tbody>
                                 </table>
                             </div>
@@ -205,11 +205,11 @@
                         <div class="row">
                             <div class="col-sm-12 col-md-5">
                                 <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">
-                                    
+
                                 </div>
                             </div>
                             <div class="row">
-                               
+
                                 <div class="col-sm-12 col-md-7">
                                     <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
                                         <ul class="pagination">
@@ -218,7 +218,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                 </div>

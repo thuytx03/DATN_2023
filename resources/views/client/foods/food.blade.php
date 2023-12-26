@@ -105,10 +105,6 @@
                                             <input type="hidden" class="food-id" value="{{$foodItem->id}}">
                                             <input class="number" type="hidden" name="qtybutton" value="1">
                                             <div class="w-100 d-flex justify-content-center">
-                                                <div class="cart-plus-minus m-2">
-                                                    <input class="cart-plus-minus-box" type="text" id="next" min="0" value="1" oninput="updateQuantity()">
-                                                </div>
-
                                                 <button type="submit" class="custom-button m-2">
                                                     Mua
                                                 </button>
@@ -132,33 +128,28 @@
                         <li id="itemList">
                             <!-- Các món ăn được thêm vào sẽ được hiển thị ở đây -->
                         </li>
+                        <br>
                         <li>
                             <h6 class="subtitle"><span>Tạm tính</span><span id="totalPrice">0</span></h6>
                         </li>
                     </ul>
                     <ul>
                         <li>
+                            <div class="mb-3">
+                                <label class="form-label">Mã giảm</label>
+                                <input type="text" class="form-group" id="voucher">
+                                <button class="custom-button back-button" id="applyButton">Áp dụng</button>
+                            </div>
+                            <div>
+                                <span id="alert" class="text-danger font-bold"></span>
+                            </div>
+                            <br>
                             <span class="info"><span>Mã giảm</span><span id="discount">0</span></span>
                         </li>
                     </ul>
                     <ul>
                         <li>
-                            <h6 class="subtitle"><span>Phương thức thanh toán</span></h6>
-                            <hr>
-                            <span>
-                                <div class=" mt-2">
-                                    <select class="form-select text-dark " id="paymentMethod">
-                                        <option value="1">Thanh toán nội địa Napas</option>
-                                        <option value="2">Thanh toán quốc tế Visa</option>
-                                        <option value="3">Thanh toán ví MoMo</option>
-                                    </select>
-                                </div>
-                            </span>
-                        </li>
-                    </ul>
-                    <ul>
-                        <li>
-                            <h6 class="subtitle"><span>Thông tin các nhân</span> </h6>
+                            <h6 class="subtitle"><span>Thông tin cá nhân</span> </h6>
                             <hr>
                             <div class="">
                                 <ul>
@@ -170,17 +161,46 @@
                             <div>
                                 <div class="mb-3">
                                     <label class="form-label">Email<span class="required">*</span></label>
-                                    <input type="email" class="form-control" id="email">
+                                    <input type="email" class="form-group" id="email">
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Ngày nhận<span class="required">*</span></label>
-                                    <input type="datetime-local" class="form-control" id="order_end">
+                                    <input type="datetime-local" class="form-group" id="order_end">
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Ghi chú</label>
-                                    <textarea name="note" id="note"></textarea>
+                                    <input class="form-group" id="note"></input>
                                 </div>
                             </div>
+                        </li>
+                    </ul>
+                    <ul>
+                        <li>
+                            <h6 class="subtitle"><span>Nhận món ăn tại rạp</span></h6>
+                            <hr>
+                            <span>
+                                <div class=" mt-2">
+                                    <select class="form-select text-dark " id="cinema">
+                                        @foreach($cinema as $cinema)
+                                        <option value="{{$cinema->id}}" class="form-group">{{$cinema->name}}</option>
+                                       @endforeach
+                                    </select>
+                                </div>
+                            </span>
+                        </li>
+                    </ul>
+                    <ul>
+                        <li>
+                            <h6 class="subtitle"><span>Phương thức thanh toán</span></h6>
+                            <hr>
+                            <span>
+                                <div class=" mt-2">
+                                    <select class="form-select text-dark " id="paymentMethod">
+                                        <option value="1" class="form-group">Thanh toán nội địa VnPay</option>
+                                        <option value="2" class="form-group">Thanh toán quốc tế Paypay</option>
+                                    </select>
+                                </div>
+                            </span>
                         </li>
                     </ul>
                 </div>
@@ -189,14 +209,16 @@
                     <form id="myForm" action="{{ route('food.add') }}" method="POST">
                         @csrf
                         <input type="hidden" name="total_amount">
+                        <input type="hidden" name="total_price">
                         <input type="hidden" name="payment_method">
                         <input type="hidden" name="food_items">
                         <input type="hidden" name="email">
                         <input type="hidden" name="order_end">
                         <input type="hidden" name="note">
+                        <input type="hidden" name="voucher">
+                        <input type="hidden" name="cinema">
                         <button class="custom-button back-button" id="payButton">Thanh toán</button>
                     </form>
-
                 </div>
             </div>
         </div>
@@ -219,17 +241,6 @@
     }
 </script>
 <script>
-    function updateQuantity() {
-        var newValue = parseInt(document.getElementById('next').value);
-        var quantityElement = document.querySelector('.quantity');
-
-        document.getElementById('next').value = newValue;
-        quantityElement.textContent = newValue;
-
-        // Các bước cập nhật quantity và totalPrice tương tự như trước
-    }
-</script>
-<script>
     function updateTotalPrice() {
         var totalPrice = parseInt(document.getElementById('totalPrice').textContent);
         var discount = parseInt(document.getElementById('discount').textContent);
@@ -240,6 +251,13 @@
 </script>
 <script>
     document.getElementById('totalPrice').addEventListener('DOMSubtreeModified', function() {
+        var totalPrice = parseInt(document.getElementById('totalPrice').textContent);
+        var discount = parseInt(document.getElementById('discount').textContent);
+        var finalPrice = totalPrice - discount;
+        document.getElementById('total').textContent = finalPrice;
+    });
+
+    document.getElementById('discount').addEventListener('DOMSubtreeModified', function() {
         var totalPrice = parseInt(document.getElementById('totalPrice').textContent);
         var discount = parseInt(document.getElementById('discount').textContent);
         var finalPrice = totalPrice - discount;
@@ -278,15 +296,19 @@
             var newItem = document.createElement('li');
             newItem.dataset.foodId = foodId;
             newItem.innerHTML = `
-                <h6 class="subtitle">
-                    <span>${foodName}</span>
-                    <span></i></span>
-                </h6>
-                <div class="info">
-                    <span id="number">Price: ${foodPrice} Vnđ</span>
-                    <span class="quantity" oninput="updateQuantity()">${quantity}</span>
+            <h6 class="subtitle">
+                <span>${foodName}</span>
+                <span></i></span>
+            </h6>
+            <div class="info">
+                <span id="number">Price: ${foodPrice} Vnđ</span>
+                <div class="border border-1 rounded-pill d-flex justify-content-center w-25">
+                    <span class="m-1" id="decrease">-</span>
+                    <span class="quantity m-1 w-50 d-flex justify-content-center" id="newQuantity" min="1">${quantity}</span>
+                    <span class="m-1" id="increase">+</span>
                 </div>
-            `;
+            </div>
+        `;
             document.getElementById('itemList').appendChild(newItem);
             var itemPrice = parseInt(foodPrice);
             var totalPriceElement = document.getElementById('totalPrice');
@@ -294,17 +316,49 @@
             totalPrice += itemPrice * parseInt(quantity);
             totalPriceElement.textContent = totalPrice;
         }
+
+        // Thêm sự kiện click cho nút giảm
+        newItem.querySelector('#decrease').addEventListener('click', function() {
+            var quantityElement = newItem.querySelector('#newQuantity');
+            var quantity = parseInt(quantityElement.innerText);
+
+            if (quantity > 1) {
+                quantityElement.innerText = quantity - 1;
+                updateTotalPrice(-1, foodPrice);
+            }
+            resetVoucher();
+        });
+        // Thêm sự kiện click cho nút tăng
+        newItem.querySelector('#increase').addEventListener('click', function() {
+            var quantityElement = newItem.querySelector('#newQuantity');
+            var quantity = parseInt(quantityElement.innerText);
+
+            quantityElement.innerText = quantity + 1;
+            updateTotalPrice(1, foodPrice);
+            resetVoucher();
+        });
+
+        function updateTotalPrice(change, itemPrice) {
+            var totalPriceElement = document.getElementById('totalPrice');
+            var totalPrice = parseInt(totalPriceElement.textContent);
+
+            totalPrice += (itemPrice * change);
+            totalPriceElement.textContent = totalPrice;
+        }
+        resetVoucher();
     }
 </script>
 <script>
     document.getElementById('payButton').addEventListener('click', function() {
         var paymentMethod = document.getElementById('paymentMethod').value;
+        var cinema = document.getElementById('cinema').value;
         var email = document.getElementById('email').value;
         var order_end = document.getElementById('order_end').value;
         var note = document.getElementById('note').value;
-        var totalPrice = document.getElementById('total').textContent;
+        var voucher = document.getElementById('voucher').value;
+        var total = document.getElementById('total').textContent;
+        var totalPrice = document.getElementById('totalPrice').textContent;
         var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
         var itemList = document.getElementById('itemList').getElementsByTagName('li');
         var foodItems = [];
 
@@ -320,16 +374,45 @@
         }
 
         // Cập nhật giá trị trong form
-        document.querySelector('input[name="total_amount"]').value = parseInt(totalPrice);
+        document.querySelector('input[name="total_amount"]').value = parseInt(total);
+        document.querySelector('input[name="total_price"]').value = parseInt(totalPrice);
         document.querySelector('input[name="payment_method"]').value = parseInt(paymentMethod);
+        document.querySelector('input[name="cinema"]').value = parseInt(cinema);
         document.querySelector('input[name="email"]').value = email;
         document.querySelector('input[name="order_end"]').value = order_end;
         document.querySelector('input[name="note"]').value = note;
+        document.querySelector('input[name="voucher"]').value = voucher;
         document.querySelector('input[name="food_items"]').value = JSON.stringify(foodItems);
 
         // Gửi form
         document.getElementById('myForm').submit();
     });
 </script>
+<script>
+    function resetVoucher() {
+        document.getElementById('voucher').value = ''; // Clear the voucher input field
+        document.getElementById('alert').innerText = ''; // Clear the voucher input field
+        document.getElementById('discount').innerText = '0'; // Reset discount value to 0
+    }
+    document.getElementById('applyButton').addEventListener('click', function() {
+        var userVoucher = document.getElementById('voucher').value;
+        var totalPrice = parseInt(document.getElementById('totalPrice').textContent);
 
+        axios.post('/food/check-voucher', {
+                voucher: userVoucher,
+                totalPrice: totalPrice
+
+            })
+            .then(function(response) {
+                var discount = response.data.discount;
+                document.getElementById('discount').innerText = discount;
+                document.getElementById('alert').innerText = "Mã giảm giá áp dụng thành công !!!";
+            })
+            .catch(function(error) {
+                if (error.response.status === 422) {
+                    document.getElementById('alert').innerText = error.response.data.error;
+                }
+            });
+    });
+</script>
 @endpush

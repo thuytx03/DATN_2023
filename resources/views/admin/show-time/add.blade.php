@@ -50,6 +50,26 @@
                         <label for="end_date">Thời gian kết thúc<span class="text-danger">(*)</span></label>
                         <input type="datetime-local" class="form-control" name="end_date" id="end_date" value="{{ old('end_date') }}">
                     </div>
+                    <div class="row">
+                        <div class="col-md-4 col-12">
+                            <div class="form-group">
+                                <label for="thuong">Giá ghế thường<span class="text-danger">(*)</span></label>
+                                <input type="text" placeholder="Giá ghế thường" class="form-control" name="thuong" id="thuong" value="{{ old('thuong') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-12">
+                            <div class="form-group">
+                                <label for="vip">Giá ghế vip<span class="text-danger">(*)</span></label>
+                                <input type="text" placeholder="Giá ghế vip" class="form-control" name="vip" id="vip" value="{{ old('vip') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-12">
+                            <div class="form-group">
+                                <label for="doi">Giá ghế đôi<span class="text-danger">(*)</span></label>
+                                <input type="text" placeholder="Giá ghế đôi" class="form-control" name="doi" id="doi" value="{{ old('doi') }}">
+                            </div>
+                        </div>
+                    </div>
                     <div class="form-group">
                         <label for="status">Trạng thái<span class="text-danger">(*)</span></label>
                         <select id="status" class="form-control custom-select" name="status">
